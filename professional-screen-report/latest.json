@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/17 22:06:13",
+    "generatedAt": "2026/07/17 22:14:20",
     "etfDate": "2026-07-17",
     "priceDate": "2026-07-17",
     "marketDate": "2026-07-16",
@@ -46,7 +46,7 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-17T13:17:31.788Z",
+    "fetchedAt": "2026-07-17T14:14:05.211Z",
     "totalCount": 410,
     "aiEnabled": false,
     "sourceScope": {
