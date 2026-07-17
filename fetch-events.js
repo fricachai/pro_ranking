@@ -170,7 +170,7 @@ async function fetchXiaoyuEvents() {
     for (const item of (data.buyback || [])) {
       results.push({
         code: item.c, title: `庫藏股：${item.n} ${item.why}`, link: `https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=${item.c}`,
-        pubDate: item.t ? `${item.t}T00:00:00+08:00` : null,
+        pubDate: item.f ? `${item.f}T00:00:00+08:00` : null,
         description: `價格 ${item.price}，預計買回 ${item.lots} 張，已執行 ${item.done} 張，狀態：${item.st}`,
         source: 'xiaoyu', eventType: 'buyback', confirmed: true
       });
