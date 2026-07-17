@@ -127,6 +127,12 @@ try {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
     }
+    if (-not $latestHtmlContent.Contains('/^[0-9]{4}$/')) {
+        throw 'Position import validation is missing the four-digit stock-code check.'
+    }
+    if ($latestHtmlContent.Contains('/^d{4}$/')) {
+        throw 'Position import validation lost its digit character class during HTML generation.'
+    }
 
     $report = Get-Content $LatestJson -Raw -Encoding utf8 | ConvertFrom-Json
     $meta = $report.meta
