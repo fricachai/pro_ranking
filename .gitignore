@@ -1,4 +1,6 @@
 node_modules/
+.playwright-cli/
+output/playwright/
 professional-screen-report/qa/
 professional-screen-report/test-results/
 professional-screen-report/latest.html

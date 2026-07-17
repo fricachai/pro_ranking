@@ -130,6 +130,17 @@ try {
     if ([int]$meta.stockCount -lt 350) {
         throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
     }
+    $rankingRows = @($report.ranking)
+    $validEntryActions = @('可開始承接', '等待確認', '暫不承接', '不建立部位')
+    $validHoldingActions = @('續抱／回測可加碼', '續抱觀察', '暫停加碼／守防線', '停止加碼／開始減碼', '優先出脫')
+    $missingDecisionRows = @($rankingRows | Where-Object {
+        -not $_.entryAction -or -not $_.holdingAction -or
+        $validEntryActions -notcontains [string]$_.entryAction -or
+        $validHoldingActions -notcontains [string]$_.holdingAction
+    })
+    if ($missingDecisionRows.Count -gt 0) {
+        throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."
+    }
 
     $etfDate = [datetime]::ParseExact([string]$meta.etfDate, 'yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture)
     $dateSlug = $etfDate.ToString('yyyyMMdd')
