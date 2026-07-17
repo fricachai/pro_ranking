@@ -131,12 +131,14 @@ try {
         throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
     }
     $rankingRows = @($report.ranking)
-    $validEntryActions = @('可開始承接', '等待確認', '暫不承接', '不建立部位')
-    $validHoldingActions = @('續抱／回測可加碼', '續抱觀察', '暫停加碼／守防線', '停止加碼／開始減碼', '優先出脫')
+    # Keep validation tokens ASCII-only so Windows PowerShell 5 can parse this
+    # UTF-8 script reliably on systems that do not default to UTF-8.
+    $validBuckets = @('A', 'B', 'C', 'D')
+    $validHoldingStates = @('add', 'hold', 'protect', 'trim', 'exit')
     $missingDecisionRows = @($rankingRows | Where-Object {
         -not $_.entryAction -or -not $_.holdingAction -or
-        $validEntryActions -notcontains [string]$_.entryAction -or
-        $validHoldingActions -notcontains [string]$_.holdingAction
+        $validBuckets -notcontains [string]$_.bucket -or
+        $validHoldingStates -notcontains [string]$_.holdingState
     })
     if ($missingDecisionRows.Count -gt 0) {
         throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."
