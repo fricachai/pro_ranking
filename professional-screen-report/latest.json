@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/17 21:10:24",
+    "generatedAt": "2026/07/17 21:17:51",
     "etfDate": "2026-07-17",
     "priceDate": "2026-07-17",
     "marketDate": "2026-07-16",
@@ -44,7 +44,7 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-17T12:19:32.415Z",
+    "fetchedAt": "2026-07-17T13:17:31.788Z",
     "totalCount": 410,
     "aiEnabled": false,
     "sourceScope": {
@@ -9583,6 +9583,19 @@
         },
         {
           "eventType": "news_pending",
+          "title": "Semiconductor stocks keep falling as investors go risk-off, Chinese startup releases powerful new AI model",
+          "publishTime": "Fri, 17 Jul 2026 13:09:20 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/article/semiconductor-stocks-keep-falling-as-investors-go-risk-off-chinese-startup-releases-powerful-new-ai-model-130920103.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "Nasdaq to lead US stocks lower as chip sell-off deepens; Netflix disappoints",
           "publishTime": "Fri, 17 Jul 2026 12:00:00 +0000",
           "sourceUrl": "https://www.proactiveinvestors.com/companies/news/1095621/nasdaq-to-lead-us-stocks-lower-as-chip-sell-off-deepens-netflix-disappoints-1095621.html",
@@ -9609,35 +9622,22 @@
         },
         {
           "eventType": "news_pending",
+          "title": "IBM’s Warning Is a ‘Hammer’ Slamming Down on Tech’s AI Outsiders",
+          "publishTime": "Fri, 17 Jul 2026 11:05:01 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/ibm-warning-hammer-slamming-down-110501015.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "TSMC hikes 2026 guidance as AI demand outpaces capacity",
           "publishTime": "Fri, 17 Jul 2026 11:03:00 +0000",
           "sourceUrl": "https://www.thestreet.com/investing/stocks/tsmc-hikes-2026-guidance-ai-demand",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Stocks sink as chip rout deepens, oil set for weekly gain",
-          "publishTime": "Fri, 17 Jul 2026 10:21:07 +0000",
-          "sourceUrl": "https://finance.yahoo.com/video/stocks-sink-chip-rout-deepens-102107909.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "European chip stocks fall after sharp U.S. peers’ selloff",
-          "publishTime": "Fri, 17 Jul 2026 09:46:37 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/european-chip-stocks-fall-sharp-094637672.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
