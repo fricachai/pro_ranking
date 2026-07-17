@@ -156,9 +156,53 @@ function normalizeEvent(raw, dedup) {
     contentHash,
     source: raw.source || 'unknown',
     confirmed: raw.confirmed !== false,
+    dateKind: raw.dateKind || 'published',
+    sourceStartDate: raw.sourceStartDate || null,
+    sourceEndDate: raw.sourceEndDate || null,
     description: (raw.description || '').trim().slice(0, 1000),
     isNew
   };
+}
+
+function normalizedDatePart(value) {
+  const match = String(value || '').match(/^(\d{4})[\/-](\d{2})[\/-](\d{2})/);
+  if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+}
+
+function validateEventContracts(events) {
+  const errors = [];
+
+  for (const event of events) {
+    const prefix = `${event.code || 'unknown'} ${event.eventType || 'unknown'}`;
+    const eventDate = normalizedDatePart(event.publishTime);
+    if (!event.code || !event.title || !event.sourceUrl || !eventDate) {
+      errors.push(`${prefix}: missing required code/title/sourceUrl/date`);
+      continue;
+    }
+
+    if (event.eventType === EVENT_TYPES.BUYBACK) {
+      const startDate = normalizedDatePart(event.sourceStartDate);
+      const endDate = normalizedDatePart(event.sourceEndDate);
+      if (event.dateKind !== 'event_start' || !startDate) {
+        errors.push(`${prefix}: buyback must preserve its source start date`);
+      } else if (eventDate !== startDate) {
+        errors.push(`${prefix}: event date ${eventDate} does not match source start ${startDate}`);
+      }
+      if (startDate && endDate && endDate < startDate) {
+        errors.push(`${prefix}: source end ${endDate} is earlier than start ${startDate}`);
+      }
+    }
+
+    if (event.eventType === EVENT_TYPES.NEWS_PENDING && event.confirmed !== false) {
+      errors.push(`${prefix}: pending news must remain unconfirmed`);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Event contract validation failed (${errors.length}):\n${errors.slice(0, 20).join('\n')}`);
+  }
 }
 
 async function fetchXiaoyuEvents() {
@@ -170,9 +214,10 @@ async function fetchXiaoyuEvents() {
     for (const item of (data.buyback || [])) {
       results.push({
         code: item.c, title: `庫藏股：${item.n} ${item.why}`, link: `https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=${item.c}`,
-        pubDate: item.f ? `${item.f}T00:00:00+08:00` : null,
+        pubDate: item.f ? `${String(item.f).replace(/\//g, '-')}T00:00:00+08:00` : null,
         description: `價格 ${item.price}，預計買回 ${item.lots} 張，已執行 ${item.done} 張，狀態：${item.st}`,
-        source: 'xiaoyu', eventType: 'buyback', confirmed: true
+        source: 'xiaoyu', eventType: 'buyback', confirmed: true,
+        dateKind: 'event_start', sourceStartDate: item.f || null, sourceEndDate: item.t || null
       });
     }
 
@@ -180,9 +225,10 @@ async function fetchXiaoyuEvents() {
       results.push({
         code: item.c, title: `處置股票：${item.n} ${item.lvl}${item.cond ? ` (${item.cond})` : ''}`,
         link: `https://www.twse.com.tw/zh/page/trading/exchange/disposal.html`,
-        pubDate: item.f ? `${item.f}T00:00:00+08:00` : null,
+        pubDate: item.f ? `${String(item.f).replace(/\//g, '-')}T00:00:00+08:00` : null,
         description: `間隔 ${item.iv}，等級 ${item.lvl}，期間 ${item.f} ~ ${item.t}，狀態：${item.st}`,
-        source: 'xiaoyu', eventType: 'dispose', confirmed: true
+        source: 'xiaoyu', eventType: 'dispose', confirmed: true,
+        dateKind: 'event_start', sourceStartDate: item.f || null, sourceEndDate: item.t || null
       });
     }
 
@@ -190,9 +236,10 @@ async function fetchXiaoyuEvents() {
       results.push({
         code: item.c, title: `內部人持股異動：${item.n} ${item.role} ${item.way}`,
         link: `https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=${item.c}`,
-        pubDate: item.d ? `${item.d}T00:00:00+08:00` : null,
+        pubDate: item.d ? `${String(item.d).replace(/\//g, '-')}T00:00:00+08:00` : null,
         description: `${item.role} ${item.way} ${item.lots} 張，價格 ${item.pb}，狀態：${item.st}`,
-        source: 'xiaoyu', eventType: 'transfer', confirmed: true
+        source: 'xiaoyu', eventType: 'transfer', confirmed: true,
+        dateKind: 'event_date', sourceStartDate: item.d || null, sourceEndDate: null
       });
     }
 
@@ -231,7 +278,8 @@ async function fetchYahooNews(stockCodes) {
           pubDate: extr(s, 'pubDate'),
           description: ((extr(s, 'description') || '')).replace(/<[^>]*>/g, '').trim().slice(0, 500),
           source: 'yahoo_news',
-          confirmed: false
+          confirmed: false,
+          dateKind: 'published'
         });
         if (items.length >= CONFIG.maxNewsPerStock) break;
       }
@@ -340,7 +388,6 @@ function mergeEvents(xiaoyuItems, newsItems, aiResults, dedup) {
     all.push(normalized);
   }
 
-  dedup.save();
   return all;
 }
 
@@ -379,11 +426,22 @@ async function main() {
 
   const merged = mergeEvents(xiaoyuItems, newsItems, aiResults, dedup);
   log(`merged unique events: ${merged.length}`);
+  validateEventContracts(merged);
+  dedup.save();
+  log('event contract validation passed');
 
   const output = {
     fetchedAt: new Date().toISOString(),
     date: todayStr,
     aiEnabled: CONFIG.aiEnabled,
+    sourceScope: {
+      xiaoyuEventTypes: ['buyback', 'disposal', 'insider_transfer'],
+      yahooNews: CONFIG.newsEnabled,
+      yahooNewsStockLimit: CONFIG.maxStocksForNews,
+      yahooNewsItemsPerStock: CONFIG.maxNewsPerStock,
+      officialMaterialInfo: false,
+      officialInvestorConference: false
+    },
     stats: {
       totalEvents: merged.length,
       byType: {},

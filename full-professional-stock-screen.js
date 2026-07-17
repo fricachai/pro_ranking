@@ -828,6 +828,8 @@ function recordForOutput(record, rank) {
     eventsLayer: (record.eventsLayer || []).map(ev => ({
       eventType: ev.eventType, title: ev.title, publishTime: ev.publishTime,
       sourceUrl: ev.sourceUrl, source: ev.source, confirmed: ev.confirmed,
+      dateKind: ev.dateKind || 'published', sourceStartDate: ev.sourceStartDate || null,
+      sourceEndDate: ev.sourceEndDate || null,
       aiSummary: ev.aiSummary || null, importance: ev.importance || null
     })),
     flowState: record.flowState,
@@ -957,7 +959,7 @@ function buildHtml(report) {
 
 <section class="section method"><article><h3>多時間窗判讀原則</h3><p>ETF採20／10／5／3／1日多時間窗，主動與被動ETF分開。外資檢查官方持股存量與買賣超流量；投信則檢查1／5／10／20日買賣超、連續買賣天數與估算金額。不同法人分開計分，不把單日買超誤認為長期加碼。技術面使用5、20、60日EMA、RSI、MACD、乖離與趨勢斜率。</p></article><article><h3>硬性與時機檢查</h3><ul><li>只保留上市股票，排除上櫃。</li><li>資料信心度低於65%或成交金額不足者排除。</li><li>營收同步衰退或中期趨勢向下者排除。</li><li>ETF 5／10日同步減碼者等待轉強。</li><li>外資持股5／10日同步下降且外資賣超者，不列立即布局。</li><li>投信5／10日持續且具金額意義的賣超者，不列立即布局。</li><li>外資持股期間出現非市場異動時，該段趨勢不直接計分。</li><li>處置、過熱、估值與除息事件改列等待。</li></ul></article></section>
 
-<section class="section"><h2>證據與限制</h2><p class="section-lead">證交所說明，外資持股變化除集中市場買賣外，也可能受借券、海外存託憑證、股本異動、ETF申購買回與國籍變更影響。因此本系統把外資持股與買賣超分開。投信與自營商使用每日買賣超，不宣稱為完整持股。本報告仍未取得券商一致預估、目標價、完整自由現金流與個人持倉成本，候選名單不等於無條件買進。事件層（重大訊息、法說會、新聞）僅為輔助資訊，不計入評分；未經官方確認的新聞列為待確認資訊。</p><ul class="sources">${sourceRows}</ul></section>
+<section class="section"><h2>證據與限制</h2><p class="section-lead">證交所說明，外資持股變化除集中市場買賣外，也可能受借券、海外存託憑證、股本異動、ETF申購買回與國籍變更影響。因此本系統把外資持股與買賣超分開。投信與自營商使用每日買賣超，不宣稱為完整持股。本報告仍未取得券商一致預估、目標價、完整自由現金流與個人持倉成本，候選名單不等於無條件買進。事件層目前涵蓋籌碼小宇的庫藏股、處置與內部人異動，以及 Yahoo Finance RSS 新聞；事件僅為輔助資訊、不計入評分，新聞一律列為待確認。官方重大訊息與法說會資料尚未實作，不得把預留的事件類型視為已完成的來源。</p><ul class="sources">${sourceRows}</ul></section>
 </main>
 <dialog class="score-dialog" id="scoreDialog" aria-labelledby="scoreDialogTitle"><div class="score-dialog-shell"><header class="score-dialog-head"><div><h2 id="scoreDialogTitle">股票評分明細</h2><p id="scoreDialogSub">六大構面實得分、判斷數據與來源</p></div><button class="score-close" id="scoreClose" type="button" title="關閉評分明細" aria-label="關閉評分明細">&times;</button></header><div class="score-dialog-body" id="scoreDialogBody"></div></div></dialog>
 <script>
@@ -1006,7 +1008,7 @@ function openScore(code,updateHash=true){
       '資料信心度 '+n(risk.dataConfidence,0)+'%；事件、處置與除權息風險另行檢查'
     ],'risk',r.code)
   ].join('');
-  const eventsHtml=r.eventsLayer&&r.eventsLayer.length?'<div style="margin-top:16px;border:1px solid var(--line);overflow:auto"><table class="score-breakdown" style="min-width:600px"><thead><tr><th>事件類型</th><th>標題</th><th>發布時間</th></tr></thead><tbody>'+r.eventsLayer.slice(0,6).map(ev=>'<tr><td style="white-space:nowrap">'+e(ev.eventType)+(ev.confirmed?'':' <span style="color:var(--amber);font-size:11px">待確認</span>')+'</td><td><a href="'+e(ev.sourceUrl)+'" target="_blank" rel="noreferrer" style="color:var(--blue)">'+e(ev.title).slice(0,80)+'</a>'+(ev.aiSummary?'<br><span style="font-size:12px;color:var(--muted)">AI: '+e(ev.aiSummary)+'</span>':'')+'</td><td style="white-space:nowrap;font-size:12px">'+e((ev.publishTime||'').slice(0,10))+'</td></tr>').join('')+'</tbody></table></div>':'';
+  const eventsHtml=r.eventsLayer&&r.eventsLayer.length?'<div style="margin-top:16px;border:1px solid var(--line);overflow:auto"><table class="score-breakdown" style="min-width:680px"><thead><tr><th>事件類型</th><th>標題</th><th>日期性質</th><th>日期</th></tr></thead><tbody>'+r.eventsLayer.slice(0,6).map(ev=>'<tr><td style="white-space:nowrap">'+e(ev.eventType)+(ev.confirmed?'':' <span style="color:var(--amber);font-size:11px">待確認</span>')+'</td><td><a href="'+e(ev.sourceUrl)+'" target="_blank" rel="noreferrer" style="color:var(--blue)">'+e(ev.title).slice(0,80)+'</a>'+(ev.aiSummary?'<br><span style="font-size:12px;color:var(--muted)">AI: '+e(ev.aiSummary)+'</span>':'')+'</td><td style="white-space:nowrap;font-size:12px">'+e(ev.dateKind==='event_start'?'事件起日':ev.dateKind==='event_date'?'事件日期':'發布日')+'</td><td style="white-space:nowrap;font-size:12px">'+e((ev.publishTime||'').slice(0,10))+'</td></tr>').join('')+'</tbody></table></div>':'';
   const factor=.88+.12*(r.confidence/100);const risks=(r.rejectionReasons||[]).length?(r.rejectionReasons||[]).join('；'):'目前未觸發硬性或時機風險，但仍應分批並設定停損條件。';
   scoreDialogTitle.textContent=r.code+' '+r.name+'｜專業評分明細';scoreDialogSub.textContent=r.industry+' · '+r.action+' · 排名第 '+r.rank;
   scoreDialogBody.innerHTML='<div class="score-dates"><span>ETF '+e(reportMeta.etfDate)+'</span><span>法人買賣超 '+e(reportMeta.institutionalDate)+'</span><span>外資持股 '+e(reportMeta.foreignHoldingDate)+'</span><span>價量／估值 '+e(reportMeta.marketDate)+'</span></div><div class="score-summary"><div><span>排名總分</span><b>'+n(r.score)+'</b></div><div><span>六構面原始總分</span><b>'+n(r.rawScore)+'</b></div><div><span>資料信心度</span><b>'+n(r.confidence,0)+'%</b></div><div><span>目前判斷</span><b>'+e(r.action)+'</b></div></div><div class="score-detail-wrap"><table class="score-breakdown"><thead><tr><th>評估項目</th><th>實得／最高</th><th>本股判斷數據</th><th>資料與消息來源</th></tr></thead><tbody>'+detailRows+'</tbody></table></div>'+eventsHtml+'<div class="score-judgment"><b>最先注意的風險：</b>'+e(risks)+'</div><p class="score-formula">排名總分＝六構面原始總分 × 資料完整度調整係數。此股係數為 '+n(factor,3)+'（0.88＋0.12×信心度），因此資料不足不會與資料完整的股票以相同可信度排名。來源連結代表本次計算所用資料的出處，仍應再查公司公告與財報原文。</p>';
@@ -1030,11 +1032,11 @@ async function main() {
       fetchJson(SOURCES.twseDaily), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url)))
     ]);
 
-  let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null };
+  let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null };
   try {
     if (fs.existsSync(LATEST_EVENTS_PATH)) {
       const parsed = JSON.parse(fs.readFileSync(LATEST_EVENTS_PATH, 'utf8'));
-      eventsLayerData = { events: parsed.events || [], aiEnabled: parsed.aiEnabled || false, fetchedAt: parsed.fetchedAt || null };
+      eventsLayerData = { events: parsed.events || [], aiEnabled: parsed.aiEnabled || false, fetchedAt: parsed.fetchedAt || null, sourceScope: parsed.sourceScope || null };
       console.log(`  事件層載入 ${eventsLayerData.events.length} 筆，AI${eventsLayerData.aiEnabled ? '已' : '未'}啟用`);
     }
   } catch (err) {
@@ -1244,6 +1246,7 @@ async function main() {
       fetchedAt: eventsLayerData.fetchedAt,
       totalCount: eventsLayerData.events.length,
       aiEnabled: eventsLayerData.aiEnabled,
+      sourceScope: eventsLayerData.sourceScope,
       byType: eventsLayerData.events.reduce((acc, ev) => {
         acc[ev.eventType] = (acc[ev.eventType] || 0) + 1;
         return acc;
