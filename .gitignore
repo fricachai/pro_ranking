@@ -3,3 +3,5 @@ professional-screen-report/qa/
 professional-screen-report/test-results/
 professional-screen-report/latest.html
 professional-screen-report/logs/
+professional-screen-report/events/dedup-hashes.json
+professional-screen-report/events/ai-cache/

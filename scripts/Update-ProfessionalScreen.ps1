@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ReportDir = Join-Path $RepoRoot 'professional-screen-report'
 $Generator = Join-Path $RepoRoot 'full-professional-stock-screen.js'
+$EventFetcher = Join-Path $RepoRoot 'fetch-events.js'
 $LatestJson = Join-Path $ReportDir 'latest.json'
 $LatestHtml = Join-Path $ReportDir 'latest.html'
 $IndexHtml = Join-Path $RepoRoot 'index.html'
@@ -103,6 +104,14 @@ try {
         throw "Generator syntax check failed. Log: $logPath"
     }
 
+    if (Test-Path $EventFetcher) {
+        Write-Host "Fetching events data (non-blocking)..."
+        & node $EventFetcher *>> $logPath
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Event fetcher failed. Continuing without events data. Log: $logPath"
+        }
+    }
+
     & node $Generator *>> $logPath
     if ($LASTEXITCODE -ne 0) {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
@@ -145,7 +154,8 @@ try {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
-    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $datedFiles
+    $eventsOutput = 'professional-screen-report/events/latest-events.json'
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json', $eventsOutput) + $datedFiles
     $changedPaths = @(Get-ChangedPaths)
     $unexpected = @($changedPaths | Where-Object { $_ -notin $allowedPaths })
     if ($unexpected.Count -gt 0) {
