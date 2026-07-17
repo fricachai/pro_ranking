@@ -154,18 +154,26 @@ try {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
-    $eventsOutput = 'professional-screen-report/events/latest-events.json'
-    $allowedPaths = @('index.html', 'professional-screen-report/latest.json', $eventsOutput) + $datedFiles
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $datedFiles
+    $allowedPrefixes = @('professional-screen-report/events/')
     $changedPaths = @(Get-ChangedPaths)
-    $unexpected = @($changedPaths | Where-Object { $_ -notin $allowedPaths })
+    $unexpected = @($changedPaths | Where-Object {
+        $path = $_
+        if ($path -in $allowedPaths) { return $false }
+        foreach ($prefix in $allowedPrefixes) {
+            if ($path -like "$prefix*" -or $path -eq $prefix.TrimEnd('/')) { return $false }
+        }
+        return $true
+    })
     if ($unexpected.Count -gt 0) {
         throw "Generator changed unexpected files: $($unexpected -join ', ')"
     }
 
+    $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $datedFiles
     $commit = $null
     $publishStatus = if ($changedPaths.Count -eq 0) { 'no_changes' } else { 'validated' }
     if ($Publish -and $changedPaths.Count -gt 0) {
-        Invoke-Git -Arguments (@('add', '--') + $allowedPaths) | Out-Null
+        Invoke-Git -Arguments (@('add', '--') + $gitAddPaths) | Out-Null
         $stagedCheck = & git diff --cached --check 2>&1
         if ($LASTEXITCODE -ne 0) {
             throw "Pre-commit validation failed:`n$($stagedCheck -join "`n")"
