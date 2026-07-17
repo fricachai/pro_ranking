@@ -29,7 +29,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 11. 使用者標記的布局部位保存在瀏覽器 `proRankingPositionsV1`，不因重跑或掉出前三名自動移除；不得把本地持倉追蹤資料上傳或寫入公開報告。
 12. 技術面15分內，標準KD（9,3,3）只占1.5分，必須使用每日最高、最低與收盤價計算。KD不得用收盤價近似；低檔黃金交叉不可單獨列為買進，高檔死亡交叉不可單獨列為減碼或出脫。
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
-14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的一組帳密。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
+14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的帳密清單。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、任何已設定帳號、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
 
 ## Codex／OpenCode 統一完成條件
 
