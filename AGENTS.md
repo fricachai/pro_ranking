@@ -31,6 +31,19 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
 14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的一組帳密。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
 
+## Codex／OpenCode 統一完成條件
+
+除非使用者明確要求只保留本機、不要提交或不要發布，任何資料更新、錯誤修正、功能新增與判斷規則調整都必須在以下條件全部成立後，才可宣告完成：
+
+1. 所有來源檔、腳本、規則與產出都更新在本專案根目錄 `pro_ranking`，不得另建 Codex 或 OpenCode 專用副本。
+2. 執行與變更範圍相符的語法、資料契約及瀏覽器操作驗證；修正匯入、登入、追蹤等功能時，必須使用實際檔案或實際操作流程重現並驗證。
+3. 需要更新報告或公開網頁時，執行 `scripts/Update-ProfessionalScreen.ps1 -Publish`，不得只修改本機 `index.html` 或只回報程式碼完成。
+4. 只提交本次任務相關檔案，提交並推送至 `origin/main`；不得清除、覆寫或夾帶原有無關變更。
+5. 完成前確認 `git status --porcelain` 無輸出，且本機 `HEAD`、`origin/main` 與 GitHub Pages 最新建置提交一致。
+6. 實際讀取 GitHub Pages 線上檔案或執行瀏覽器測試，確認本次關鍵功能已上線；只有 Pages 顯示建置成功但線上內容未更新，不算完成。
+7. 最終回報必須包含資料日期（資料更新任務）、提交版本、分支與公開網址，讓下一個 Codex 或 OpenCode 可直接從同一資料夾接手。
+8. 瀏覽器 `localStorage`、登入狀態與使用者下載的布局追蹤 JSON 屬私人本機資料，不得為了交接寫入 Git 或公開報告；交接只保存功能與資料格式規則。
+
 ## 重要檔案
 
 - `full-professional-stock-screen.js`：資料抓取、評分與報告產生器。
@@ -42,7 +55,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 ## 非日常任務
 
-只有使用者明確要求新增欄位、修改評分、調整版面或修正錯誤時，才分析與編輯產生器。完成後必須先在本機驗證，再提交、推送並檢查公開 Pages 內容。
+只有使用者明確要求新增欄位、修改評分、調整版面或修正錯誤時，才分析與編輯產生器。完成後必須遵守「Codex／OpenCode 統一完成條件」，不得留下只有其中一個工具知道的未提交版本。
 
 ## 事件資料契約與限制
 
