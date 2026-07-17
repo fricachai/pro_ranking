@@ -121,6 +121,12 @@ try {
     foreach ($path in @($LatestJson, $LatestHtml)) {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
+    $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"')) {
+        if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
+            throw "Required login gate token is missing: $requiredAuthToken"
+        }
+    }
 
     $report = Get-Content $LatestJson -Raw -Encoding utf8 | ConvertFrom-Json
     $meta = $report.meta
@@ -129,6 +135,10 @@ try {
     }
     if ([int]$meta.stockCount -lt 350) {
         throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
+    }
+    $minimumKdCoverage = [math]::Floor([int]$meta.stockCount * 0.90)
+    if ([int]$meta.kdCovered -lt $minimumKdCoverage) {
+        throw "KD OHLC coverage is unexpectedly low: $($meta.kdCovered)/$($meta.stockCount)"
     }
     $rankingRows = @($report.ranking)
     # Keep validation tokens ASCII-only so Windows PowerShell 5 can parse this
