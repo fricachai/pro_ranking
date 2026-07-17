@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/17 22:56:37",
+    "generatedAt": "2026/07/17 22:58:56",
     "etfDate": "2026-07-17",
     "priceDate": "2026-07-17",
     "marketDate": "2026-07-16",
@@ -46,7 +46,7 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-17T14:37:15.259Z",
+    "fetchedAt": "2026-07-17T14:58:40.635Z",
     "totalCount": 410,
     "aiEnabled": false,
     "sourceScope": {
@@ -9662,9 +9662,35 @@
         },
         {
           "eventType": "news_pending",
+          "title": "AMD Falls 5%, Intel Drops 4%, NVIDIA Slides 3% Before Recovering as Rotation Hits Semiconductor Stocks",
+          "publishTime": "Fri, 17 Jul 2026 14:30:21 +0000",
+          "sourceUrl": "https://247wallst.com/investing/2026/07/17/amd-falls-5-intel-drops-4-nvidia-slides-3-before-recovering-as-rotation-hits-semiconductor-stocks/",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "Taiwan Semiconductor Manufacturing (TSM): A Beneficiary of AI Boom",
           "publishTime": "Fri, 17 Jul 2026 14:19:59 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/taiwan-semiconductor-manufacturing-tsm-beneficiary-141959698.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
+          "title": "TSM Stock Falls To Two-Month Low Amid Semiconductor Sell-Off Despite Wave Of Price Target Hikes",
+          "publishTime": "Fri, 17 Jul 2026 14:08:26 +0000",
+          "sourceUrl": "https://stocktwits.com/news-articles/markets/equity/tsm-stock-two-month-low-semiconductor-selloff-price-target-hikes/cZZ7laVR7MG",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -9691,32 +9717,6 @@
           "title": "Semiconductor stocks keep falling as investors go risk-off, Chinese startup releases powerful new AI model",
           "publishTime": "Fri, 17 Jul 2026 13:09:20 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/article/semiconductor-stocks-keep-falling-as-investors-go-risk-off-chinese-startup-releases-powerful-new-ai-model-130920103.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Nasdaq to lead US stocks lower as chip sell-off deepens; Netflix disappoints",
-          "publishTime": "Fri, 17 Jul 2026 12:00:00 +0000",
-          "sourceUrl": "https://www.proactiveinvestors.com/companies/news/1095621/nasdaq-to-lead-us-stocks-lower-as-chip-sell-off-deepens-netflix-disappoints-1095621.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Stocks Fall Pre-Bell as Chip Sell-Off Continues",
-          "publishTime": "Fri, 17 Jul 2026 11:53:14 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/stocks-fall-pre-bell-chip-115314659.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
