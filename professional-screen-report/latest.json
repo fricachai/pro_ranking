@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/17 22:34:58",
+    "generatedAt": "2026/07/17 22:37:31",
     "etfDate": "2026-07-17",
     "priceDate": "2026-07-17",
     "marketDate": "2026-07-16",
@@ -46,7 +46,7 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-17T14:14:05.211Z",
+    "fetchedAt": "2026-07-17T14:37:15.259Z",
     "totalCount": 410,
     "aiEnabled": false,
     "sourceScope": {
@@ -9662,6 +9662,32 @@
         },
         {
           "eventType": "news_pending",
+          "title": "Taiwan Semiconductor Manufacturing (TSM): A Beneficiary of AI Boom",
+          "publishTime": "Fri, 17 Jul 2026 14:19:59 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/taiwan-semiconductor-manufacturing-tsm-beneficiary-141959698.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
+          "title": "The Zacks Analyst Blog Highlights NVIDIA, AMD,  Taiwan Semiconductor Manufacturing and Seagate",
+          "publishTime": "Fri, 17 Jul 2026 13:21:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/zacks-analyst-blog-highlights-nvidia-132100178.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "Semiconductor stocks keep falling as investors go risk-off, Chinese startup releases powerful new AI model",
           "publishTime": "Fri, 17 Jul 2026 13:09:20 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/article/semiconductor-stocks-keep-falling-as-investors-go-risk-off-chinese-startup-releases-powerful-new-ai-model-130920103.html",
@@ -9691,32 +9717,6 @@
           "title": "Stocks Fall Pre-Bell as Chip Sell-Off Continues",
           "publishTime": "Fri, 17 Jul 2026 11:53:14 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/stocks-fall-pre-bell-chip-115314659.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "IBM’s Warning Is a ‘Hammer’ Slamming Down on Tech’s AI Outsiders",
-          "publishTime": "Fri, 17 Jul 2026 11:05:01 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/ibm-warning-hammer-slamming-down-110501015.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "TSMC hikes 2026 guidance as AI demand outpaces capacity",
-          "publishTime": "Fri, 17 Jul 2026 11:03:00 +0000",
-          "sourceUrl": "https://www.thestreet.com/investing/stocks/tsmc-hikes-2026-guidance-ai-demand",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
