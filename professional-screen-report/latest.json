@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/17 20:07:20",
+    "generatedAt": "2026/07/17 20:19:44",
     "etfDate": "2026-07-17",
     "priceDate": "2026-07-17",
     "marketDate": "2026-07-16",
@@ -44,9 +44,21 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-17T12:07:05.574Z",
+    "fetchedAt": "2026-07-17T12:19:32.415Z",
     "totalCount": 410,
     "aiEnabled": false,
+    "sourceScope": {
+      "xiaoyuEventTypes": [
+        "buyback",
+        "disposal",
+        "insider_transfer"
+      ],
+      "yahooNews": true,
+      "yahooNewsStockLimit": 100,
+      "yahooNewsItemsPerStock": 5,
+      "officialMaterialInfo": false,
+      "officialInvestorConference": false
+    },
     "byType": {
       "buyback": 58,
       "disposal": 1,
@@ -440,6 +452,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-043817650.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -1369,10 +1384,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：達麗 董事 贈與",
-          "publishTime": "2026/06/29T00:00:00+08:00",
+          "publishTime": "2026-06-29T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6177",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/29",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -1582,10 +1600,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：台中銀 大股東、經理人（2人） 一般交易",
-          "publishTime": "2026/07/14T00:00:00+08:00",
+          "publishTime": "2026-07-14T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2812",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/14",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -2337,6 +2358,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-043817650.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -3062,6 +3086,9 @@
           "sourceUrl": "https://www.offshore-technology.com/news/fpcc-force-majeure-shipments-hormuz-disruptions/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -3072,6 +3099,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/global-dividend-stocks-consider-october-093205721.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -3082,6 +3112,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/toyo-denki-tse-6505-earnings-202112971.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -3092,6 +3125,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/top-asian-dividend-stocks-portfolio-223928408.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -3490,10 +3526,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：台新新光金 經理人 一般交易",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2887",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -3504,6 +3543,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ts-financial-holdings-ts-smartbrain-025900191.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -3514,6 +3556,9 @@
           "sourceUrl": "https://www.lifeinsuranceinternational.com/news/shin-kong-taishin-life-merger/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -4424,10 +4469,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：南亞科 董事 一般交易",
-          "publishTime": "2026/06/18T00:00:00+08:00",
+          "publishTime": "2026-06-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2408",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -4438,6 +4486,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/nanya-technology-corp-tpe-2408-190015806.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -4448,6 +4499,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/taiwanese-chipmaker-nanya-plans-6-092507004.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -4458,6 +4512,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/discover-asian-stocks-might-trading-043803379.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -4468,6 +4525,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-stocks-trading-below-estimated-223434817.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -4478,6 +4538,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/3-global-stocks-estimated-trading-093810129.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -5251,10 +5314,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：遠傳 經理人（15人） 信託",
-          "publishTime": "2026/06/25T00:00:00+08:00",
+          "publishTime": "2026-06-25T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=4904",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/25",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -5265,6 +5331,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/far-eastone-telecommunications-co-ltd-150056454.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -5275,6 +5344,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/far-eastone-telecommunications-co-ltd-150211310.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -5869,10 +5941,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：洋基工程 經理人 贈與",
-          "publishTime": "2026/06/22T00:00:00+08:00",
+          "publishTime": "2026-06-22T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6691",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/22",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -6419,6 +6494,9 @@
           "sourceUrl": "https://qz.com/jensen-huang-ai-returns-family-offices-taipei-060326",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -6429,6 +6507,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/exponent-raises-40m-build-financial-154900644.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -6439,6 +6520,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/chailease-holding-co-ltd-tpe-170042671.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -6449,6 +6533,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ying-chih-liao-appointed-non-140000540.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -6459,6 +6546,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/chailease-holding-co-ltd-tpe-170054033.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -6984,6 +7074,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/why-ainos-aimd-may-positioning-210033334.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -6994,6 +7087,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/healthcare/articles/vasro-ainos-expands-smell-ai-120000988.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -7004,6 +7100,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/healthcare/articles/ainos-mackay-memorial-hospital-topco-120000716.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -7014,6 +7113,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/topco-scientific-unites-14-taiwan-074600179.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -7024,6 +7126,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ainos-topco-sign-distribution-agreement-133000588.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -7233,10 +7338,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：永豐金 經理人（2人） 贈與",
-          "publishTime": "2026/06/15T00:00:00+08:00",
+          "publishTime": "2026-06-15T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2890",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/15",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -7812,10 +7920,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：玉山金 經理人 贈與",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2884",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -7826,6 +7937,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/yoshimura-food-holdings-tse-2884-091308151.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -8734,10 +8848,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：台積電 經理人 贈與",
-          "publishTime": "2026/07/03T00:00:00+08:00",
+          "publishTime": "2026-07-03T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2330",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/03",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -8748,6 +8865,9 @@
           "sourceUrl": "https://www.proactiveinvestors.com/companies/news/1095621/nasdaq-to-lead-us-stocks-lower-as-chip-sell-off-deepens-netflix-disappoints-1095621.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -8758,6 +8878,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/stocks-fall-pre-bell-chip-115314659.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -8768,6 +8891,9 @@
           "sourceUrl": "https://www.thestreet.com/investing/stocks/tsmc-hikes-2026-guidance-ai-demand",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -8778,6 +8904,9 @@
           "sourceUrl": "https://finance.yahoo.com/video/stocks-sink-chip-rout-deepens-102107909.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -8788,6 +8917,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/european-chip-stocks-fall-sharp-094637672.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -9338,10 +9470,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：藥華藥 董事（3人） 信託",
-          "publishTime": "2026/06/23T00:00:00+08:00",
+          "publishTime": "2026-06-23T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6446",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/23",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -9857,10 +9992,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：宏全 經理人（2人） 贈與",
-          "publishTime": "2026/06/18T00:00:00+08:00",
+          "publishTime": "2026-06-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=9939",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -10058,10 +10196,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：南電 董事 一般交易",
-          "publishTime": "2026/05/22T00:00:00+08:00",
+          "publishTime": "2026-05-22T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8046",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/22",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -10072,6 +10213,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/3-asian-stocks-estimated-trade-223526010.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -10082,6 +10226,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/3-global-stocks-possibly-trading-094151568.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -10092,6 +10239,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-value-stocks-priced-below-223430831.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -10102,6 +10252,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/3-global-stocks-estimated-undervalued-093808601.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -10112,6 +10265,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/3-global-stocks-estimated-undervalued-093759372.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -10904,10 +11060,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：力積電 經理人 一般交易",
-          "publishTime": "2026/06/18T00:00:00+08:00",
+          "publishTime": "2026-06-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6770",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -11973,10 +12132,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：上海商銀 經理人 贈與",
-          "publishTime": "2026/05/25T00:00:00+08:00",
+          "publishTime": "2026-05-25T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=5876",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/25",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -12173,10 +12335,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：昇陽半導體 轉讓股份予員工",
-          "publishTime": "2026/05/12T00:00:00+08:00",
+          "publishTime": "2026-05-12T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8028",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/12",
+          "sourceEndDate": "2026/07/11",
           "aiSummary": null,
           "importance": null
         }
@@ -12811,10 +12976,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：全友 董事 鉅額逐筆交易",
-          "publishTime": "2026/05/22T00:00:00+08:00",
+          "publishTime": "2026-05-22T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2305",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/22",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -13181,10 +13349,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：威強電 大股東 盤後定價交易",
-          "publishTime": "2026/06/18T00:00:00+08:00",
+          "publishTime": "2026-06-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3022",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -14251,10 +14422,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：南亞 董事 一般交易",
-          "publishTime": "2026/06/26T00:00:00+08:00",
+          "publishTime": "2026-06-26T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1303",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/26",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -14265,6 +14439,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/global-ptfe-based-copper-clad-082000679.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -14275,6 +14452,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/cooling-fabrics-company-evaluation-report-140600076.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -14285,6 +14465,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/epoxy-resin-market-worth-20-233000645.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -15610,6 +15793,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143433513.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -15620,6 +15806,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chipmos-reports-record-highest-monthly-100000243.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -15630,6 +15819,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chipmos-reports-17-7-yoy-100000756.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -15640,6 +15832,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chipmos-imos-unveils-dividends-shares-025945740.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -15650,6 +15845,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chipmos-shareholders-approve-cash-dividend-100000697.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -16540,10 +16738,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：富邦金 經理人 贈與",
-          "publishTime": "2026/07/16T00:00:00+08:00",
+          "publishTime": "2026-07-16T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2881",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/16",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -17106,10 +17307,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：凱基金 經理人 贈與",
-          "publishTime": "2026/06/24T00:00:00+08:00",
+          "publishTime": "2026-06-24T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2883",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/24",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17120,6 +17324,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/abaxx-exchange-completes-first-physical-120000501.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17130,6 +17337,9 @@
           "sourceUrl": "https://www.privatebankerinternational.com/news/kgi-bank-opens-first-overseas-branch/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -17331,6 +17541,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/astera-labs-alab-using-taiwan-143418833.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17341,6 +17554,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/alab-rides-strong-ai-infrastructure-171500478.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17351,6 +17567,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/wiwynn-shinwa-controls-announce-strategic-012600784.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -17775,6 +17994,9 @@
           "sourceUrl": "https://www.barchart.com/story/news/3320456/you-may-not-know-ase-technology-but-the-chip-stock-has-nearly-quadrupled",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17785,6 +18007,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asml-holdings-q2-earnings-beat-135400108.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17795,6 +18020,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/aehr-test-systems-q4-earnings-143200530.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17805,6 +18033,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asx-vs-lrcx-ai-semiconductor-134400398.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -17815,6 +18046,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/premium-smartphone-demand-holds-whats-162500286.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -18025,6 +18259,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/gmi-cloud-seeks-635-million-123917053.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -18035,6 +18272,9 @@
           "sourceUrl": "https://investorshub.advfn.com/market-news/article/29305/realtek-sees-mixed-demand-trends-as-second-half-visibility-remains-limited-rltqy",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -18045,6 +18285,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/dip-tse-2379-margin-decline-201012931.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -18828,10 +19071,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：元大金 經理人 贈與",
-          "publishTime": "2026/06/16T00:00:00+08:00",
+          "publishTime": "2026-06-16T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2885",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/16",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -18998,10 +19244,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：雙鍵 大股東（2人） 一般交易",
-          "publishTime": "2026/06/11T00:00:00+08:00",
+          "publishTime": "2026-06-11T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=4764",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/11",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -19510,10 +19759,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：矽統 轉讓股份予員工",
-          "publishTime": "2026/06/02T00:00:00+08:00",
+          "publishTime": "2026-06-02T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2363",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/06/02",
+          "sourceEndDate": "2026/07/31",
           "aiSummary": null,
           "importance": null
         }
@@ -19706,10 +19958,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：順德 董事、經理人（4人） 贈與",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2351",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -20108,10 +20363,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：矽格 轉讓股份予員工",
-          "publishTime": "2026/06/12T00:00:00+08:00",
+          "publishTime": "2026-06-12T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6257",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/06/12",
+          "sourceEndDate": "2026/08/11",
           "aiSummary": null,
           "importance": null
         }
@@ -20463,6 +20721,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-markets-november-2025-stocks-043758016.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -20473,6 +20734,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/3-asian-stocks-estimated-trading-223436107.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -20483,6 +20747,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-market-3-stocks-may-043753831.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -21008,10 +21275,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：巨大 轉讓股份予員工",
-          "publishTime": "2026/05/08T00:00:00+08:00",
+          "publishTime": "2026-05-08T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=9921",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/08",
+          "sourceEndDate": "2026/07/07",
           "aiSummary": null,
           "importance": null
         }
@@ -21568,10 +21838,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：旭隼 經理人（5人） 信託",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6409",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -23538,10 +23811,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：天二科技 董事 一般交易",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6834",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -24419,10 +24695,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：友達 經理人 一般交易",
-          "publishTime": "2026/06/09T00:00:00+08:00",
+          "publishTime": "2026-06-09T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2409",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/09",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -24788,10 +25067,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：嘉晶 董事 鉅額逐筆交易",
-          "publishTime": "2026/06/26T00:00:00+08:00",
+          "publishTime": "2026-06-26T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3016",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/26",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -25911,10 +26193,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：凌巨 董事 轉讓私募股票",
-          "publishTime": "2026/07/06T00:00:00+08:00",
+          "publishTime": "2026-07-06T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8105",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/06",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -26304,10 +26589,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：精誠 經理人 贈與",
-          "publishTime": "2026/06/16T00:00:00+08:00",
+          "publishTime": "2026-06-16T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6214",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/16",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -26512,6 +26800,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/asus-expands-versatile-chromeos-lineup-130000797.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -26522,6 +26813,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/samsung-becomes-sisvel-wi-fi-070900329.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -26532,6 +26826,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/asus-zenni-claw-now-available-130000354.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -26542,6 +26839,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/asus-mewc-turn-global-landmarks-130000395.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -26552,6 +26852,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/asus-rog-g700-asus-nuc-130000903.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -26932,10 +27235,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：宇瞻 董事、經理人（10人） 信託",
-          "publishTime": "2026/05/20T00:00:00+08:00",
+          "publishTime": "2026-05-20T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8271",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/20",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -27334,6 +27640,9 @@
           "sourceUrl": "https://wwd.com/sourcing-journal/logistics/freight-rates-double-digits-china-scrutinizes-ocean-carriers-fuel-surcharges-peak-season-1238956943/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -27919,10 +28228,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：正新 董事（2人） 贈與",
-          "publishTime": "2026/06/22T00:00:00+08:00",
+          "publishTime": "2026-06-22T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2105",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/22",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -28316,10 +28628,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：創見 董事、經理人（6人） 信託",
-          "publishTime": "2026/06/22T00:00:00+08:00",
+          "publishTime": "2026-06-22T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2451",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/22",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -28484,10 +28799,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：敦吉 董事 贈與",
-          "publishTime": "2026/05/25T00:00:00+08:00",
+          "publishTime": "2026-05-25T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2459",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/25",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -29043,10 +29361,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：仁寶 轉讓股份予員工",
-          "publishTime": "2026/05/13T00:00:00+08:00",
+          "publishTime": "2026-05-13T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2324",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/13",
+          "sourceEndDate": "2026/07/10",
           "aiSummary": null,
           "importance": null
         }
@@ -29262,6 +29583,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/ubs-raises-price-target-astera-185530451.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29272,6 +29596,9 @@
           "sourceUrl": "https://www.thestreet.com/investing/nvidia-brings-back-geforce-rtx-3060-graphics-card",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29282,6 +29609,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/formfactor-form-stock-know-005919458.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29292,6 +29622,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/penguin-solutions-kla-corporation-stocks-005119636.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29302,6 +29635,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/semtech-onsemi-shares-soaring-know-004319968.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -29519,6 +29855,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chunghwa-telecom-co-ltd-cht-133410110.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29529,6 +29868,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/tiiay-cht-better-value-stock-154004673.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29539,6 +29881,9 @@
           "sourceUrl": "https://www.marketbeat.com/instant-alerts/chunghwa-telecom-q1-earnings-call-highlights-2026-05-09/?utm_source=yahoofinance&amp;utm_medium=yahoofinance&amp;.tsrc=rss",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29549,6 +29894,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chunghwa-telecom-co-ltd-cht-070249336.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -29559,6 +29907,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chunghwa-telecom-reports-un-audited-075600194.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -30356,6 +30707,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/global-markets-top-value-stock-093810380.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -30366,6 +30720,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/strike-tse-6196-margin-decline-211926709.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -30376,6 +30733,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/multibeam-partners-marketech-accelerate-sales-130000823.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -30770,10 +31130,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：櫻花建 董事 贈與",
-          "publishTime": "2026/06/24T00:00:00+08:00",
+          "publishTime": "2026-06-24T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2539",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/24",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -31032,6 +31395,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/independent-testing-shows-business-security-080000798.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31042,6 +31408,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/hsbc-bullish-intel-corporation-intc-185450746.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31052,6 +31421,9 @@
           "sourceUrl": "https://www.just-auto.com/news/fuso-hon-hai-to-establish-new-bus-company-in-h2/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -31258,6 +31630,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/navitas-semiconductor-announces-fourth-quarter-210500377.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31268,6 +31643,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/nvts-deepens-global-partnerships-fuel-135700524.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31278,6 +31656,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/why-navitas-semiconductor-nvts-10-121046619.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31288,6 +31669,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/navitas-semiconductor-nvts-assessing-valuation-091312589.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -31298,6 +31682,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/navitas-consolidates-asian-distribution-signs-200000829.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -32219,6 +32606,9 @@
           "sourceUrl": "https://www.fool.com/coverage/better-buy/2026/07/07/credo-technology-group-vs-marvell-technology-which-technology-stock-is-a-better-buy-in-2026/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -32229,6 +32619,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/bizlink-buy-interplex-datacom-850-070847920.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -33555,6 +33948,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/ichigo-tse-2337-following-june-121530869.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -33565,6 +33961,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/macronix-secure-nor-flash-memory-160000089.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -33575,6 +33974,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ichigo-tse-2337-valuation-check-031329654.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -33585,6 +33987,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ichigo-tse-2337-valuation-check-200743797.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -33595,6 +34000,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/assessing-ichigo-tse-2337-valuation-001539115.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -34208,10 +34616,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：鴻勁 董事 贈與",
-          "publishTime": "2026/06/09T00:00:00+08:00",
+          "publishTime": "2026-06-09T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=7769",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/09",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -34814,6 +35225,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/chroma-ate-inc-tpe-2360-070125468.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -34824,6 +35238,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/chroma-ate-inc-tpe-2360-010101235.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -35208,10 +35625,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：緯創 經理人 贈與",
-          "publishTime": "2026/06/15T00:00:00+08:00",
+          "publishTime": "2026-06-15T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3231",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/15",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -35222,6 +35642,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/nvidia-supplier-plans-u-facility-170645330.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -35232,6 +35655,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/nvidia-supplier-king-yuan-electronics-122806790.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -35242,6 +35668,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/value-partners-groups-strategic-moves-230850303.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -35252,6 +35681,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/nvidia-unveils-vera-cpu-agents-035700506.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -36575,6 +37007,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/nvidia-kyber-delay-hits-asian-134103513.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -36585,6 +37020,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ignoring-ai-bubble-fears-investors-053150245.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -36788,6 +37226,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/vuzix-reports-2025-financial-results-202500135.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -36798,6 +37239,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/rigetti-computing-reports-fourth-quarter-210500701.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -36808,6 +37252,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/partnerships-early-orders-powering-rigettis-123600993.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -36818,6 +37265,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/morgan-stanley-now-expects-2026-131836279.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -36828,6 +37278,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/vuzix-ultralite-pro-enterprise-platform-133500789.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -37350,10 +37803,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：致伸 經理人 信託",
-          "publishTime": "2026/05/20T00:00:00+08:00",
+          "publishTime": "2026-05-20T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=4915",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/20",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -37746,6 +38202,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/cathay-financial-holding-co-ltd-170038104.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -37756,6 +38215,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/cathay-financial-ramps-regional-asset-062200861.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -37766,6 +38228,9 @@
           "sourceUrl": "https://uk.finance.yahoo.com/news/airlines-extra-legroom-seat-flights-cost-cheapest-123120937.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -37776,6 +38241,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/cathay-financial-holding-co-ltd-150031592.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -37786,6 +38254,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/stevie-awards-announce-winners-22nd-130000347.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -38534,10 +39005,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：華邦電 董事 一般交易",
-          "publishTime": "2026/05/25T00:00:00+08:00",
+          "publishTime": "2026-05-25T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2344",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/25",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -38548,6 +39022,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/winbond-launches-8gb-ddr4-dram-141500861.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -38558,6 +39035,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/winbond-taps-clarivates-ipfolio-supercharge-132850739.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -38568,6 +39048,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/winbond-selects-ipfolio-clarivate-070000458.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -38578,6 +39061,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/latest-global-nor-flash-market-043000628.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -38969,10 +39455,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：勤誠 董事 贈與",
-          "publishTime": "2026/06/15T00:00:00+08:00",
+          "publishTime": "2026-06-15T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8210",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/15",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -39176,6 +39665,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-growth-companies-high-insider-223843990.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -39186,6 +39678,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-growth-companies-high-insider-223802067.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -39196,6 +39691,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-223612004.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -39206,6 +39704,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/exploring-high-growth-tech-stocks-093827238.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -39216,6 +39717,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/global-growth-stocks-strong-insider-093550598.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -40143,10 +40647,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：志聖 董事 贈與",
-          "publishTime": "2026/06/16T00:00:00+08:00",
+          "publishTime": "2026-06-16T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2467",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/16",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -40352,10 +40859,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：台汽電 經理人 一般交易",
-          "publishTime": "2026/05/26T00:00:00+08:00",
+          "publishTime": "2026-05-26T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8926",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/26",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -40926,10 +41436,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：瀚宇博 經理人 贈與",
-          "publishTime": "2026/05/21T00:00:00+08:00",
+          "publishTime": "2026-05-21T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=5469",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/21",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -41365,10 +41878,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：聯電 轉讓股份予員工",
-          "publishTime": "2026/04/30T00:00:00+08:00",
+          "publishTime": "2026-04-30T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2303",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/04/30",
+          "sourceEndDate": "2026/06/29",
           "aiSummary": null,
           "importance": null
         },
@@ -41379,6 +41895,9 @@
           "sourceUrl": "https://www.barchart.com/story/news/3302581/with-a-technology-shift-margin-expansion-will-trigger-further-upside-for-umc-stock",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -41389,6 +41908,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/articles/wedbush-delivers-urgent-message-tsmc-184001343.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -41399,6 +41921,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/silith-umc-achieve-mass-production-014500347.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -41409,6 +41934,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-142755071.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -41612,6 +42140,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/twse-returns-computex-worlds-fifth-020000838.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -42272,6 +42803,9 @@
           "sourceUrl": "https://247wallst.com/investing/2026/07/16/asias-other-ai-winners-the-thailand-and-taiwan-funds-riding-the-same-boom-as-koreas-105-run/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42282,6 +42816,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/delta-electronics-americas-x-labs-130000591.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42292,6 +42829,9 @@
           "sourceUrl": "https://247wallst.com/investing/2026/07/07/musashi-seimitsu-might-be-the-missing-piece-in-power-distribution-for-datacenters/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42302,6 +42842,9 @@
           "sourceUrl": "https://finance.yahoo.com/m/ac2fef02-744d-3d22-bd04-4dfb44ec5827/chip-stocks-rebound-amid-dip.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42312,6 +42855,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/nvidia-releases-major-collection-open-045300021.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -42707,6 +43253,9 @@
           "sourceUrl": "https://www.verdict.co.uk/together-ai-secures-800m-series-c/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42717,6 +43266,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/neocloud-together-ai-raises-800m-182914808.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42727,6 +43279,9 @@
           "sourceUrl": "https://qz.com/together-ai-series-c-funding-800-million-valuation-070126",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42737,6 +43292,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/together-ai-raises-800-million-160522664.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -42747,6 +43305,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/together-ai-raises-800-million-130000463.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -43460,10 +44021,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：偉詮電 董事 贈與",
-          "publishTime": "2026/05/18T00:00:00+08:00",
+          "publishTime": "2026-05-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2436",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -43636,10 +44200,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：王品 董事 鉅額逐筆交易",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2727",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -44190,10 +44757,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：一詮 經理人 贈與",
-          "publishTime": "2026/06/05T00:00:00+08:00",
+          "publishTime": "2026-06-05T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2486",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/05",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -44947,10 +45517,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：聚陽 董事 贈與",
-          "publishTime": "2026/07/07T00:00:00+08:00",
+          "publishTime": "2026-07-07T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1477",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/07",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -45167,6 +45740,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/exploring-3-high-growth-tech-043833212.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -45177,6 +45753,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-043809192.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -45187,6 +45766,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/synaptics-syna-edge-ai-uav-160949095.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -45197,6 +45779,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-223534376.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -45207,6 +45792,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/exploring-high-growth-tech-stocks-043806479.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -45744,10 +46332,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：華立 董事、經理人（7人） 洽特定人",
-          "publishTime": "2026/06/10T00:00:00+08:00",
+          "publishTime": "2026-06-10T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3010",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/10",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -46139,10 +46730,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：達發 經理人 贈與",
-          "publishTime": "2026/07/06T00:00:00+08:00",
+          "publishTime": "2026-07-06T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6526",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/06",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -47448,6 +48042,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-value-stocks-trading-below-043759835.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -47458,6 +48055,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/asian-market-value-stocks-trading-223443342.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -47468,6 +48068,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-asia-223536470.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -48795,10 +49398,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：華東 董事 一般交易",
-          "publishTime": "2026/06/29T00:00:00+08:00",
+          "publishTime": "2026-06-29T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8110",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/29",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -49188,6 +49794,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/amds-10-billion-taiwan-push-173540821.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -49811,10 +50420,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：鈺邦 大股東 一般交易",
-          "publishTime": "2026/06/25T00:00:00+08:00",
+          "publishTime": "2026-06-25T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6449",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/25",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -49978,10 +50590,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：佳能 經理人（8人） 信託",
-          "publishTime": "2026/07/14T00:00:00+08:00",
+          "publishTime": "2026-07-14T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2374",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/14",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -50346,10 +50961,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：欣興 董事 贈與",
-          "publishTime": "2026/06/18T00:00:00+08:00",
+          "publishTime": "2026-06-18T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3037",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/18",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -50360,6 +50978,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/unimicron-seeks-1-4-billion-134029386.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -50370,6 +50991,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/high-growth-tech-stocks-watch-043807999.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -50380,6 +51004,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/exploring-3-high-growth-tech-093819547.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -51159,6 +51786,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/ase-technology-asx-ranks-among-100046165.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -51169,6 +51799,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-growth-stocks-insiders-banking-043532830.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -51179,6 +51812,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-growth-stocks-high-insider-043558212.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -51189,6 +51825,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-growth-leaders-high-insider-223827287.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -51199,6 +51838,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-growth-stocks-high-insider-043532503.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -51499,10 +52141,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：振大環球 經理人 贈與",
-          "publishTime": "2026/05/21T00:00:00+08:00",
+          "publishTime": "2026-05-21T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=4441",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/21",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -51717,10 +52362,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：群光 維護公司信用及股東權益",
-          "publishTime": "2026/07/01T00:00:00+08:00",
+          "publishTime": "2026-07-01T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2385",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/07/01",
+          "sourceEndDate": "2026/08/29",
           "aiSummary": null,
           "importance": null
         }
@@ -53031,6 +53679,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/guc-showcase-vsora-jotunn8-ai-060000417.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -53041,6 +53692,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/marvell-stock-rises-broadcom-hopes-174950288.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -53051,6 +53705,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/3-asian-dividend-stocks-yielding-043153550.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -54162,6 +54819,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/asian-stocks-may-trading-below-043745769.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -54753,10 +55413,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：全新 董事（2人） 洽特定人",
-          "publishTime": "2026/06/03T00:00:00+08:00",
+          "publishTime": "2026-06-03T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2455",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/03",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -54962,6 +55625,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/kyokuyo-tse-1301-earnings-growth-142157828.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -54972,6 +55638,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/construction-carbon-fiber-fabric-market-092200011.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -54982,6 +55651,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/3-global-dividend-stocks-yielding-093237795.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -55917,10 +56589,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：宏碁 董事 洽特定人",
-          "publishTime": "2026/06/03T00:00:00+08:00",
+          "publishTime": "2026-06-03T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2353",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/03",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -57790,10 +58465,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：保瑞 轉讓股份予員工",
-          "publishTime": "2026/05/14T00:00:00+08:00",
+          "publishTime": "2026-05-14T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6472",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/14",
+          "sourceEndDate": "2026/07/12",
           "aiSummary": null,
           "importance": null
         }
@@ -57983,10 +58661,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：長興 經理人 贈與",
-          "publishTime": "2026/05/19T00:00:00+08:00",
+          "publishTime": "2026-05-19T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1717",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/19",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -58189,6 +58870,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/ctbc-financial-holding-co-ltd-010118964.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -58199,6 +58883,9 @@
           "sourceUrl": "https://www.retailbankerinternational.com/news/taiwan-finance-sector-ai-model/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -58209,6 +58896,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ctbc-financial-holding-co-ltd-010119912.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -58219,6 +58909,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ctbc-financial-holding-co-ltd-170038428.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -59525,10 +60218,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：威盛 維護公司信用及股東權益",
-          "publishTime": "2026/07/09T00:00:00+08:00",
+          "publishTime": "2026-07-09T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2388",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/07/09",
+          "sourceEndDate": "2026/09/07",
           "aiSummary": null,
           "importance": null
         }
@@ -60125,6 +60821,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/ns-solutions-fairly-priced-solid-110837279.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -60135,6 +60834,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/japan-clears-taiwans-yageo-shibaura-140742424.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -60145,6 +60847,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/taiwans-yageo-raises-offer-price-031539232.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -60155,6 +60860,9 @@
           "sourceUrl": "https://finance.yahoo.com/news/japans-shibaura-classified-core-national-082950993.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -61043,10 +61751,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：金寶 董事 一般交易",
-          "publishTime": "2026/07/09T00:00:00+08:00",
+          "publishTime": "2026-07-09T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2312",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/09",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -62308,10 +63019,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：群電 經理人 贈與",
-          "publishTime": "2026/05/19T00:00:00+08:00",
+          "publishTime": "2026-05-19T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=6412",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/05/19",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -62655,10 +63369,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：敦泰 董事 信託",
-          "publishTime": "2026/07/06T00:00:00+08:00",
+          "publishTime": "2026-07-06T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3545",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/06",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -63222,6 +63939,9 @@
           "sourceUrl": "https://financialpost.com/technology/canadian-startup-wants-to-show-chip-companies-can-build-in-canada",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -63232,6 +63952,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/chipmaker-remains-core-ai-winner-134820194.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -63242,6 +63965,9 @@
           "sourceUrl": "https://247wallst.com/investing/2026/07/08/the-mediatek-ghost-story-just-dropped-the-worlds-most-powerful-custom-silicon-juggernaut-into-a-25-discount-zone/",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -63252,6 +63978,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/ericsson-om-eric-b-low-211553158.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -63262,6 +63991,9 @@
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/t-stock-moves-higher-following-160752979.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -64157,10 +64889,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：中工 大股東 一般交易",
-          "publishTime": "2026/06/03T00:00:00+08:00",
+          "publishTime": "2026-06-03T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2515",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/03",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -64673,6 +65408,9 @@
           "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/lintes-technology-unveils-shared-npc-050000811.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         },
@@ -64683,6 +65421,9 @@
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/lintes-accelerates-ai-connectivity-expansion-005000065.html",
           "source": "yahoo_news",
           "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -67234,10 +67975,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：王道銀行 經理人 贈與",
-          "publishTime": "2026/07/13T00:00:00+08:00",
+          "publishTime": "2026-07-13T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2897",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/13",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -69030,10 +69774,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：三發地產 轉讓股份予員工",
-          "publishTime": "2026/05/12T00:00:00+08:00",
+          "publishTime": "2026-05-12T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=9946",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/12",
+          "sourceEndDate": "2026/07/11",
           "aiSummary": null,
           "importance": null
         }
@@ -69194,10 +69941,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：意騰-KY 經理人（4人） 信託",
-          "publishTime": "2026/06/15T00:00:00+08:00",
+          "publishTime": "2026-06-15T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=7749",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/15",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -70940,10 +71690,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：大山 董事（2人） 贈與",
-          "publishTime": "2026/07/07T00:00:00+08:00",
+          "publishTime": "2026-07-07T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1615",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/07",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -72113,10 +72866,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：三陽工業 轉讓股份予員工",
-          "publishTime": "2026/05/21T00:00:00+08:00",
+          "publishTime": "2026-05-21T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2206",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/21",
+          "sourceEndDate": "2026/07/17",
           "aiSummary": null,
           "importance": null
         }
@@ -75890,10 +76646,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：志超 董事 鉅額逐筆交易",
-          "publishTime": "2026/06/12T00:00:00+08:00",
+          "publishTime": "2026-06-12T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=8213",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/12",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -77338,10 +78097,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：聯華 轉讓股份予員工",
-          "publishTime": "2026/05/26T00:00:00+08:00",
+          "publishTime": "2026-05-26T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1229",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/26",
+          "sourceEndDate": "2026/07/24",
           "aiSummary": null,
           "importance": null
         }
@@ -77715,10 +78477,13 @@
         {
           "eventType": "buyback",
           "title": "庫藏股：皇昌 轉讓股份予員工",
-          "publishTime": "2026/05/19T00:00:00+08:00",
+          "publishTime": "2026-05-19T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2543",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/05/19",
+          "sourceEndDate": "2026/07/18",
           "aiSummary": null,
           "importance": null
         }
@@ -78534,10 +79299,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：永信 董事 贈與",
-          "publishTime": "2026/06/24T00:00:00+08:00",
+          "publishTime": "2026-06-24T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=3705",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/24",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -79570,10 +80338,13 @@
         {
           "eventType": "disposal",
           "title": "處置股票：日電貿 二次處置 (連續三次)",
-          "publishTime": "2026/07/20T00:00:00+08:00",
+          "publishTime": "2026-07-20T00:00:00+08:00",
           "sourceUrl": "https://www.twse.com.tw/zh/page/trading/exchange/disposal.html",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_start",
+          "sourceStartDate": "2026/07/20",
+          "sourceEndDate": "2026/07/31",
           "aiSummary": null,
           "importance": null
         }
@@ -79940,10 +80711,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：潤弘 經理人（2人） 贈與",
-          "publishTime": "2026/06/02T00:00:00+08:00",
+          "publishTime": "2026-06-02T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2597",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/02",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -81545,10 +82319,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：葡萄王 董事 贈與",
-          "publishTime": "2026/06/05T00:00:00+08:00",
+          "publishTime": "2026-06-05T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1707",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/05",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -82218,10 +82995,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：汎德永業 經理人（2人） 贈與",
-          "publishTime": "2026/06/29T00:00:00+08:00",
+          "publishTime": "2026-06-29T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=2247",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/06/29",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -84324,10 +85104,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：德淵 大股東 一般交易",
-          "publishTime": "2026/07/08T00:00:00+08:00",
+          "publishTime": "2026-07-08T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=4720",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/08",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
@@ -87766,10 +88549,13 @@
         {
           "eventType": "insider_transfer",
           "title": "內部人持股異動：華城 經理人 洽特定人",
-          "publishTime": "2026/07/08T00:00:00+08:00",
+          "publishTime": "2026-07-08T00:00:00+08:00",
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1519",
           "source": "xiaoyu",
           "confirmed": true,
+          "dateKind": "event_date",
+          "sourceStartDate": "2026/07/08",
+          "sourceEndDate": null,
           "aiSummary": null,
           "importance": null
         }
