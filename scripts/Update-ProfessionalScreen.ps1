@@ -1,0 +1,179 @@
+[CmdletBinding()]
+param(
+    [switch]$Publish,
+    [int]$PagesTimeoutSeconds = 240
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+$RepoRoot = Split-Path -Parent $PSScriptRoot
+$ReportDir = Join-Path $RepoRoot 'professional-screen-report'
+$Generator = Join-Path $RepoRoot 'full-professional-stock-screen.js'
+$LatestJson = Join-Path $ReportDir 'latest.json'
+$LatestHtml = Join-Path $ReportDir 'latest.html'
+$IndexHtml = Join-Path $RepoRoot 'index.html'
+$LogDir = Join-Path $ReportDir 'logs'
+$LiveUrl = 'https://fricachai.github.io/pro_ranking/'
+
+function Assert-Command {
+    param([Parameter(Mandatory)][string]$Name)
+    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+        throw "Required command not found: $Name"
+    }
+}
+
+function Invoke-Git {
+    param([Parameter(Mandatory)][string[]]$Arguments)
+    $output = & git @Arguments 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "git $($Arguments -join ' ') failed:`n$($output -join "`n")"
+    }
+    return $output
+}
+
+function Get-ChangedPaths {
+    $lines = @(Invoke-Git -Arguments @('status', '--porcelain=v1'))
+    return @($lines | ForEach-Object {
+        if ($_.Length -ge 4) { $_.Substring(3).Trim('"').Replace('\', '/') }
+    } | Where-Object { $_ })
+}
+
+function Test-LiveReport {
+    param(
+        [Parameter(Mandatory)][string]$ExpectedCommit,
+        [Parameter(Mandatory)][string]$ExpectedEtfDate
+    )
+
+    $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
+    do {
+        $raw = & gh api repos/fricachai/pro_ranking/pages/builds/latest 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "Unable to query GitHub Pages status:`n$($raw -join "`n")"
+        }
+        $build = ($raw -join "`n") | ConvertFrom-Json
+        if ($build.status -eq 'errored') {
+            throw "GitHub Pages build failed. commit=$($build.commit)"
+        }
+        if ($build.status -eq 'built' -and $build.commit -eq $ExpectedCommit) {
+            break
+        }
+        Start-Sleep -Seconds 8
+    } while ((Get-Date) -lt $deadline)
+
+    if ($build.status -ne 'built' -or $build.commit -ne $ExpectedCommit) {
+        throw "GitHub Pages did not publish commit $ExpectedCommit within $PagesTimeoutSeconds seconds."
+    }
+
+    $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
+    $required = @('top30TableWrap', 'fullTableWrap', $ExpectedEtfDate)
+    $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
+    if ($response.StatusCode -ne 200 -or $missing.Count -gt 0) {
+        throw "Live page validation failed. HTTP=$($response.StatusCode); missing=$($missing -join ', ')"
+    }
+}
+
+Assert-Command -Name 'node'
+Assert-Command -Name 'git'
+if ($Publish) { Assert-Command -Name 'gh' }
+
+Push-Location $RepoRoot
+try {
+    if (-not (Test-Path $Generator)) { throw "Generator not found: $Generator" }
+    $initialChanges = @(Get-ChangedPaths)
+    if ($initialChanges.Count -gt 0) {
+        throw 'The working tree is not clean. Update stopped to protect existing changes.'
+    }
+
+    New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
+    $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $logPath = Join-Path $LogDir "daily-refresh-$timestamp.log"
+
+    & node --check $Generator *> $logPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Generator syntax check failed. Log: $logPath"
+    }
+
+    & node $Generator *>> $logPath
+    if ($LASTEXITCODE -ne 0) {
+        $tail = Get-Content $logPath -Tail 60 -Encoding utf8
+        throw "Report generation failed. Log: $logPath`n$($tail -join "`n")"
+    }
+
+    foreach ($path in @($LatestJson, $LatestHtml)) {
+        if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
+    }
+
+    $report = Get-Content $LatestJson -Raw -Encoding utf8 | ConvertFrom-Json
+    $meta = $report.meta
+    if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
+        throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
+    }
+    if ([int]$meta.stockCount -lt 350) {
+        throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
+    }
+
+    $etfDate = [datetime]::ParseExact([string]$meta.etfDate, 'yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture)
+    $dateSlug = $etfDate.ToString('yyyyMMdd')
+    $datedFiles = @(
+        "professional-screen-report/full-professional-ranking-$dateSlug.csv",
+        "professional-screen-report/full-professional-screen-$dateSlug.html",
+        "professional-screen-report/full-professional-screen-$dateSlug.json"
+    )
+    foreach ($relativePath in $datedFiles) {
+        if (-not (Test-Path (Join-Path $RepoRoot $relativePath))) {
+            throw "Dated output is missing: $relativePath"
+        }
+    }
+
+    Copy-Item $LatestHtml $IndexHtml -Force
+    $latestHash = (Get-FileHash $LatestHtml -Algorithm SHA256).Hash
+    $indexHash = (Get-FileHash $IndexHtml -Algorithm SHA256).Hash
+    if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
+
+    $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
+    foreach ($marker in @('top30TableWrap', 'fullTableWrap', [string]$meta.etfDate)) {
+        if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
+    }
+
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $datedFiles
+    $changedPaths = @(Get-ChangedPaths)
+    $unexpected = @($changedPaths | Where-Object { $_ -notin $allowedPaths })
+    if ($unexpected.Count -gt 0) {
+        throw "Generator changed unexpected files: $($unexpected -join ', ')"
+    }
+
+    $commit = $null
+    $publishStatus = if ($changedPaths.Count -eq 0) { 'no_changes' } else { 'validated' }
+    if ($Publish -and $changedPaths.Count -gt 0) {
+        Invoke-Git -Arguments (@('add', '--') + $allowedPaths) | Out-Null
+        $stagedCheck = & git diff --cached --check 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "Pre-commit validation failed:`n$($stagedCheck -join "`n")"
+        }
+        Invoke-Git -Arguments @('commit', '-m', "Refresh professional stock screen for $($meta.etfDate)") | Out-Null
+        $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
+        $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
+        Invoke-Git -Arguments @('push', 'origin', $branch) | Out-Null
+        Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
+        $publishStatus = 'published'
+    }
+
+    $topThree = @($report.topThree | Select-Object -First 3 | ForEach-Object {
+        "$($_.code) $($_.name) [$($_.action)] $($_.score)"
+    })
+    Write-Output "STATUS=$publishStatus"
+    Write-Output "ETF_DATE=$($meta.etfDate)"
+    Write-Output "INSTITUTIONAL_DATE=$($meta.institutionalDate)"
+    Write-Output "FOREIGN_HOLDING_DATE=$($meta.foreignHoldingDate)"
+    Write-Output "MARKET_DATE=$($meta.marketDate)"
+    Write-Output "STOCK_COUNT=$($meta.stockCount)"
+    Write-Output "TOP3=$($topThree -join ' | ')"
+    if ($commit) { Write-Output "COMMIT=$commit" }
+    if ($Publish) { Write-Output "LIVE_URL=$LiveUrl" }
+    Write-Output "LOG=$logPath"
+}
+finally {
+    Pop-Location
+}

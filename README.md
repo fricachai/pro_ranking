@@ -28,6 +28,41 @@ node .\full-professional-stock-screen.js
 - `latest.json`：完整分析資料
 - `full-professional-ranking-YYYYMMDD.csv`：完整排名
 
+## 每日更新與發布
+
+不需要 AI、最省 Token 的方式，是直接執行固定更新器：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
+```
+
+更新器會自動抓取資料、產生報告、驗證輸出、更新 `index.html`、限定提交本次報告檔案、推送到 `main`，並等待 GitHub Pages 完成本次提交後再檢查公開頁。若工作區已有未提交變更、股票數異常、必要輸出缺漏或 Pages 未完成，腳本會停止而不宣稱成功。
+
+只產生與驗證、不提交發布：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
+```
+
+## 交給 OpenCode
+
+OpenCode 會讀取根目錄 `AGENTS.md`，專案也提供 `/update-report` 指令。Windows 可依官方方式安裝：
+
+```powershell
+npm install -g opencode-ai
+opencode auth login
+```
+
+互動方式：在本專案執行 `opencode`，輸入 `/update-report`。
+
+非互動一鍵方式：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
+```
+
+日常更新不需要 OpenCode 分析完整報告；OpenCode只執行固定更新器並讀取數行摘要，只有失敗時才分析紀錄，因此可顯著減少 AI Token。若只是固定時間每天發布，直接用 Windows 工作排程器呼叫更新器會比呼叫任何 AI 更省成本。
+
 ## 資料邊界
 
 目前只篩選 ETF 資料集內持有的上市股票，排除上櫃股票。ETF來源可能標示資料不完整或部分ETF更新落後，因此20日資料只作背景，10日確認延續，5日用於判斷轉折。外資持股變化也可能受借券、海外存託憑證、股本異動與非市場交易影響，不能直接等同外資買賣超。投信與自營商欄位是每日買賣超流量，不等同基金完整持股明細。

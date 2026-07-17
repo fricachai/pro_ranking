@@ -1,3 +1,5 @@
 node_modules/
 professional-screen-report/qa/
 professional-screen-report/test-results/
+professional-screen-report/latest.html
+professional-screen-report/logs/
