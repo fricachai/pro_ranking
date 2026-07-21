@@ -51,6 +51,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
+`opencode.json` 對 PowerShell 執行檔名稱、`-NoProfile` 與相對／絕對路徑保留必要相容性，但命令仍必須以 `Update-ProfessionalScreen.ps1 -Publish` 結尾；其他 Shell 命令維持拒絕。
+
 ## 新電腦一次性準備
 
 1. 安裝 Node.js 18 以上、Git、GitHub CLI，以及 OpenCode Desktop 或 OpenCode CLI 其中一種。

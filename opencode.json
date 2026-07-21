@@ -5,8 +5,8 @@
     "webfetch": "deny",
     "bash": {
       "*": "deny",
-      "powershell -ExecutionPolicy Bypass -File .\\scripts\\Update-ProfessionalScreen.ps1 -Publish": "allow",
-      "powershell -ExecutionPolicy Bypass -File ./scripts/Update-ProfessionalScreen.ps1 -Publish": "allow"
+      "powershell* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
+      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow"
     }
   }
 }

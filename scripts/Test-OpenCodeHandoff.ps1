@@ -118,6 +118,13 @@ try {
     if (-not $config.permission -or [string]$config.permission.edit -ne 'deny') {
         throw 'opencode.json must keep direct file editing disabled for the daily updater.'
     }
+    $bashRules = $config.permission.bash
+    $allowedUpdatePatterns = @($bashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'allow' -and $_.Name -like '*Update-ProfessionalScreen.ps1*'
+    })
+    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1) {
+        throw 'opencode.json must deny other shell commands and allow the controlled update script.'
+    }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json
     $events = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/events/latest-events.json') -Raw -Encoding utf8 | ConvertFrom-Json
