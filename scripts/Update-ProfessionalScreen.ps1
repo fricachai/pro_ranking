@@ -187,7 +187,7 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", '待查核候選（治理警示）', '防守價提醒', 'actionTransitionHtml')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", '防守價提醒', 'actionTransitionHtml')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
@@ -237,7 +237,7 @@ try {
     $rankingRows = @($report.ranking)
     # Keep validation tokens ASCII-only so Windows PowerShell 5 can parse this
     # UTF-8 script reliably on systems that do not default to UTF-8.
-    $validBuckets = @('A', 'B', 'C', 'D', 'G')
+    $validBuckets = @('A', 'B', 'C', 'D')
     $validHoldingStates = @('add', 'hold', 'protect', 'trim', 'exit')
     $missingDecisionRows = @($rankingRows | Where-Object {
         -not $_.entryAction -or -not $_.holdingAction -or
@@ -247,14 +247,13 @@ try {
     if ($missingDecisionRows.Count -gt 0) {
         throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."
     }
-    $governanceRows = @($rankingRows | Where-Object { $_.governance -and $_.governance.hasWarning })
-    $misclassifiedGovernanceRows = @($governanceRows | Where-Object { [string]$_.bucket -ne 'G' -or [string]$_.entryAction -ne '待查核候選' })
-    if ($misclassifiedGovernanceRows.Count -gt 0) {
-        throw "Governance warnings are not forced into the review bucket for $($misclassifiedGovernanceRows.Count) stocks."
-    }
-    $topThreeGovernanceRows = @($report.topThree | Where-Object { $_.governance -and $_.governance.hasWarning })
-    if ($topThreeGovernanceRows.Count -gt 0) {
-        throw "Governance-warning stocks must not appear in topThree."
+    $governanceOverrideRows = @($rankingRows | Where-Object {
+        $_.PSObject.Properties.Name -contains 'governance' -or
+        [string]$_.entryAction -match '待查核|治理' -or
+        [string]$_.holdingAction -match '待查核|治理'
+    })
+    if ($governanceOverrideRows.Count -gt 0) {
+        throw "Governance data must not appear in ranking decisions or position actions."
     }
 
     $etfDate = [datetime]::ParseExact([string]$meta.etfDate, 'yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture)
