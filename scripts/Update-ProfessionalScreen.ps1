@@ -187,9 +187,14 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", '防守價提醒', 'actionTransitionHtml')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", '實際操作價位', 'operationPriceHtml', 'tracking-toggle')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
+        }
+    }
+    foreach ($removedPositionToken in @('actionTransitionHtml', '防守價提醒', '已持有動作／轉換')) {
+        if ($latestHtmlContent.Contains($removedPositionToken)) {
+            throw "Removed position token is still present: $removedPositionToken"
         }
     }
     if (-not $latestHtmlContent.Contains('/^[0-9]{4}$/')) {
