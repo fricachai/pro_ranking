@@ -22,6 +22,19 @@ const TODAY = new Intl.DateTimeFormat('en-CA', {
     twseRevenue: 'https://openapi.twse.com.tw/v1/opendata/t187ap05_L',
     twseEps: 'https://openapi.twse.com.tw/v1/opendata/t187ap14_L',
     twseMargin: 'https://openapi.twse.com.tw/v1/opendata/t187ap17_L',
+    twseMaterialInfo: 'https://openapi.twse.com.tw/v1/opendata/t187ap04_L',
+    twseInsiderHoldings: 'https://openapi.twse.com.tw/v1/opendata/t187ap11_L',
+    twseInsiderTransfers: 'https://openapi.twse.com.tw/v1/opendata/t187ap12_L',
+    twseRegulatoryPenalties: 'https://openapi.twse.com.tw/v1/opendata/t187ap22_L',
+    twseDisclosureViolations: 'https://openapi.twse.com.tw/v1/opendata/t187ap23_L',
+    twseMarginTrading: 'https://www.twse.com.tw/rwd/zh/marginTrading/MI_MARGN',
+    twseBorrowedShort: 'https://www.twse.com.tw/rwd/zh/marginTrading/TWT93U',
+    tdccHoldingLevels: 'https://openapi.tdcc.com.tw/v1/opendata/1-5',
+    moeaExportOrders: 'https://service.moea.gov.tw/EE520/opendata/b.csv',
+    moeaIndustrialProduction: 'https://service.moea.gov.tw/EE520/opendata/d.csv',
+    cbcExchangeRate: 'https://cpx.cbc.gov.tw/API/DataAPI/Get?FileName=BP01D01',
+    cbcPolicyRate: 'https://cpx.cbc.gov.tw/API/DataAPI/Get?FileName=EG28D01',
+    cbcMoneySupply: 'https://cpx.cbc.gov.tw/API/DataAPI/Get?FileName=EF01M01',
     twseDaily: 'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
     twseForeignHolding: 'https://www.twse.com.tw/rwd/zh/fund/MI_QFIIS',
     twseInstitutional: 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html',
@@ -42,6 +55,10 @@ const WEIGHTS = {
 
 const BALANCE_ENDPOINTS = {
   TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap07_L_${type}`)
+};
+
+const INCOME_ENDPOINTS = {
+  TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap06_L_${type}`)
 };
 
 function sleep(ms) {
@@ -307,20 +324,20 @@ async function fetchTwseForeignHoldingHistory(asOfIso) {
   });
   const seen = new Set();
   const snapshots = payloads.filter(payload => {
-    if (!payload || seen.has(payload.date)) return false;
+    if (!payload || payload.__error || !payload.date || !payload.rows || seen.has(payload.date)) return false;
     seen.add(payload.date);
     return true;
   }).sort((a, b) => b.date.localeCompare(a.date));
-  if (snapshots.length < 21) throw new Error(`外資持股交易日不足：僅 ${snapshots.length} 日`);
+  if (snapshots.length < 11) throw new Error(`外資持股交易日不足：僅 ${snapshots.length} 日`);
   return { snapshots, dates: snapshots.map(snapshot => snapshot.date) };
 }
 
 function foreignHoldingFeatures(history, code) {
   const rows = history.snapshots.map(snapshot => snapshot.rows.get(code) || null);
   const current = rows[0];
-  const structuralChanges = rows.slice(0, 21).flatMap((row, index) => row?.changeReason
+  const structuralChanges = rows.slice(0, Math.min(21, rows.length)).flatMap((row, index) => row?.changeReason
     ? [{ date: history.dates[index], reason: row.changeReason }] : []);
-  const trendReliable = Boolean(current && rows[20] && structuralChanges.length === 0);
+  const trendReliable = Boolean(current && rows[10] && structuralChanges.length === 0);
   const lotsChange = index => current && rows[index] ? (current.shares - rows[index].shares) / 1000 : null;
   const ratioChange = index => current && rows[index] && Number.isFinite(current.ratio) && Number.isFinite(rows[index].ratio)
     ? current.ratio - rows[index].ratio : null;
@@ -334,6 +351,252 @@ function foreignHoldingFeatures(history, code) {
     trendReliable,
     structuralChanges
   };
+}
+
+function fieldIndex(fields, pattern, fallback) {
+  const index = (fields || []).findIndex(field => pattern.test(String(field)));
+  return index >= 0 ? index : fallback;
+}
+
+async function fetchTwseInstitutionalHistory(asOfIso, fallbackData = null) {
+  const payloads = await mapLimit(calendarDatesEnding(asOfIso, 45), 4, async iso => {
+    const url = `https://www.twse.com.tw/rwd/zh/fund/T86?date=${isoToYyyymmdd(iso)}&selectType=ALLBUT0999&response=json`;
+    const payload = await fetchJson(url);
+    if (payload.stat !== 'OK' || !payload.data?.length) return null;
+    const fields = payload.fields || [];
+    const foreignIndex = fieldIndex(fields, /^外陸資買賣超股數\(不含外資自營商\)$/, 4);
+    const trustIndex = fieldIndex(fields, /^投信買賣超股數$/, 10);
+    const dealerIndex = fieldIndex(fields, /^自營商買賣超股數$/, 11);
+    const totalIndex = fieldIndex(fields, /^三大法人買賣超股數$/, 18);
+    const rows = new Map(payload.data.map(row => [String(row[0]).trim(), {
+      foreign: (number(row[foreignIndex]) || 0) / 1000,
+      trust: (number(row[trustIndex]) || 0) / 1000,
+      dealer: (number(row[dealerIndex]) || 0) / 1000,
+      total: (number(row[totalIndex]) || 0) / 1000
+    }]).filter(([code]) => /^\d{4}$/.test(code)));
+    return { date: yyyymmddToIso(payload.date) || iso, rows };
+  });
+  const seen = new Set();
+  const snapshots = payloads.filter(payload => payload && !payload.__error && !seen.has(payload.date) && seen.add(payload.date))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const primaryDays = snapshots.length;
+  if (snapshots.length < 20 && fallbackData?.dates && fallbackData?.days) {
+    for (const rawDate of fallbackData.dates) {
+      const date = String(rawDate).replace(/\//g, '-');
+      if (seen.has(date)) continue;
+      const fallbackRows = fallbackData.days[rawDate] || fallbackData.days[date] || [];
+      const rows = new Map(fallbackRows.map(row => [String(row[0]), {
+        foreign: number(row[4]) || 0,
+        trust: number(row[5]) || 0,
+        dealer: number(row[6]) || 0,
+        total: number(row[7]) || 0
+      }]).filter(([code]) => /^\d{4}$/.test(code)));
+      if (!rows.size) continue;
+      snapshots.push({ date, rows, fallback: true });
+      seen.add(date);
+      if (snapshots.length >= 20) break;
+    }
+    snapshots.sort((a, b) => b.date.localeCompare(a.date));
+  }
+  if (primaryDays < 5 || snapshots.length < 20) throw new Error(`TWSE T86 history is incomplete: official=${primaryDays}, combined=${snapshots.length}`);
+  return {
+    snapshots: snapshots.slice(0, 20),
+    dates: snapshots.slice(0, 20).map(snapshot => snapshot.date),
+    primaryDays,
+    sourceMode: primaryDays >= 20 ? 'TWSE T86 direct' : `TWSE T86 direct (${primaryDays}d) + Xiaoyu older history fallback`
+  };
+}
+
+function institutionalFeatures(history, code) {
+  const rows = history.snapshots.map(snapshot => snapshot.rows.get(code) || { foreign: 0, trust: 0, dealer: 0, total: 0 });
+  const rolling = (field, days) => sum(rows.slice(0, days).map(row => row[field]));
+  const consecutive = field => {
+    let count = 0;
+    const direction = Math.sign(rows[0]?.[field] || 0);
+    if (!direction) return 0;
+    for (const row of rows) {
+      if (Math.sign(row[field] || 0) !== direction) break;
+      count += direction;
+    }
+    return count;
+  };
+  return {
+    total1: rolling('total', 1), total5: rolling('total', 5), total10: rolling('total', 10), total20: rolling('total', 20),
+    foreign1: rolling('foreign', 1), foreign5: rolling('foreign', 5), foreign10: rolling('foreign', 10), foreign20: rolling('foreign', 20),
+    trust1: rolling('trust', 1), trust5: rolling('trust', 5), trust10: rolling('trust', 10), trust20: rolling('trust', 20),
+    dealer1: rolling('dealer', 1), dealer5: rolling('dealer', 5), dealer10: rolling('dealer', 10), dealer20: rolling('dealer', 20),
+    trustConsecutive: consecutive('trust')
+  };
+}
+
+async function fetchTwseCreditHistory(asOfIso) {
+  const payloads = await mapLimit(calendarDatesEnding(asOfIso, 22), 4, async iso => {
+    const date = isoToYyyymmdd(iso);
+    const [margin, borrowed] = await Promise.all([
+      fetchJson(`${SOURCES.twseMarginTrading}?date=${date}&selectType=ALL&response=json`),
+      fetchJson(`${SOURCES.twseBorrowedShort}?date=${date}&response=json`)
+    ]);
+    const marginRows = margin.tables?.[1]?.data || [];
+    if (!marginRows.length) return null;
+    const rows = new Map();
+    for (const row of marginRows) {
+      const code = String(row[0]).trim();
+      if (!/^\d{4}$/.test(code)) continue;
+      rows.set(code, { financingBalance: number(row[6]), shortBalance: number(row[12]), borrowedShortSell: 0, borrowedShortBalance: 0 });
+    }
+    for (const row of (borrowed.data || [])) {
+      const code = String(row[0]).trim();
+      if (!rows.has(code)) rows.set(code, { financingBalance: null, shortBalance: null, borrowedShortSell: 0, borrowedShortBalance: 0 });
+      rows.get(code).borrowedShortSell = (number(row[9]) || 0) / 1000;
+      rows.get(code).borrowedShortBalance = (number(row[12]) || 0) / 1000;
+    }
+    return { date: yyyymmddToIso(margin.date) || iso, rows };
+  });
+  const seen = new Set();
+  const snapshots = payloads.filter(payload => payload && !payload.__error && !seen.has(payload.date) && seen.add(payload.date))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  if (snapshots.length < 6) throw new Error(`TWSE credit history is incomplete: ${snapshots.length} trading days`);
+  return { snapshots, dates: snapshots.map(snapshot => snapshot.date) };
+}
+
+function creditFeatures(history, code, return5 = null, dailyVolumeLots = null) {
+  const rows = history.snapshots.map(snapshot => snapshot.rows.get(code) || null);
+  const current = rows[0] || {};
+  const base = rows[5] || {};
+  const diff = field => Number.isFinite(current[field]) && Number.isFinite(base[field]) ? current[field] - base[field] : null;
+  const borrowedShortSell5 = sum(rows.slice(0, 5).map(row => row?.borrowedShortSell));
+  const financingD5 = diff('financingBalance');
+  const borrowedShortD5 = diff('borrowedShortBalance');
+  return {
+    date: history.dates[0] || null,
+    financingBalance: current.financingBalance ?? null,
+    financingD5,
+    shortBalance: current.shortBalance ?? null,
+    shortD5: diff('shortBalance'),
+    borrowedShortBalance: current.borrowedShortBalance ?? null,
+    borrowedShortD5,
+    borrowedShortSell5,
+    financingCrowding: Number.isFinite(financingD5) && financingD5 > Math.max(1000, (current.financingBalance || 0) * 0.1) && return5 > 8,
+    shortPressure: Number.isFinite(borrowedShortD5) && (
+      borrowedShortD5 > Math.max(1000, (current.borrowedShortBalance || 0) * 0.15, (dailyVolumeLots || 0) * 0.05) ||
+      borrowedShortSell5 > Math.max(2000, (current.borrowedShortBalance || 0) * 0.25, (dailyVolumeLots || 0) * 0.15)
+    )
+  };
+}
+
+function tdccFeatures(rows) {
+  const byCode = new Map();
+  let date = null;
+  for (const row of rows || []) {
+    const code = String(row['證券代號'] || '').trim();
+    if (!/^\d{4}$/.test(code)) continue;
+    const level = number(row['持股分級']);
+    const ratio = number(row['占集保庫存數比例%']);
+    const people = number(row['人數']);
+    date = date || yyyymmddToIso(row['﻿資料日期'] || row['資料日期']);
+    if (!byCode.has(code)) byCode.set(code, { date: null, largeHolderRatio: 0, retailRatio: 0, shareholderCount: 0 });
+    const item = byCode.get(code);
+    item.date = date;
+    if (level >= 13 && level <= 15) item.largeHolderRatio += ratio || 0;
+    if (level >= 1 && level <= 5) item.retailRatio += ratio || 0;
+    if (level >= 1 && level <= 15) item.shareholderCount += people || 0;
+  }
+  for (const item of byCode.values()) {
+    item.largeHolderRatio = round(item.largeHolderRatio, 2);
+    item.retailRatio = round(item.retailRatio, 2);
+  }
+  return { date, byCode };
+}
+
+function governanceFeatures(code, holdingsRows, transferRows, penaltyRows, violationRows) {
+  const holdings = (holdingsRows || []).filter(row => String(row['公司代號'] || '').trim() === code);
+  const transfers = (transferRows || []).filter(row => String(row['公司代號'] || '').trim() === code);
+  const penalties = (penaltyRows || []).filter(row => String(row['股票代號'] || row['公司代號'] || '').trim() === code);
+  const violations = (violationRows || []).filter(row => String(row['股票代號'] || row['公司代號'] || '').trim() === code);
+  const pledgeRatios = holdings.map(row => number(row['設質股數佔持股比例'])).filter(Number.isFinite);
+  const marketTransfers = transfers.filter(row => /一般交易|鉅額逐筆交易|鉅額配對交易/.test(String(row['預定轉讓方式及股數-轉讓方式'] || '')));
+  const transferShares = marketTransfers.map(row => number(row['預定轉讓方式及股數-轉讓股數']) || number(row['預定轉讓總股數-自有持股']) || 0);
+  const maxInsiderPledgePct = pledgeRatios.length ? Math.max(...pledgeRatios) : null;
+  return {
+    maxInsiderPledgePct,
+    highPledgeCount: pledgeRatios.filter(value => value >= 50).length,
+    declaredTransferLots: sum(transferShares) / 1000,
+    penalties: penalties.slice(0, 3).map(row => row['違規事由'] || row['主旨'] || '官方裁處紀錄'),
+    disclosureViolations: violations.slice(0, 3).map(row => row['違規事由'] || row['主旨'] || '資訊申報違規紀錄'),
+    highPledgeRisk: maxInsiderPledgePct >= 50,
+    transferRisk: sum(transferShares) > 0,
+    complianceRisk: penalties.length > 0 || violations.length > 0
+  };
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [], cell = '', quoted = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (char === '"') {
+      if (quoted && text[index + 1] === '"') { cell += '"'; index += 1; }
+      else quoted = !quoted;
+    } else if (char === ',' && !quoted) { row.push(cell); cell = ''; }
+    else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && text[index + 1] === '\n') index += 1;
+      row.push(cell); if (row.some(value => value !== '')) rows.push(row); row = []; cell = '';
+    } else cell += char;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  const headers = rows.shift() || [];
+  return rows.map(values => Object.fromEntries(headers.map((header, index) => [header.replace(/^\uFEFF/, ''), values[index] || ''])));
+}
+
+function rocMonthKey(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length < 5) return null;
+  return `${Number(digits.slice(0, 3)) + 1911}-${digits.slice(3, 5)}`;
+}
+
+async function fetchMacroOverlay(twseDailyRows) {
+  const [exportCsv, productionCsv, fx, rate, money] = await Promise.all([
+    fetchText(SOURCES.moeaExportOrders), fetchText(SOURCES.moeaIndustrialProduction),
+    fetchJson(SOURCES.cbcExchangeRate), fetchJson(SOURCES.cbcPolicyRate), fetchJson(SOURCES.cbcMoneySupply)
+  ]);
+  const exportRows = parseCsv(exportCsv).filter(row => Number.isFinite(number(row['統計值(美元)'])));
+  const exportLatest = exportRows.at(-1);
+  const exportPeriod = exportLatest?.['資料期(民國年)'];
+  const exportPrevious = exportRows.find(row => String(row['資料期(民國年)']) === String(Number(exportPeriod) - 100));
+  const productionRows = parseCsv(productionCsv).filter(row => String(row['行業代碼'] || '').trim() === 'C' && Number.isFinite(number(row['統計值(指數)'])));
+  const productionLatest = productionRows.at(-1);
+  const productionPeriod = productionLatest?.['資料期(民國年)'];
+  const productionPrevious = productionRows.find(row => String(row['資料期(民國年)']) === String(Number(productionPeriod) - 100));
+  const fxRows = fx.data?.dataSets || [];
+  const fxLatest = fxRows.at(-1) || [];
+  const fxBase = fxRows.at(-21) || [];
+  const rateLatest = (rate.data?.dataSets || []).at(-1) || [];
+  const moneyLatest = (money.data?.dataSets || []).at(-1) || [];
+  const commonStocks = (twseDailyRows || []).filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000);
+  const advances = commonStocks.filter(row => number(row.Change) > 0).length;
+  const declines = commonStocks.filter(row => number(row.Change) < 0).length;
+  const breadth = advances + declines ? advances / (advances + declines) * 100 : null;
+  const metrics = {
+    exportOrdersPeriod: rocMonthKey(exportPeriod),
+    exportOrdersYoy: pctChange(number(exportLatest?.['統計值(美元)']), number(exportPrevious?.['統計值(美元)'])),
+    manufacturingPeriod: rocMonthKey(productionPeriod),
+    manufacturingYoy: pctChange(number(productionLatest?.['統計值(指數)']), number(productionPrevious?.['統計值(指數)'])),
+    m1bPeriod: moneyLatest[0] || null,
+    m1bYoy: number(moneyLatest[16]),
+    usdTwdDate: yyyymmddToIso(fxLatest[0]),
+    usdTwd: number(fxLatest[1]),
+    usdTwdChange20: pctChange(number(fxLatest[1]), number(fxBase[1])),
+    policyRateDate: yyyymmddToIso(rateLatest[0]),
+    policyRate: number(rateLatest[1]),
+    marketBreadth: breadth,
+    advances, declines
+  };
+  let signalScore = 0;
+  if (metrics.exportOrdersYoy > 5) signalScore += 1; else if (metrics.exportOrdersYoy < -5) signalScore -= 1;
+  if (metrics.manufacturingYoy > 3) signalScore += 1; else if (metrics.manufacturingYoy < -3) signalScore -= 1;
+  if (metrics.m1bYoy > 4) signalScore += 1; else if (metrics.m1bYoy < 0) signalScore -= 1;
+  if (metrics.marketBreadth > 55) signalScore += 1; else if (metrics.marketBreadth < 45) signalScore -= 1;
+  return { status: signalScore >= 2 ? '環境支持' : signalScore <= -2 ? '環境逆風' : '訊號分歧', signalScore, metrics };
 }
 
 function broadSector(industry = '') {
@@ -472,7 +735,7 @@ function kdTimingScore(technical) {
 }
 
 function scoreRecords(records) {
-  const fields = ['revenueYoy', 'revenueYtdYoy', 'operatingMargin', 'debtRatio', 'currentRatio', 'earningsYield', 'pe', 'pb', 'yield',
+  const fields = ['revenueYoy', 'revenueYtdYoy', 'operatingMargin', 'grossMargin', 'netMargin', 'debtRatio', 'currentRatio', 'earningsYield', 'pe', 'pb', 'yield',
     'etfFlow5', 'etfFlow10', 'etfFlow20', 'activeFlow5', 'foreignNetValue5',
     'trustValue5', 'trustValue10', 'dealerValue5',
     'foreignHoldingD5Value', 'foreignHoldingD10Value', 'dailyValue'];
@@ -496,9 +759,10 @@ function scoreRecords(records) {
     const financial = isFinancial(record.industry);
     const growthConsistency = Number.isFinite(m.revenueYoy) && Number.isFinite(m.revenueYtdYoy)
       ? (m.revenueYoy > 0 && m.revenueYtdYoy > 0 ? 1 : (m.revenueYoy > 0 || m.revenueYtdYoy > 0 ? 0.55 : 0.1)) : 0.35;
-    const operatingQuality = Number.isFinite(m.operatingMargin)
-      ? p(record, 'operatingMargin', true, true)
+    let operatingQuality = Number.isFinite(m.operatingMargin)
+      ? (0.4 * p(record, 'operatingMargin', true, true) + 0.3 * p(record, 'grossMargin', true, true) + 0.3 * p(record, 'netMargin', true, true))
       : (financial ? (m.eps > 0 ? 0.65 : 0.2) : 0.35);
+    if (!financial && Number.isFinite(m.nonOperatingContributionPct) && m.nonOperatingContributionPct > 50) operatingQuality *= 0.8;
     const balanceQuality = financial
       ? (m.eps > 0 ? 0.6 : 0.2)
       : 0.62 * p(record, 'debtRatio', false, true) + 0.38 * p(record, 'currentRatio', true, true);
@@ -631,6 +895,14 @@ function classifyRecord(record) {
   const hardReject = reasons.some(reason => /資料覆蓋|成交金額|處置|營收動能/.test(reason));
   const trendReject = reasons.some(reason => /趨勢仍向下|同步減碼/.test(reason));
   const timingReject = reasons.some(reason => /改善不足|調節|1\/3日|主動ETF|投信|外資持股|尚未上彎|未守20日|過熱|KD|高波動|急跌反轉|除權息|共識不足|估值高/.test(reason));
+  if (record.credit?.financingCrowding) reasons.push('融資增幅與短線漲幅同步偏高');
+  if (record.credit?.shortPressure) reasons.push('借券賣出與借券賣出餘額壓力升高');
+  if (record.governance?.highPledgeRisk) reasons.push('內部人最高設質比例達50%以上');
+  if (record.governance?.transferRisk) reasons.push('官方資料出現內部人申報轉讓');
+  if (record.governance?.complianceRisk) reasons.push('官方資料出現裁處或資訊申報違規紀錄');
+  if (record.officialMaterialRisk) reasons.push('官方重大訊息出現高風險關鍵字，須查原文');
+  if (Number.isFinite(m.nonOperatingContributionPct) && m.nonOperatingContributionPct > 50) reasons.push('單季稅前獲利對營業外貢獻依賴偏高');
+  const overlayTimingReject = reasons.some(reason => /融資增幅|借券賣出|內部人最高設質|申報轉讓|裁處或資訊申報|官方重大訊息|營業外貢獻/.test(reason));
   const foreignAligned = foreign?.trendReliable && foreign.d5Lots >= 0 && foreign.d10Lots >= 0 && m.foreignNet5 >= 0;
   const trustAligned = !trustSellMaterial && !trustRecentReversal;
   if (hardReject) {
@@ -639,7 +911,7 @@ function classifyRecord(record) {
   } else if (trendReject) {
     action = '等待轉強';
     bucket = 'C';
-  } else if (timingReject) {
+  } else if (timingReject || overlayTimingReject) {
     action = '等回測或確認';
     bucket = 'B';
   } else if (record.adjustedScore >= 67 && analysisPrice >= t?.ema20 && t?.ma20Slope5 > 0 && t?.ema60Slope >= 0 && record.etf.flowPct[5] > 0 && record.etf.flowPct[10] >= 0 && record.etf.activeChanges[5] >= 0 && foreignAligned && trustAligned) {
@@ -877,6 +1149,26 @@ function selectTopThree(records) {
   return selected;
 }
 
+function assignSectorContext(records) {
+  const valid = records.map(record => record.technical?.return20).filter(Number.isFinite).sort((a, b) => a - b);
+  const median = values => values.length ? values[Math.floor(values.length / 2)] : null;
+  const marketMedian = median(valid);
+  const sectorRows = new Map();
+  for (const record of records) {
+    if (!sectorRows.has(record.sector)) sectorRows.set(record.sector, []);
+    if (Number.isFinite(record.technical?.return20)) sectorRows.get(record.sector).push(record.technical.return20);
+  }
+  const summary = [...sectorRows.entries()].map(([sector, values]) => {
+    values.sort((a, b) => a - b);
+    const sectorMedian = median(values);
+    const relative = Number.isFinite(sectorMedian) && Number.isFinite(marketMedian) ? sectorMedian - marketMedian : null;
+    return { sector, sample: values.length, return20Median: round(sectorMedian, 2), relativeToSample: round(relative, 2), status: relative > 3 ? '相對領先' : relative < -3 ? '相對落後' : '接近樣本' };
+  }).sort((a, b) => (b.relativeToSample || 0) - (a.relativeToSample || 0));
+  const lookup = new Map(summary.map(row => [row.sector, row]));
+  for (const record of records) record.sectorContext = lookup.get(record.sector) || null;
+  return { marketMedianReturn20: round(marketMedian, 2), sectors: summary };
+}
+
 function recordForOutput(record, rank) {
   return {
     rank,
@@ -908,6 +1200,10 @@ function recordForOutput(record, rank) {
       revenueYoy: round(record.metrics.revenueYoy, 2),
       revenueYtdYoy: round(record.metrics.revenueYtdYoy, 2),
       operatingMargin: round(record.metrics.operatingMargin, 2),
+      grossMargin: round(record.metrics.grossMargin, 2),
+      netMargin: round(record.metrics.netMargin, 2),
+      nonOperatingContributionPct: round(record.metrics.nonOperatingContributionPct, 2),
+      financialPeriod: record.financialPeriod || null,
       eps: round(record.metrics.eps, 2),
       debtRatio: round(record.metrics.debtRatio, 2),
       currentRatio: round(record.metrics.currentRatio, 2)
@@ -966,6 +1262,11 @@ function recordForOutput(record, rank) {
       etfLaggingExposure: round(record.etf.laggingExposure, 2),
       dataConfidence: record.confidence
     },
+    credit: record.credit || null,
+    tdcc: record.tdcc || null,
+    governance: record.governance || null,
+    officialMaterialRisk: Boolean(record.officialMaterialRisk),
+    sectorContext: record.sectorContext || null,
     events: record.events,
     eventsLayer: (record.eventsLayer || []).map(ev => ({
       eventType: ev.eventType, title: ev.title, publishTime: ev.publishTime,
@@ -1046,8 +1347,8 @@ function buildHtml(report) {
   return `<!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>上市股票ETF、外資與投信專業選股報告</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+<title>ETF持有上市股多因子研究報告</title>
 <style>
 :root{--ink:#17211d;--muted:#63706a;--line:#d8dfdb;--paper:#f6f8f6;--white:#fff;--green:#176b49;--red:#a13b32;--amber:#9a6814;--blue:#255f85}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;letter-spacing:0}a{color:var(--blue)}.stock-link{color:#174f73;text-decoration:none}.stock-link:hover,.stock-link:focus-visible{text-decoration:underline;text-underline-offset:3px}.pick h3 .stock-link::after{content:' ↗';font-size:.72em;font-weight:600}header{background:#12251d;color:#fff;padding:34px max(24px,calc((100vw - 1240px)/2)) 30px;border-bottom:5px solid #c9a85b}header h1{font-size:clamp(28px,4vw,44px);margin:0 0 10px;letter-spacing:0}header p{margin:5px 0;color:#d5dfda;line-height:1.6}.freeze{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:14px}.freeze b{color:#fff}main{max-width:1240px;margin:auto;padding:26px 24px 70px}.warning{border-left:5px solid var(--amber);background:#fff8e6;padding:16px 18px;margin-bottom:24px;line-height:1.7}.section{margin:30px 0}.section h2{font-size:23px;margin:0 0 8px}.section-lead{color:var(--muted);margin:0 0 18px;line-height:1.65}.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.pick{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}.pick-head{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:13px}.pick-head .rank{width:32px;height:32px;display:grid;place-items:center;background:#c9a85b;color:#12251d;font-weight:800}.pick h3{font-size:20px;margin:0}.pick h3+p{font-size:13px;color:var(--muted);margin:4px 0 0}.pick-head strong{font-size:25px;color:var(--green)}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}.metrics span{font-size:11px;color:var(--muted);border-right:1px solid var(--line)}.metrics span:last-child{border:0}.metrics b{display:block;color:var(--ink);font-size:15px;margin-top:3px}.pick dl{margin:0}.pick dt{font-size:12px;text-transform:uppercase;color:var(--green);font-weight:800;margin-top:12px}.pick dd{margin:3px 0 0;line-height:1.58;font-size:14px}.flow{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.flow span{font-size:12px;background:#eef3f0;padding:5px 7px;border-radius:3px}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);background:#fff}.summary-grid div{padding:16px;border-right:1px solid var(--line)}.summary-grid div:last-child{border:0}.summary-grid b{display:block;font-size:25px;color:var(--green);margin-bottom:4px}.summary-grid span{font-size:13px;color:var(--muted)}.table-wrap{overflow:auto;border:1px solid var(--line);background:#fff}table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;white-space:nowrap}th,td{padding:10px 11px;border-bottom:1px solid #e7ebe8;text-align:right}th{position:sticky;top:0;background:#edf2ef;color:#35433d;z-index:1}th:nth-child(2),td:nth-child(2),th:last-child,td:last-child{text-align:left}tr:hover td{background:#f7faf8}.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.filters input,.filters select{height:38px;border:1px solid #bfc9c3;background:#fff;padding:0 10px;font:inherit;border-radius:3px}.filters input{min-width:240px}.table-scroll-tools{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;padding:7px 0;background:var(--paper)}.scroll-button{width:38px;height:38px;border:1px solid #aebbb4;background:#fff;color:var(--ink);font:700 20px/1 sans-serif;border-radius:4px;cursor:pointer}.scroll-button:hover,.scroll-button:focus-visible{background:#e9f0ec;border-color:var(--green)}.top-scroll{height:18px;overflow-x:auto;overflow-y:hidden;border:1px solid #c9d2cd;background:#fff}.top-scroll-sizer{height:1px}.top-scroll,.full-table-wrap{scrollbar-color:#71857a #edf2ef;scrollbar-width:auto}.top-scroll::-webkit-scrollbar,.full-table-wrap::-webkit-scrollbar{height:14px;width:12px}.top-scroll::-webkit-scrollbar-track,.full-table-wrap::-webkit-scrollbar-track{background:#edf2ef}.top-scroll::-webkit-scrollbar-thumb,.full-table-wrap::-webkit-scrollbar-thumb{background:#71857a;border:3px solid #edf2ef;border-radius:7px}.full-table-wrap{max-height:72vh;overscroll-behavior:contain}.full-table{min-width:1780px}.full-table th:nth-child(1),.full-table td:nth-child(1){position:sticky;left:0;min-width:54px;width:54px;background:#fff;z-index:3}.full-table th:nth-child(2),.full-table td:nth-child(2){position:sticky;left:54px;min-width:178px;background:#fff;z-index:3;box-shadow:5px 0 7px -7px #425048}.full-table thead th:nth-child(1),.full-table thead th:nth-child(2){background:#edf2ef;z-index:6}.full-table tbody tr:hover td:nth-child(1),.full-table tbody tr:hover td:nth-child(2){background:#f7faf8}.method{display:grid;grid-template-columns:1.2fr .8fr;gap:24px}.method article{background:#fff;border-top:3px solid var(--green);padding:18px}.method h3{margin:0 0 10px;font-size:17px}.method p,.method li{line-height:1.7;color:#3f4b46}.weights{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.weights span{background:#eef3f0;padding:10px}.weights b{display:block;font-size:19px}.sources{columns:2;line-height:1.8}.small{font-size:12px;color:var(--muted)}.tag-A{color:var(--green);font-weight:700}.tag-B{color:var(--amber);font-weight:700}.tag-C,.tag-D{color:var(--red);font-weight:700}@media(max-width:950px){.picks{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.method{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:18px 12px 50px}header{padding:26px 16px}.summary-grid{grid-template-columns:1fr}.summary-grid div{border-right:0;border-bottom:1px solid var(--line)}.filters input{min-width:100%}.sources{columns:1}.full-table th:nth-child(2),.full-table td:nth-child(2){min-width:145px}.table-scroll-tools{grid-template-columns:36px minmax(0,1fr) 36px}.scroll-button{width:36px;height:36px}}
 </style>
@@ -1105,22 +1406,24 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
   </div>
 </div>
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
-<header><div class="header-row"><h1>上市股票ETF、外資與投信專業選股報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>只篩選上市股票，整合基本面、估值、ETF籌碼、外資實際持股、外資／投信／自營商買賣超、技術面、事件與風險。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>即時報價凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
+<header><div class="header-row"><h1>ETF持有上市股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為 ETF 持有且可辨識的上市普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、治理、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>即時報價凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
 <main>
-<div class="warning"><b>資料邊界：</b>本報告只保留籌碼小宇 ${report.meta.etfCount} 檔 ETF 所持有的 ${report.meta.stockCount} 檔上市股票，已排除上櫃股票。網站本次仍標示 incomplete=true，${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景，10日看延續，5日看轉折。標準KD完整日K覆蓋 ${report.meta.kdCovered}／${report.meta.stockCount} 檔，只作進出場時機輔助。外資「持股變化」與「買賣超」分開判讀；投信資料是每日買賣超流量，不等同基金完整持股明細。每次執行都會重新排序，掉出前三名不等於賣出；新部位與既有部位必須分開判斷。評分是研究排序，不是保證報酬或個人化投資建議。</div>
+<div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市普通股，約占當日 ${report.meta.listedUniverseCount} 檔上市普通股的 ${report.meta.coverageRate}%，不是全體上市股票。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易、集保與治理是獨立覆蓋或風險門檻，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
+
+<section class="section"><h2>宏觀與市場環境覆蓋</h2><p class="section-lead">狀態：<b>${escapeHtml(report.macroOverlay.status)}</b>（訊號分數 ${fmt(report.macroOverlay.signalScore, 0)}）。本層使用官方公開資料，只調整研究時的環境認知，不直接改個股100分與排名。</p><div class="summary-grid"><div><b>${signed(report.macroOverlay.metrics.exportOrdersYoy, 1, '%')}</b><span>外銷訂單年增｜${escapeHtml(report.macroOverlay.metrics.exportOrdersPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.manufacturingYoy, 1, '%')}</b><span>製造業生產年增｜${escapeHtml(report.macroOverlay.metrics.manufacturingPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.m1bYoy, 1, '%')}</b><span>M1B年增｜${escapeHtml(report.macroOverlay.metrics.m1bPeriod)}</span></div><div><b>${fmt(report.macroOverlay.metrics.marketBreadth, 1)}%</b><span>上市普通股上漲家數占比｜${report.macroOverlay.metrics.advances}漲／${report.macroOverlay.metrics.declines}跌</span></div></div><p class="framework-note">新台幣兌美元 ${fmt(report.macroOverlay.metrics.usdTwd, 3)}（${escapeHtml(report.macroOverlay.metrics.usdTwdDate)}；20筆變化 ${signed(report.macroOverlay.metrics.usdTwdChange20, 2, '%')}）；重貼現率 ${fmt(report.macroOverlay.metrics.policyRate, 3)}%（${escapeHtml(report.macroOverlay.metrics.policyRateDate)}）。</p></section>
 
 <section class="section"><h2>本次執行的前三名研究候選</h2><p class="section-lead">這是本次資料重算後的研究優先順序，不是持倉清單，也不代表掉出名單就該賣出。請分別看「建立新部位」與「已經持有」；已開始布局者請勾選追蹤，之後每次重跑都會保留並更新判斷。</p><div class="picks">${topCards}</div><div class="decision-legend"><div><b>尚未持有</b><p>只有「可開始承接」才進入分批布局；等待確認、暫不承接或不建立部位都不應因排名高而追價。</p></div><div><b>已經持有</b><p>依序採續抱／加碼、續抱觀察、暫停加碼、開始減碼、優先出脫；排名變化本身不是賣出條件。</p></div></div></section>
 
 <section class="section" id="positionSection"><h2>我的布局追蹤</h2><p class="section-lead">勾選任何股票的追蹤方塊後，系統會在這個瀏覽器保存起始時間、起始價格與起始排名。即使之後多次重跑、排名改變或掉出前三名，仍會顯示最新的既有部位動作。重新整理與資料更新不會刪除；更換裝置或清除網站資料前，請先下載備份。</p><div class="position-actions"><button class="position-action-button" id="exportPositions" type="button" title="下載布局追蹤JSON備份">&#8595; 下載追蹤備份</button><button class="position-action-button" id="importPositions" type="button" title="從JSON備份匯入布局追蹤">&#8593; 匯入追蹤備份</button><input id="importPositionsFile" type="file" accept="application/json,.json" hidden><span class="position-backup-status" id="positionBackupStatus" role="status" aria-live="polite"></span></div><div class="table-wrap"><table class="position-table"><thead><tr><th>股票</th><th>起始／目前排名</th><th>成本價</th><th>現價／損益</th><th>新部位</th><th>已持有動作</th><th>目前依據</th><th>移除</th></tr></thead><tbody id="positionRows"></tbody></table></div></section>
 
-<section class="section"><h2>篩選覆蓋</h2><div class="summary-grid"><div><b>${report.meta.stockCount}</b><span>ETF持有的上市股票</span></div><div><b>${report.meta.foreignHoldingCovered}</b><span>具官方外資持股趨勢</span></div><div><b>${report.meta.bucketA}</b><span>A級：可分批布局候選</span></div><div><b>${report.meta.rejected}</b><span>D級：硬性條件排除</span></div></div></section>
+<section class="section"><h2>篩選覆蓋</h2><div class="summary-grid"><div><b>${report.meta.stockCount}／${report.meta.listedUniverseCount}</b><span>ETF持有上市普通股／全體上市普通股</span></div><div><b>${report.meta.foreignHoldingCovered}</b><span>具官方外資持股趨勢</span></div><div><b>${report.meta.bucketA}</b><span>A級：通過初步布局門檻</span></div><div><b>${report.meta.rejected}</b><span>D級：硬性條件排除</span></div></div></section>
 
 <section class="section"><h2>前30名與主要風險</h2><p class="section-lead">點擊「總分」可查看該股六大構面實得分、判斷數據、資料日期與來源。外資持股是存量；外資、投信與自營商買賣超是流量，分開計算以避免重複加分。</p><div class="table-scroll-tools"><button class="scroll-button" id="top30ScrollLeft" type="button" title="向左捲動" aria-label="前30名表格向左捲動">&#8592;</button><div class="top-scroll" id="top30TopScroll" aria-label="前30名表格水平捲軸"><div class="top-scroll-sizer" id="top30TopScrollSizer"></div></div><button class="scroll-button" id="top30ScrollRight" type="button" title="向右捲動" aria-label="前30名表格向右捲動">&#8594;</button></div><div class="table-wrap top30-table-wrap" id="top30TableWrap"><table class="top30-table" id="top30Table"><thead><tr><th>#</th><th>股票</th><th>追蹤</th><th>建立新部位</th><th>已經持有</th><th>總分</th><th>信心</th><th>營收YoY</th><th>PE</th><th>ETF 5日</th><th>主動ETF 5日</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信買賣超5日</th><th>RSI</th><th>K／D</th><th>最先注意風險</th></tr></thead><tbody>${topRows}</tbody></table></div></section>
 
 <section class="section"><h2>完整 ${report.meta.stockCount} 檔上市股票排名</h2><div class="filters"><input id="search" type="search" placeholder="搜尋代號或名稱"><select id="bucket"><option value="">全部新部位動作</option><option value="A">可開始承接</option><option value="B">等待確認</option><option value="C">暫不承接</option><option value="D">不建立部位</option></select><select id="sector"><option value="">全部產業</option>${[...new Set(report.ranking.map(row => row.sector))].sort().map(value => `<option>${escapeHtml(value)}</option>`).join('')}</select><label class="position-toggle"><input id="positionOnly" type="checkbox"> <span>只看我的布局追蹤</span></label></div><div class="table-scroll-tools"><button class="scroll-button" id="scrollLeft" type="button" title="向左捲動" aria-label="向左捲動">&#8592;</button><div class="top-scroll" id="fullTopScroll" aria-label="表格水平捲軸"><div class="top-scroll-sizer" id="fullTopScrollSizer"></div></div><button class="scroll-button" id="scrollRight" type="button" title="向右捲動" aria-label="向右捲動">&#8594;</button></div><div class="table-wrap full-table-wrap" id="fullTableWrap"><table class="full-table" id="fullTable"><thead><tr><th>#</th><th>股票</th><th>追蹤</th><th>產業</th><th>建立新部位</th><th>已經持有</th><th>總分明細</th><th>信心</th><th>即時/收盤</th><th>營收YoY</th><th>累計YoY</th><th>PE</th><th>ETF 5日</th><th>ETF 10日</th><th>主動5日</th><th>外資持股比</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信5日</th><th>投信10日</th><th>RSI</th><th>K／D</th><th>距20EMA</th><th>主要風險</th></tr></thead><tbody id="fullRows"></tbody></table></div><p class="small">點擊總分可查看該股的分項分數與來源；外資持股比率高低本身不是買賣訊號，重點是持股存量、法人買賣流量與ETF方向是否一致。</p></section>
 
 <section class="section"><h2>專業篩選架構與評分內容</h2><p class="section-lead">比例代表該項在100分總分中的最高分，不代表預期報酬率。各項先依同產業或全體樣本標準化，再由硬性風險條件決定是否可進入布局名單。</p><div class="framework-wrap"><table class="framework-table"><thead><tr><th>占總分</th><th>評估項目</th><th>實際計分內容</th><th>判讀重點與限制</th></tr></thead><tbody>
-<tr><td>30%</td><td>基本面與成長</td><td><ul><li>單月營收年增：最高7.2分</li><li>累計營收年增：最高7.2分</li><li>營業利益率／金融業獲利品質：最高5.1分</li><li>負債比與流動比率：最高3.9分</li><li>盈餘殖利率：最高3.0分</li><li>營收成長一致性：最高3.6分</li></ul></td><td>確認成長是否有財務品質支持。只看營收會忽略毛利率、現金流與一次性收益，因此仍需後續公司研究。</td></tr>
+<tr><td>30%</td><td>基本面與成長</td><td><ul><li>單月營收年增：最高7.2分</li><li>累計營收年增：最高7.2分</li><li>季報毛利率、營業利益率與淨利率／金融業獲利品質：合計最高5.1分</li><li>負債比與流動比率：最高3.9分</li><li>盈餘殖利率：最高3.0分</li><li>營收成長一致性：最高3.6分</li></ul></td><td>季報獲利品質已納入；若單季稅前獲利對營業外貢獻依賴超過50%，會折減獲利品質並列時機警示。完整現金流與自由現金流仍須查財報原文。</td></tr>
 <tr><td>15%</td><td>估值</td><td><ul><li>本益比：最高7.05分</li><li>股價淨值比：最高4.05分</li><li>現金殖利率：最高3.9分</li></ul></td><td>以同產業相對比較為主；低估值可能反映景氣衰退或獲利下修，不能單獨視為便宜。</td></tr>
 <tr><td>20%</td><td>ETF／外資／投信／自營商籌碼</td><td><ul><li>ETF 5／10／20日變化：最高6.0分</li><li>ETF加碼速度：最高0.8分</li><li>主動ETF 5日與加碼家數：最高3.2分</li><li>外資5日買賣超：最高1.6分</li><li>外資實際持股5／10日變化：最高3.6分</li><li>投信5／10日買賣超與10日連續性：最高3.8分</li><li>自營商5日買賣超：最高1.0分</li></ul></td><td>20日只辨識背景，10日確認延續，5日看轉折。外資持股是存量；外資、投信、自營商買賣超是流量。各類法人分開計分，三大法人合計只展示、不重複加分。投信買賣超不等於基金完整持股。</td></tr>
 <tr><td>15%</td><td>技術面與進場時機</td><td><ul><li>5／20／60日EMA與趨勢斜率：最高6.0分</li><li>RSI合理區間：最高3.0分</li><li>MACD動能變化：最高2.0分</li><li>標準KD（9,3,3）時機確認：最高1.5分</li><li>距20日EMA乖離：最高2.5分</li></ul></td><td>KD使用每日最高、最低與收盤計算，只作時機輔助。低檔黃金交叉不等於買進；高檔死亡交叉也不單獨構成賣出，仍須搭配均線與籌碼。</td></tr>
@@ -1128,9 +1431,9 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
 <tr><td>10%</td><td>風險與流動性</td><td><ul><li>成交金額與流動性：最高3.0分</li><li>20日波動程度：最高2.5分</li><li>ETF持股集中度：最高1.5分</li><li>處置、除息等事件風險：最高1.5分</li><li>資料完整度：最高1.5分</li></ul></td><td>分數越高代表交易條件與資料品質較可控，不代表沒有下跌風險。硬性淘汰條件仍優先於總分。</td></tr>
 </tbody></table></div><p class="framework-note">分數是候選研究排序工具；高分若觸發外資轉弱、ETF短中期減碼、趨勢破壞、處置或事件風險，仍會降級或排除。</p></section>
 
-<section class="section method"><article><h3>多時間窗判讀原則</h3><p>ETF採20／10／5／3／1日多時間窗，主動與被動ETF分開。外資檢查官方持股存量與買賣超流量；投信則檢查1／5／10／20日買賣超、連續買賣天數與估算金額。不同法人分開計分，不把單日買超誤認為長期加碼。技術面使用5、20、60日EMA、RSI、MACD、標準KD、乖離與趨勢斜率。</p></article><article><h3>硬性與時機檢查</h3><ul><li>只保留上市股票，排除上櫃。</li><li>資料信心度低於65%或成交金額不足者排除。</li><li>營收同步衰退或中期趨勢向下者排除。</li><li>ETF 5／10日同步減碼者等待轉強。</li><li>外資持股5／10日同步下降且外資賣超者，不列立即布局。</li><li>投信5／10日持續且具金額意義的賣超者，不列立即布局。</li><li>KD高檔死亡交叉只列時機警示，須搭配均線跌破或籌碼轉弱才升級減碼。</li><li>外資持股期間出現非市場異動時，該段趨勢不直接計分。</li><li>處置、過熱、估值與除息事件改列等待。</li></ul></article></section>
+<section class="section method"><article><h3>多時間窗判讀原則</h3><p>ETF採20／10／5／3／1日多時間窗，主動與被動ETF分開。外資檢查官方持股存量與買賣超流量；投信則檢查1／5／10／20日買賣超、連續買賣天數與估算金額。法人買賣超直接取自證交所 T86，不再把次級整理來源當主要證據。技術面使用5、20、60日EMA、RSI、MACD、標準KD、乖離與趨勢斜率。</p></article><article><h3>新增風險覆蓋與時機檢查</h3><ul><li>融資快速增加且短線漲幅過大，列為擁擠風險。</li><li>借券賣出量與借券賣出餘額升高，列為壓力警示；借券本身不等於已賣出。</li><li>集保持股分級13–15占比只描述大額級距集中，不直接推論特定主力。</li><li>內部人設質達50%以上、申報轉讓、裁處或資訊申報違規，改列等待查核。</li><li>官方重大訊息若出現停止交易、財報延遲、訴訟、重大損失等高風險關鍵字，須先查原文。</li><li>宏觀與產業相對強弱屬覆蓋層，不直接改個股分數。</li></ul></article></section>
 
-<section class="section"><h2>證據與限制</h2><p class="section-lead">證交所說明，外資持股變化除集中市場買賣外，也可能受借券、海外存託憑證、股本異動、ETF申購買回與國籍變更影響。因此本系統把外資持股與買賣超分開。投信與自營商使用每日買賣超，不宣稱為完整持股。本報告仍未取得券商一致預估、目標價、完整自由現金流與個人持倉成本，候選名單不等於無條件買進。事件層目前涵蓋籌碼小宇的庫藏股、處置與內部人異動，以及 Yahoo Finance RSS 新聞；事件僅為輔助資訊、不計入評分，新聞一律列為待確認。官方重大訊息與法說會資料尚未實作，不得把預留的事件類型視為已完成的來源。</p><ul class="sources">${sourceRows}</ul></section>
+<section class="section"><h2>證據層級與限制</h2><p class="section-lead">A級證據優先採證交所、公開資訊觀測站、集保結算所、經濟部及中央銀行的官方原始資料；籌碼小宇屬B級次級整理，主要用於ETF持股與官方資料備援／交叉檢查；Yahoo Finance 新聞屬C級待確認資訊，不直接計分。官方重大訊息已接入；法說會只在重大訊息文字明確出現「法人說明會／法說會」時辨識，不宣稱已取得完整法說會資料庫。結構化庫藏股與處置事件仍會進入原有催化／風險分數，官方重大訊息、信用交易、集保與治理則作獨立風險門檻，避免重複計分。外資持股變化仍可能受借券、海外存託憑證、股本異動、ETF申購買回與國籍變更影響。本報告尚未取得券商一致預估、目標價、完整自由現金流與個人持倉成本。</p><ul class="sources">${sourceRows}</ul></section>
 </main>
 <dialog class="score-dialog" id="scoreDialog" aria-labelledby="scoreDialogTitle"><div class="score-dialog-shell"><header class="score-dialog-head"><div><h2 id="scoreDialogTitle">股票評分明細</h2><p id="scoreDialogSub">六大構面實得分、判斷數據與來源</p></div><button class="score-close" id="scoreClose" type="button" title="關閉評分明細" aria-label="關閉評分明細">&times;</button></header><div class="score-dialog-body" id="scoreDialogBody"></div></div></dialog>
 </div>
@@ -1167,12 +1470,13 @@ function renderPositions(){
 }
 function openScore(code,updateHash=true){
   const r=rows.find(row=>row.code===String(code));if(!r)return;
-  const c=r.components||{};const f=r.fundamentals||{};const v=r.valuation||{};const etf=r.etf||{};const foreign=r.foreign||{};const trust=r.investmentTrust||{};const dealer=r.dealer||{};const t=r.technical||{};const risk=r.riskInputs||{};
+  const c=r.components||{};const f=r.fundamentals||{};const v=r.valuation||{};const etf=r.etf||{};const foreign=r.foreign||{};const trust=r.investmentTrust||{};const dealer=r.dealer||{};const t=r.technical||{};const risk=r.riskInputs||{};const credit=r.credit||{};const tdcc=r.tdcc||{};const governance=r.governance||{};
   const catalystEvents=(r.events&&r.events.buyback?'有進行中庫藏股':'未偵測進行中庫藏股')+'；'+(r.events&&r.events.disposal?'有處置或交易限制事件':'未偵測處置事件');
   const detailRows=[
     componentRow('基本面與成長',c.fundamentals,30,[
       '單月營收年增 '+s(f.revenueYoy,1,'%')+'；累計營收年增 '+s(f.revenueYtdYoy,1,'%'),
-      '營業利益率 '+n(f.operatingMargin,1)+'%；EPS '+n(f.eps,2),
+      '季報 '+e(f.financialPeriod||'—')+'；毛利率／營業利益率／淨利率 '+n(f.grossMargin,1)+'%／'+n(f.operatingMargin,1)+'%／'+n(f.netMargin,1)+'%；EPS '+n(f.eps,2),
+      '稅前獲利的營業外貢獻 '+n(f.nonOperatingContributionPct,1)+'%（超過50%列警示）',
       '負債比 '+n(f.debtRatio,1)+'%；流動比率 '+n(f.currentRatio,1)+'%'
     ],'fundamentals',r.code),
     componentRow('估值',c.valuation,15,[
@@ -1203,7 +1507,9 @@ function openScore(code,updateHash=true){
       '資料信心度 '+n(risk.dataConfidence,0)+'%；事件、處置與除權息風險另行檢查'
     ],'risk',r.code)
   ].join('');
-  const eventsHtml=r.eventsLayer&&r.eventsLayer.length?'<div style="margin-top:16px;border:1px solid var(--line);overflow:auto"><table class="score-breakdown" style="min-width:680px"><thead><tr><th>事件類型</th><th>標題</th><th>日期性質</th><th>日期</th></tr></thead><tbody>'+r.eventsLayer.slice(0,6).map(ev=>'<tr><td style="white-space:nowrap">'+e(ev.eventType)+(ev.confirmed?'':' <span style="color:var(--amber);font-size:11px">待確認</span>')+'</td><td><a href="'+e(ev.sourceUrl)+'" target="_blank" rel="noreferrer" style="color:var(--blue)">'+e(ev.title).slice(0,80)+'</a>'+(ev.aiSummary?'<br><span style="font-size:12px;color:var(--muted)">AI: '+e(ev.aiSummary)+'</span>':'')+'</td><td style="white-space:nowrap;font-size:12px">'+e(ev.dateKind==='event_start'?'事件起日':ev.dateKind==='event_date'?'事件日期':'發布日')+'</td><td style="white-space:nowrap;font-size:12px">'+e((ev.publishTime||'').slice(0,10))+'</td></tr>').join('')+'</tbody></table></div>':'';
+  let eventsHtml=r.eventsLayer&&r.eventsLayer.length?'<div style="margin-top:16px;border:1px solid var(--line);overflow:auto"><table class="score-breakdown" style="min-width:680px"><thead><tr><th>事件類型</th><th>標題</th><th>日期性質</th><th>日期</th></tr></thead><tbody>'+r.eventsLayer.slice(0,6).map(ev=>'<tr><td style="white-space:nowrap">'+e(ev.eventType)+(ev.confirmed?'':' <span style="color:var(--amber);font-size:11px">待確認</span>')+'</td><td><a href="'+e(ev.sourceUrl)+'" target="_blank" rel="noreferrer" style="color:var(--blue)">'+e(ev.title).slice(0,80)+'</a>'+(ev.aiSummary?'<br><span style="font-size:12px;color:var(--muted)">AI: '+e(ev.aiSummary)+'</span>':'')+'</td><td style="white-space:nowrap;font-size:12px">'+e(ev.dateKind==='event_start'?'事件起日':ev.dateKind==='event_date'?'事件日期':'發布日')+'</td><td style="white-space:nowrap;font-size:12px">'+e((ev.publishTime||'').slice(0,10))+'</td></tr>').join('')+'</tbody></table></div>':'';
+  const overlayHtml='<div class="score-judgment"><b>不重複計分的官方覆蓋：</b><br>融資餘額 '+n(credit.financingBalance,0)+' 張（5日 '+s(credit.financingD5,0,'張')+'）；借券賣出餘額 '+n(credit.borrowedShortBalance,0)+' 張（5日 '+s(credit.borrowedShortD5,0,'張')+'）。<br>集保持股分級13–15占比 '+n(tdcc.largeHolderRatio,2)+'%；分級1–5占比 '+n(tdcc.retailRatio,2)+'%。<br>內部人最高設質 '+n(governance.maxInsiderPledgePct,1)+'%；申報轉讓 '+n(governance.declaredTransferLots,0)+' 張；產業20日相對樣本 '+s(r.sectorContext&&r.sectorContext.relativeToSample,1,'%')+'（'+e(r.sectorContext&&r.sectorContext.status||'—')+'）。</div>';
+  eventsHtml=overlayHtml+eventsHtml;
   const factor=.88+.12*(r.confidence/100);const risks=(r.rejectionReasons||[]).length?(r.rejectionReasons||[]).join('；'):'目前未觸發硬性或時機風險，但仍應分批並設定停損條件。';
   scoreDialogTitle.textContent=r.code+' '+r.name+'｜專業評分明細';scoreDialogSub.textContent=r.industry+' · 排名第 '+r.rank;
   scoreDialogBody.innerHTML='<div class="score-dates"><span>ETF '+e(reportMeta.etfDate)+'</span><span>法人買賣超 '+e(reportMeta.institutionalDate)+'</span><span>外資持股 '+e(reportMeta.foreignHoldingDate)+'</span><span>價量／估值 '+e(reportMeta.marketDate)+'</span></div><div class="score-summary"><div><span>排名總分</span><b>'+n(r.score)+'</b></div><div><span>六構面原始總分</span><b>'+n(r.rawScore)+'</b></div><div><span>資料信心度</span><b>'+n(r.confidence,0)+'%</b></div><div><span>目前排名</span><b>'+n(r.rank,0)+'</b></div></div><div class="decision-strip"><span><small>尚未持有</small><b>'+e(r.entryAction)+'</b></span><span class="state-'+e(r.holdingState)+'"><small>已經持有</small><b>'+e(r.holdingAction)+'</b></span></div><label class="position-toggle"><input type="checkbox" data-position-toggle="'+e(r.code)+'"> <span>我已開始布局，持續追蹤</span></label><div class="score-detail-wrap"><table class="score-breakdown"><thead><tr><th>評估項目</th><th>實得／最高</th><th>本股判斷數據</th><th>資料與消息來源</th></tr></thead><tbody>'+detailRows+'</tbody></table></div>'+eventsHtml+'<div class="score-judgment"><b>已持有部位：</b>'+e(r.holdingPlan)+'<br><b>最先注意的風險：</b>'+e(risks)+'</div><p class="score-formula">排名總分＝六構面原始總分 × 資料完整度調整係數。此股係數為 '+n(factor,3)+'（0.88＋0.12×信心度），因此資料不足不會與資料完整的股票以相同可信度排名。來源連結代表本次計算所用資料的出處，仍應再查公司公告與財報原文。</p>';
@@ -1223,10 +1529,14 @@ async function main() {
   console.log('1/7 讀取ETF資料與上市股票官方市場資料...');
   const dataTextPromise = fetchText(SOURCES.etf);
   const [institution, events, twseValuationRows, twseRevenueRows, twseEpsRows,
-    twseMarginRows, twseDailyRows, balancePayloads] = await Promise.all([
+    twseMarginRows, twseDailyRows, balancePayloads, incomePayloads, tdccRows,
+    insiderHoldingRows, insiderTransferRows, regulatoryPenaltyRows, disclosureViolationRows] = await Promise.all([
       fetchJson(SOURCES.institution), fetchJson(SOURCES.events), fetchJson(SOURCES.twseValuation),
       fetchJson(SOURCES.twseRevenue), fetchJson(SOURCES.twseEps), fetchJson(SOURCES.twseMargin),
-      fetchJson(SOURCES.twseDaily), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url)))
+      fetchJson(SOURCES.twseDaily), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url))),
+      Promise.all(INCOME_ENDPOINTS.TWSE.map(url => fetchJson(url))), fetchJson(SOURCES.tdccHoldingLevels),
+      fetchJson(SOURCES.twseInsiderHoldings), fetchJson(SOURCES.twseInsiderTransfers),
+      fetchJson(SOURCES.twseRegulatoryPenalties), fetchJson(SOURCES.twseDisclosureViolations)
     ]);
 
   let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null };
@@ -1264,7 +1574,11 @@ async function main() {
   console.log(`ETF ${data.etfs.length} 檔，ETF持股共 ${allStockEntries.length} 檔，保留上市股票 ${stockEntries.length} 檔，主動ETF ${activeSet.size} 檔。`);
 
   console.log(`2/7 讀取${stockEntries.length}檔上市股票ETF快照與官方外資持股歷史...`);
-  const foreignHoldingPromise = fetchTwseForeignHoldingHistory(yyyymmddToIso(data.meta.latest));
+  const asOfIso = yyyymmddToIso(data.meta.latest);
+  const foreignHoldingPromise = fetchTwseForeignHoldingHistory(asOfIso);
+  const institutionalHistoryPromise = fetchTwseInstitutionalHistory(asOfIso, institution);
+  const creditHistoryPromise = fetchTwseCreditHistory(asOfIso);
+  const macroOverlayPromise = fetchMacroOverlay(twseDailyRows);
   const details = await mapLimit(stockEntries, 16, async ([code], index) => {
     if ((index + 1) % 75 === 0) console.log(`  已完成 ${index + 1}/${stockEntries.length}`);
     return fetchJson(`${XIAOYU}/data/stock/${code}.json`);
@@ -1274,7 +1588,9 @@ async function main() {
     if ((index + 1) % 100 === 0) console.log(`  KD日K已完成 ${index + 1}/${stockEntries.length}`);
     return fetchYahooOhlc(code);
   });
-  const foreignHoldingHistory = await foreignHoldingPromise;
+  const [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay] = await Promise.all([
+    foreignHoldingPromise, institutionalHistoryPromise, creditHistoryPromise, macroOverlayPromise
+  ]);
   console.log(`  外資持股已取得 ${foreignHoldingHistory.dates.length} 個交易日，最新 ${foreignHoldingHistory.dates[0]}`);
 
   const twseValuation = createLookup(twseValuationRows, ['Code']);
@@ -1283,10 +1599,12 @@ async function main() {
   const twseMargin = createLookup(twseMarginRows, ['公司代號']);
   const twseDaily = createLookup(twseDailyRows, ['Code']);
   const twseBalance = createLookup(balancePayloads.flat(), ['公司代號']);
+  const twseIncome = createLookup(incomePayloads.flat(), ['公司代號']);
+  const tdccData = tdccFeatures(tdccRows);
 
-  const instDates = (institution.dates || []).slice(0, 20);
+  const instDates = institutionalHistory.dates.slice(0, 20);
   const instMaps = instDates.map(date => new Map((institution.days?.[date] || []).map(row => [String(row[0]), row])));
-  const institutional = code => {
+  const institutionalLegacy = code => {
     const daily = instMaps.map(map => map.get(code)?.slice(4, 8).map(number) || [0, 0, 0, 0]);
     const get = (index, count) => sum(daily.slice(0, count).map(row => row[index] || 0));
     const positiveDays = (index, count) => daily.slice(0, count).filter(row => (row[index] || 0) > 0).length;
@@ -1303,6 +1621,18 @@ async function main() {
   };
 
   console.log('3/7 建立基本面、估值、籌碼、技術與事件特徵...');
+  const institutional = code => {
+    const base = institutionalFeatures(institutionalHistory, code);
+    const trustRows = institutionalHistory.snapshots.map(snapshot => snapshot.rows.get(code)?.trust || 0);
+    return {
+      ...base,
+      trustPositiveDays5: trustRows.slice(0, 5).filter(value => value > 0).length,
+      trustPositiveDays10: trustRows.slice(0, 10).filter(value => value > 0).length,
+      trustNegativeDays5: trustRows.slice(0, 5).filter(value => value < 0).length,
+      trustNegativeDays10: trustRows.slice(0, 10).filter(value => value < 0).length
+    };
+  };
+
   const records = stockEntries.map(([code, stock], index) => {
     const detail = details[index]?.__error ? null : details[index];
     const ohlc = ohlcSeries[index]?.__error ? [] : ohlcSeries[index];
@@ -1312,6 +1642,7 @@ async function main() {
     const epsRow = twseEps.get(code);
     const dailyRow = twseDaily.get(code);
     const balanceRow = twseBalance.get(code);
+    const incomeRow = twseIncome.get(code);
     const industry = revenueRow?.['產業別'] || epsRow?.['產業別'] || '未分類';
     const eps = number(epsRow?.['基本每股盈餘(元)'] ?? epsRow?.['基本每股盈餘']);
     const opMargin = market === 'TWSE'
@@ -1321,6 +1652,17 @@ async function main() {
           const revenue = number(epsRow?.['營業收入']);
           return Number.isFinite(operatingIncome) && revenue ? operatingIncome / revenue * 100 : null;
         })();
+    const quarterRevenue = number(incomeRow?.['營業收入']);
+    const quarterGrossProfit = number(incomeRow?.['營業毛利（毛損）']);
+    const quarterOperatingIncome = number(incomeRow?.['營業利益（損失）']);
+    const quarterPretaxIncome = number(incomeRow?.['稅前淨利（淨損）']);
+    const quarterParentNetIncome = number(incomeRow?.['淨利（淨損）歸屬於母公司業主'] ?? incomeRow?.['本期淨利（淨損）']);
+    const marginRow = twseMargin.get(code);
+    const grossMargin = number(marginRow?.['毛利率(%)(營業毛利)/(營業收入)']) ?? (quarterRevenue ? quarterGrossProfit / quarterRevenue * 100 : null);
+    const netMargin = number(marginRow?.['稅後純益率(%)(稅後損益)/(營業收入)']) ?? (quarterRevenue ? quarterParentNetIncome / quarterRevenue * 100 : null);
+    const nonOperatingContributionPct = Number.isFinite(quarterPretaxIncome) && quarterPretaxIncome > 0 && Number.isFinite(quarterOperatingIncome)
+      ? (quarterPretaxIncome - quarterOperatingIncome) / Math.abs(quarterPretaxIncome) * 100 : null;
+    const financialPeriod = incomeRow?.['年度'] && incomeRow?.['季別'] ? `${Number(incomeRow['年度']) + 1911}Q${incomeRow['季別']}` : null;
     const price = number(stock.price) || number(dailyRow?.ClosingPrice ?? dailyRow?.Close);
     const pe = number(valuationRow?.PEratio ?? valuationRow?.PriceEarningRatio);
     const pb = number(valuationRow?.PBratio ?? valuationRow?.PriceBookRatio);
@@ -1336,6 +1678,9 @@ async function main() {
     const etf = stockEtfFeatures(stock, detail, activeSet, laggingSet);
     const closes = (detail?.px || []).map(number).filter(Number.isFinite).reverse();
     const technical = technicalFromCloses(closes, ohlc);
+    const credit = creditFeatures(creditHistory, code, technical?.return5, (number(dailyRow?.TradeVolume) || 0) / 1000);
+    const tdcc = tdccData.byCode.get(code) || null;
+    const governance = governanceFeatures(code, insiderHoldingRows, insiderTransferRows, regulatoryPenaltyRows, disclosureViolationRows);
     const event = eventFeatures(events, code, yyyymmddToIso(data.meta.latest));
     let confidence = 20;
     if (detail && detail.snap_dates?.length >= 21) confidence += 20;
@@ -1346,7 +1691,7 @@ async function main() {
     if (valuationRow) confidence += 12;
     if (technical) confidence += 11;
     if (Number.isFinite(technical?.kdK) && Number.isFinite(technical?.kdD)) confidence += 2;
-    if (instMaps.some(map => map.has(code))) confidence += 5;
+    if (institutionalHistory.snapshots.some(snapshot => snapshot.rows.has(code))) confidence += 5;
     if (foreignHolding.trendReliable) confidence += 5;
     else if (Number.isFinite(foreignHolding.heldShares)) confidence += 2;
     confidence -= Math.min(12, etf.laggingExposure * 0.35);
@@ -1355,11 +1700,13 @@ async function main() {
     const revenueYoy = number(revenueRow?.['營業收入-去年同月增減(%)']);
     const revenueYtdYoy = number(revenueRow?.['累計營業收入-前期比較增減(%)']);
     const stockEvents = (eventsByCode.get(code) || []).slice(0, 8);
+    const officialMaterialRisk = stockEvents.some(ev => ev.source === 'twse_material' && /停止交易|終止上市|下市|重整|破產|重大損失|財務報告.*延|裁罰|訴訟|資金貸與|背書保證|掏空|財報重編/.test(`${ev.title || ''} ${ev.description || ''}`));
     return {
       code, name: stock.name, market, industry, sector: broadSector(industry), etf, foreignHolding, technical, events: event,
-      eventsLayer: stockEvents, closeDate: yyyymmddToIso(data.meta.price_date), confidence: round(confidence, 1), live: null,
+      eventsLayer: stockEvents, credit, tdcc, governance, officialMaterialRisk, financialPeriod,
+      closeDate: yyyymmddToIso(data.meta.price_date), confidence: round(confidence, 1), live: null,
       metrics: {
-        price, revenueYoy, revenueYtdYoy, operatingMargin: opMargin, eps, debtRatio, currentRatio,
+        price, revenueYoy, revenueYtdYoy, operatingMargin: opMargin, grossMargin, netMargin, nonOperatingContributionPct, eps, debtRatio, currentRatio,
         earningsYield: Number.isFinite(pe) && pe > 0 ? 100 / pe : null,
         pe, pb, yield: dividendYield,
         etfFlow5: etf.flowPct[5], etfFlow10: etf.flowPct[10], etfFlow20: etf.flowPct[20],
@@ -1409,6 +1756,7 @@ async function main() {
   scoreRecords(records);
 
   console.log('5/7 執行硬性淘汰與投資組合層級覆核...');
+  const sectorOverlay = assignSectorContext(records);
   records.sort((a, b) => {
     const bucketOrder = { A: 0, B: 1, C: 2, D: 3 };
     return bucketOrder[a.bucket] - bucketOrder[b.bucket] || b.adjustedScore - a.adjustedScore || b.confidence - a.confidence;
@@ -1426,9 +1774,16 @@ async function main() {
       marketDate: marketDates.at(-1) || yyyymmddToIso(data.meta.price_date),
       foreignHoldingDate: foreignHoldingHistory.dates[0],
       institutionalDate: instDates[0] || null,
+      institutionalSource: institutionalHistory.sourceMode,
+      institutionalOfficialDays: institutionalHistory.primaryDays,
+      creditDate: creditHistory.dates[0] || null,
+      tdccDate: tdccData.date,
+      quarterlyFinancialPeriod: [...new Set(records.map(record => record.financialPeriod).filter(Boolean))].sort().at(-1) || null,
       liveFreeze: liveTimes.length ? `${TODAY} ${liveTimes.at(-1)}` : '無可驗證即時報價',
       etfCount: data.etfs.length,
       stockCount: stockEntries.length,
+      listedUniverseCount: twseDailyRows.filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000).length,
+      coverageRate: round(stockEntries.length / Math.max(1, twseDailyRows.filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000).length) * 100, 1),
       allEtfHeldStocks: allStockEntries.length,
       foreignHoldingCovered: records.filter(record => record.foreignHolding?.trendReliable).length,
       kdCovered: records.filter(record => Number.isFinite(record.technical?.kdK) && Number.isFinite(record.technical?.kdD)).length,
@@ -1440,6 +1795,14 @@ async function main() {
       bucketA: records.filter(record => record.bucket === 'A').length,
       rejected: records.filter(record => record.bucket === 'D').length,
       scope: '只篩選籌碼小宇ETF持股資料集中的上市股票；上櫃股票已排除，不等於全部上市股票'
+    },
+    macroOverlay,
+    sectorOverlay,
+    sourcePosture: {
+      primary: '證交所、公開資訊觀測站、集保結算所、經濟部與中央銀行官方原始資料',
+      secondary: '籌碼小宇 ETF 持股與事件整理；法人買賣超僅作官方資料的備援／交叉檢查',
+      pending: 'Yahoo Finance 新聞只列待確認，不直接計分',
+      scoreBoundary: '宏觀、信用交易、集保與治理資料屬獨立覆蓋或風險門檻；除季報獲利品質外，不重複灌入100分'
     },
     methodology: {
       weights: WEIGHTS,
@@ -1460,6 +1823,20 @@ async function main() {
     topThree,
     ranking,
     sources: {
+      '[A 官方原始] 證交所 T86 三大法人逐日買賣超': 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html',
+      '[A 官方原始] 公開資訊觀測站重大訊息': SOURCES.twseMaterialInfo,
+      '[A 官方原始] 公開資訊觀測站上市季損益表': INCOME_ENDPOINTS.TWSE[0],
+      '[A 官方原始] 證交所融資融券': `${SOURCES.twseMarginTrading}?response=html`,
+      '[A 官方原始] 證交所借券賣出': `${SOURCES.twseBorrowedShort}?response=html`,
+      '[A 官方原始] 集保股權分散表': SOURCES.tdccHoldingLevels,
+      '[A 官方原始] 公開資訊觀測站董監事持股與設質': SOURCES.twseInsiderHoldings,
+      '[A 官方原始] 公開資訊觀測站內部人持股轉讓': SOURCES.twseInsiderTransfers,
+      '[A 官方原始] 證交所裁處與資訊申報違規': SOURCES.twseRegulatoryPenalties,
+      '[A 官方原始] 經濟部外銷訂單': SOURCES.moeaExportOrders,
+      '[A 官方原始] 經濟部工業生產': SOURCES.moeaIndustrialProduction,
+      '[A 官方原始] 中央銀行匯率／利率／貨幣供給': SOURCES.cbcExchangeRate,
+      '[B 次級整理] 籌碼小宇 ETF 持股': SOURCES.etf,
+      '[C 待確認] Yahoo Finance 新聞': SOURCES.yahooFinanceRss,
       '籌碼小宇 ETF 持股資料': SOURCES.etf,
       '籌碼小宇 法人逐日買賣超整理': SOURCES.institution,
       '籌碼小宇 公司事件資料': SOURCES.events,
@@ -1475,12 +1852,15 @@ async function main() {
     },
     sourceGroups: {
       fundamentals: [
+        { label: '公開資訊觀測站上市公司季損益表', url: INCOME_ENDPOINTS.TWSE[0] },
         { label: '證交所上市公司月營收', url: SOURCES.twseRevenue },
         { label: '證交所上市公司EPS', url: SOURCES.twseEps },
         { label: '證交所上市公司財務比率與資產負債資料', url: BALANCE_ENDPOINTS.TWSE[0] }
       ],
       valuation: [{ label: '證交所本益比、股價淨值比與殖利率', url: SOURCES.twseValuation }],
       ownership: [
+        { label: '證交所 T86 三大法人逐日買賣超', url: 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html' },
+        { label: '集保股權分散表', url: SOURCES.tdccHoldingLevels },
         { label: '籌碼小宇ETF持股資料', url: SOURCES.etf },
         { label: '籌碼小宇法人逐日買賣超整理', url: SOURCES.institution },
         { label: '證交所三大法人買賣超日報', url: SOURCES.twseInstitutional },
@@ -1497,11 +1877,15 @@ async function main() {
         { label: '籌碼小宇公司事件資料', url: SOURCES.events }
       ],
       risk: [
+        { label: '證交所融資融券與借券賣出', url: `${SOURCES.twseMarginTrading}?response=html` },
+        { label: '集保股權分散表', url: SOURCES.tdccHoldingLevels },
+        { label: '公開資訊觀測站董監事持股與設質', url: SOURCES.twseInsiderHoldings },
         { label: '證交所每日行情與成交金額', url: SOURCES.twseDaily },
         { label: '籌碼小宇ETF持股與資料更新狀態', url: SOURCES.etf },
         { label: '籌碼小宇公司事件資料', url: SOURCES.events }
       ],
       events_layer: [
+        { label: '公開資訊觀測站重大訊息（官方確認）', url: SOURCES.twseMaterialInfo },
         { label: 'Yahoo Finance 個股新聞 (待確認資訊)', url: SOURCES.yahooFinanceRss },
         { label: '籌碼小宇公司事件資料 (庫藏股/處置/內部人異動)', url: SOURCES.events }
       ]

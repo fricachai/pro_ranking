@@ -139,6 +139,20 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
+    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate')) {
+        if (-not $meta.$requiredMetaField) {
+            throw "latest.json is missing meta.$requiredMetaField."
+        }
+    }
+    if ([string]$meta.institutionalSource -notlike 'TWSE T86 direct*') {
+        throw "Institutional data is not sourced directly from TWSE T86: $($meta.institutionalSource)"
+    }
+    if ([int]$meta.institutionalOfficialDays -lt 5) {
+        throw "TWSE T86 official history is too short: $($meta.institutionalOfficialDays) days"
+    }
+    if (-not $report.macroOverlay -or -not $report.sourcePosture -or -not $report.sectorOverlay) {
+        throw 'latest.json is missing macro, source-posture, or sector overlay.'
+    }
     if ([int]$meta.stockCount -lt 350) {
         throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
     }
@@ -222,6 +236,8 @@ try {
     Write-Output "ETF_DATE=$($meta.etfDate)"
     Write-Output "INSTITUTIONAL_DATE=$($meta.institutionalDate)"
     Write-Output "FOREIGN_HOLDING_DATE=$($meta.foreignHoldingDate)"
+    Write-Output "CREDIT_DATE=$($meta.creditDate)"
+    Write-Output "TDCC_DATE=$($meta.tdccDate)"
     Write-Output "MARKET_DATE=$($meta.marketDate)"
     Write-Output "STOCK_COUNT=$($meta.stockCount)"
     Write-Output "TOP3=$($topThree -join ' | ')"

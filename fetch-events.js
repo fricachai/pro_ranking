@@ -13,6 +13,7 @@ const LOG_DIR = path.join(ROOT, 'professional-screen-report', 'logs');
 
 const XIAOYU_EVENTS_URL = 'https://xiaoyu-etf.pages.dev/data/events.json';
 const YAHOO_RSS_TPL = 'https://finance.yahoo.com/rss/headline?s=';
+const TWSE_MATERIAL_INFO_URL = 'https://openapi.twse.com.tw/v1/opendata/t187ap04_L';
 
 const CONFIG = {
   aiProvider: process.env.AI_PROVIDER || '',
@@ -66,6 +67,22 @@ function formatDate(isoStr) {
   const d = new Date(isoStr);
   if (isNaN(d.getTime())) return null;
   return d.toISOString().slice(0, 10);
+}
+
+function rocDateToIso(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length !== 7) return null;
+  const year = Number(digits.slice(0, 3)) + 1911;
+  const month = digits.slice(3, 5);
+  const day = digits.slice(5, 7);
+  return `${year}-${month}-${day}`;
+}
+
+function pick(row, ...keys) {
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(row || {}, key)) return row[key];
+  }
+  return null;
 }
 
 const EVENT_TYPES = {
@@ -126,6 +143,8 @@ class DedupDB {
 }
 
 function classifyBySourceType(raw) {
+  if (raw.eventType === EVENT_TYPES.INVESTOR_CONF) return EVENT_TYPES.INVESTOR_CONF;
+  if (raw.eventType === EVENT_TYPES.MATERIAL_INFO) return EVENT_TYPES.MATERIAL_INFO;
   if (raw.source === 'xiaoyu') {
     if (raw.eventType === 'buyback') return EVENT_TYPES.BUYBACK;
     if (raw.eventType === 'dispose') return EVENT_TYPES.DISPOSAL;
@@ -138,6 +157,37 @@ function classifyBySourceType(raw) {
   if (raw.source === 'twse_material') return EVENT_TYPES.MATERIAL_INFO;
   if (raw.source === 'investor_conf') return EVENT_TYPES.INVESTOR_CONF;
   return EVENT_TYPES.NEWS_PENDING;
+}
+
+async function fetchOfficialMaterialInfo() {
+  const results = [];
+  try {
+    const data = await fetchJson(TWSE_MATERIAL_INFO_URL);
+    for (const item of (Array.isArray(data) ? data : [])) {
+      const code = String(pick(item, '公司代號') || '').trim();
+      const title = String(pick(item, '主旨 ', '主旨') || '').trim();
+      const date = rocDateToIso(pick(item, '發言日期', '事實發生日', '出表日期'));
+      if (!/^\d{4}$/.test(code) || !title || !date) continue;
+      const time = String(pick(item, '發言時間') || '').replace(/\D/g, '').padStart(6, '0');
+      const isInvestorConference = /法人說明會|法說會/.test(title);
+      const query = new URLSearchParams({ co_id: code, year: String(Number(date.slice(0, 4)) - 1911), month: date.slice(5, 7) });
+      results.push({
+        code,
+        title: `重大訊息｜${title}`,
+        link: `https://mops.twse.com.tw/mops/web/t05sr01_1?${query.toString()}#${date.replace(/-/g, '')}${time}`,
+        pubDate: `${date}T${time.slice(0, 2)}:${time.slice(2, 4)}:${time.slice(4, 6)}+08:00`,
+        description: String(pick(item, '說明') || '').trim(),
+        source: 'twse_material',
+        eventType: isInvestorConference ? EVENT_TYPES.INVESTOR_CONF : EVENT_TYPES.MATERIAL_INFO,
+        confirmed: true,
+        dateKind: 'published'
+      });
+    }
+    log(`official material information loaded: ${results.length}`);
+  } catch (err) {
+    log('WARN: official material information fetch failed:', err.message);
+  }
+  return results;
 }
 
 function normalizeEvent(raw, dedup) {
@@ -362,12 +412,12 @@ async function runAI(events, dedup) {
   return aiResults;
 }
 
-function mergeEvents(xiaoyuItems, newsItems, aiResults, dedup) {
+function mergeEvents(xiaoyuItems, officialItems, newsItems, aiResults, dedup) {
   const all = [];
   const aiMap = {};
   for (const r of aiResults) aiMap[r.contentHash] = r;
 
-  const rawItems = [...xiaoyuItems, ...newsItems];
+  const rawItems = [...xiaoyuItems, ...officialItems, ...newsItems];
   const seen = new Set();
 
   for (const raw of rawItems) {
@@ -417,14 +467,15 @@ async function main() {
   }
 
   const xiaoyuItems = await fetchXiaoyuEvents();
+  const officialItems = await fetchOfficialMaterialInfo();
   const newsItems = stockCodes.length > 0 ? await fetchYahooNews(stockCodes) : [];
 
-  const allEvents = [...xiaoyuItems, ...newsItems];
-  log(`raw items: xiaoyu=${xiaoyuItems.length}, news=${newsItems.length}, total=${allEvents.length}`);
+  const allEvents = [...xiaoyuItems, ...officialItems, ...newsItems];
+  log(`raw items: xiaoyu=${xiaoyuItems.length}, official=${officialItems.length}, news=${newsItems.length}, total=${allEvents.length}`);
 
   const aiResults = await runAI(allEvents, dedup);
 
-  const merged = mergeEvents(xiaoyuItems, newsItems, aiResults, dedup);
+  const merged = mergeEvents(xiaoyuItems, officialItems, newsItems, aiResults, dedup);
   log(`merged unique events: ${merged.length}`);
   validateEventContracts(merged);
   dedup.save();
@@ -439,8 +490,8 @@ async function main() {
       yahooNews: CONFIG.newsEnabled,
       yahooNewsStockLimit: CONFIG.maxStocksForNews,
       yahooNewsItemsPerStock: CONFIG.maxNewsPerStock,
-      officialMaterialInfo: false,
-      officialInvestorConference: false
+      officialMaterialInfo: true,
+      officialInvestorConference: 'material_info_keyword_only'
     },
     stats: {
       totalEvents: merged.length,
