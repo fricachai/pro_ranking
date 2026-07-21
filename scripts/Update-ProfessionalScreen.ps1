@@ -95,20 +95,72 @@ try {
         throw 'The working tree is not clean. Update stopped to protect existing changes.'
     }
 
+    if ($Publish) {
+        $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
+        if ($branch -ne 'main') { throw "Publishing is only allowed from main. Current branch: $branch" }
+        $remoteUrl = (Invoke-Git -Arguments @('remote', 'get-url', 'origin') | Select-Object -First 1).Trim()
+        if ($remoteUrl -notmatch 'github\.com[/:]fricachai/pro_ranking(?:\.git)?$') {
+            throw "Unexpected origin remote: $remoteUrl"
+        }
+        $authOutput = & gh auth status 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "GitHub CLI is not authenticated:`n$($authOutput -join "`n")"
+        }
+        Invoke-Git -Arguments @('fetch', 'origin', 'main') | Out-Null
+        $headBeforeRefresh = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
+        $originBeforeRefresh = (Invoke-Git -Arguments @('rev-parse', 'origin/main') | Select-Object -First 1).Trim()
+        if ($headBeforeRefresh -ne $originBeforeRefresh) {
+            throw "Local main is not synchronized with origin/main. HEAD=$headBeforeRefresh origin/main=$originBeforeRefresh"
+        }
+    }
+
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $logPath = Join-Path $LogDir "daily-refresh-$timestamp.log"
 
-    & node --check $Generator *> $logPath
-    if ($LASTEXITCODE -ne 0) {
-        throw "Generator syntax check failed. Log: $logPath"
+    foreach ($scriptPath in @($Generator, $EventFetcher)) {
+        & node --check $scriptPath *>> $logPath
+        if ($LASTEXITCODE -ne 0) {
+            throw "JavaScript syntax check failed: $scriptPath. Log: $logPath"
+        }
     }
 
-    if (Test-Path $EventFetcher) {
-        Write-Host "Fetching events data (non-blocking)..."
-        & node $EventFetcher *>> $logPath
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Event fetcher failed. Continuing without events data. Log: $logPath"
+    if (-not (Test-Path $EventFetcher)) { throw "Event fetcher not found: $EventFetcher" }
+    $refreshStartedUtc = [DateTime]::UtcNow
+    Write-Host 'Fetching and validating events and news data...'
+    & node $EventFetcher *>> $logPath
+    if ($LASTEXITCODE -ne 0) {
+        $tail = Get-Content $logPath -Tail 60 -Encoding utf8
+        throw "Event and news refresh failed. Publishing stale events is not allowed. Log: $logPath`n$($tail -join "`n")"
+    }
+
+    $LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
+    if (-not (Test-Path $LatestEventsJson)) { throw "Events output is missing: $LatestEventsJson" }
+    $eventData = Get-Content $LatestEventsJson -Raw -Encoding utf8 | ConvertFrom-Json
+    if (-not $eventData.fetchedAt -or -not $eventData.sourceScope -or -not $eventData.sourceStatus) {
+        throw 'Events output is missing fetchedAt, sourceScope, or sourceStatus.'
+    }
+    $eventFetchedAt = [DateTimeOffset]::Parse([string]$eventData.fetchedAt)
+    if ($eventFetchedAt.UtcDateTime -lt $refreshStartedUtc.AddMinutes(-2)) {
+        throw "Events output was not refreshed in this run: $($eventData.fetchedAt)"
+    }
+    if ($eventData.sourceScope.yahooNews -ne $true -or $eventData.sourceScope.officialMaterialInfo -ne $true) {
+        throw 'Yahoo news and official material information must both be enabled.'
+    }
+    if ([int]$eventData.sourceStatus.etfStockCodes -lt 300) {
+        throw "ETF stock-code coverage is too low: $($eventData.sourceStatus.etfStockCodes)"
+    }
+    if ([int]$eventData.sourceStatus.xiaoyuItems -lt 1 -or [int]$eventData.sourceStatus.officialMaterialItems -lt 1) {
+        throw 'Xiaoyu events or official material information returned no valid items.'
+    }
+    $newsStatus = $eventData.sourceStatus.yahooNews
+    if ([int]$newsStatus.requestedStocks -lt 300 -or [double]$newsStatus.coverageRate -lt 80 -or [int]$newsStatus.itemCount -lt 1) {
+        throw "Yahoo news coverage is insufficient: requested=$($newsStatus.requestedStocks), coverage=$($newsStatus.coverageRate)%, items=$($newsStatus.itemCount)"
+    }
+    $eventTypeNames = @($eventData.events | Group-Object eventType | ForEach-Object Name)
+    foreach ($requiredEventType in @('material_info', 'news_pending')) {
+        if ($eventTypeNames -notcontains $requiredEventType) {
+            throw "Required event type is missing: $requiredEventType"
         }
     }
 
@@ -152,6 +204,12 @@ try {
     }
     if (-not $report.macroOverlay -or -not $report.sourcePosture -or -not $report.sectorOverlay) {
         throw 'latest.json is missing macro, source-posture, or sector overlay.'
+    }
+    if (-not $report.eventsMeta -or [string]$report.eventsMeta.fetchedAt -ne [string]$eventData.fetchedAt) {
+        throw 'latest.json did not consume the events file refreshed in this run.'
+    }
+    if (-not $report.eventsMeta.sourceStatus -or [int]$report.eventsMeta.totalCount -lt 1) {
+        throw 'latest.json is missing validated event-source status or event records.'
     }
     if ([int]$meta.stockCount -lt 350) {
         throw "Listed stock count is unexpectedly low: $($meta.stockCount)"
@@ -227,6 +285,20 @@ try {
         Invoke-Git -Arguments @('push', 'origin', $branch) | Out-Null
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
         $publishStatus = 'published'
+    }
+    elseif ($Publish) {
+        $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
+        Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
+        $publishStatus = 'published_no_changes'
+    }
+
+    if ($Publish) {
+        $headAfterPublish = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
+        $originAfterPublish = (Invoke-Git -Arguments @('rev-parse', 'origin/main') | Select-Object -First 1).Trim()
+        $remainingChanges = @(Get-ChangedPaths)
+        if ($headAfterPublish -ne $originAfterPublish -or $remainingChanges.Count -gt 0) {
+            throw "Publish verification failed. HEAD=$headAfterPublish origin/main=$originAfterPublish remaining=$($remainingChanges -join ', ')"
+        }
     }
 
     $topThree = @($report.topThree | Select-Object -First 3 | ForEach-Object {

@@ -16,7 +16,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 ## OpenCode 執行規則
 
-1. 每日更新不得改動 `full-professional-stock-screen.js` 的評分權重、硬性條件、資料來源或版面。
+1. 先讀 `OPENCODE_HANDOFF.md`。每日更新不得改動 `full-professional-stock-screen.js` 的評分權重、硬性條件、資料來源、驗證門檻或版面。
 2. 不要重新閱讀完整 `index.html` 或 `professional-screen-report/latest.json`；它們很大，腳本已負責驗證。
 3. 成功時只回報腳本最後輸出的精簡摘要：資料日期、股票數、前三名、提交版本及公開網址。
 4. 失敗時停止，不要猜測、不降低門檻，也不要自行填造資料。只讀取腳本指出的紀錄檔尾端，說明失敗步驟。
@@ -49,6 +49,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 - `full-professional-stock-screen.js`：資料抓取、評分與報告產生器。
 - `fetch-events.js`：事件輔助層抓取、欄位語意驗證與去重；不直接改變六構面分數。
 - `scripts/Update-ProfessionalScreen.ps1`：每日更新、驗證與發布入口。
+- `scripts/Test-OpenCodeHandoff.ps1`：OpenCode、GitHub、資料契約與線上版本的交接預檢。
+- `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode 非互動模式執行每日發布。
+- `OPENCODE_HANDOFF.md`：完整交接清單、一次性設定與故障邊界。
+- `opencode.json`、`.opencode/commands/update-report.md`：限制 OpenCode 權限並提供 `/update-report`。
 - `index.html`：GitHub Pages 首頁，由更新腳本從最新報告複製產生。
 - `professional-screen-report/latest.json`：最新完整分析資料。
 - `professional-screen-report/full-professional-*`：依 ETF 資料日保存的版本。
@@ -59,10 +63,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 ## 事件資料契約與限制
 
-1. 目前真正完成的事件來源只有：籌碼小宇 `events.json` 的庫藏股、處置、內部人異動，以及最多 100 檔股票、每檔最多 5 則的 Yahoo Finance RSS 新聞。
-2. `material_info` 與 `investor_conf` 只是預留類型；在正式完成公開資訊觀測站重大訊息及法說會抓取、測試與來源驗證前，不得宣稱系統已涵蓋這兩類資料。
+1. 已完成的事件來源是：籌碼小宇 `events.json` 的庫藏股、處置、內部人異動；證交所／公開資訊觀測站上市公司重大訊息；以及最多 500 檔股票、每檔最多 5 則的 Yahoo Finance RSS 新聞。
+2. `material_info` 已接入官方重大訊息；`investor_conf` 只代表重大訊息文字明確出現「法人說明會／法說會」，不得宣稱已取得完整法說會資料庫。
 3. 籌碼小宇庫藏股欄位 `f` 是事件起日、`t` 是預定結束日。輸出的 `publishTime` 目前承載可排序的事件日期，但必須等於 `f`，並以 `dateKind=event_start` 說明其不是公告發布時間；不得再把 `t` 映射成發布時間。
 4. 抓取器必須保留 `sourceStartDate`、`sourceEndDate` 與 `dateKind`，並在覆寫 `latest-events.json` 前執行資料契約檢查。檢查失敗即退出，不得用猜測修正來源欄位。
 5. Yahoo RSS 新聞必須維持 `confirmed=false` 與 `eventType=news_pending`，只供查核，不得直接加減評分。
 6. 修改事件來源前，先保存一筆原始資料樣本並確認欄位語意，再新增映射；不得只依欄位名稱、排序或畫面推測。
 7. 發布後至少檢查：事件資料契約通過、未出現庫藏股結束日誤標、網頁清楚揭露實際來源與未實作範圍、GitHub Pages 對應本次提交。
+8. 每日發布必須重新產生 `latest-events.json`，且包含 `sourceStatus`；ETF股票代號不得少於300、Yahoo新聞成功讀取率不得低於80%，官方重大訊息與新聞不得為空。未通過時必須停止，不得沿用舊事件檔。

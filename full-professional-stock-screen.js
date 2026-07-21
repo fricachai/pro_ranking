@@ -1539,11 +1539,11 @@ async function main() {
       fetchJson(SOURCES.twseRegulatoryPenalties), fetchJson(SOURCES.twseDisclosureViolations)
     ]);
 
-  let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null };
+  let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null, sourceStatus: null };
   try {
     if (fs.existsSync(LATEST_EVENTS_PATH)) {
       const parsed = JSON.parse(fs.readFileSync(LATEST_EVENTS_PATH, 'utf8'));
-      eventsLayerData = { events: parsed.events || [], aiEnabled: parsed.aiEnabled || false, fetchedAt: parsed.fetchedAt || null, sourceScope: parsed.sourceScope || null };
+      eventsLayerData = { events: parsed.events || [], aiEnabled: parsed.aiEnabled || false, fetchedAt: parsed.fetchedAt || null, sourceScope: parsed.sourceScope || null, sourceStatus: parsed.sourceStatus || null };
       console.log(`  事件層載入 ${eventsLayerData.events.length} 筆，AI${eventsLayerData.aiEnabled ? '已' : '未'}啟用`);
     }
   } catch (err) {
@@ -1815,6 +1815,7 @@ async function main() {
       totalCount: eventsLayerData.events.length,
       aiEnabled: eventsLayerData.aiEnabled,
       sourceScope: eventsLayerData.sourceScope,
+      sourceStatus: eventsLayerData.sourceStatus,
       byType: eventsLayerData.events.reduce((acc, ev) => {
         acc[ev.eventType] = (acc[ev.eventType] || 0) + 1;
         return acc;

@@ -34,3 +34,17 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 `index.html` 與報告檔是生成品，應修改 `full-professional-stock-screen.js` 後重新產生，不要直接手改生成頁面。持倉追蹤使用瀏覽器 `localStorage`；換裝置、換瀏覽器或清除網站資料前請先下載備份。
 
 線上版本：<https://fricachai.github.io/pro_ranking/>
+
+## OpenCode 交接
+
+完整交接清單、一次性安裝、權限設計、新聞彙整方式與失敗防護請見 [`OPENCODE_HANDOFF.md`](OPENCODE_HANDOFF.md)。先執行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
+```
+
+出現 `HANDOFF_READY=true` 後，日常可交給 OpenCode 單鍵執行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
+```

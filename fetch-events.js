@@ -21,7 +21,9 @@ const CONFIG = {
   get aiEnabled() { return Boolean(this.aiProvider && this.aiKey); },
   newsEnabled: process.env.EVENTS_NEWS !== '0',
   maxNewsPerStock: 5,
-  maxStocksForNews: 500
+  maxStocksForNews: 500,
+  minStockCodes: 300,
+  minNewsFeedCoverage: 0.8
 };
 
 function log(...args) {
@@ -185,8 +187,9 @@ async function fetchOfficialMaterialInfo() {
     }
     log(`official material information loaded: ${results.length}`);
   } catch (err) {
-    log('WARN: official material information fetch failed:', err.message);
+    throw new Error(`Official material information fetch failed: ${err.message}`);
   }
+  if (results.length === 0) throw new Error('Official material information returned no valid records.');
   return results;
 }
 
@@ -294,19 +297,21 @@ async function fetchXiaoyuEvents() {
     }
 
   } catch (err) {
-    log('WARN: xiaoyu events fetch failed:', err.message);
+    throw new Error(`Xiaoyu events fetch failed: ${err.message}`);
   }
+  if (results.length === 0) throw new Error('Xiaoyu events returned no valid records.');
   return results;
 }
 
 async function fetchYahooNews(stockCodes) {
   if (!CONFIG.newsEnabled) {
     log('news disabled via EVENTS_NEWS=0');
-    return [];
+    return { items: [], requestedStocks: 0, fetchedStocks: 0, failedStocks: 0, coverageRate: 0 };
   }
   const results = [];
   const codes = stockCodes.slice(0, CONFIG.maxStocksForNews);
   let fetched = 0;
+  let failed = 0;
   for (const code of codes) {
     try {
       const rss = await fetchText(`${YAHOO_RSS_TPL}${code}.TW`);
@@ -336,11 +341,18 @@ async function fetchYahooNews(stockCodes) {
       results.push(...items);
       fetched += 1;
     } catch (err) {
-      // skip individual stock failures silently
+      failed += 1;
     }
   }
-  log(`yahoo news fetched: ${results.length} items from ${fetched} stocks`);
-  return results;
+  const coverageRate = codes.length > 0 ? fetched / codes.length : 0;
+  log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; coverage=${(coverageRate * 100).toFixed(1)}%`);
+  return {
+    items: results,
+    requestedStocks: codes.length,
+    fetchedStocks: fetched,
+    failedStocks: failed,
+    coverageRate
+  };
 }
 
 async function runAI(events, dedup) {
@@ -453,27 +465,41 @@ async function main() {
   log(`dedup DB loaded: ${dedup.stats().total} entries`);
 
   const todayStr = new Date().toISOString().slice(0, 10);
-  const stockCodes = [];
+  const stockCodeSet = new Set();
   try {
     const etfDataText = await fetchText('https://xiaoyu-etf.pages.dev/data.js');
     const codeRegex = /"(\d{4})":\s*\{/g;
     let m;
     while ((m = codeRegex.exec(etfDataText)) !== null) {
-      stockCodes.push(m[1]);
+      stockCodeSet.add(m[1]);
     }
-    log(`stock codes loaded from ETF data: ${stockCodes.length}`);
   } catch (err) {
-    log('WARN: could not load stock codes from ETF data:', err.message);
+    throw new Error(`Could not load stock codes from ETF data: ${err.message}`);
+  }
+  const stockCodes = [...stockCodeSet];
+  log(`stock codes loaded from ETF data: ${stockCodes.length}`);
+  if (stockCodes.length < CONFIG.minStockCodes) {
+    throw new Error(`ETF stock-code coverage is unexpectedly low: ${stockCodes.length} < ${CONFIG.minStockCodes}`);
   }
 
   const xiaoyuItems = await fetchXiaoyuEvents();
   const officialItems = await fetchOfficialMaterialInfo();
-  const newsItems = stockCodes.length > 0 ? await fetchYahooNews(stockCodes) : [];
+  const newsResult = await fetchYahooNews(stockCodes);
+  const newsItems = newsResult.items;
+  if (!CONFIG.newsEnabled) throw new Error('Yahoo news must be enabled for a publishable refresh.');
+  if (newsResult.requestedStocks < CONFIG.minStockCodes) {
+    throw new Error(`Yahoo news requested-stock coverage is unexpectedly low: ${newsResult.requestedStocks}`);
+  }
+  if (newsResult.coverageRate < CONFIG.minNewsFeedCoverage) {
+    throw new Error(`Yahoo news feed coverage is too low: ${(newsResult.coverageRate * 100).toFixed(1)}%`);
+  }
+  if (newsItems.length === 0) throw new Error('Yahoo news returned no valid items.');
 
   const allEvents = [...xiaoyuItems, ...officialItems, ...newsItems];
   log(`raw items: xiaoyu=${xiaoyuItems.length}, official=${officialItems.length}, news=${newsItems.length}, total=${allEvents.length}`);
 
-  const aiResults = await runAI(allEvents, dedup);
+  const aiCandidates = allEvents.map(item => normalizeEvent(item, dedup)).filter(Boolean);
+  const aiResults = await runAI(aiCandidates, dedup);
 
   const merged = mergeEvents(xiaoyuItems, officialItems, newsItems, aiResults, dedup);
   log(`merged unique events: ${merged.length}`);
@@ -492,6 +518,18 @@ async function main() {
       yahooNewsItemsPerStock: CONFIG.maxNewsPerStock,
       officialMaterialInfo: true,
       officialInvestorConference: 'material_info_keyword_only'
+    },
+    sourceStatus: {
+      etfStockCodes: stockCodes.length,
+      xiaoyuItems: xiaoyuItems.length,
+      officialMaterialItems: officialItems.length,
+      yahooNews: {
+        requestedStocks: newsResult.requestedStocks,
+        fetchedStocks: newsResult.fetchedStocks,
+        failedStocks: newsResult.failedStocks,
+        itemCount: newsItems.length,
+        coverageRate: Number((newsResult.coverageRate * 100).toFixed(1))
+      }
     },
     stats: {
       totalEvents: merged.length,
@@ -517,7 +555,8 @@ async function main() {
     eventsCount: merged.length,
     newToday: merged.filter(e => e.isNew).length,
     aiEnabled: CONFIG.aiEnabled,
-    stats: output.stats
+    stats: output.stats,
+    sourceStatus: output.sourceStatus
   }));
 }
 
