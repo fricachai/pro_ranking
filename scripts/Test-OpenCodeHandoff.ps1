@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$SkipOpenCode,
+    [switch]$RequireCli,
     [switch]$SkipLive,
     [switch]$AllowDirty
 )
@@ -63,7 +64,18 @@ foreach ($relativePath in $requiredFiles) {
 $node = Assert-Command -Name 'node'
 $git = Assert-Command -Name 'git'
 $gh = Assert-Command -Name 'gh'
-if (-not $SkipOpenCode) { $openCode = Assert-Command -Name 'opencode' }
+$openCodeCli = Get-Command opencode -ErrorAction SilentlyContinue
+$desktopCandidates = @(
+    (Join-Path $env:LOCALAPPDATA 'Programs\@opencode-aidesktop\OpenCode.exe'),
+    (Join-Path $env:LOCALAPPDATA 'Programs\OpenCode\OpenCode.exe')
+)
+$openCodeDesktop = $desktopCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if ($RequireCli -and -not $openCodeCli) {
+    throw 'OpenCode Desktop is not the same as the opencode CLI. The CLI is required for non-interactive PowerShell automation.'
+}
+if (-not $SkipOpenCode -and -not $openCodeCli -and -not $openCodeDesktop) {
+    throw 'OpenCode was not found as either a CLI command or a Desktop installation.'
+}
 
 $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
@@ -90,9 +102,16 @@ try {
 
     Invoke-Checked -Name $gh.Source -Arguments @('auth', 'status') | Out-Null
 
-    if (-not $SkipOpenCode) {
-        $openCodeVersion = (Invoke-Checked -Name $openCode.Source -Arguments @('--version') | Select-Object -First 1).Trim()
-        Invoke-Checked -Name $openCode.Source -Arguments @('auth', 'list') | Out-Null
+    $openCodeMode = 'skipped'
+    $openCodeVersion = $null
+    if (-not $SkipOpenCode -and $openCodeCli) {
+        $openCodeMode = if ($openCodeDesktop) { 'cli+desktop' } else { 'cli' }
+        $openCodeVersion = (Invoke-Checked -Name $openCodeCli.Source -Arguments @('--version') | Select-Object -First 1).Trim()
+        Invoke-Checked -Name $openCodeCli.Source -Arguments @('auth', 'list') | Out-Null
+    }
+    elseif (-not $SkipOpenCode -and $openCodeDesktop) {
+        $openCodeMode = 'desktop'
+        $openCodeVersion = (Get-Item -LiteralPath $openCodeDesktop).VersionInfo.ProductVersion
     }
 
     $config = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
@@ -136,7 +155,11 @@ try {
 
     Write-Output 'HANDOFF_READY=true'
     Write-Output "NODE_VERSION=$nodeVersion"
-    if (-not $SkipOpenCode) { Write-Output "OPENCODE_VERSION=$openCodeVersion" }
+    if (-not $SkipOpenCode) {
+        Write-Output "OPENCODE_MODE=$openCodeMode"
+        Write-Output "OPENCODE_VERSION=$openCodeVersion"
+        if ($openCodeDesktop) { Write-Output "OPENCODE_DESKTOP=$openCodeDesktop" }
+    }
     Write-Output "BRANCH=$branch"
     Write-Output "COMMIT=$head"
     Write-Output "ETF_DATE=$($report.meta.etfDate)"

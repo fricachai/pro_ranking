@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 - `fetch-events.js`：事件輔助層抓取、欄位語意驗證與去重；不直接改變六構面分數。
 - `scripts/Update-ProfessionalScreen.ps1`：每日更新、驗證與發布入口。
 - `scripts/Test-OpenCodeHandoff.ps1`：OpenCode、GitHub、資料契約與線上版本的交接預檢。
-- `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode 非互動模式執行每日發布。
+- `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode CLI 非互動模式執行每日發布；Desktop 直接使用 `/update-report`。
 - `OPENCODE_HANDOFF.md`：完整交接清單、一次性設定與故障邊界。
 - `opencode.json`、`.opencode/commands/update-report.md`：限制 OpenCode 權限並提供 `/update-report`。
 - `index.html`：GitHub Pages 首頁，由更新腳本從最新報告複製產生。

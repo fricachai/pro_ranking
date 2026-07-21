@@ -43,7 +43,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
 ```
 
-出現 `HANDOFF_READY=true` 後，日常可交給 OpenCode 單鍵執行：
+出現 `HANDOFF_READY=true` 後，OpenCode Desktop 可在專案內輸入 `/update-report`。只有需要從 PowerShell 非互動啟動 OpenCode 時，才使用下列 CLI 單鍵入口：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1

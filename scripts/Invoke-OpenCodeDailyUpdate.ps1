@@ -10,11 +10,15 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $Preflight = Join-Path $PSScriptRoot 'Test-OpenCodeHandoff.ps1'
 $OpenCode = Get-Command opencode -ErrorAction SilentlyContinue
 if (-not $OpenCode) {
-    throw 'OpenCode is not installed. Run: npm install -g opencode-ai; then run: opencode auth login'
+    $desktopPath = Join-Path $env:LOCALAPPDATA 'Programs\@opencode-aidesktop\OpenCode.exe'
+    if (Test-Path -LiteralPath $desktopPath) {
+        throw 'OpenCode Desktop is installed. Use /update-report inside the pro_ranking project. This non-interactive PowerShell wrapper additionally requires the opencode CLI in PATH.'
+    }
+    throw 'OpenCode was not found. Install OpenCode Desktop, or install the CLI with npm install -g opencode-ai for non-interactive automation.'
 }
 
 if (-not $SkipPreflight) {
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $Preflight
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $Preflight -RequireCli
     if ($LASTEXITCODE -ne 0) { throw 'OpenCode handoff preflight failed.' }
 }
 

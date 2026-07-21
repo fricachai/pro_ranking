@@ -2,20 +2,26 @@
 
 ## 結論
 
-可以交給 OpenCode 執行，但 OpenCode 是流程操作者，不是資料來源。實際資料抓取、新聞彙整、評分、產檔、Git 提交、推送與 GitHub Pages 驗證，全部由本專案既有腳本完成。只要新電腦具備必要工具與個人登入權限，OpenCode 可用單一指令完成完整更新。
+可以交給 OpenCode Desktop 或 OpenCode CLI 執行，但 OpenCode 是流程操作者，不是資料來源。實際資料抓取、新聞彙整、評分、產檔、Git 提交、推送與 GitHub Pages 驗證，全部由本專案既有腳本完成。只要新電腦具備必要工具與個人登入權限，OpenCode 可用單一指令完成完整更新。
 
 ## 最簡單的日常操作
 
-在本專案根目錄執行：
+### 已安裝 OpenCode Desktop
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
-```
-
-也可在 OpenCode 互動介面輸入：
+在 OpenCode Desktop 開啟「上市股票專業選股網頁」專案，輸入：
 
 ```text
 /update-report
+```
+
+或直接輸入「依 AGENTS.md 執行每日更新」。這就是目前電腦已可使用的方式，不需要為此另外安裝 CLI。
+
+### 需要從 PowerShell 非互動啟動 OpenCode
+
+只有這種模式才需要另外安裝 `opencode` CLI，然後在本專案根目錄執行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
 兩種方式最後都只會執行這個受控入口：
@@ -34,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 | OpenCode 權限 | `opencode.json` | 禁止代理直接改檔，只允許受控更新命令 |
 | OpenCode 指令 | `.opencode/commands/update-report.md` | 提供 `/update-report` 快捷指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
-| 單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再呼叫 OpenCode |
+| CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
 | 交接預檢 | `scripts/Test-OpenCodeHandoff.ps1` | 檢查工具、登入、遠端、分支、檔案、資料契約與線上頁面 |
 | 每日管線 | `scripts/Update-ProfessionalScreen.ps1` | 抓取、重算、驗證、提交、推送與 Pages 驗證 |
 | 事件新聞 | `fetch-events.js` | 籌碼小宇事件、官方重大訊息、Yahoo 新聞、去重與選配 AI 摘要 |
@@ -47,34 +53,41 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 ## 新電腦一次性準備
 
-1. 安裝 Node.js 18 以上、Git、GitHub CLI 與 OpenCode。
-2. Windows 可用官方支援的 NPM 安裝 OpenCode：
+1. 安裝 Node.js 18 以上、Git、GitHub CLI，以及 OpenCode Desktop 或 OpenCode CLI 其中一種。
+2. 如果使用 OpenCode Desktop，直接在桌面版加入本專案即可，不需要 `opencode` 命令出現在 PATH。
+3. 只有需要排程或從 PowerShell 非互動啟動時，才用官方支援的 NPM 安裝 CLI：
 
    ```powershell
    npm install -g opencode-ai
    ```
 
-3. 登入 OpenCode 的模型供應商：
+4. CLI 模式需登入 OpenCode 的模型供應商；Desktop 模式沿用桌面版已設定的帳號與模型：
 
    ```powershell
    opencode auth login
    opencode auth list
    ```
 
-4. 登入 GitHub，帳號必須能推送 `fricachai/pro_ranking`：
+5. 登入 GitHub，帳號必須能推送 `fricachai/pro_ranking`：
 
    ```powershell
    gh auth login
    gh auth status
    ```
 
-5. 第一次執行完整預檢：
+6. 第一次執行完整預檢。預檢會接受 Desktop 或 CLI 任一安裝方式：
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
    ```
 
 只有最後出現 `HANDOFF_READY=true` 才算可以交接執行。
+
+若要特別確認非互動 CLI 也可用，增加 `-RequireCli`：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -RequireCli
+```
 
 ## 每次更新會重新抓取什麼
 
