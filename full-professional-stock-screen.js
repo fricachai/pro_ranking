@@ -310,7 +310,11 @@ function cleanForeignChangeReason(value) {
 
 async function fetchTwseForeignHoldingHistory(asOfIso) {
   const calendarDates = calendarDatesEnding(asOfIso, 45);
-  const payloads = await mapLimit(calendarDates, 4, async iso => {
+  // MI_QFIIS can temporarily return too few days when many historical dates
+  // are requested concurrently. Fetch this small 45-day window sequentially
+  // so the existing 11-trading-day quality gate remains reliable.
+  const payloads = await mapLimit(calendarDates, 1, async iso => {
+    await sleep(120);
     const url = `${SOURCES.twseForeignHolding}?date=${isoToYyyymmdd(iso)}&selectType=ALLBUT0999&response=json`;
     const payload = await fetchJson(url);
     if (payload.stat !== 'OK' || !payload.data?.length) return null;
