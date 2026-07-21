@@ -20,7 +20,7 @@ const CONFIG = {
   get aiEnabled() { return Boolean(this.aiProvider && this.aiKey); },
   newsEnabled: process.env.EVENTS_NEWS !== '0',
   maxNewsPerStock: 5,
-  maxStocksForNews: 100
+  maxStocksForNews: 500
 };
 
 function log(...args) {
