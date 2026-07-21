@@ -30,6 +30,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 12. 技術面15分內，標準KD（9,3,3）只占1.5分，必須使用每日最高、最低與收盤價計算。KD不得用收盤價近似；低檔黃金交叉不可單獨列為買進，高檔死亡交叉不可單獨列為減碼或出脫。
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
 14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的帳密清單。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、任何已設定帳號、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
+15. 治理資料排除規則：董監持股設質、內部人轉讓、裁處、資訊申報違規及其他治理查核資料，即使仍存在於原始事件來源，也不得進入評分、排名、風險原因、前三名資格、建立新部位、持有動作或前台顯示；不得產生 G 級、「待查核候選」、「治理查核」或「治理警示」。<!-- GOVERNANCE_EXCLUSION_RULE_V1 -->
 
 ## 官方外資持股歷史完整性
 
@@ -71,7 +72,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 ## 事件資料契約與限制
 
-1. 已完成的事件來源是：籌碼小宇 `events.json` 的庫藏股、處置、內部人異動；證交所／公開資訊觀測站上市公司重大訊息；以及最多 500 檔股票、每檔最多 5 則的 Yahoo Finance RSS 新聞。
+1. 已完成的原始事件來源是：籌碼小宇 `events.json` 的庫藏股、處置與內部人異動；證交所／公開資訊觀測站上市公司重大訊息；以及最多 500 檔股票、每檔最多 5 則的 Yahoo Finance RSS 新聞。內部人異動僅可保留於原始事件檔以維持來源契約，不得進入個股評估、風險原因、動作判斷或前台顯示。
 2. `material_info` 已接入官方重大訊息；`investor_conf` 只代表重大訊息文字明確出現「法人說明會／法說會」，不得宣稱已取得完整法說會資料庫。
 3. 籌碼小宇庫藏股欄位 `f` 是事件起日、`t` 是預定結束日。輸出的 `publishTime` 目前承載可排序的事件日期，但必須等於 `f`，並以 `dateKind=event_start` 說明其不是公告發布時間；不得再把 `t` 映射成發布時間。
 4. 抓取器必須保留 `sourceStartDate`、`sourceEndDate` 與 `dateKind`，並在覆寫 `latest-events.json` 前執行資料契約檢查。檢查失敗即退出，不得用猜測修正來源欄位。

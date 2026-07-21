@@ -61,6 +61,14 @@ foreach ($relativePath in $requiredFiles) {
     }
 }
 
+$governanceRuleMarker = 'GOVERNANCE_EXCLUSION_RULE_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($governanceRuleMarker)) {
+        throw "Governance exclusion rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
 $node = Assert-Command -Name 'node'
 $git = Assert-Command -Name 'git'
 $gh = Assert-Command -Name 'gh'
@@ -154,6 +162,24 @@ try {
     if ([double]$events.sourceStatus.yahooNews.coverageRate -lt 80) {
         throw "Current Yahoo news feed coverage is below 80%: $($events.sourceStatus.yahooNews.coverageRate)%"
     }
+    $forbiddenDecisionTerms = @(
+        (-join @([char]0x6CBB, [char]0x7406)),
+        (-join @([char]0x5F85, [char]0x67E5, [char]0x6838)),
+        (-join @([char]0x8A2D, [char]0x8CEA)),
+        (-join @([char]0x88C1, [char]0x8655)),
+        (-join @([char]0x7533, [char]0x5831, [char]0x9055, [char]0x898F)),
+        (-join @([char]0x5167, [char]0x90E8, [char]0x4EBA))
+    )
+    $forbiddenDecisionPattern = ($forbiddenDecisionTerms | ForEach-Object { [regex]::Escape($_) }) -join '|'
+    $governanceDecisionRows = @($report.ranking | Where-Object {
+        $_.PSObject.Properties.Name -contains 'governance' -or
+        [string]$_.entryAction -match $forbiddenDecisionPattern -or
+        [string]$_.holdingAction -match $forbiddenDecisionPattern -or
+        ((@($_.rejectionReasons) -join '|') -match $forbiddenDecisionPattern)
+    })
+    if ($governanceDecisionRows.Count -gt 0) {
+        throw "Current report contains governance data in ranking, risk reasons, or position decisions for $($governanceDecisionRows.Count) stocks."
+    }
 
     $head = (Invoke-Checked -Name $git.Source -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
     $origin = (Invoke-Checked -Name $git.Source -Arguments @('rev-parse', 'origin/main') | Select-Object -First 1).Trim()
@@ -171,6 +197,16 @@ try {
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
         foreach ($marker in @('top30TableWrap', 'fullTableWrap', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
+        }
+        $forbiddenLiveTerms = @(
+            (-join @([char]0x5F85, [char]0x67E5, [char]0x6838, [char]0x5019, [char]0x9078)),
+            (-join @([char]0x6CBB, [char]0x7406, [char]0x67E5, [char]0x6838)),
+            (-join @([char]0x6CBB, [char]0x7406, [char]0x8B66, [char]0x793A))
+        )
+        foreach ($forbiddenLiveTerm in $forbiddenLiveTerms) {
+            if ($response.Content.Contains($forbiddenLiveTerm)) {
+                throw 'Live page still contains a forbidden governance decision marker.'
+            }
         }
     }
 
