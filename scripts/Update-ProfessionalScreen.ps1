@@ -125,6 +125,19 @@ try {
         }
     }
 
+    # MI_QFIIS has returned transiently incomplete history under parallel
+    # date requests. Keep the proven sequential fetch and 11-day quality gate.
+    $generatorContent = Get-Content $Generator -Raw -Encoding utf8
+    foreach ($requiredForeignHistoryToken in @(
+        'mapLimit(calendarDates, 1',
+        'await sleep(120)',
+        'snapshots.length < 11'
+    )) {
+        if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
+            throw "Foreign-holding history safeguard is missing: $requiredForeignHistoryToken"
+        }
+    }
+
     if (-not (Test-Path $EventFetcher)) { throw "Event fetcher not found: $EventFetcher" }
     $refreshStartedUtc = [DateTime]::UtcNow
     Write-Host 'Fetching and validating events and news data...'
@@ -191,7 +204,7 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate')) {
+    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate')) {
         if (-not $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
@@ -201,6 +214,9 @@ try {
     }
     if ([int]$meta.institutionalOfficialDays -lt 5) {
         throw "TWSE T86 official history is too short: $($meta.institutionalOfficialDays) days"
+    }
+    if ([int]$meta.foreignHoldingHistoryDays -lt 11) {
+        throw "TWSE foreign-holding history is too short: $($meta.foreignHoldingHistoryDays) valid trading days"
     }
     if (-not $report.macroOverlay -or -not $report.sourcePosture -or -not $report.sectorOverlay) {
         throw 'latest.json is missing macro, source-posture, or sector overlay.'
@@ -308,6 +324,7 @@ try {
     Write-Output "ETF_DATE=$($meta.etfDate)"
     Write-Output "INSTITUTIONAL_DATE=$($meta.institutionalDate)"
     Write-Output "FOREIGN_HOLDING_DATE=$($meta.foreignHoldingDate)"
+    Write-Output "FOREIGN_HOLDING_HISTORY_DAYS=$($meta.foreignHoldingHistoryDays)"
     Write-Output "CREDIT_DATE=$($meta.creditDate)"
     Write-Output "TDCC_DATE=$($meta.tdccDate)"
     Write-Output "MARKET_DATE=$($meta.marketDate)"

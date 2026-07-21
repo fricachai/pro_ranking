@@ -106,6 +106,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 
 新聞會去重、保留來源連結與抓取時間，並與個股報告一起呈現。沒有 AI 金鑰時仍會完成新聞彙整；若另以環境變數提供 `AI_PROVIDER`、`AI_API_KEY`，才會對新事件加上選配的 AI 影響摘要。任何 AI 摘要仍不得直接改變評分。金鑰只能放在使用者環境變數，不可寫進本專案。
 
+### 官方外資持股的固定抓取與判讀規則
+
+- `MI_QFIIS` 最近 45 個日曆日採逐日循序查詢並保留短暫延遲。2026-07-21 曾因多日期並行查詢暫時只取得 10 個有效交易日；改為循序查詢後，同一官方來源取得 24 日，證明這不是官方只能提供 10 日。
+- 10 日變化需要目前快照與第 10 個交易日前快照，因此最低門檻是 11 個有效交易日。不得為完成更新而放寬、補值或縮短後仍稱為 10 日。
+- 只有無結構性異動且具完整 5／10 日資料的 `trendReliable=true` 個股，外資持股趨勢才可參與評分與風險判斷。
+- 每次成功報告都必須包含 `meta.foreignHoldingHistoryDays >= 11`，網頁也會顯示有效交易日數。若不足，管線應停止並檢查最大可查日期、週末／休市與暫時性限流後重試，不調整選股權重。
+
 ## 防止錯誤發布的關卡
 
 每日管線會在下列任一情況停止，不會拿舊資料更新網站：
@@ -115,7 +122,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 3. 事件、官方重大訊息或 Yahoo 新聞抓取失敗。
 4. ETF 股票代號少於 300，或 Yahoo 新聞成功讀取率低於 80%。
 5. 報告沒有使用本次剛抓取的事件新聞檔。
-6. 官方法人、外資持股、信用交易、集保、標準 KD、股票數或決策欄位不符合資料契約。
+6. 官方法人、外資持股（含至少 11 個有效交易日）、信用交易、集保、標準 KD、股票數或決策欄位不符合資料契約。
 7. 生成檔出現預期外變更、提交失敗、推送失敗或 GitHub Pages 未部署同一提交。
 8. 線上頁面 HTTP、資料日期或必要畫面標記驗證失敗。
 
@@ -124,7 +131,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 OpenCode 必須回報：
 
 - `STATUS=published`
-- ETF、法人、外資持股、信用交易、集保及市場資料日期
+- ETF、法人、外資持股、信用交易、集保及市場資料日期，以及外資持股有效交易日數
 - 股票數與前三名研究候選
 - Git 提交版本
 - `https://fricachai.github.io/pro_ranking/`

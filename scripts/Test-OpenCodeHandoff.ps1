@@ -85,6 +85,17 @@ foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.j
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 
+$generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
+foreach ($requiredForeignHistoryToken in @(
+    'mapLimit(calendarDates, 1',
+    'await sleep(120)',
+    'snapshots.length < 11'
+)) {
+    if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
+        throw "Foreign-holding history safeguard is missing: $requiredForeignHistoryToken"
+    }
+}
+
 Push-Location $RepoRoot
 try {
     $branch = (Invoke-Checked -Name $git.Source -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
@@ -131,6 +142,9 @@ try {
     if (-not $report.meta.etfDate -or -not $report.meta.marketDate -or -not $report.eventsMeta) {
         throw 'latest.json is missing report dates or events metadata.'
     }
+    if ([int]$report.meta.foreignHoldingHistoryDays -lt 11) {
+        throw "Current report has fewer than 11 valid TWSE foreign-holding trading days: $($report.meta.foreignHoldingHistoryDays)"
+    }
     if (-not $events.fetchedAt -or -not $events.sourceScope -or -not $events.sourceStatus) {
         throw 'latest-events.json is missing source freshness or source-status metadata.'
     }
@@ -171,6 +185,7 @@ try {
     Write-Output "COMMIT=$head"
     Write-Output "ETF_DATE=$($report.meta.etfDate)"
     Write-Output "MARKET_DATE=$($report.meta.marketDate)"
+    Write-Output "FOREIGN_HOLDING_HISTORY_DAYS=$($report.meta.foreignHoldingHistoryDays)"
     Write-Output "EVENTS_FETCHED_AT=$($events.fetchedAt)"
     Write-Output "NEWS_FEED_COVERAGE=$($events.sourceStatus.yahooNews.coverageRate)%"
     if (-not $SkipLive) { Write-Output "LIVE_URL=$LiveUrl" }
