@@ -24,7 +24,7 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-兩種方式最後都只會執行這個受控入口：
+OpenCode Desktop 的 `/update-report` 會先執行交接預檢，再執行這個受控更新入口：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
@@ -37,7 +37,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 | 類別 | 檔案 | 用途 |
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
-| OpenCode 權限 | `opencode.json` | 禁止代理直接改檔，只允許受控更新命令 |
+| OpenCode 權限 | `opencode.json` | 禁止代理直接改檔，只允許交接預檢與受控更新命令 |
 | OpenCode 指令 | `.opencode/commands/update-report.md` | 提供 `/update-report` 快捷指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |

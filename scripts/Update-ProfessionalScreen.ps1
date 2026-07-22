@@ -187,12 +187,15 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", '實際操作價位', 'operationPriceHtml', 'tracking-toggle')) {
+    $operationPriceToken = -join @([char]0x5BE6, [char]0x969B, [char]0x64CD, [char]0x4F5C, [char]0x50F9, [char]0x4F4D)
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", $operationPriceToken, 'operationPriceHtml', 'tracking-toggle')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
     }
-    foreach ($removedPositionToken in @('actionTransitionHtml', '防守價提醒', '已持有動作／轉換')) {
+    $defenseReminderToken = -join @([char]0x9632, [char]0x5B88, [char]0x50F9, [char]0x63D0, [char]0x9192)
+    $actionTransitionToken = -join @([char]0x5DF2, [char]0x6301, [char]0x6709, [char]0x52D5, [char]0x4F5C, [char]0xFF0F, [char]0x8F49, [char]0x63DB)
+    foreach ($removedPositionToken in @('actionTransitionHtml', $defenseReminderToken, $actionTransitionToken)) {
         if ($latestHtmlContent.Contains($removedPositionToken)) {
             throw "Removed position token is still present: $removedPositionToken"
         }
@@ -252,10 +255,13 @@ try {
     if ($missingDecisionRows.Count -gt 0) {
         throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."
     }
+    $pendingReviewToken = -join @([char]0x5F85, [char]0x67E5, [char]0x6838)
+    $governanceToken = -join @([char]0x6CBB, [char]0x7406)
+    $governanceDecisionPattern = [regex]::Escape($pendingReviewToken) + '|' + [regex]::Escape($governanceToken)
     $governanceOverrideRows = @($rankingRows | Where-Object {
         $_.PSObject.Properties.Name -contains 'governance' -or
-        [string]$_.entryAction -match '待查核|治理' -or
-        [string]$_.holdingAction -match '待查核|治理'
+        [string]$_.entryAction -match $governanceDecisionPattern -or
+        [string]$_.holdingAction -match $governanceDecisionPattern
     })
     if ($governanceOverrideRows.Count -gt 0) {
         throw "Governance data must not appear in ranking decisions or position actions."

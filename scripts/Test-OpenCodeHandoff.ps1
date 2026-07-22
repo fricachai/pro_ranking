@@ -61,6 +61,24 @@ foreach ($relativePath in $requiredFiles) {
     }
 }
 
+foreach ($relativePath in @(
+    'scripts/Invoke-OpenCodeDailyUpdate.ps1',
+    'scripts/Test-OpenCodeHandoff.ps1',
+    'scripts/Update-ProfessionalScreen.ps1'
+)) {
+    $scriptPath = Join-Path $RepoRoot $relativePath
+    $nonAsciiByte = [IO.File]::ReadAllBytes($scriptPath) | Where-Object { $_ -gt 127 } | Select-Object -First 1
+    if ($null -ne $nonAsciiByte) {
+        throw "Windows PowerShell 5.1 compatibility requires an ASCII-only script: $relativePath"
+    }
+    $parseTokens = $null
+    $parseErrors = $null
+    [System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$parseTokens, [ref]$parseErrors) | Out-Null
+    if ($parseErrors.Count -gt 0) {
+        throw "PowerShell syntax validation failed for ${relativePath}: $($parseErrors[0])"
+    }
+}
+
 $governanceRuleMarker = 'GOVERNANCE_EXCLUSION_RULE_V1'
 foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
@@ -141,8 +159,11 @@ try {
     $allowedUpdatePatterns = @($bashRules.PSObject.Properties | Where-Object {
         [string]$_.Value -eq 'allow' -and $_.Name -like '*Update-ProfessionalScreen.ps1*'
     })
-    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1) {
-        throw 'opencode.json must deny other shell commands and allow the controlled update script.'
+    $allowedPreflightPatterns = @($bashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'allow' -and $_.Name -like '*Test-OpenCodeHandoff.ps1*'
+    })
+    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1) {
+        throw 'opencode.json must deny other shell commands and allow the controlled preflight and update scripts.'
     }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json
