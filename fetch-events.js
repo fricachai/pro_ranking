@@ -23,7 +23,8 @@ const CONFIG = {
   maxNewsPerStock: 5,
   maxStocksForNews: 500,
   minStockCodes: 300,
-  minNewsFeedCoverage: 0.8
+  minNewsFeedCoverage: 0.8,
+  requestTimeoutMs: Number(process.env.EVENTS_REQUEST_TIMEOUT_MS || 30000)
 };
 
 function log(...args) {
@@ -44,12 +45,14 @@ async function fetchText(url, attempts = 3) {
   for (let i = 0; i < attempts; i += 1) {
     try {
       const response = await fetch(url, {
-        headers: { 'user-agent': 'Mozilla/5.0 (compatible; CodexResearch)' }
+        headers: { 'user-agent': 'Mozilla/5.0 (compatible; CodexResearch)' },
+        signal: AbortSignal.timeout(CONFIG.requestTimeoutMs)
       });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
       return await response.text();
     } catch (error) {
       lastError = error;
+      log(`request failed (${i + 1}/${attempts}) for ${url}: ${error?.name || 'Error'} ${error?.message || error}`);
       await sleep(500 * (i + 1));
     }
   }
@@ -561,6 +564,12 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error(err.stack || err);
+  const detail = err.stack || String(err);
+  try {
+    ensureDir(LOG_DIR);
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    fs.writeFileSync(path.join(LOG_DIR, `event-fetch-failed-${stamp}.log`), `${detail}\n`, 'utf8');
+  } catch (_) {}
+  console.error(detail);
   process.exitCode = 1;
 });

@@ -4,11 +4,11 @@
     "edit": "deny",
     "webfetch": "deny",
     "bash": {
-      "*": "deny",
       "powershell* -File *Test-OpenCodeHandoff.ps1": "allow",
       "pwsh* -File *Test-OpenCodeHandoff.ps1": "allow",
       "powershell* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
-      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow"
+      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
+      "*": "deny"
     }
   }
 }
