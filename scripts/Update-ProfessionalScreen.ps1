@@ -16,6 +16,10 @@ $LatestHtml = Join-Path $ReportDir 'latest.html'
 $IndexHtml = Join-Path $RepoRoot 'index.html'
 $LogDir = Join-Path $ReportDir 'logs'
 $LiveUrl = 'https://fricachai.github.io/pro_ranking/'
+$LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
+$latestEventsExistedBeforeRun = $false
+$latestEventsBytesBeforeRun = $null
+$reportGenerationCompleted = $false
 
 function Assert-Command {
     param([Parameter(Mandatory)][string]$Name)
@@ -94,6 +98,10 @@ try {
     if ($initialChanges.Count -gt 0) {
         throw 'The working tree is not clean. Update stopped to protect existing changes.'
     }
+    $latestEventsExistedBeforeRun = Test-Path -LiteralPath $LatestEventsJson
+    if ($latestEventsExistedBeforeRun) {
+        $latestEventsBytesBeforeRun = [IO.File]::ReadAllBytes($LatestEventsJson)
+    }
 
     if ($Publish) {
         $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
@@ -147,7 +155,6 @@ try {
         throw "Event and news refresh failed. Publishing stale events is not allowed. Log: $logPath`n$($tail -join "`n")"
     }
 
-    $LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
     if (-not (Test-Path $LatestEventsJson)) { throw "Events output is missing: $LatestEventsJson" }
     $eventData = Get-Content $LatestEventsJson -Raw -Encoding utf8 | ConvertFrom-Json
     if (-not $eventData.fetchedAt -or -not $eventData.sourceScope -or -not $eventData.sourceStatus) {
@@ -182,6 +189,7 @@ try {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
         throw "Report generation failed. Log: $logPath`n$($tail -join "`n")"
     }
+    $reportGenerationCompleted = $true
 
     foreach ($path in @($LatestJson, $LatestHtml)) {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
@@ -352,6 +360,17 @@ try {
     if ($commit) { Write-Output "COMMIT=$commit" }
     if ($Publish) { Write-Output "LIVE_URL=$LiveUrl" }
     Write-Output "LOG=$logPath"
+}
+catch {
+    if (-not $reportGenerationCompleted) {
+        if ($latestEventsExistedBeforeRun -and $null -ne $latestEventsBytesBeforeRun) {
+            [IO.File]::WriteAllBytes($LatestEventsJson, $latestEventsBytesBeforeRun)
+        }
+        elseif (Test-Path -LiteralPath $LatestEventsJson) {
+            Remove-Item -LiteralPath $LatestEventsJson -Force
+        }
+    }
+    throw
 }
 finally {
     Pop-Location
