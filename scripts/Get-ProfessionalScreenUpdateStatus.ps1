@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidateRange(0, 60)][int]$WaitSeconds = 0
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -12,8 +14,14 @@ if (-not (Test-Path -LiteralPath $StatePath)) {
     exit 0
 }
 
-$state = Get-Content -LiteralPath $StatePath -Raw -Encoding utf8 | ConvertFrom-Json
-$running = $state.status -eq 'running' -and $state.pid -and (Get-Process -Id ([int]$state.pid) -ErrorAction SilentlyContinue)
+$deadline = (Get-Date).AddSeconds($WaitSeconds)
+do {
+    $state = Get-Content -LiteralPath $StatePath -Raw -Encoding utf8 | ConvertFrom-Json
+    $running = $state.status -eq 'running' -and $state.pid -and (Get-Process -Id ([int]$state.pid) -ErrorAction SilentlyContinue)
+    if (-not $running -or (Get-Date) -ge $deadline) { break }
+    Start-Sleep -Seconds 5
+} while ($true)
+
 if ($running) {
     Write-Output 'STATUS=running'
     Write-Output "PID=$($state.pid)"

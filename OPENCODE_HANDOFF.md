@@ -24,7 +24,7 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 的 `/update-report` 會先執行交接預檢，再啟動受控背景更新。完整抓取與報告生成通常需要數分鐘，背景工作不會因 OpenCode Shell 等待上限而被終止。啟動後輸入 `/update-report-status` 查閱實際完成、失敗與紀錄檔狀態：
+OpenCode Desktop 日常只需執行 `/update-report`。它會先執行交接預檢、啟動受控背景更新，並自動輪詢到 published 或 failed；完整抓取與報告生成通常需要數分鐘，背景工作不會因 OpenCode Shell 等待上限而被終止。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
