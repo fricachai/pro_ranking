@@ -23,10 +23,11 @@ if (-not $SkipPreflight) {
 }
 
 $prompt = @'
-Read AGENTS.md and OPENCODE_HANDOFF.md. Perform the controlled daily data refresh. Run exactly:
-powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
+Read AGENTS.md and OPENCODE_HANDOFF.md. Start the controlled daily data refresh. Run exactly:
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
 
-Do not edit any file directly. Do not change scoring logic, data sources, validation thresholds, or layout. The script must refetch events and news, rebuild the report, publish it, and verify GitHub Pages. On success, report only the compact script summary. On failure, stop and report the failed gate and log path.
+Do not edit any file directly. Do not change scoring logic, data sources, validation thresholds, or layout. The update runs in a controlled background process because the full report can exceed a Shell wait window. Report only STATUS=started and RUN_LOG. The result must be checked later with Get-ProfessionalScreenUpdateStatus.ps1; do not claim the report is published before that status says published.
 '@
 
 Push-Location $RepoRoot

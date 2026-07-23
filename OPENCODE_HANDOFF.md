@@ -24,10 +24,11 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 的 `/update-report` 會先執行交接預檢，再執行這個受控更新入口：
+OpenCode Desktop 的 `/update-report` 會先執行交接預檢，再啟動受控背景更新。完整抓取與報告生成通常需要數分鐘，背景工作不會因 OpenCode Shell 等待上限而被終止。啟動後輸入 `/update-report-status` 查閱實際完成、失敗與紀錄檔狀態：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1
 ```
 
 ## 必須一起交接的檔案
@@ -38,10 +39,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
 | OpenCode 權限 | `opencode.json` | 禁止代理直接改檔，只允許交接預檢與受控更新命令 |
-| OpenCode 指令 | `.opencode/commands/update-report.md` | 提供 `/update-report` 快捷指令 |
+| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md` | 提供啟動與查詢快捷指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
 | 交接預檢 | `scripts/Test-OpenCodeHandoff.ps1` | 檢查工具、登入、遠端、分支、檔案、資料契約與線上頁面 |
+| 背景更新啟動 | `scripts/Start-ProfessionalScreenUpdate.ps1` | 以獨立 PowerShell 程序啟動完整更新，避免 Shell 等待上限中止工作 |
+| 背景更新狀態 | `scripts/Get-ProfessionalScreenUpdateStatus.ps1` | 回報 running、published 或 failed 與紀錄檔位置 |
 | 每日管線 | `scripts/Update-ProfessionalScreen.ps1` | 抓取、重算、驗證、提交、推送與 Pages 驗證 |
 | 事件新聞 | `fetch-events.js` | 籌碼小宇事件、官方重大訊息、Yahoo 新聞、去重與選配 AI 摘要 |
 | 分析核心 | `full-professional-stock-screen.js` | 全部市場資料抓取、特徵、評分、風險門檻與報告生成 |
@@ -51,7 +54,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 對 PowerShell 執行檔名稱、`-NoProfile` 與相對／絕對路徑保留必要相容性，但命令仍必須以 `Update-ProfessionalScreen.ps1 -Publish` 結尾；其他 Shell 命令維持拒絕。
+`opencode.json` 只允許交接預檢、背景更新啟動、狀態查詢及受控管線；特定 allow 規則必須置於萬用 deny 規則之前，其他 Shell 命令維持拒絕。
 
 ## 新電腦一次性準備
 

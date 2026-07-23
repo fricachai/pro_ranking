@@ -45,10 +45,14 @@ $requiredFiles = @(
     'README.md',
     'opencode.json',
     '.opencode/commands/update-report.md',
+    '.opencode/commands/update-report-status.md',
     'fetch-events.js',
     'full-professional-stock-screen.js',
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
     'scripts/Test-OpenCodeHandoff.ps1',
+    'scripts/Start-ProfessionalScreenUpdate.ps1',
+    'scripts/Run-ProfessionalScreenUpdate.ps1',
+    'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
     'scripts/Update-ProfessionalScreen.ps1',
     'professional-screen-report/latest.json',
     'professional-screen-report/events/latest-events.json',
@@ -64,6 +68,9 @@ foreach ($relativePath in $requiredFiles) {
 foreach ($relativePath in @(
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
     'scripts/Test-OpenCodeHandoff.ps1',
+    'scripts/Start-ProfessionalScreenUpdate.ps1',
+    'scripts/Run-ProfessionalScreenUpdate.ps1',
+    'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
     'scripts/Update-ProfessionalScreen.ps1'
 )) {
     $scriptPath = Join-Path $RepoRoot $relativePath
@@ -80,7 +87,7 @@ foreach ($relativePath in @(
 }
 
 $governanceRuleMarker = 'GOVERNANCE_EXCLUSION_RULE_V1'
-foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains($governanceRuleMarker)) {
         throw "Governance exclusion rule is missing from the OpenCode handoff surface: $relativePath"
@@ -162,8 +169,20 @@ try {
     $allowedPreflightPatterns = @($bashRules.PSObject.Properties | Where-Object {
         [string]$_.Value -eq 'allow' -and $_.Name -like '*Test-OpenCodeHandoff.ps1*'
     })
-    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1) {
-        throw 'opencode.json must deny other shell commands and allow the controlled preflight and update scripts.'
+    $allowedStartPatterns = @($bashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'allow' -and $_.Name -like '*Start-ProfessionalScreenUpdate.ps1*'
+    })
+    $allowedStatusPatterns = @($bashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'allow' -and $_.Name -like '*Get-ProfessionalScreenUpdateStatus.ps1*'
+    })
+    $ruleNames = @($bashRules.PSObject.Properties.Name)
+    $denyIndex = [array]::IndexOf([string[]]$ruleNames, '*')
+    $lastAllowIndex = -1
+    for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
+        if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
+    }
+    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -le $lastAllowIndex) {
+        throw 'opencode.json must place the controlled allow rules before the deny-all shell rule.'
     }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json
