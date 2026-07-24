@@ -122,6 +122,19 @@ try {
         }
     }
 
+    if ($Publish) {
+        $todaySlug = (Get-Date).ToString('yyyyMMdd')
+        $snapshotTag = "published/$todaySlug"
+        Invoke-Git @('fetch', 'origin', '--tags', '--force') | Out-Null
+        $existingTag = & git tag -l $snapshotTag 2>&1 | Where-Object { $_ -eq $snapshotTag }
+        if ($existingTag) {
+            Write-Warning "Snapshot for calendar date $todaySlug is already published (tag: $snapshotTag). Skipping update to preserve locked snapshot."
+            Write-Output "STATUS=snapshot_locked"
+            Write-Output "LOCKED_CALENDAR_DATE=$todaySlug"
+            return
+        }
+    }
+
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $logPath = Join-Path $LogDir "daily-refresh-$timestamp.log"
@@ -328,11 +341,33 @@ try {
         Invoke-Git -Arguments @('push', 'origin', $branch) | Out-Null
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
         $publishStatus = 'published'
+        # Create and push snapshot lock tag
+        $todaySlug = (Get-Date).ToString('yyyyMMdd')
+        $snapshotTag = "published/$todaySlug"
+        Invoke-Git @('tag', '-f', $snapshotTag) | Out-Null
+        try {
+            Invoke-Git @('push', 'origin', $snapshotTag) | Out-Null
+        }
+        catch {
+            Write-Warning "Failed to push snapshot lock tag '$snapshotTag': $_"
+        }
+
     }
     elseif ($Publish) {
         $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
         $publishStatus = 'published_no_changes'
+        # Create and push snapshot lock tag
+        $todaySlug = (Get-Date).ToString('yyyyMMdd')
+        $snapshotTag = "published/$todaySlug"
+        Invoke-Git @('tag', '-f', $snapshotTag) | Out-Null
+        try {
+            Invoke-Git @('push', 'origin', $snapshotTag) | Out-Null
+        }
+        catch {
+            Write-Warning "Failed to push snapshot lock tag '$snapshotTag': $_"
+        }
+
     }
 
     if ($Publish) {
