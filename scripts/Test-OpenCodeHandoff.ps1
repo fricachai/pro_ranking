@@ -143,6 +143,13 @@ foreach ($requiredForeignHistoryToken in @(
     }
 }
 
+$eventFetcherContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'fetch-events.js') -Raw -Encoding utf8
+foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, 6')) {
+    if (-not $eventFetcherContent.Contains($requiredEventFetcherToken)) {
+        throw "Event refresh safeguard is missing: $requiredEventFetcherToken"
+    }
+}
+
 Push-Location $RepoRoot
 try {
     $branch = (Invoke-Checked -Name $git.Source -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
