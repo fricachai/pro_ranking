@@ -1,5 +1,6 @@
 ---
 description: Check the controlled professional-screen update status
+agent: build
 ---
 
 Do not edit files. Run only:

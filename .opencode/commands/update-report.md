@@ -1,5 +1,6 @@
 ---
 description: 更新、驗證並發布每日上市股票專業選股報告
+agent: build
 ---
 
 先讀取專案根目錄 `AGENTS.md` 與 `OPENCODE_HANDOFF.md`。這是受控的每日更新，不得直接編輯任何檔案。完整更新需要數分鐘；不得直接以 Shell 等待 `Update-ProfessionalScreen.ps1` 完成，因為 OpenCode 的 Shell 生命週期可能中斷長工作。先執行 Windows PowerShell 5.1 相容性與完整交接預檢，再啟動受控背景工作：
