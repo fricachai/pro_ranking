@@ -188,8 +188,8 @@ try {
     for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
         if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
     }
-    if ([string]$config.shell -ne 'powershell.exe' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
-        throw 'opencode.json must define powershell.exe and place the deny-all shell rule before the controlled allow rules.'
+    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
+        throw 'opencode.json must explicitly enable bash for the Build primary agent, define powershell.exe, and place the deny-all shell rule before the controlled allow rules.'
     }
     foreach ($expectedCommand in @(
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',

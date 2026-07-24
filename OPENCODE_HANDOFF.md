@@ -24,7 +24,7 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。它不得路由至 subagent，因為子代理可能沒有 Shell 執行權限。主工作階段會先執行交接預檢、啟動受控背景更新，並自動輪詢到 published 或 failed；完整抓取與報告生成通常需要數分鐘，背景工作不會因 OpenCode Shell 等待上限而被終止。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
+OpenCode Desktop 日常只需在 **Build 主工作階段** 執行 `/update-report`。若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**，再以 Tab 切換至 Build；不可在子代理或 Plan 執行更新。設定檔會明確啟用 Build 的 Bash 工具。主工作階段會先執行交接預檢、啟動受控背景更新，並自動輪詢到 published 或 failed；完整抓取與報告生成通常需要數分鐘，背景工作不會因 OpenCode Shell 等待上限而被終止。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
@@ -54,7 +54,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 明確使用 Windows `powershell.exe`，且只允許交接預檢、背景更新啟動、狀態查詢及受控管線。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；其他 Shell 命令維持拒絕。
+`opencode.json` 明確使用 Windows `powershell.exe`，並啟用 Build 主代理的 Bash 工具；它只允許交接預檢、背景更新啟動、狀態查詢及受控管線。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；其他 Shell 命令維持拒絕。
 
 ## 新電腦一次性準備
 
