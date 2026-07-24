@@ -94,6 +94,13 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     }
 }
 
+foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
+    $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if ($commandContent -match '(?m)^agent\s*:') {
+        throw "OpenCode update commands must run in the main session, not a subagent: $relativePath"
+    }
+}
+
 $node = Assert-Command -Name 'node'
 $git = Assert-Command -Name 'git'
 $gh = Assert-Command -Name 'gh'
