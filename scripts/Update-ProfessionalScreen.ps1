@@ -138,7 +138,7 @@ try {
     $generatorContent = Get-Content $Generator -Raw -Encoding utf8
     foreach ($requiredForeignHistoryToken in @(
         'mapLimit(calendarDates, 1',
-        'await sleep(120)',
+        'await sleep(700)',
         'snapshots.length < 11'
     )) {
         if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
