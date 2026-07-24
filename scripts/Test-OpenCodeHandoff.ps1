@@ -135,7 +135,7 @@ foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.j
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
 foreach ($requiredForeignHistoryToken in @(
     'mapLimit(calendarDates, 1',
-    'await sleep(120)',
+    'await sleep(700)',
     'snapshots.length < 11'
 )) {
     if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
