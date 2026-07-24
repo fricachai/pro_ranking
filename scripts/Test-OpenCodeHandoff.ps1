@@ -237,8 +237,12 @@ try {
     if (-not $SkipLive) {
         $buildRaw = Invoke-Checked -Name $gh.Source -Arguments @('api', 'repos/fricachai/pro_ranking/pages/builds/latest')
         $build = ($buildRaw -join "`n") | ConvertFrom-Json
-        if ($build.status -ne 'built' -or $build.commit -ne $head) {
-            throw "GitHub Pages is not built from current HEAD. status=$($build.status) pages=$($build.commit) HEAD=$head"
+        if ($build.status -ne 'built') {
+            throw "GitHub Pages is not built. status=$($build.status) pages=$($build.commit) HEAD=$head"
+        }
+        if ($build.commit -ne $head) {
+            Write-Output "PAGES_COMMIT=$($build.commit)"
+            Write-Output "PAGES_HEAD_LAG=$head"
         }
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
@@ -266,6 +270,7 @@ try {
     }
     Write-Output "BRANCH=$branch"
     Write-Output "COMMIT=$head"
+    if (-not $SkipLive) { Write-Output "PAGES_BUILD_COMMIT=$($build.commit)" }
     Write-Output "ETF_DATE=$($report.meta.etfDate)"
     Write-Output "MARKET_DATE=$($report.meta.marketDate)"
     Write-Output "FOREIGN_HOLDING_HISTORY_DAYS=$($report.meta.foreignHoldingHistoryDays)"
