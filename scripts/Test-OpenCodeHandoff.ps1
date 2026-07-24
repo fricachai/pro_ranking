@@ -50,6 +50,7 @@ $requiredFiles = @(
     'full-professional-stock-screen.js',
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
     'scripts/Test-OpenCodeHandoff.ps1',
+    'scripts/Invoke-ProfessionalScreenUpdateCommand.ps1',
     'scripts/Start-ProfessionalScreenUpdate.ps1',
     'scripts/Run-ProfessionalScreenUpdate.ps1',
     'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
@@ -68,6 +69,7 @@ foreach ($relativePath in $requiredFiles) {
 foreach ($relativePath in @(
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
     'scripts/Test-OpenCodeHandoff.ps1',
+    'scripts/Invoke-ProfessionalScreenUpdateCommand.ps1',
     'scripts/Start-ProfessionalScreenUpdate.ps1',
     'scripts/Run-ProfessionalScreenUpdate.ps1',
     'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
@@ -99,6 +101,11 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$') {
         throw "OpenCode update commands must explicitly select the Build primary agent: $relativePath"
     }
+}
+
+$updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
+if ($updateCommand -notmatch 'COMMAND_SHELL_INTERPOLATION_V1' -or $updateCommand -notmatch '!`powershell -NoProfile -ExecutionPolicy Bypass -File \.\\scripts\\Invoke-ProfessionalScreenUpdateCommand\.ps1`') {
+    throw 'The update command must use the controlled command-shell interpolation wrapper.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -193,6 +200,7 @@ try {
     }
     foreach ($expectedCommand in @(
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',
+        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1',
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1',
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60'
     )) {
