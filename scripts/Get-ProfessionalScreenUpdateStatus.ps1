@@ -29,12 +29,18 @@ if ($running) {
     exit 0
 }
 
-Write-Output "STATUS=$($state.status)"
+if ($state.status -eq 'running') {
+    Write-Output 'STATUS=failed'
+    Write-Output 'FAILURE_STAGE=worker_stopped_before_completion'
+}
+else {
+    Write-Output "STATUS=$($state.status)"
+}
 Write-Output "EXIT_CODE=$($state.exitCode)"
 Write-Output "RUN_LOG=$($state.runLog)"
 Write-Output "COMPLETED_AT=$($state.completedAt)"
 if (Test-Path -LiteralPath $state.runLog) {
-    $tail = Get-Content -LiteralPath $state.runLog -Tail 25 -Encoding utf8
+    $tail = @(Get-Content -LiteralPath $state.runLog -Tail 25 -Encoding utf8)
     if ($tail.Count -gt 0) {
         Write-Output 'LOG_TAIL_BEGIN'
         $tail

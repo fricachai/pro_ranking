@@ -311,11 +311,10 @@ async function fetchYahooNews(stockCodes) {
     log('news disabled via EVENTS_NEWS=0');
     return { items: [], requestedStocks: 0, fetchedStocks: 0, failedStocks: 0, coverageRate: 0 };
   }
-  const results = [];
   const codes = stockCodes.slice(0, CONFIG.maxStocksForNews);
-  let fetched = 0;
-  let failed = 0;
-  for (const code of codes) {
+  let completed = 0;
+  const outcomes = await mapLimit(codes, 6, async code => {
+    let outcome;
     try {
       const rss = await fetchText(`${YAHOO_RSS_TPL}${code}.TW`);
       const items = [];
@@ -341,12 +340,19 @@ async function fetchYahooNews(stockCodes) {
         });
         if (items.length >= CONFIG.maxNewsPerStock) break;
       }
-      results.push(...items);
-      fetched += 1;
+      outcome = { code, items, fetched: true };
     } catch (err) {
-      failed += 1;
+      outcome = { code, items: [], fetched: false };
     }
-  }
+    completed += 1;
+    if (completed % 50 === 0 || completed === codes.length) {
+      log(`yahoo news progress: ${completed}/${codes.length}`);
+    }
+    return outcome;
+  });
+  const results = outcomes.flatMap(outcome => outcome.items);
+  const fetched = outcomes.filter(outcome => outcome.fetched).length;
+  const failed = outcomes.length - fetched;
   const coverageRate = codes.length > 0 ? fetched / codes.length : 0;
   log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; coverage=${(coverageRate * 100).toFixed(1)}%`);
   return {
