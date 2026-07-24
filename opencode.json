@@ -1,18 +1,19 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "shell": "powershell.exe",
   "permission": {
     "edit": "deny",
     "webfetch": "deny",
     "bash": {
+      "*": "deny",
       "powershell* -File *Test-OpenCodeHandoff.ps1": "allow",
       "pwsh* -File *Test-OpenCodeHandoff.ps1": "allow",
       "powershell* -File *Start-ProfessionalScreenUpdate.ps1": "allow",
       "pwsh* -File *Start-ProfessionalScreenUpdate.ps1": "allow",
-      "powershell* -File *Get-ProfessionalScreenUpdateStatus.ps1": "allow",
-      "pwsh* -File *Get-ProfessionalScreenUpdateStatus.ps1": "allow",
+      "powershell* -File *Get-ProfessionalScreenUpdateStatus.ps1*": "allow",
+      "pwsh* -File *Get-ProfessionalScreenUpdateStatus.ps1*": "allow",
       "powershell* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
-      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
-      "*": "deny"
+      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow"
     }
   }
 }

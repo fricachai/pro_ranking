@@ -54,7 +54,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 只允許交接預檢、背景更新啟動、狀態查詢及受控管線；特定 allow 規則必須置於萬用 deny 規則之前，其他 Shell 命令維持拒絕。
+`opencode.json` 明確使用 Windows `powershell.exe`，且只允許交接預檢、背景更新啟動、狀態查詢及受控管線。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；其他 Shell 命令維持拒絕。
 
 ## 新電腦一次性準備
 

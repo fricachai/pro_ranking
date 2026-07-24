@@ -188,8 +188,20 @@ try {
     for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
         if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
     }
-    if ([string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -le $lastAllowIndex) {
-        throw 'opencode.json must place the controlled allow rules before the deny-all shell rule.'
+    if ([string]$config.shell -ne 'powershell.exe' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
+        throw 'opencode.json must define powershell.exe and place the deny-all shell rule before the controlled allow rules.'
+    }
+    foreach ($expectedCommand in @(
+        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',
+        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1',
+        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60'
+    )) {
+        $matched = @($bashRules.PSObject.Properties | Where-Object {
+            [string]$_.Value -eq 'allow' -and $expectedCommand -like $_.Name
+        })
+        if ($matched.Count -lt 1) {
+            throw "opencode.json does not allow the required command: $expectedCommand"
+        }
     }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json
