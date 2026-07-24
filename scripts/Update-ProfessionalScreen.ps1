@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$Publish,
-    [int]$PagesTimeoutSeconds = 240
+    [int]$PagesTimeoutSeconds = 900
 )
 
 Set-StrictMode -Version Latest

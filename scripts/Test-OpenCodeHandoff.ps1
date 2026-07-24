@@ -150,6 +150,11 @@ foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(c
     }
 }
 
+$updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-ProfessionalScreen.ps1') -Raw -Encoding utf8
+if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
+    throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
+}
+
 Push-Location $RepoRoot
 try {
     $branch = (Invoke-Checked -Name $git.Source -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
