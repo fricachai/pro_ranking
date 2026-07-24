@@ -9,6 +9,9 @@
       "mode": "primary",
       "tools": {
         "bash": true
+      },
+      "permission": {
+        "bash": "allow"
       }
     }
   },

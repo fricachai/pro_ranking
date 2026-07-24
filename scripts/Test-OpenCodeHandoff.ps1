@@ -98,14 +98,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
 
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
-    if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$') {
+    if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {
         throw "OpenCode update commands must explicitly select the Build primary agent: $relativePath"
     }
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'COMMAND_SHELL_INTERPOLATION_V1' -or $updateCommand -notmatch '!`powershell -NoProfile -ExecutionPolicy Bypass -File \.\\scripts\\Invoke-ProfessionalScreenUpdateCommand\.ps1`') {
-    throw 'The update command must use the controlled command-shell interpolation wrapper.'
+if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60') {
+    throw 'The update command must start and poll the controlled background workflow.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -202,8 +202,8 @@ try {
     for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
         if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
     }
-    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
-        throw 'opencode.json must explicitly enable bash for the Build primary agent, define powershell.exe, and place the deny-all shell rule before the controlled allow rules.'
+    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.bash -ne 'allow' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
+        throw 'opencode.json must explicitly allow bash for the Build primary agent, define powershell.exe, and retain the controlled global shell rules.'
     }
     foreach ($expectedCommand in @(
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',
