@@ -146,13 +146,15 @@ try {
         }
     }
 
-    # MI_QFIIS has returned transiently incomplete history under parallel
-    # date requests. Keep the proven sequential fetch and 11-day quality gate.
+    # MI_QFIIS must be fetched sequentially. Weekend/holiday dates are skipped,
+    # and temporarily failed dates are retried without relaxing the 11-day gate.
     $generatorContent = Get-Content $Generator -Raw -Encoding utf8
     foreach ($requiredForeignHistoryToken in @(
-        'mapLimit(calendarDates, 1',
-        'await sleep(700)',
-        'snapshots.length < 11'
+        'mapLimit(retryDates, 1',
+        'calendarDatesEnding(asOfIso, FOREIGN_HOLDING_LOOKBACK_CALENDAR_DAYS)',
+        'FOREIGN_HOLDING_MAX_PASSES = 3',
+        'FOREIGN_HOLDING_REQUIRED_DAYS = 11',
+        'latestUsableSourceDate('
     )) {
         if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
             throw "Foreign-holding history safeguard is missing: $requiredForeignHistoryToken"

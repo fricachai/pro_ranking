@@ -57,6 +57,12 @@ const INCOME_ENDPOINTS = {
   TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap06_L_${type}`)
 };
 
+const FOREIGN_HOLDING_REQUIRED_DAYS = 11;
+const FOREIGN_HOLDING_LOOKBACK_CALENDAR_DAYS = 45;
+const FOREIGN_HOLDING_MAX_PASSES = 3;
+const FOREIGN_HOLDING_REQUEST_DELAY_MS = 700;
+const FOREIGN_HOLDING_RETRY_DELAY_MS = 2500;
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -292,6 +298,15 @@ function isoToYyyymmdd(value) {
   return String(value || '').replace(/-/g, '');
 }
 
+function isIsoDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ''));
+}
+
+function latestUsableSourceDate(...dates) {
+  const candidates = dates.filter(isIsoDate).filter(date => date <= TODAY).sort();
+  return candidates.at(-1) || TODAY;
+}
+
 function calendarDatesEnding(asOfIso, count = 45) {
   const end = new Date(`${asOfIso}T00:00:00Z`);
   return Array.from({ length: count }, (_, index) => {
@@ -305,31 +320,65 @@ function cleanForeignChangeReason(value) {
 }
 
 async function fetchTwseForeignHoldingHistory(asOfIso) {
-  const calendarDates = calendarDatesEnding(asOfIso, 45);
-  // MI_QFIIS can temporarily return too few days when requests are too close
-  // together. Fetch this small 45-day window sequentially with a conservative
-  // delay so the existing 11-trading-day quality gate remains reliable.
-  const payloads = await mapLimit(calendarDates, 1, async iso => {
-    await sleep(700);
-    const url = `${SOURCES.twseForeignHolding}?date=${isoToYyyymmdd(iso)}&selectType=ALLBUT0999&response=json`;
-    const payload = await fetchJson(url);
-    if (payload.stat !== 'OK' || !payload.data?.length) return null;
-    const rows = payload.data.map(row => ({
-      code: String(row[0]),
-      shares: number(row[5]),
-      ratio: number(row[7]),
-      changeReason: cleanForeignChangeReason(row[10])
-    })).filter(row => /^\d{4}$/.test(row.code) && Number.isFinite(row.shares));
-    return { date: yyyymmddToIso(payload.date), rows: new Map(rows.map(row => [row.code, row])) };
-  });
-  const seen = new Set();
-  const snapshots = payloads.filter(payload => {
-    if (!payload || payload.__error || !payload.date || !payload.rows || seen.has(payload.date)) return false;
-    seen.add(payload.date);
-    return true;
-  }).sort((a, b) => b.date.localeCompare(a.date));
-  if (snapshots.length < 11) throw new Error(`外資持股交易日不足：僅 ${snapshots.length} 日`);
-  return { snapshots, dates: snapshots.map(snapshot => snapshot.date) };
+  if (!isIsoDate(asOfIso)) throw new Error(`外資持股日期錨點無效：${asOfIso || 'missing'}`);
+  const calendarDates = calendarDatesEnding(asOfIso, FOREIGN_HOLDING_LOOKBACK_CALENDAR_DAYS);
+  const snapshotsByDate = new Map();
+  const completedRequestDates = new Set();
+  const passDiagnostics = [];
+
+  // MI_QFIIS has no trading-calendar endpoint. Query calendar dates sequentially:
+  // weekend/holiday dates return no rows and are skipped, while valid official
+  // trading dates are collected until the 10-day comparison has 11 snapshots.
+  for (let pass = 1; pass <= FOREIGN_HOLDING_MAX_PASSES; pass += 1) {
+    const diagnostics = { pass, requested: 0, empty: 0, errors: [] };
+    const retryDates = calendarDates.filter(iso => !completedRequestDates.has(iso));
+
+    await mapLimit(retryDates, 1, async iso => {
+      if (snapshotsByDate.size >= FOREIGN_HOLDING_REQUIRED_DAYS) return null;
+      diagnostics.requested += 1;
+      await sleep(FOREIGN_HOLDING_REQUEST_DELAY_MS);
+      const url = `${SOURCES.twseForeignHolding}?date=${isoToYyyymmdd(iso)}&selectType=ALLBUT0999&response=json`;
+      try {
+        const payload = await fetchJson(url, 5);
+        if (payload.stat !== 'OK' || !payload.data?.length) {
+          diagnostics.empty += 1;
+          return null;
+        }
+        const rows = payload.data.map(row => ({
+          code: String(row[0]),
+          shares: number(row[5]),
+          ratio: number(row[7]),
+          changeReason: cleanForeignChangeReason(row[10])
+        })).filter(row => /^\d{4}$/.test(row.code) && Number.isFinite(row.shares));
+        const date = yyyymmddToIso(payload.date);
+        if (!date || !rows.length) {
+          diagnostics.empty += 1;
+          return null;
+        }
+        completedRequestDates.add(iso);
+        snapshotsByDate.set(date, { date, rows: new Map(rows.map(row => [row.code, row])) });
+      } catch (error) {
+        diagnostics.errors.push(`${iso}: ${error.message || error}`);
+      }
+      return null;
+    });
+
+    passDiagnostics.push(diagnostics);
+    if (snapshotsByDate.size >= FOREIGN_HOLDING_REQUIRED_DAYS) {
+      const snapshots = [...snapshotsByDate.values()].sort((a, b) => b.date.localeCompare(a.date));
+      console.log(`  MI_QFIIS：以 ${asOfIso} 為錨點，取得 ${snapshots.length} 個有效交易日；最新 ${snapshots[0].date}`);
+      return { snapshots, dates: snapshots.map(snapshot => snapshot.date) };
+    }
+    if (pass < FOREIGN_HOLDING_MAX_PASSES) {
+      console.warn(`  MI_QFIIS 第 ${pass} 輪僅取得 ${snapshotsByDate.size}/${FOREIGN_HOLDING_REQUIRED_DAYS} 個有效交易日；重試暫時失敗日期。`);
+      await sleep(FOREIGN_HOLDING_RETRY_DELAY_MS * pass);
+    }
+  }
+
+  const diagnosticText = passDiagnostics.map(item =>
+    `第${item.pass}輪：查詢${item.requested}日、休市或空回應${item.empty}日、錯誤${item.errors.length}日${item.errors.length ? `（${item.errors.slice(0, 3).join(' | ')}）` : ''}`
+  ).join('；');
+  throw new Error(`外資持股交易日不足：僅 ${snapshotsByDate.size} 日（需要至少 ${FOREIGN_HOLDING_REQUIRED_DAYS} 日；資料錨點 ${asOfIso}；${diagnosticText}）`);
 }
 
 function foreignHoldingFeatures(history, code) {
@@ -1570,7 +1619,10 @@ async function main() {
   console.log(`ETF ${data.etfs.length} 檔，ETF持股共 ${allStockEntries.length} 檔，保留上市股票 ${stockEntries.length} 檔，主動ETF ${activeSet.size} 檔。`);
 
   console.log(`2/7 讀取${stockEntries.length}檔上市股票ETF快照與官方外資持股歷史...`);
-  const asOfIso = yyyymmddToIso(data.meta.latest);
+  const asOfIso = latestUsableSourceDate(
+    yyyymmddToIso(data.meta.latest),
+    yyyymmddToIso(data.meta.price_date)
+  );
   const foreignHoldingPromise = fetchTwseForeignHoldingHistory(asOfIso);
   const institutionalHistoryPromise = fetchTwseInstitutionalHistory(asOfIso, institution);
   const creditHistoryPromise = fetchTwseCreditHistory(asOfIso);
