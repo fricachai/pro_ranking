@@ -522,7 +522,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 1,334.30 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 1,334.30 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 1334.3,
       "recoveryPrice": 1360.33,
@@ -754,7 +754,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 246.64 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 246.64 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 246.64,
       "recoveryPrice": 246.64,
@@ -1385,7 +1385,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 40.78 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 40.78 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 40.78,
       "recoveryPrice": 41.54,
@@ -1619,7 +1619,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 77.37 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 77.37 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 77.37,
       "recoveryPrice": 80.4,
@@ -1867,7 +1867,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 80.42 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 80.42 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 80.42,
       "recoveryPrice": 81.88,
@@ -2113,7 +2113,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 87.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 87.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "投信5/10日持續且具金額意義地賣超"
       ],
@@ -2350,7 +2350,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 31.71 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 31.71 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 31.71,
       "recoveryPrice": 31.71,
@@ -2548,7 +2548,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 125.76 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 125.76 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 125.76,
       "recoveryPrice": 127.71,
@@ -2783,7 +2783,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 1,334.30 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 1,334.30 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 1334.3,
       "recoveryPrice": 1360.33,
@@ -3015,7 +3015,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 108.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 108.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -3253,7 +3253,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 246.64 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 246.64 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 246.64,
       "recoveryPrice": 246.64,
@@ -3571,7 +3571,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 326.94，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 326.94，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -3913,7 +3913,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 25.86 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 25.86 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 25.86,
       "recoveryPrice": 26.22,
@@ -4150,7 +4150,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 20.04 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 20.04 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 20.04,
       "recoveryPrice": 20.32,
@@ -4411,7 +4411,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 6,624.83 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 6,624.83 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 6624.83,
       "recoveryPrice": 7828.24,
@@ -4661,7 +4661,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 2,050.20 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 2,050.20 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 2050.2,
       "recoveryPrice": 2050.2,
@@ -4934,7 +4934,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 30.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 30.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -5263,7 +5263,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 40.15 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 40.15 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 40.15,
       "recoveryPrice": 45.07,
@@ -5459,7 +5459,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 695.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 695.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -5711,7 +5711,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 34.08 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 34.08 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 34.08,
       "recoveryPrice": 35.1,
@@ -5985,7 +5985,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 138.75 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 138.75 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 138.75,
       "recoveryPrice": 138.75,
@@ -6286,7 +6286,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 205.39 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 205.39 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 205.39,
       "recoveryPrice": 206.42,
@@ -6516,7 +6516,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 487.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 487.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -6819,7 +6819,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 151.85 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 151.85 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 151.85,
       "recoveryPrice": 155.56,
@@ -7129,7 +7129,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 483.01 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 483.01 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 483.01,
       "recoveryPrice": 483.69,
@@ -7361,7 +7361,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 2,317.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 2,317.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -7679,7 +7679,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 155.42 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 155.42 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 155.42,
       "recoveryPrice": 164.92,
@@ -7892,7 +7892,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 38.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 38.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -8093,7 +8093,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 69.41 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 69.41 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 69.41,
       "recoveryPrice": 70.31,
@@ -8328,7 +8328,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 51.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 51.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "投信5/10日持續且具金額意義地賣超"
       ],
@@ -8581,7 +8581,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 22.67，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 22.67，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -8844,7 +8844,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 213.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 213.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -9044,7 +9044,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 35.06 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 35.06 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 35.06,
       "recoveryPrice": 36.1,
@@ -9363,7 +9363,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 107.31 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 107.31 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 107.31,
       "recoveryPrice": 110.5,
@@ -9597,7 +9597,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 98.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 98.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -9812,7 +9812,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 379.14，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 379.14，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -10130,7 +10130,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 42.58 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 42.58 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 42.58,
       "recoveryPrice": 43.8,
@@ -10370,7 +10370,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 12.89 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 12.89 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 12.89,
       "recoveryPrice": 13.23,
@@ -10604,7 +10604,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 115.67 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 115.67 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 115.67,
       "recoveryPrice": 118.66,
@@ -10918,7 +10918,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 2,067.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 2,067.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -11184,7 +11184,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 799.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 799.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -11437,7 +11437,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 208.12 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 208.12 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 208.12,
       "recoveryPrice": 213.35,
@@ -11711,7 +11711,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 49.90 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 49.90 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 49.9,
       "recoveryPrice": 51.46,
@@ -11929,7 +11929,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 29.07，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 29.07，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -12159,7 +12159,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 327.09 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 327.09 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 327.09,
       "recoveryPrice": 340.23,
@@ -12390,7 +12390,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 47.38 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 47.38 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 47.38,
       "recoveryPrice": 50.19,
@@ -12629,7 +12629,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 31.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 31.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -12879,7 +12879,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 487.13，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 487.13，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -13195,7 +13195,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 14.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 14.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -13397,7 +13397,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 2,378.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 2,378.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -13662,7 +13662,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 35.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 35.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -13914,7 +13914,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 36.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 36.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -14150,7 +14150,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 55.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 55.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -14399,7 +14399,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 292.10 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 292.10 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 292.1,
       "recoveryPrice": 307.66,
@@ -14650,7 +14650,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 300.68 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 300.68 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 300.68,
       "recoveryPrice": 327.35,
@@ -14873,7 +14873,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 353.95 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 353.95 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 353.95,
       "recoveryPrice": 359.84,
@@ -15108,7 +15108,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 125.22 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 125.22 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 125.22,
       "recoveryPrice": 127.4,
@@ -15356,7 +15356,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 163.80 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 163.80 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 163.8,
       "recoveryPrice": 166.71,
@@ -15578,7 +15578,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 163.66 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 163.66 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 163.66,
       "recoveryPrice": 172.91,
@@ -15828,7 +15828,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 56.81 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 56.81 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 56.81,
       "recoveryPrice": 56.81,
@@ -16129,7 +16129,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 740.47，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 740.47，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -16357,7 +16357,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 57.18 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 57.18 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 57.18,
       "recoveryPrice": 64.63,
@@ -16594,7 +16594,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 132.08 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 132.08 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 132.08,
       "recoveryPrice": 144.46,
@@ -16882,7 +16882,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 998.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 998.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -17199,7 +17199,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 500.14 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 500.14 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 500.14,
       "recoveryPrice": 545.76,
@@ -17488,7 +17488,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 27.11 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 27.11 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 27.11,
       "recoveryPrice": 29.74,
@@ -17749,7 +17749,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 692.35 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 692.35 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 692.35,
       "recoveryPrice": 751.65,
@@ -18035,7 +18035,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 44.26 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 44.26 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 44.26,
       "recoveryPrice": 46.58,
@@ -18247,7 +18247,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 61.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 61.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "KD高檔死亡交叉（僅屬時機警示）"
       ],
@@ -18528,7 +18528,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 49.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 49.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -18782,7 +18782,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 147.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 147.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -19061,7 +19061,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 117.24 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 117.24 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 117.24,
       "recoveryPrice": 125.54,
@@ -19323,7 +19323,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 21.15，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 21.15，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -19537,7 +19537,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 44.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 44.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -19773,7 +19773,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 126.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 126.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -20027,7 +20027,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 38.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 38.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -20230,7 +20230,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 947.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 947.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -20482,7 +20482,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 61.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 61.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "投信5/10日持續且具金額意義地賣超"
       ],
@@ -20735,7 +20735,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 42.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 42.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "投信5/10日持續且具金額意義地賣超"
       ],
@@ -21001,7 +21001,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 1,000.70，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 1,000.70，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -21305,7 +21305,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 301.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 301.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -21543,7 +21543,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 124.26 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 124.26 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 124.26,
       "recoveryPrice": 138.26,
@@ -21822,7 +21822,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 21.11 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 21.11 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 21.11,
       "recoveryPrice": 21.26,
@@ -22106,7 +22106,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 54.59 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 54.59 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 54.59,
       "recoveryPrice": 60.12,
@@ -22382,7 +22382,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 102.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 102.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -22582,7 +22582,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 75.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 75.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -22833,7 +22833,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 3,837.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 3,837.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -23085,7 +23085,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 592.38 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 592.38 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 592.38,
       "recoveryPrice": 642.75,
@@ -23391,7 +23391,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 231.47，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 231.47，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -23641,7 +23641,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 54.97 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 54.97 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 54.97,
       "recoveryPrice": 61.13,
@@ -23881,7 +23881,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 76.89 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 76.89 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 76.89,
       "recoveryPrice": 81.1,
@@ -24128,7 +24128,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 146.14 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 146.14 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 146.14,
       "recoveryPrice": 155.05,
@@ -24377,7 +24377,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 89.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 89.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -24645,7 +24645,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 665.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 665.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -24898,7 +24898,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 42.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 42.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -25099,7 +25099,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 17.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 17.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -25301,7 +25301,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 190.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 190.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "投信5/10日持續且具金額意義地賣超"
       ],
@@ -25539,7 +25539,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 3,679.00 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 3,679.00 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 3679,
       "recoveryPrice": 3849.96,
@@ -25842,7 +25842,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 25.27 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 25.27 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 25.27,
       "recoveryPrice": 27.42,
@@ -26183,7 +26183,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 17.71 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 17.71 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 17.71,
       "recoveryPrice": 17.84,
@@ -26382,7 +26382,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 75.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 75.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -26584,7 +26584,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 677.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 677.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -26889,7 +26889,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 347.48，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 347.48，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -27129,7 +27129,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 10.70 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 10.70 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 10.7,
       "recoveryPrice": 12.67,
@@ -27327,7 +27327,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 73.19 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 73.19 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 73.19,
       "recoveryPrice": 77.28,
@@ -27538,7 +27538,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 19.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 19.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -27740,7 +27740,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 31.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 31.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -27942,7 +27942,7 @@
       "entryAction": "等待確認",
       "holdingAction": "續抱觀察",
       "holdingState": "hold",
-      "holdingPlan": "已有部位可續抱，但收盤跌破60日EMA約 159.30 且法人同步轉弱時，先減碼三分之一。",
+      "holdingPlan": "已有部位可續抱觀察，但暫不追價；若收盤跌破60日EMA約 159.30 且法人籌碼轉弱，先減碼三分之一。",
       "holdingSignals": [],
       "defensePrice": 159.3,
       "recoveryPrice": 188.67,
@@ -28152,7 +28152,7 @@
       "entryAction": "等待確認",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 65.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 65.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -28369,7 +28369,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 134.10，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 134.10，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -28646,7 +28646,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 725.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 725.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -28952,7 +28952,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 88.03，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 88.03，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -29194,7 +29194,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 69.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 69.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -29432,7 +29432,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 80.80，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 80.80，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -29709,7 +29709,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 63.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 63.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -29948,7 +29948,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 83.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 83.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -30223,7 +30223,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 201.99，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 201.99，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -30462,7 +30462,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 113.83，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 113.83，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -30691,7 +30691,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 273.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 273.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -31001,7 +31001,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 198.03，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 198.03，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "外資持股5/10日下降且外資5日賣超",
@@ -31304,7 +31304,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 348.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 348.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -31609,7 +31609,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 4,918.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 4,918.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -31913,7 +31913,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 41.38，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 41.38，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -32182,7 +32182,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 222.00，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 222.00，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "投信5/10日持續且具金額意義地賣超"
@@ -32489,7 +32489,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 210.38，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 210.38，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -32710,7 +32710,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 20.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 20.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -33014,7 +33014,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 46.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 46.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "外資持股5/10日下降且外資5日賣超"
@@ -33248,7 +33248,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 63.56，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 63.56，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -33504,7 +33504,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 378.96，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 378.96，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -33782,7 +33782,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 264.75，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 264.75，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -34076,7 +34076,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 216.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 216.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -34323,7 +34323,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 249.34，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 249.34，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -34548,7 +34548,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 35.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 35.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -34830,7 +34830,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 35.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 35.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -35041,7 +35041,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 3,574.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 3,574.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -35280,7 +35280,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 101.82，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 101.82，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -35561,7 +35561,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 224.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 224.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -35784,7 +35784,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 46.97，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 46.97，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -36025,7 +36025,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 83.95，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 83.95，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -36225,7 +36225,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 204.21，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 204.21，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -36464,7 +36464,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 72.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 72.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -36677,7 +36677,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 69.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 69.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -36931,7 +36931,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 499.23，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 499.23，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -37172,7 +37172,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 130.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 130.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -37453,7 +37453,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 102.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 102.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -37671,7 +37671,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 82.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 82.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -37966,7 +37966,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 120.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 120.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -38181,7 +38181,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 98.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 98.49，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -38419,7 +38419,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 69.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 69.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -38754,7 +38754,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 24.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 24.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -38993,7 +38993,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 1,112.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 1,112.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -39231,7 +39231,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 338.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 338.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -39497,7 +39497,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 125.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 125.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -39751,7 +39751,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 17.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 17.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "外資持股5/10日下降且外資5日賣超"
@@ -40002,7 +40002,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 15.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 15.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -40211,7 +40211,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 197.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 197.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -40415,7 +40415,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 2,076.15，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 2,076.15，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -40646,7 +40646,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 113.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 113.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -40953,7 +40953,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 254.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 254.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -41157,7 +41157,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 110.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 110.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -41394,7 +41394,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 61.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 61.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -41643,7 +41643,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 84.08，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 84.08，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -41949,7 +41949,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 8.46，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 8.46，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 8.46,
       "recoveryPrice": 8.92,
@@ -42159,7 +42159,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 143.05，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 143.05，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -42399,7 +42399,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 179.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 179.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -42614,7 +42614,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 70.70，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 70.70，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -42925,7 +42925,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 27.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 27.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -43169,7 +43169,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 6,500.69，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 6,500.69，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -43437,7 +43437,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 338.35，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 338.35，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -43702,7 +43702,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 1,955.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 1,955.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -44062,7 +44062,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 1,427.27，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 1,427.27，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -44301,7 +44301,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 896.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 896.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -44567,7 +44567,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 234.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 234.59，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -44792,7 +44792,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 1,644.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 1,644.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -45059,7 +45059,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 169.79，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 169.79，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "投信5/10日持續且具金額意義地賣超"
@@ -45367,7 +45367,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 28.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 28.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -45578,7 +45578,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 186.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 186.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -45802,7 +45802,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 67.60，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 67.60，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -46013,7 +46013,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 24.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 24.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 24.4,
       "recoveryPrice": 25.18,
@@ -46259,7 +46259,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 143.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 143.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -46519,7 +46519,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 279.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 279.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -46732,7 +46732,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 2,340.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 2,340.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -47051,7 +47051,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 5,055.59，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 5,055.59，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -47318,7 +47318,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 68.06，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 68.06，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -47627,7 +47627,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 33.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 33.51，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -47864,7 +47864,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 1,223.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 1,223.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -48119,7 +48119,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 97.11，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 97.11，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -48440,7 +48440,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 76.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 76.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -48642,7 +48642,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 630.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 630.54，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -48959,7 +48959,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 152.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 152.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -49181,7 +49181,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 143.20，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 143.20，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -49490,7 +49490,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 27.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 27.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -49795,7 +49795,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 74.61，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 74.61，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -50050,7 +50050,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 72.78，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 72.78，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -50297,7 +50297,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 253.65，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 253.65，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -50552,7 +50552,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 101.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 101.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -50754,7 +50754,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 467.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 467.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -50994,7 +50994,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 274.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 274.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -51262,7 +51262,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 256.64，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 256.64，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -51507,7 +51507,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 32.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 32.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "投信5/10日持續且具金額意義地賣超"
@@ -51762,7 +51762,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 461.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 461.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超",
@@ -52005,7 +52005,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 52.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 52.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -52283,7 +52283,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 18.92，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 18.92，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -52561,7 +52561,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 58.99，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 58.99，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -52805,7 +52805,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 304.65，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 304.65，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -53072,7 +53072,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 57.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 57.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -53288,7 +53288,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 51.55，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 51.55，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -53529,7 +53529,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 35.13，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 35.13，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -53734,7 +53734,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 186.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 186.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -53987,7 +53987,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 64.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 64.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -54225,7 +54225,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 1,208.21，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 1,208.21，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -54467,7 +54467,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 319.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 319.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -54707,7 +54707,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 26.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 26.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -54946,7 +54946,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 71.96，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 71.96，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -55169,7 +55169,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 144.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 144.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -55420,7 +55420,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 120.85，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 120.85，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -55640,7 +55640,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 590.92，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 590.92，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -55882,7 +55882,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 1,151.85，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 1,151.85，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -56166,7 +56166,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 638.79，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 638.79，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -56423,7 +56423,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 37.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 37.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -56633,7 +56633,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 865.85，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 865.85，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -56985,7 +56985,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 61.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 61.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -57210,7 +57210,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 312.92，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 312.92，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -57530,7 +57530,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 4,312.93，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 4,312.93，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -57810,7 +57810,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 172.58，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 172.58，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -58023,7 +58023,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 39.80，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 39.80，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -58243,7 +58243,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 303.32，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 303.32，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -58563,7 +58563,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 140.88，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 140.88，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -58845,7 +58845,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 72.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 72.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -59062,7 +59062,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 44.97，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 44.97，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -59289,7 +59289,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 55.61，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 55.61，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -59547,7 +59547,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 34.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 34.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -59801,7 +59801,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 214.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 214.42，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -60012,7 +60012,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 208.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 208.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -60214,7 +60214,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 8,066.21，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 8,066.21，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -60523,7 +60523,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 63.82，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 63.82，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -60841,7 +60841,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 115.87，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 115.87，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -61123,7 +61123,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 325.17，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 325.17，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -61380,7 +61380,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 156.24，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 156.24，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -61604,7 +61604,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 69.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 69.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -61908,7 +61908,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 2,166.36，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 2,166.36，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -62165,7 +62165,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 508.40，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 508.40，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -62422,7 +62422,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 32.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 32.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -62730,7 +62730,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 732.26，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 732.26，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -63021,7 +63021,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 117.91，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 117.91，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -63274,7 +63274,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 183.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 183.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -63579,7 +63579,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 35.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 35.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -63924,7 +63924,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 323.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 323.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -64246,7 +64246,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 81.84，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 81.84，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "外資持股5/10日下降且外資5日賣超"
@@ -64500,7 +64500,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 53.05，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 53.05，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -64745,7 +64745,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 223.25，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 223.25，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "投信5/10日持續且具金額意義地賣超"
@@ -64976,7 +64976,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 298.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 298.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -65205,7 +65205,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 217.10，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 217.10，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -65445,7 +65445,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 88.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 88.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -65688,7 +65688,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 197.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 197.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -65993,7 +65993,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 1,184.09，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 1,184.09，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -66235,7 +66235,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 225.52，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 225.52，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -66517,7 +66517,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 166.58，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 166.58，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -66762,7 +66762,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 25.63，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 25.63，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -67020,7 +67020,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 262.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 262.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -67258,7 +67258,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 146.96，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 146.96，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -67590,7 +67590,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 240.12，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 240.12，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -67853,7 +67853,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 458.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 458.39，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -68092,7 +68092,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 62.22，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 62.22，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -68314,7 +68314,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 238.84，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 238.84，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -68526,7 +68526,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 495.87，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 495.87，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -68766,7 +68766,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 180.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 180.18，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -69007,7 +69007,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 44.33，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 44.33，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -69245,7 +69245,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 43.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 43.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -69489,7 +69489,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 81.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 81.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -69733,7 +69733,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 54.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 54.86，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -69979,7 +69979,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 228.71，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 228.71，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -70250,7 +70250,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 235.70，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 235.70，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -70535,7 +70535,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 31.67，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 31.67，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -70857,7 +70857,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 4,022.38，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 4,022.38，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "投信5/10日持續且具金額意義地賣超"
@@ -71176,7 +71176,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 28.60，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 28.60，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -71473,7 +71473,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 564.89，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 564.89，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -71730,7 +71730,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 184.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 184.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -72001,7 +72001,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 302.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 302.30，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -72220,7 +72220,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 84.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 84.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -72462,7 +72462,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 71.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 71.89，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -72697,7 +72697,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 37.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 37.45，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -72902,7 +72902,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 51.25，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 51.25，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -73108,7 +73108,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 796.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 796.54，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -73411,7 +73411,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 157.18，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 157.18，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -73615,7 +73615,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 1,683.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 1,683.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -73853,7 +73853,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 47.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 47.27，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -74085,7 +74085,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 56.79，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 56.79，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "投信5/10日持續且具金額意義地賣超"
@@ -74354,7 +74354,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 382.50，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 382.50，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -74585,7 +74585,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 413.95，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 413.95，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -74894,7 +74894,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 158.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 158.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -75162,7 +75162,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 110.69，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 110.69，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -75390,7 +75390,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 487.83，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 487.83，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -75608,7 +75608,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 113.87，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 113.87，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -75826,7 +75826,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 104.44，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 104.44，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -76155,7 +76155,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 25.50，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 25.50，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -76369,7 +76369,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 552.91，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 552.91，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -76626,7 +76626,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 104.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 104.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -76869,7 +76869,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 136.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 136.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -77073,7 +77073,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 491.41，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 491.41，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -77301,7 +77301,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 158.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 158.74，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -77608,7 +77608,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 167.72，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 167.72，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -77842,7 +77842,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 63.94，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 63.94，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -78102,7 +78102,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 31.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 31.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -78356,7 +78356,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 72.75，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 72.75，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -78599,7 +78599,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 413.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 413.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "ETF 5/10日同步減碼",
         "外資持股5/10日下降且外資5日賣超",
@@ -78833,7 +78833,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 49.99，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 49.99，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -79059,7 +79059,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 86.33，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 86.33，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -79278,7 +79278,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 12.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 12.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -79507,7 +79507,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 784.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 784.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -79759,7 +79759,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 48.26，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 48.26，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -79965,7 +79965,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 56.15，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 56.15，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -80190,7 +80190,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 201.16，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 201.16，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -80426,7 +80426,7 @@
       "entryAction": "暫不承接",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 39.62，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 39.62，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -80660,7 +80660,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 46.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 46.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -80899,7 +80899,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 176.28，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 176.28，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 176.28,
       "recoveryPrice": 187.8,
@@ -81163,7 +81163,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 19.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 19.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 19.02,
       "recoveryPrice": 19.06,
@@ -81362,7 +81362,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 65.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 65.91，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 65.91,
       "recoveryPrice": 66.28,
@@ -81575,7 +81575,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 126.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 126.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 126.12,
       "recoveryPrice": 127.6,
@@ -81782,7 +81782,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 72.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 72.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 72.78,
       "recoveryPrice": 74.96,
@@ -82016,7 +82016,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 40.94，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 40.94，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 40.94,
       "recoveryPrice": 42.02,
@@ -82223,7 +82223,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 30.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 30.75，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 30.75,
       "recoveryPrice": 31.33,
@@ -82461,7 +82461,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 60.88，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 60.88，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 60.88,
       "recoveryPrice": 63.55,
@@ -82682,7 +82682,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 119.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 119.40，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 119.4,
       "recoveryPrice": 121.52,
@@ -82893,7 +82893,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 54.76，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 54.76，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 54.76,
       "recoveryPrice": 56.37,
@@ -83091,7 +83091,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 48.37，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 48.37，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -83307,7 +83307,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 65.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 65.64，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 65.64,
       "recoveryPrice": 65.64,
@@ -83519,7 +83519,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 91.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 91.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 91.02,
       "recoveryPrice": 91.02,
@@ -83740,7 +83740,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 28.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 28.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 28.06,
       "recoveryPrice": 28.44,
@@ -83939,7 +83939,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 42.79，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 42.79，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 42.79,
       "recoveryPrice": 43.14,
@@ -84395,7 +84395,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 40.24，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 40.24，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 40.24,
       "recoveryPrice": 40.24,
@@ -84625,7 +84625,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 10.93，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 10.93，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -84933,7 +84933,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 102.57，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 102.57，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -85148,7 +85148,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 153.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 153.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 153.98,
       "recoveryPrice": 158.21,
@@ -85383,7 +85383,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 165.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 165.73，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -85613,7 +85613,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 39.48，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 39.48，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 39.48,
       "recoveryPrice": 39.48,
@@ -85822,7 +85822,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 111.67，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 111.67，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -86050,7 +86050,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 18.64，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 18.64，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -86278,7 +86278,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 76.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 76.98，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 76.98,
       "recoveryPrice": 76.98,
@@ -86477,7 +86477,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 26.96，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 26.96，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 26.96,
       "recoveryPrice": 30.7,
@@ -86675,7 +86675,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 57.19，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 57.19，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -86904,7 +86904,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 290.55，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 290.55，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -87123,7 +87123,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 94.42，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 94.42，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -87357,7 +87357,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 125.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 125.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 125.69,
       "recoveryPrice": 126.02,
@@ -87583,7 +87583,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 59.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 59.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -87788,7 +87788,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 149.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 149.32，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 149.32,
       "recoveryPrice": 152.4,
@@ -87986,7 +87986,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 79.08，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 79.08，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 79.08,
       "recoveryPrice": 79.92,
@@ -88185,7 +88185,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 429.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 429.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -88402,7 +88402,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 59.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 59.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -88604,7 +88604,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 148.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 148.04，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 148.04,
       "recoveryPrice": 153.8,
@@ -88802,7 +88802,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 26.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 26.71，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 26.71,
       "recoveryPrice": 27.79,
@@ -89020,7 +89020,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 91.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 91.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 91.53,
       "recoveryPrice": 94.67,
@@ -89241,7 +89241,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 140.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 140.30，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 140.3,
       "recoveryPrice": 145.55,
@@ -89480,7 +89480,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 120.84，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 120.84，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -89683,7 +89683,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 117.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 117.35，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -89886,7 +89886,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 107.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 107.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 107.02,
       "recoveryPrice": 112.71,
@@ -90086,7 +90086,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 72.83，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 72.83，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 72.83,
       "recoveryPrice": 76.77,
@@ -90286,7 +90286,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 33.20，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 33.20，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -90491,7 +90491,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 45.20，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 45.20，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -90706,7 +90706,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 179.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 179.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -90909,7 +90909,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 7.51，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 7.51，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -91112,7 +91112,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 59.41，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 59.41，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -91387,7 +91387,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 95.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 95.50，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 95.5,
       "recoveryPrice": 97.16,
@@ -91615,7 +91615,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 180.61，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 180.61，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -91839,7 +91839,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 47.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 47.26，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -92042,7 +92042,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 297.93，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 297.93，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -92245,7 +92245,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 59.15，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 59.15，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -92450,7 +92450,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 10.31，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 10.31，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -92729,7 +92729,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 7.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 7.00，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -92931,7 +92931,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 158.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 158.81，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -93135,7 +93135,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 44.83，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 44.83，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -93354,7 +93354,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 40.28，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 40.28，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -93579,7 +93579,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 349.08，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 349.08，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -93820,7 +93820,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 135.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 135.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -94038,7 +94038,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 153.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 153.48，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -94252,7 +94252,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 25.14，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 25.14，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -94464,7 +94464,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 32.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 32.12，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -94666,7 +94666,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 29.31，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 29.31，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -94869,7 +94869,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 29.43，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 29.43，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "ETF 5/10日同步減碼"
       ],
@@ -95083,7 +95083,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 83.62，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 83.62，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -95309,7 +95309,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 22.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 22.72，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -95512,7 +95512,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 35.33，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 35.33，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -95933,7 +95933,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 56.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 56.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -96362,7 +96362,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 85.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 85.03，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "外資持股5/10日下降且外資5日賣超"
       ],
@@ -96565,7 +96565,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 32.44，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 32.44，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -96770,7 +96770,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 62.89，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 62.89，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -97028,7 +97028,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 62.68，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 62.68，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 62.68,
       "recoveryPrice": 62.88,
@@ -97245,7 +97245,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 22.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 22.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 22.53,
       "recoveryPrice": 22.53,
@@ -97457,7 +97457,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 52.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 52.05，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 52.05,
       "recoveryPrice": 52.05,
@@ -97656,7 +97656,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 23.56，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 23.56，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -97870,7 +97870,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 113.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 113.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -98076,7 +98076,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 77.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 77.90，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -98281,7 +98281,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 57.70，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 57.70，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -98706,7 +98706,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 193.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 193.78，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -99122,7 +99122,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 21.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 21.01，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -99599,7 +99599,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 39.62，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 39.62，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -100322,7 +100322,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 318.13，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 318.13，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -100535,7 +100535,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 50.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 50.19，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -100760,7 +100760,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 10.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 10.74，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -101174,7 +101174,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 68.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 68.53，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -101867,7 +101867,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 99.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 99.45，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -102351,7 +102351,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 43.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 43.69，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -102581,7 +102581,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 25.51，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 25.51，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -102784,7 +102784,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 30.58，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 30.58，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -102989,7 +102989,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 66.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 66.65，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -103739,7 +103739,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 60.90，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 60.90，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 60.9,
       "recoveryPrice": 60.9,
@@ -104004,7 +104004,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 13.90，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 13.90，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -104207,7 +104207,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 36.06，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 36.06，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -104889,7 +104889,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 173.87，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 173.87，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -105093,7 +105093,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 21.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 21.23，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -105337,7 +105337,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 22.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 22.57，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -105833,7 +105833,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 229.25，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 229.25，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -106060,7 +106060,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 167.17，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 167.17，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -106558,7 +106558,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 21.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 21.06，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -107020,7 +107020,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 80.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 80.07，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -107503,7 +107503,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 53.14，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 53.14，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -107709,7 +107709,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 88.76，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 88.76，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼"
@@ -107965,7 +107965,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 54.36，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 54.36，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -108469,7 +108469,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 130.13，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 130.13，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -108674,7 +108674,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 16.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 16.02，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -109911,7 +109911,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 36.34，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 36.34，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -110116,7 +110116,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 28.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 28.02，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [],
       "defensePrice": 28.02,
       "recoveryPrice": 28.18,
@@ -110374,7 +110374,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 27.47，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 27.47，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
@@ -110581,7 +110581,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 123.49，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 123.49，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -110796,7 +110796,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "暫停加碼／跌破減碼",
       "holdingState": "protect",
-      "holdingPlan": "已有部位先暫停加碼；若收盤跌破60日EMA約 195.27，且下一交易日仍未收復，先減碼三分之一；若ETF或外資賣壓持續，再降低部位。",
+      "holdingPlan": "已有部位暫停加碼；若收盤跌破60日EMA約 195.27，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下"
       ],
@@ -111315,7 +111315,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 18.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 18.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "外資持股5/10日下降且外資5日賣超"
@@ -111947,7 +111947,7 @@
       "entryAction": "不建立部位",
       "holdingAction": "停止加碼／開始減碼",
       "holdingState": "trim",
-      "holdingPlan": "已有部位停止加碼。反彈若仍未站回 191.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
+      "holdingPlan": "已有部位先停止加碼。反彈若仍未站回 191.80，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。",
       "holdingSignals": [
         "價格跌破60日EMA且20日趨勢向下",
         "ETF 5/10日同步減碼",
