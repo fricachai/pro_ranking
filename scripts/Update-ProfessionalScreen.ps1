@@ -235,8 +235,8 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate')) {
-        if (-not $meta.$requiredMetaField) {
+    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs')) {
+        if ($requiredMetaField -notin $meta.PSObject.Properties.Name -or $null -eq $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
     }
@@ -248,6 +248,9 @@ try {
     }
     if ([int]$meta.foreignHoldingHistoryDays -lt 11) {
         throw "TWSE foreign-holding history is too short: $($meta.foreignHoldingHistoryDays) valid trading days"
+    }
+    if (-not [bool]$meta.activeEtfDataComplete -and [int]$meta.bucketA -gt 0) {
+        throw "Active ETF same-day coverage is incomplete ($($meta.activeUpdated)/$($meta.activeEtfs)), but report still contains $($meta.bucketA) buy-oriented A-bucket records."
     }
     if (-not $report.macroOverlay -or -not $report.sourcePosture -or -not $report.sectorOverlay) {
         throw 'latest.json is missing macro, source-posture, or sector overlay.'

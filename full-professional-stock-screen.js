@@ -650,7 +650,7 @@ function changeFromSeries(series, days) {
   return (number(series.at(-1)) || 0) - (number(series.at(-1 - days)) || 0);
 }
 
-function stockEtfFeatures(stock, detail, activeSet, laggingSet) {
+function stockEtfFeatures(stock, detail, activeSet, activeSignalSet, activeCoverage, laggingSet) {
   const dates = detail?.snap_dates || [];
   const latestDate = dates[0];
   const current = snapshotMap(detail?.snaps?.[latestDate] || []);
@@ -659,7 +659,7 @@ function stockEtfFeatures(stock, detail, activeSet, laggingSet) {
     const date = dates[Math.min(days, Math.max(0, dates.length - 1))];
     snapshots[days] = snapshotMap(detail?.snaps?.[date] || []);
   }
-  const activeLots = map => sum([...map.entries()].filter(([code]) => activeSet.has(code)).map(([, row]) => row.lots));
+  const activeLots = map => sum([...map.entries()].filter(([code]) => activeSignalSet.has(code)).map(([, row]) => row.lots));
   const currentActiveLots = activeLots(current);
   const activeChanges = {};
   const activeBreadth = {};
@@ -669,7 +669,7 @@ function stockEtfFeatures(stock, detail, activeSet, laggingSet) {
     let buyers = 0;
     let sellers = 0;
     for (const code of new Set([...current.keys(), ...base.keys()])) {
-      if (!activeSet.has(code)) continue;
+      if (!activeSignalSet.has(code)) continue;
       const delta = (current.get(code)?.lots || 0) - (base.get(code)?.lots || 0);
       if (delta > 0) buyers += 1;
       if (delta < 0) sellers += 1;
@@ -695,6 +695,7 @@ function stockEtfFeatures(stock, detail, activeSet, laggingSet) {
     weight: number(holder.weight),
     d1: number(holder.d1),
     active: activeSet.has(holder.etf),
+    activeSignalEligible: activeSignalSet.has(holder.etf),
     lagging: laggingSet.has(holder.etf)
   }));
   return {
@@ -706,6 +707,7 @@ function stockEtfFeatures(stock, detail, activeSet, laggingSet) {
     activeChanges,
     activePct,
     activeBreadth,
+    activeCoverage,
     passiveChanges: Object.fromEntries([1, 3, 5, 10, 20].map(days => [days, (totalChanges[days] || 0) - activeChanges[days]])),
     top1Concentration: totalLots > 0 ? (holderLots[0] || 0) / totalLots * 100 : null,
     top3Concentration: totalLots > 0 ? sum(holderLots.slice(0, 3)) / totalLots * 100 : null,
@@ -880,6 +882,10 @@ function classifyRecord(record) {
   const reasons = [];
   let action = '觀察';
   let bucket = 'C';
+  const activeEtfDataComplete = Boolean(record.etf.activeCoverage?.complete);
+  if (!activeEtfDataComplete) {
+    reasons.push(`主動ETF當日持股未完整（${record.etf.activeCoverage.updated}/${record.etf.activeCoverage.total}）`);
+  }
   if (record.confidence < 65) reasons.push('資料覆蓋不足');
   if (!Number.isFinite(m.dailyValue) || m.dailyValue < 50_000_000) reasons.push('單日成交金額低於5,000萬元');
   if (record.events.disposal) reasons.push('處置或交易限制風險');
@@ -939,7 +945,7 @@ function classifyRecord(record) {
   } else if (timingReject || overlayTimingReject) {
     action = '等回測或確認';
     bucket = 'B';
-  } else if (record.adjustedScore >= 67 && analysisPrice >= t?.ema20 && t?.ma20Slope5 > 0 && t?.ema60Slope >= 0 && record.etf.flowPct[5] > 0 && record.etf.flowPct[10] >= 0 && record.etf.activeChanges[5] >= 0 && foreignAligned && trustAligned) {
+  } else if (activeEtfDataComplete && record.adjustedScore >= 67 && analysisPrice >= t?.ema20 && t?.ma20Slope5 > 0 && t?.ema60Slope >= 0 && record.etf.flowPct[5] > 0 && record.etf.flowPct[10] >= 0 && record.etf.activeChanges[5] >= 0 && foreignAligned && trustAligned) {
     action = '可分批布局';
     bucket = 'A';
   } else if (record.adjustedScore >= 60) {
@@ -1241,6 +1247,7 @@ function recordForOutput(record, rank) {
       d10: record.etf.totalChanges[10], d20: record.etf.totalChanges[20],
       activeD5: record.etf.activeChanges[5], activeD10: record.etf.activeChanges[10],
       activeBuyers5: record.etf.activeBreadth[5].buyers, activeSellers5: record.etf.activeBreadth[5].sellers,
+      activeCoverage: record.etf.activeCoverage,
       d5Value: round(record.metrics.etfD5Value, 0), activeD5Value: round(record.metrics.activeEtfD5Value, 0),
       laggingExposure: round(record.etf.laggingExposure, 2), topHolders: record.etf.topHolders
     },
@@ -1455,6 +1462,7 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
 <header><div class="header-row"><h1>ETF持有上市股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為 ETF 持有且可辨識的上市普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>即時報價凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
 <main>
 <div class="warning"><b>外資持股歷史完整性：</b>本次由證交所取得 ${report.meta.foreignHoldingHistoryDays} 個有效交易日；至少 11 日才計算並發布 10 日持股變化。</div>
+<div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `未完整：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；本次不提供「可分批布局」新建部位。`}</div>
 <div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市普通股，約占當日 ${report.meta.listedUniverseCount} 檔上市普通股的 ${report.meta.coverageRate}%，不是全體上市股票。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
 
 <section class="section"><h2>宏觀與市場環境覆蓋</h2><p class="section-lead">狀態：<b>${escapeHtml(report.macroOverlay.status)}</b>（訊號分數 ${fmt(report.macroOverlay.signalScore, 0)}）。本層使用官方公開資料，只調整研究時的環境認知，不直接改個股100分與排名。</p><div class="summary-grid"><div><b>${signed(report.macroOverlay.metrics.exportOrdersYoy, 1, '%')}</b><span>外銷訂單年增｜${escapeHtml(report.macroOverlay.metrics.exportOrdersPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.manufacturingYoy, 1, '%')}</b><span>製造業生產年增｜${escapeHtml(report.macroOverlay.metrics.manufacturingPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.m1bYoy, 1, '%')}</b><span>M1B年增｜${escapeHtml(report.macroOverlay.metrics.m1bPeriod)}</span></div><div><b>${fmt(report.macroOverlay.metrics.marketBreadth, 1)}%</b><span>上市普通股上漲家數占比｜${report.macroOverlay.metrics.advances}漲／${report.macroOverlay.metrics.declines}跌</span></div></div><p class="framework-note">新台幣兌美元 ${fmt(report.macroOverlay.metrics.usdTwd, 3)}（${escapeHtml(report.macroOverlay.metrics.usdTwdDate)}；20筆變化 ${signed(report.macroOverlay.metrics.usdTwdChange20, 2, '%')}）；重貼現率 ${fmt(report.macroOverlay.metrics.policyRate, 3)}%（${escapeHtml(report.macroOverlay.metrics.policyRateDate)}）。</p></section>
@@ -1614,7 +1622,17 @@ async function main() {
     ...twseValuationRows.map(row => String(row.Code || ''))
   ]);
   const stockEntries = allStockEntries.filter(([code]) => /^\d{4}$/.test(code) && twseListedCodes.has(code));
-  const activeSet = new Set(data.etfs.filter(etf => etf.type === 'active').map(etf => etf.code));
+  const activeEtfs = data.etfs.filter(etf => etf.type === 'active');
+  const activeSet = new Set(activeEtfs.map(etf => etf.code));
+  const activeSignalSet = new Set(activeEtfs.filter(etf => etf.updated).map(etf => etf.code));
+  const activeStaleEtfs = activeEtfs.filter(etf => !etf.updated).map(etf => ({ code: etf.code, name: etf.name, date: etf.date || null }));
+  const activeCoverage = {
+    total: activeSet.size,
+    updated: activeSignalSet.size,
+    rate: activeSet.size ? activeSignalSet.size / activeSet.size * 100 : 0,
+    complete: activeSet.size > 0 && activeSignalSet.size === activeSet.size,
+    staleEtfs: activeStaleEtfs
+  };
   const laggingSet = new Set(data.etfs.filter(etf => !etf.updated).map(etf => etf.code));
   console.log(`ETF ${data.etfs.length} 檔，ETF持股共 ${allStockEntries.length} 檔，保留上市股票 ${stockEntries.length} 檔，主動ETF ${activeSet.size} 檔。`);
 
@@ -1723,7 +1741,7 @@ async function main() {
     const currentRatio = Number.isFinite(currentAssets) && Number.isFinite(currentLiabilities) && currentLiabilities > 0 ? currentAssets / currentLiabilities * 100 : null;
     const inst = institutional(code);
     const foreignHolding = foreignHoldingFeatures(foreignHoldingHistory, code);
-    const etf = stockEtfFeatures(stock, detail, activeSet, laggingSet);
+    const etf = stockEtfFeatures(stock, detail, activeSet, activeSignalSet, activeCoverage, laggingSet);
     const closes = (detail?.px || []).map(number).filter(Number.isFinite).reverse();
     const technical = technicalFromCloses(closes, ohlc);
     const credit = creditFeatures(creditHistory, code, technical?.return5, (number(dailyRow?.TradeVolume) || 0) / 1000);
@@ -1836,7 +1854,10 @@ async function main() {
       foreignHoldingCovered: records.filter(record => record.foreignHolding?.trendReliable).length,
       kdCovered: records.filter(record => Number.isFinite(record.technical?.kdK) && Number.isFinite(record.technical?.kdD)).length,
       activeEtfs: activeSet.size,
-      activeUpdated: data.meta.active_updated,
+      activeUpdated: activeSignalSet.size,
+      activeCoverageRate: round(activeCoverage.rate, 1),
+      activeEtfDataComplete: activeCoverage.complete,
+      activeStaleEtfs,
       laggingEtfs: data.meta.lagging_etfs,
       incomplete: data.meta.incomplete,
       deepScored: records.filter(record => record.confidence >= 65).length,

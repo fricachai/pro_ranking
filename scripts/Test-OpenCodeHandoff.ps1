@@ -234,6 +234,12 @@ try {
     if ([int]$report.meta.foreignHoldingHistoryDays -lt 11) {
         throw "Current report has fewer than 11 valid TWSE foreign-holding trading days: $($report.meta.foreignHoldingHistoryDays)"
     }
+    if ($null -eq $report.meta.activeEtfDataComplete -or $null -eq $report.meta.activeCoverageRate -or $null -eq $report.meta.activeStaleEtfs) {
+        throw 'Current report is missing active-ETF completeness metadata.'
+    }
+    if (-not [bool]$report.meta.activeEtfDataComplete -and [int]$report.meta.bucketA -gt 0) {
+        throw "Active ETF same-day coverage is incomplete ($($report.meta.activeUpdated)/$($report.meta.activeEtfs)), but report still contains $($report.meta.bucketA) buy-oriented A-bucket records."
+    }
     if (-not $events.fetchedAt -or -not $events.sourceScope -or -not $events.sourceStatus) {
         throw 'latest-events.json is missing source freshness or source-status metadata.'
     }
