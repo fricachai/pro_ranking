@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026/07/30 20:16:55",
+    "generatedAt": "2026/07/30 20:19:52",
     "etfDate": "2026-07-30",
     "priceDate": "2026-07-30",
     "marketDate": "2026-07-29",
@@ -165,8 +165,8 @@
     "caveat": "分數用於研究排序；未取得完整一致預估、自由現金流、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-07-30T12:16:33.919Z",
-    "totalCount": 913,
+    "fetchedAt": "2026-07-30T12:19:28.725Z",
+    "totalCount": 903,
     "aiEnabled": false,
     "sourceScope": {
       "xiaoyuEventTypes": [
@@ -188,7 +188,7 @@
         "requestedStocks": 500,
         "fetchedStocks": 458,
         "failedStocks": 42,
-        "itemCount": 541,
+        "itemCount": 530,
         "coverageRate": 91.6
       }
     },
@@ -198,7 +198,7 @@
       "insider_transfer": 160,
       "material_info": 166,
       "investor_conf": 14,
-      "news_pending": 516
+      "news_pending": 506
     }
   },
   "topThree": [
@@ -25271,47 +25271,7 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "Global Market Highlights 3 Stocks Estimated Below Intrinsic Value",
-          "publishTime": "Fri, 15 May 2026 09:38:03 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/global-market-highlights-3-stocks-093803131.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Para Light Shatters Thermal Limits with ThermaFlat™ SiC MOSFETs Featuring Industry-Leading RDS(on) Stability",
-          "publishTime": "Wed, 18 Mar 2026 06:34:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/para-light-shatters-thermal-limits-063400963.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Asian Market's Top Value Stocks Estimated Below Intrinsic Worth January 2026",
-          "publishTime": "Mon, 19 Jan 2026 22:38:35 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/asian-markets-top-value-stocks-223835997.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "籌碼分歧",
       "signalRobust": false,
       "rejectionReasons": [
@@ -33131,7 +33091,21 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [],
+      "eventsLayer": [
+        {
+          "eventType": "news_pending",
+          "title": "TEAM GROUP ANNOUNCES ACQUISITION OF A&amp;J VACWORX, EXPANDING INDUSTRIAL SERVICES PLATFORM",
+          "publishTime": "Thu, 09 Apr 2026 13:11:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/team-group-announces-acquisition-j-131100823.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        }
+      ],
       "flowState": "籌碼分歧",
       "signalRobust": false,
       "rejectionReasons": [
@@ -66479,60 +66453,7 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "HNA TechnologyLtd And 2 Other Undiscovered Gems With Promising Potential",
-          "publishTime": "Sun, 12 Oct 2025 22:32:58 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/hna-technologyltd-2-other-undiscovered-223258940.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Jones Tech And 2 Other Undiscovered Gems In Asia",
-          "publishTime": "Wed, 10 Sep 2025 04:33:07 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/jones-tech-2-other-undiscovered-043307702.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Asia's Undiscovered Gems Featuring Shanghai Xiao Fang PharmaceuticalLtd And Two More Small Caps With Strong Fundamentals",
-          "publishTime": "Tue, 05 Aug 2025 04:32:56 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/asias-undiscovered-gems-featuring-shanghai-043256346.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "3 Undiscovered Asian Gems With Promising Potential",
-          "publishTime": "Mon, 04 Aug 2025 22:33:13 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/3-undiscovered-asian-gems-promising-223313067.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "籌碼分歧",
       "signalRobust": false,
       "rejectionReasons": [
@@ -98691,7 +98612,34 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [],
+      "eventsLayer": [
+        {
+          "eventType": "news_pending",
+          "title": "Undiscovered Gems In Global Featuring 3 Promising Small Caps",
+          "publishTime": "Tue, 10 Feb 2026 09:33:26 +0000",
+          "sourceUrl": "https://finance.yahoo.com/news/undiscovered-gems-global-featuring-3-093326867.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
+          "title": "Global Dividend Stocks Featuring Top 3 Picks",
+          "publishTime": "Fri, 28 Nov 2025 09:31:48 +0000",
+          "sourceUrl": "https://finance.yahoo.com/news/global-dividend-stocks-featuring-top-093148966.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        }
+      ],
       "flowState": "籌碼分歧",
       "signalRobust": false,
       "rejectionReasons": [
@@ -102288,6 +102236,19 @@
           "title": "3 Asian Dividend Stocks Offering Yields Up To 4.1%",
           "publishTime": "Mon, 27 Oct 2025 04:33:09 +0000",
           "sourceUrl": "https://finance.yahoo.com/news/3-asian-dividend-stocks-offering-043309996.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
+          "title": "3 Global Dividend Stocks Yielding Up To 3.5%",
+          "publishTime": "Fri, 26 Sep 2025 09:31:53 +0000",
+          "sourceUrl": "https://finance.yahoo.com/news/3-global-dividend-stocks-yielding-093153590.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -106745,7 +106706,21 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [],
+      "eventsLayer": [
+        {
+          "eventType": "news_pending",
+          "title": "Three Undiscovered Gems in Asia to Enhance Your Portfolio",
+          "publishTime": "Mon, 01 Jun 2026 04:33:37 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/three-undiscovered-gems-asia-enhance-043337252.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        }
+      ],
       "flowState": "5/10日延續加碼",
       "signalRobust": false,
       "rejectionReasons": [
@@ -109261,47 +109236,7 @@
         "buyback": null,
         "insiderTransferLots30": 0
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "Top Asian Dividend Stocks To Consider In December 2025",
-          "publishTime": "Wed, 31 Dec 2025 04:31:42 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/top-asian-dividend-stocks-consider-043142348.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Global Dividend Stocks To Watch With Up To 7.3% Yield",
-          "publishTime": "Tue, 25 Nov 2025 09:31:53 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/global-dividend-stocks-watch-7-093153131.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "3 Global Dividend Stocks Yielding Up To 3.5%",
-          "publishTime": "Fri, 26 Sep 2025 09:31:53 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/3-global-dividend-stocks-yielding-093153590.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "籌碼分歧",
       "signalRobust": false,
       "rejectionReasons": [
@@ -115356,71 +115291,6 @@
           "sourceUrl": "https://mops.twse.com.tw/mops/web/t05sr01_1?co_id=1515&year=115&month=07#20260727151405",
           "source": "twse_material",
           "confirmed": true,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Is It Too Late To Consider Nittetsu Mining (TSE:1515) After Its Strong Multi‑Year Rally?",
-          "publishTime": "Wed, 13 May 2026 04:34:37 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/too-consider-nittetsu-mining-tse-043437013.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Nittetsu Mining And 2 Other Undiscovered Gems In Asia With Promising Potential",
-          "publishTime": "Wed, 11 Feb 2026 04:33:29 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/nittetsu-mining-2-other-undiscovered-043329996.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Shenzhen Hipine Precision Technology And 2 Other Undiscovered Gems In Asia",
-          "publishTime": "Tue, 13 Jan 2026 22:33:23 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/shenzhen-hipine-precision-technology-2-223323324.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Lotus HoldingsLtd And 2 Other Undiscovered Gems in Asia With Solid Potential",
-          "publishTime": "Mon, 15 Dec 2025 22:35:13 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/lotus-holdingsltd-2-other-undiscovered-223513692.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Assessing Nittetsu Mining (TSE:1515)’s Valuation After a 22% Monthly and 156% One-Year Share Price Surge",
-          "publishTime": "Wed, 10 Dec 2025 20:07:38 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/assessing-nittetsu-mining-tse-1515-200738197.html",
-          "source": "yahoo_news",
-          "confirmed": false,
           "dateKind": "published",
           "sourceStartDate": null,
           "sourceEndDate": null,
