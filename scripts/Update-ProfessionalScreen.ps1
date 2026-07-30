@@ -80,7 +80,7 @@ function Test-LiveReport {
 
     $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
     $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
-    $required = @('top30TableWrap', 'fullTableWrap', $ExpectedEtfDate)
+    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     if ($response.StatusCode -ne 200 -or $missing.Count -gt 0) {
         throw "Live page validation failed. HTTP=$($response.StatusCode); missing=$($missing -join ', ')"
@@ -211,7 +211,7 @@ try {
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
     $operationPriceToken = -join @([char]0x5BE6, [char]0x969B, [char]0x64CD, [char]0x4F5C, [char]0x50F9, [char]0x4F4D)
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", $operationPriceToken, 'operationPriceHtml', 'tracking-toggle')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", $operationPriceToken, 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
@@ -312,7 +312,7 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('top30TableWrap', 'fullTableWrap', [string]$meta.etfDate)) {
+    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 

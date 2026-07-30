@@ -286,7 +286,7 @@ try {
         }
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(
