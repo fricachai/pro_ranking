@@ -25,7 +25,7 @@ try {
         $currentStatus = $statusLine[0].Substring(7)
     } while ($currentStatus -eq 'running')
 
-    if ($currentStatus -notin @('published', 'failed')) {
+    if ($currentStatus -notin @('published', 'no_new_data', 'failed')) {
         throw "Unexpected update status: $currentStatus"
     }
 }

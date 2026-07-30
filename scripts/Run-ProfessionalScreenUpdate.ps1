@@ -26,10 +26,26 @@ $state = [ordered]@{
 Write-State -Value $state
 
 $exitCode = 1
+$updaterStatus = $null
 try {
     Push-Location $RepoRoot
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Updater -Publish *>> $RunLogPath
+    $output = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Updater -Publish 2>&1)
     $exitCode = $LASTEXITCODE
+    $output | ForEach-Object { [string]$_ } | Add-Content -LiteralPath $RunLogPath -Encoding utf8
+    if ($exitCode -eq 0) {
+        $statusLine = @($output | ForEach-Object { [string]$_ } | Where-Object { $_ -like 'STATUS=*' } | Select-Object -Last 1)
+        if ($statusLine.Count -ne 1) {
+            'Updater completed without a valid STATUS line.' | Add-Content -LiteralPath $RunLogPath -Encoding utf8
+            $exitCode = 1
+        }
+        else {
+            $updaterStatus = $statusLine[0].Substring(7)
+            if ($updaterStatus -notin @('published', 'no_new_data')) {
+                "Unexpected updater status: $updaterStatus" | Add-Content -LiteralPath $RunLogPath -Encoding utf8
+                $exitCode = 1
+            }
+        }
+    }
 }
 catch {
     $_ | Out-String | Add-Content -LiteralPath $RunLogPath -Encoding utf8
@@ -37,7 +53,7 @@ catch {
 }
 finally {
     Pop-Location
-    $state.status = if ($exitCode -eq 0) { 'published' } else { 'failed' }
+    $state.status = if ($exitCode -eq 0) { $updaterStatus } else { 'failed' }
     $state.completedAt = (Get-Date).ToString('o')
     $state.exitCode = $exitCode
     Write-State -Value $state

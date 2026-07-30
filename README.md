@@ -23,6 +23,8 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
 ```
 
+同一日可重複執行。每次都會重新查詢盤中行情、新聞、重大訊息與其他來源，不再被日期標籤提前攔截。排除純生成／抓取時間戳後，資料有實質變化才回報 `STATUS=published` 並建立 `published/YYYYMMDD-HHmmss` 稽核標籤；沒有新資料則回報 `STATUS=no_new_data`，維持既有正式版。<!-- INTRADAY_REFRESH_V1 -->
+
 只在本機更新與驗證：
 
 ```powershell

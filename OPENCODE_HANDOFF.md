@@ -125,7 +125,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 決策卡的閱讀順序固定為「目前動作 → 執行時間／比例 → 觸發價 → 改變條件 → 原因」。目前動作和確認時間不可混用；今天先不動時顯示「持有不動」，「下個交易日確認」只屬時間條件。
 - 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
 - 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
-- 同日 `published/YYYYMMDD` 已鎖時，不得刪除標籤。使用者明確要求發布純 UI 變更時，先確認資料與評分邏輯未變，再完成語法、三份 HTML 雜湊、`design-qa.md`、桌機／手機與互動 QA；限定提交 UI／驗證檔後推送，確認 Pages SHA、HTTP 200、資料日期及 `positionDecisionSummary`，最後執行受控入口確認 `STATUS=snapshot_locked`。
+- 同一日可以重複執行 `/update-report`。舊的 `published/YYYYMMDD` 只是歷史紀錄，不再阻擋來源檢查；每次都會重新抓取盤中行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
+- 更新器會排除純生成／抓取時間戳後比較報告指紋；資料有實質變化才提交發布並建立 `published/YYYYMMDD-HHmmss` 稽核標籤，否則清理本次生成變動並回報 `STATUS=no_new_data`。
+- OpenCode 必須把 `no_new_data` 回報為「已完成當次檢查但沒有新資料」，不能說成失敗或再次發布成功；只有 `STATUS=published` 才附上新提交。
 - 只要涉及資料來源、資料日期、評分、排名、動作規則或品質門檻，就不得使用純 UI 例外流程。
 - 本機登入、成本、追蹤部位與測試狀態不得進入 Git 或 Obsidian；只保存功能規格、測試方法與不含個資的結果。
 
@@ -144,15 +146,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 
 ## 成功後的完成證據
 
-OpenCode 必須回報：
+OpenCode 必須依結果回報：
 
-- `STATUS=published`
-- ETF、法人、外資持股、信用交易、集保及市場資料日期，以及外資持股有效交易日數
-- 股票數與前三名研究候選
-- Git 提交版本
-- `https://fricachai.github.io/pro_ranking/`
-- 本次執行紀錄檔位置
-- 治理資料排除驗證通過，排名、動作與線上頁面未出現治理查核或待查核候選
+- 有實質資料變化：`STATUS=published`、來源日期、外資持股有效交易日數、股票數、前三名、新 Git 提交、`PUBLISHED_TAG`、公開網址與紀錄檔。
+- 沒有實質資料變化：`STATUS=no_new_data`、`CHECKED_AT`、來源日期、目前正式版提交、公開網址與紀錄檔；不得宣稱再次發布。
+- 兩種成功狀態都必須確認治理資料排除與資料品質閘門通過。
 
 此外，工作區必須乾淨，本機 `HEAD` 必須等於 `origin/main`，GitHub Pages 最新建置提交也必須是同一版本。
 

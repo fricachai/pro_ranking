@@ -96,6 +96,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     }
 }
 
+$intradayRuleMarker = 'INTRADAY_REFRESH_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($intradayRuleMarker)) {
+        throw "Intraday refresh rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {
@@ -104,8 +112,8 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60') {
-    throw 'The update command must start and poll the controlled background workflow.'
+if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $updateCommand -notmatch 'STATUS=no_new_data' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
+    throw 'The update command must start and poll the intraday-capable controlled background workflow.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -155,6 +163,29 @@ foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(c
 $updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-ProfessionalScreen.ps1') -Raw -Encoding utf8
 if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
     throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
+}
+foreach ($requiredIntradayToken in @(
+    'function Get-ReportFingerprint',
+    'function Restore-GeneratedChanges',
+    "publishStatus = 'no_new_data'",
+    'DATA_CHANGED=',
+    'published/$publicationStamp'
+)) {
+    if (-not $updaterContent.Contains($requiredIntradayToken)) {
+        throw "Intraday refresh safeguard is missing: $requiredIntradayToken"
+    }
+}
+foreach ($forbiddenDateLockToken in @(
+    'STATUS=snapshot_locked',
+    'tag -l $snapshotTag'
+)) {
+    if ($updaterContent.Contains($forbiddenDateLockToken)) {
+        throw "Date-only snapshot lock still blocks intraday refresh: $forbiddenDateLockToken"
+    }
+}
+$runnerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Run-ProfessionalScreenUpdate.ps1') -Raw -Encoding utf8
+if (-not $runnerContent.Contains("'published', 'no_new_data'")) {
+    throw 'Background runner must propagate published and no_new_data statuses.'
 }
 
 Push-Location $RepoRoot

@@ -20,6 +20,11 @@ $LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
 $latestEventsExistedBeforeRun = $false
 $latestEventsBytesBeforeRun = $null
 $reportGenerationCompleted = $false
+$previousReportFingerprint = $null
+$currentReportFingerprint = $null
+$dataChanged = $true
+$checkedAt = (Get-Date).ToString('o')
+$publishedTag = $null
 
 function Assert-Command {
     param([Parameter(Mandatory)][string]$Name)
@@ -50,6 +55,52 @@ function Get-ChangedPaths {
     return @($lines | ForEach-Object {
         if ($_.Length -ge 4) { $_.Substring(3).Trim('"').Replace('\', '/') }
     } | Where-Object { $_ })
+}
+
+function Get-ReportFingerprint {
+    param([Parameter(Mandatory)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return $null }
+    $value = Get-Content -LiteralPath $Path -Raw -Encoding utf8 | ConvertFrom-Json
+    if ($value.meta) {
+        $value.meta.PSObject.Properties.Remove('generatedAt')
+    }
+    if ($value.eventsMeta) {
+        $value.eventsMeta.PSObject.Properties.Remove('fetchedAt')
+    }
+    $normalized = $value | ConvertTo-Json -Depth 100 -Compress
+    $bytes = [Text.Encoding]::UTF8.GetBytes($normalized)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash($bytes))).Replace('-', '')
+    }
+    finally {
+        $sha256.Dispose()
+    }
+}
+
+function Restore-GeneratedChanges {
+    param([Parameter(Mandatory)][string[]]$Paths)
+
+    $tracked = @()
+    $untracked = @()
+    foreach ($path in $Paths) {
+        & git ls-files --error-unmatch -- $path *> $null
+        if ($LASTEXITCODE -eq 0) { $tracked += $path } else { $untracked += $path }
+    }
+    if ($tracked.Count -gt 0) {
+        Invoke-Git -Arguments (@('restore', '--worktree', '--') + $tracked) | Out-Null
+    }
+    foreach ($path in $untracked) {
+        $target = [IO.Path]::GetFullPath((Join-Path $RepoRoot $path))
+        $rootPrefix = [IO.Path]::GetFullPath($RepoRoot).TrimEnd('\') + '\'
+        if (-not $target.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to remove generated path outside the repository: $target"
+        }
+        if (Test-Path -LiteralPath $target -PathType Leaf) {
+            Remove-Item -LiteralPath $target -Force
+        }
+    }
 }
 
 function Test-LiveReport {
@@ -102,6 +153,7 @@ try {
     if ($latestEventsExistedBeforeRun) {
         $latestEventsBytesBeforeRun = [IO.File]::ReadAllBytes($LatestEventsJson)
     }
+    $previousReportFingerprint = Get-ReportFingerprint -Path $LatestJson
 
     if ($Publish) {
         $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
@@ -119,19 +171,6 @@ try {
         $originBeforeRefresh = (Invoke-Git -Arguments @('rev-parse', 'origin/main') | Select-Object -First 1).Trim()
         if ($headBeforeRefresh -ne $originBeforeRefresh) {
             throw "Local main is not synchronized with origin/main. HEAD=$headBeforeRefresh origin/main=$originBeforeRefresh"
-        }
-    }
-
-    if ($Publish) {
-        $todaySlug = (Get-Date).ToString('yyyyMMdd')
-        $snapshotTag = "published/$todaySlug"
-        Invoke-Git @('fetch', 'origin', '--tags', '--force') | Out-Null
-        $existingTag = & git tag -l $snapshotTag 2>&1 | Where-Object { $_ -eq $snapshotTag }
-        if ($existingTag) {
-            Write-Warning "Snapshot for calendar date $todaySlug is already published (tag: $snapshotTag). Skipping update to preserve locked snapshot."
-            Write-Output "STATUS=snapshot_locked"
-            Write-Output "LOCKED_CALENDAR_DATE=$todaySlug"
-            return
         }
     }
 
@@ -316,6 +355,12 @@ try {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
+    $currentReportFingerprint = Get-ReportFingerprint -Path $LatestJson
+    if (-not $currentReportFingerprint) {
+        throw 'Unable to calculate the current report fingerprint.'
+    }
+    $dataChanged = -not $previousReportFingerprint -or $previousReportFingerprint -ne $currentReportFingerprint
+
     $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $datedFiles
     $allowedPrefixes = @('professional-screen-report/events/')
     $changedPaths = @(Get-ChangedPaths)
@@ -331,47 +376,47 @@ try {
         throw "Generator changed unexpected files: $($unexpected -join ', ')"
     }
 
+    if (-not $dataChanged) {
+        Restore-GeneratedChanges -Paths $changedPaths
+        Copy-Item $IndexHtml $LatestHtml -Force
+        $changedPaths = @(Get-ChangedPaths)
+        if ($changedPaths.Count -gt 0) {
+            throw "No-new-data cleanup left repository changes: $($changedPaths -join ', ')"
+        }
+    }
+
     $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $datedFiles
     $commit = $null
-    $publishStatus = if ($changedPaths.Count -eq 0) { 'no_changes' } else { 'validated' }
-    if ($Publish -and $changedPaths.Count -gt 0) {
+    $publishStatus = if ($dataChanged) { 'validated' } else { 'no_new_data' }
+    if ($Publish -and $dataChanged -and $changedPaths.Count -gt 0) {
         Invoke-Git -Arguments (@('add', '--') + $gitAddPaths) | Out-Null
         $stagedCheck = & git diff --cached --check 2>&1
         if ($LASTEXITCODE -ne 0) {
             throw "Pre-commit validation failed:`n$($stagedCheck -join "`n")"
         }
-        Invoke-Git -Arguments @('commit', '-m', "Refresh professional stock screen for $($meta.etfDate)") | Out-Null
+        $commitTime = (Get-Date).ToString('yyyy-MM-dd HH:mm')
+        Invoke-Git -Arguments @('commit', '-m', "Refresh professional stock screen at $commitTime") | Out-Null
         $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
         $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
         Invoke-Git -Arguments @('push', 'origin', $branch) | Out-Null
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
         $publishStatus = 'published'
-        # Create and push snapshot lock tag
-        $todaySlug = (Get-Date).ToString('yyyyMMdd')
-        $snapshotTag = "published/$todaySlug"
-        Invoke-Git @('tag', '-f', $snapshotTag) | Out-Null
+        # Keep an immutable run tag for audit without blocking later same-day refreshes.
+        $publicationStamp = (Get-Date).ToString('yyyyMMdd-HHmmss')
+        $publishedTag = "published/$publicationStamp"
+        Invoke-Git @('tag', $publishedTag, $commit) | Out-Null
         try {
-            Invoke-Git @('push', 'origin', $snapshotTag) | Out-Null
+            Invoke-Git @('push', 'origin', $publishedTag) | Out-Null
         }
         catch {
-            Write-Warning "Failed to push snapshot lock tag '$snapshotTag': $_"
+            Write-Warning "Failed to push publication audit tag '$publishedTag': $_"
         }
 
     }
     elseif ($Publish) {
         $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
-        $publishStatus = 'published_no_changes'
-        # Create and push snapshot lock tag
-        $todaySlug = (Get-Date).ToString('yyyyMMdd')
-        $snapshotTag = "published/$todaySlug"
-        Invoke-Git @('tag', '-f', $snapshotTag) | Out-Null
-        try {
-            Invoke-Git @('push', 'origin', $snapshotTag) | Out-Null
-        }
-        catch {
-            Write-Warning "Failed to push snapshot lock tag '$snapshotTag': $_"
-        }
+        $publishStatus = 'no_new_data'
 
     }
 
@@ -388,6 +433,9 @@ try {
         "$($_.code) $($_.name) [$($_.action)] $($_.score)"
     })
     Write-Output "STATUS=$publishStatus"
+    Write-Output "CHECKED_AT=$checkedAt"
+    Write-Output "DATA_CHANGED=$($dataChanged.ToString().ToLowerInvariant())"
+    Write-Output "REPORT_FINGERPRINT=$currentReportFingerprint"
     Write-Output "ETF_DATE=$($meta.etfDate)"
     Write-Output "INSTITUTIONAL_DATE=$($meta.institutionalDate)"
     Write-Output "FOREIGN_HOLDING_DATE=$($meta.foreignHoldingDate)"
@@ -398,6 +446,7 @@ try {
     Write-Output "STOCK_COUNT=$($meta.stockCount)"
     Write-Output "TOP3=$($topThree -join ' | ')"
     if ($commit) { Write-Output "COMMIT=$commit" }
+    if ($publishedTag) { Write-Output "PUBLISHED_TAG=$publishedTag" }
     if ($Publish) { Write-Output "LIVE_URL=$LiveUrl" }
     Write-Output "LOG=$logPath"
 }

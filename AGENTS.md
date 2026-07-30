@@ -4,7 +4,7 @@
 
 本專案每日重新抓取 ETF、證交所、公開資訊觀測站與即時行情資料，產生台灣上市股票研究排序報告並發布到 GitHub Pages。
 
-## 每日更新唯一入口
+## 盤中／每日更新唯一入口
 
 日常資料更新只執行：
 
@@ -18,7 +18,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 1. 先讀 `OPENCODE_HANDOFF.md`。每日更新不得改動 `full-professional-stock-screen.js` 的評分權重、硬性條件、資料來源、驗證門檻或版面。
 2. 不要重新閱讀完整 `index.html` 或 `professional-screen-report/latest.json`；它們很大，腳本已負責驗證。
-3. 成功時只回報腳本最後輸出的精簡摘要：資料日期、股票數、前三名、提交版本及公開網址。
+3. 成功時依腳本狀態回報：`published` 顯示資料日期、股票數、前三名、提交版本與公開網址；`no_new_data` 顯示檢查時間、資料日期及「來源已檢查但無實質變化」，不得虛構新提交。
 4. 失敗時停止，不要猜測、不降低門檻，也不要自行填造資料。只讀取腳本指出的紀錄檔尾端，說明失敗步驟。
 5. 若工作區原本有未提交變更，腳本會停止。不得清除或覆蓋這些變更。
 6. ETF 20 日資料只作背景，10 日確認延續，5 日看轉折；不得把 20 日累積直接寫成買進訊號。
@@ -48,10 +48,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 4. 每張卡至少顯示：股票與現況、現在動作、執行門檻、主要原因；完整依據必須可展開。手機版改為單欄卡片，不得出現頁面級水平溢出。
 5. `proRankingPositionsV1`、成本價、登入狀態與追蹤 JSON 都是瀏覽器私人資料。測試可建立本機狀態，但不得把測試持倉、成本或帳密寫入 Git、公開 HTML、截圖文字或 Obsidian。
 6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。使用前必須確認沒有更動資料、評分、排名、門檻或日期；不得用此模式冒充每日資料更新。
-7. 若 `published/YYYYMMDD` 已存在，日常 `-Publish` 回傳 `STATUS=snapshot_locked` 是正常保護。純 UI 例外流程不得刪除標籤：先確認乾淨 `main` 與資料閘門，重產並完成語法、雜湊、桌機／手機與互動 QA，只提交相關 UI／驗證檔，推送後核對 Pages SHA、HTTP 200 與線上標記，最後再執行受控入口確認仍為 `snapshot_locked`。
-8. 只要修改資料來源、評分、排名、動作規則、品質門檻或報告日期，就不屬於純 UI 例外；必須等待或依授權解除快照鎖後走完整受控更新，禁止沿用舊資料發布。
-9. 決策介面發布驗證至少包含 `positionDecisionSummary`、資料日期與既有表格標記。`Update-ProfessionalScreen.ps1` 與 `Test-OpenCodeHandoff.ps1` 必須同步檢查新標記。
-10. 視覺修改必須保存 `design-qa.md`：來源與實作並排比較、桌機與手機尺寸、測試狀態、互動清單、console error、差異修正紀錄及 `Final result: passed`。截圖本身不是完成證據，必須實際比較並修正可見差異。
+7. 同一日可多次執行受控更新。舊的 `published/YYYYMMDD` 只保留歷史稽核，不得再用來提前停止；每次都必須重新查詢行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
+8. 更新器以排除 `meta.generatedAt` 與 `eventsMeta.fetchedAt` 後的報告資料指紋判斷實質變化：有變化才提交發布並建立不可變的 `published/YYYYMMDD-HHmmss` 稽核標籤；只有抓取時間改變時，還原本次生成檔並回報 `STATUS=no_new_data`。
+9. `STATUS=no_new_data` 代表已完成當次來源檢查且無實質變化，不是失敗，也不得誤報為已發布新版本。`STATUS=published` 才表示有新資料並完成 Git、Pages 與線上驗證。
+10. 只要修改資料來源、評分、排名、動作規則、品質門檻或報告日期，就不屬於純 UI 例外；必須走完整受控更新，禁止沿用舊資料冒充新資料。
+11. 決策介面發布驗證至少包含 `positionDecisionSummary`、資料日期與既有表格標記。`Update-ProfessionalScreen.ps1` 與 `Test-OpenCodeHandoff.ps1` 必須同步檢查新標記。
+12. 視覺修改必須保存 `design-qa.md`：來源與實作並排比較、桌機與手機尺寸、測試狀態、互動清單、console error、差異修正紀錄及 `Final result: passed`。截圖本身不是完成證據，必須實際比較並修正可見差異。
 
 ## Codex／OpenCode 統一完成條件
 

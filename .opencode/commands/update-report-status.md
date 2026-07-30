@@ -9,4 +9,4 @@ Run only:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60
 ```
 
-Report the returned status, commit when published, and run-log path. If the status is failed, report only the failure summary and run-log path. Do not rerun the update automatically. <!-- BUILD_BASH_DAILY_UPDATE_V1 --><!-- GOVERNANCE_EXCLUSION_RULE_V1 -->
+Report the returned status, commit when published, checked time when no new data is found, and run-log path. If the status is failed, report only the failure summary and run-log path. Do not rerun the update automatically. `STATUS=no_new_data` is a successful current-source check, not a failure. <!-- BUILD_BASH_DAILY_UPDATE_V1 --><!-- GOVERNANCE_EXCLUSION_RULE_V1 --><!-- INTRADAY_REFRESH_V1 -->

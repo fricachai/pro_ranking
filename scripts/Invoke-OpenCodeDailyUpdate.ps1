@@ -27,7 +27,7 @@ Read AGENTS.md and OPENCODE_HANDOFF.md. Start the controlled daily data refresh.
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
 
-Do not edit any file directly. Do not change scoring logic, data sources, validation thresholds, or layout. The update runs in a controlled background process because the full report can exceed a Shell wait window. Report only STATUS=started and RUN_LOG. The result must be checked later with Get-ProfessionalScreenUpdateStatus.ps1; do not claim the report is published before that status says published.
+Do not edit any file directly. Do not change scoring logic, data sources, validation thresholds, or layout. The update runs in a controlled background process because the full report can exceed a Shell wait window. Report only STATUS=started and RUN_LOG. The result must be checked later with Get-ProfessionalScreenUpdateStatus.ps1; do not claim the report is published before that status says published. STATUS=no_new_data means current sources were checked but no material data changed.
 '@
 
 Push-Location $RepoRoot
