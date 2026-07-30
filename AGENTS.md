@@ -40,6 +40,19 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 4. 報告必須輸出 `meta.foreignHoldingHistoryDays` 並在頁面揭露有效交易日數；每日管線與交接預檢都必須確認至少 11 日。
 5. 再次不足時，先檢查官方最大可查日期、週末／休市日、回應狀態及暫時性限流，再以循序方式重試。這是資料取得故障，不是修改選股權重或放寬品質標準的理由。
 
+## 持股決策總覽與純 UI 發布規則
+
+1. 「持股決策總覽」必須先回答目前動作，再回答執行時間、部位比例、觸發價、改變條件與原因。排名與新部位分類不得取代既有部位動作。
+2. 目前動作與確認時間必須分開：例如今天尚未觸發減碼時，動作顯示「持有不動」，時間顯示「下個交易日確認」；不得把「次日確認」誤作目前買賣動作。
+3. 摘要固定分為「減碼／出脫、次日確認、持有不動、可加碼」。卡片與摘要必須共同使用 `positionDecisionMeta` 的結果，不得各自建立另一套分類。
+4. 每張卡至少顯示：股票與現況、現在動作、執行門檻、主要原因；完整依據必須可展開。手機版改為單欄卡片，不得出現頁面級水平溢出。
+5. `proRankingPositionsV1`、成本價、登入狀態與追蹤 JSON 都是瀏覽器私人資料。測試可建立本機狀態，但不得把測試持倉、成本或帳密寫入 Git、公開 HTML、截圖文字或 Obsidian。
+6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。使用前必須確認沒有更動資料、評分、排名、門檻或日期；不得用此模式冒充每日資料更新。
+7. 若 `published/YYYYMMDD` 已存在，日常 `-Publish` 回傳 `STATUS=snapshot_locked` 是正常保護。純 UI 例外流程不得刪除標籤：先確認乾淨 `main` 與資料閘門，重產並完成語法、雜湊、桌機／手機與互動 QA，只提交相關 UI／驗證檔，推送後核對 Pages SHA、HTTP 200 與線上標記，最後再執行受控入口確認仍為 `snapshot_locked`。
+8. 只要修改資料來源、評分、排名、動作規則、品質門檻或報告日期，就不屬於純 UI 例外；必須等待或依授權解除快照鎖後走完整受控更新，禁止沿用舊資料發布。
+9. 決策介面發布驗證至少包含 `positionDecisionSummary`、資料日期與既有表格標記。`Update-ProfessionalScreen.ps1` 與 `Test-OpenCodeHandoff.ps1` 必須同步檢查新標記。
+10. 視覺修改必須保存 `design-qa.md`：來源與實作並排比較、桌機與手機尺寸、測試狀態、互動清單、console error、差異修正紀錄及 `Final result: passed`。截圖本身不是完成證據，必須實際比較並修正可見差異。
+
 ## Codex／OpenCode 統一完成條件
 
 除非使用者明確要求只保留本機、不要提交或不要發布，任何資料更新、錯誤修正、功能新增與判斷規則調整都必須在以下條件全部成立後，才可宣告完成：

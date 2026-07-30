@@ -120,6 +120,15 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 只有無結構性異動且具完整 5／10 日資料的 `trendReliable=true` 個股，外資持股趨勢才可參與評分與風險判斷。
 - 每次成功報告都必須包含 `meta.foreignHoldingHistoryDays >= 11`，網頁也會顯示有效交易日數。若不足，管線應停止並檢查最大可查日期、週末／休市與暫時性限流後重試，不調整選股權重。
 
+### 持股決策總覽與純 UI 維護
+
+- 決策卡的閱讀順序固定為「目前動作 → 執行時間／比例 → 觸發價 → 改變條件 → 原因」。目前動作和確認時間不可混用；今天先不動時顯示「持有不動」，「下個交易日確認」只屬時間條件。
+- 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
+- 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
+- 同日 `published/YYYYMMDD` 已鎖時，不得刪除標籤。使用者明確要求發布純 UI 變更時，先確認資料與評分邏輯未變，再完成語法、三份 HTML 雜湊、`design-qa.md`、桌機／手機與互動 QA；限定提交 UI／驗證檔後推送，確認 Pages SHA、HTTP 200、資料日期及 `positionDecisionSummary`，最後執行受控入口確認 `STATUS=snapshot_locked`。
+- 只要涉及資料來源、資料日期、評分、排名、動作規則或品質門檻，就不得使用純 UI 例外流程。
+- 本機登入、成本、追蹤部位與測試狀態不得進入 Git 或 Obsidian；只保存功能規格、測試方法與不含個資的結果。
+
 ## 防止錯誤發布的關卡
 
 每日管線會在下列任一情況停止，不會拿舊資料更新網站：
