@@ -249,8 +249,7 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    $operationPriceToken = -join @([char]0x5BE6, [char]0x969B, [char]0x64CD, [char]0x4F5C, [char]0x50F9, [char]0x4F4D)
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", $operationPriceToken, 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
