@@ -126,8 +126,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
 - 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
 - 同一日可以重複執行 `/update-report`。舊的 `published/YYYYMMDD` 只是歷史紀錄，不再阻擋來源檢查；每次都會重新抓取盤中行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
-- 更新器會排除純生成／抓取時間戳後比較報告指紋；資料有實質變化才提交發布並建立 `published/YYYYMMDD-HHmmss` 稽核標籤，否則清理本次生成變動並回報 `STATUS=no_new_data`。
-- OpenCode 必須把 `no_new_data` 回報為「已完成當次檢查但沒有新資料」，不能說成失敗或再次發布成功；只有 `STATUS=published` 才附上新提交。
+- 更新器會排除純生成／抓取時間戳後比較報告指紋，但每次成功檢查都會提交本次報告與事件檢查時間、發布並建立 `published/YYYYMMDD-HHmmss` 稽核標籤。`DATA_CHANGED=false` 代表沒有實質內容變化，不得說成失敗。<!-- REFRESH_TIMESTAMP_V1 -->
+- Yahoo RSS 是 C 級待確認資訊；若 429 限流造成部分或全部失敗，事件檔必須揭露 `partial` 或 `unavailable`、成功率與限流數，但仍以本次重新取得的官方重大訊息與結構化事件完成報告。不得沿用舊新聞冒充本次抓取。<!-- OPTIONAL_YAHOO_NEWS_V1 -->
 - 只要涉及資料來源、資料日期、評分、排名、動作規則或品質門檻，就不得使用純 UI 例外流程。
 - 本機登入、成本、追蹤部位與測試狀態不得進入 Git 或 Obsidian；只保存功能規格、測試方法與不含個資的結果。
 
@@ -137,8 +137,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 
 1. 工作區有未提交變更，或本機 `main` 與 `origin/main` 不一致。
 2. Node.js、Git、GitHub CLI、GitHub 登入或遠端儲存庫不正確。
-3. 事件、官方重大訊息或 Yahoo 新聞抓取失敗。
-4. ETF 股票代號少於 300，或 Yahoo 新聞成功讀取率低於 80%。
+3. 結構化事件或官方重大訊息抓取失敗。
+4. ETF 股票代號少於 300，或 Yahoo 新聞未實際嘗試／來源狀態未揭露。Yahoo 成功率低於 80%本身不是失敗。
 5. 報告沒有使用本次剛抓取的事件新聞檔。
 6. 官方法人、外資持股（含至少 11 個有效交易日）、信用交易、集保、標準 KD、股票數或決策欄位不符合資料契約。
 7. 生成檔出現預期外變更、提交失敗、推送失敗或 GitHub Pages 未部署同一提交。
@@ -148,9 +148,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 
 OpenCode 必須依結果回報：
 
-- 有實質資料變化：`STATUS=published`、來源日期、外資持股有效交易日數、股票數、前三名、新 Git 提交、`PUBLISHED_TAG`、公開網址與紀錄檔。
-- 沒有實質資料變化：`STATUS=no_new_data`、`CHECKED_AT`、來源日期、目前正式版提交、公開網址與紀錄檔；不得宣稱再次發布。
-- 兩種成功狀態都必須確認治理資料排除與資料品質閘門通過。
+- 成功：`STATUS=published`、`CHECKED_AT`、`DATA_CHANGED`、來源日期、Yahoo 新聞狀態、外資持股有效交易日數、股票數、前三名、新 Git 提交、`PUBLISHED_TAG`、公開網址與紀錄檔。
+- `DATA_CHANGED=false` 時要明確說明「來源已重新檢查，實質內容未變；本次檢查時間已發布」。
+- 所有成功更新都必須確認治理資料排除與資料品質閘門通過。
 
 此外，工作區必須乾淨，本機 `HEAD` 必須等於 `origin/main`，GitHub Pages 最新建置提交也必須是同一版本。
 

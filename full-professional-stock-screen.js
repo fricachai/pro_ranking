@@ -1378,12 +1378,20 @@ function refreshPositionLanguage(report) {
 
 function buildHtml(report) {
   refreshPositionLanguage(report);
+  const newsStatusLabels = {
+    complete: '完整',
+    partial: '部分成功',
+    unavailable: '暫時無法取得'
+  };
+  const newsStatusLabel = newsStatusLabels[report.meta.yahooNewsStatus] || '未確認';
+  const degradedNewsNotice = report.meta.yahooNewsStatus === 'complete' ? '' : `
+<div class="warning"><b>新聞來源狀態：</b>Yahoo Finance RSS 本次${newsStatusLabel}（成功率 ${fmt(report.meta.yahooNewsCoverageRate, 1)}%）。官方重大訊息與結構化事件已重新檢查，報告照常更新；Yahoo 新聞僅屬待確認資訊，不直接計分。</div>`;
   const scoreLink = row => `<a class="score-link" href="#score-${escapeHtml(row.code)}" data-score-code="${escapeHtml(row.code)}" title="查看 ${escapeHtml(row.name)} 的評分明細、判斷資料與來源">${fmt(row.score)}</a>`;
   const topCards = report.topThree.map((row, index) => `
     <article class="pick">
       <div class="pick-head"><span class="rank">${index + 1}</span><div><h3><a class="stock-link" href="${yahooTechnicalUrl(row.code)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析">${escapeHtml(row.code)} ${escapeHtml(row.name)}</a></h3><p>${escapeHtml(row.industry)}</p></div><strong>${scoreLink(row)}</strong></div>
       <div class="decision-strip"><span><small>建立新部位</small><b>${escapeHtml(row.entryAction)}</b></span><span class="state-${escapeHtml(row.holdingState)}"><small>已經持有</small><b>${escapeHtml(row.holdingAction)}</b></span></div>
-      <div class="metrics"><span>即時價<b>${fmt(row.livePrice ?? row.close, 2)}</b></span><span>信心度<b>${fmt(row.confidence, 0)}%</b></span><span>本益比<b>${fmt(row.valuation.pe)}</b></span><span>RSI／K／D<b>${fmt(row.technical.rsi14, 0)}／${fmt(row.technical.kdK, 0)}／${fmt(row.technical.kdD, 0)}</b></span></div>
+      <div class="metrics"><span>${escapeHtml(report.meta.priceLabel || '最新報價')}<b>${fmt(row.livePrice ?? row.close, 2)}</b></span><span>信心度<b>${fmt(row.confidence, 0)}%</b></span><span>本益比<b>${fmt(row.valuation.pe)}</b></span><span>RSI／K／D<b>${fmt(row.technical.rsi14, 0)}／${fmt(row.technical.kdK, 0)}／${fmt(row.technical.kdD, 0)}</b></span></div>
       <label class="position-toggle"><input type="checkbox" data-position-toggle="${escapeHtml(row.code)}"> <span>我已開始布局，持續追蹤</span></label>
       <dl><dt>值得布局的理由</dt><dd>${escapeHtml(row.thesis)}</dd><dt>市場可能已經反映的部分</dt><dd>${escapeHtml(row.pricedIn)}</dd><dt>市場可能低估的地方</dt><dd>${escapeHtml(row.possibleUnderestimate)}</dd><dt>最先要注意的風險</dt><dd>${escapeHtml(row.rejectionReasons[0] || '目前未觸發硬性風險，但仍不適合一次買足。')}</dd><dt>尚未持有怎麼做</dt><dd>${escapeHtml(row.entryPlan)}</dd><dt>已經持有怎麼做</dt><dd>${escapeHtml(row.holdingPlan)}</dd></dl>
       <div class="flow"><span>ETF 5日 ${signed(row.etf.d5, 0, '張')}</span><span>主動ETF 5日 ${signed(row.etf.activeD5, 0, '張')}</span><span>外資持股5日 ${signed(row.foreign.holdingD5, 0, '張')}</span><span>外資買賣超5日 ${signed(row.foreign.netBuy5, 0, '張')}</span><span>投信買賣超5日 ${signed(row.investmentTrust.netBuy5, 0, '張')}</span></div>
@@ -1462,8 +1470,9 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
   </div>
 </div>
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
-<header><div class="header-row"><h1>ETF持有上市股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為 ETF 持有且可辨識的上市普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>即時報價凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
+<header><div class="header-row"><h1>ETF持有上市股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為 ETF 持有且可辨識的上市普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
 <main>
+${degradedNewsNotice}
 <div class="warning"><b>外資持股歷史完整性：</b>本次由證交所取得 ${report.meta.foreignHoldingHistoryDays} 個有效交易日；至少 11 日才計算並發布 10 日持股變化。</div>
 <div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `未完整：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；本次不提供「可分批布局」新建部位。`}</div>
 <div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市普通股，約占當日 ${report.meta.listedUniverseCount} 檔上市普通股的 ${report.meta.coverageRate}%，不是全體上市股票。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
@@ -1873,10 +1882,18 @@ async function main() {
   const ranking = records.map((record, index) => recordForOutput(record, index + 1));
   const topThree = topThreeRecords.map(record => ranking.find(row => row.code === record.code));
   const liveTimes = records.map(record => record.live?.time).filter(Boolean).sort();
+  const liveDates = records.map(record => record.live?.date).filter(Boolean).sort();
+  const latestLiveTime = liveTimes.at(-1) || null;
+  const quotePhase = latestLiveTime && latestLiveTime >= '13:30:00' ? 'close' : 'intraday';
+  const yahooNewsStatus = eventsLayerData.sourceStatus?.yahooNews?.status || 'unavailable';
+  const yahooNewsCoverageRate = number(eventsLayerData.sourceStatus?.yahooNews?.coverageRate) || 0;
   const marketDates = [twseDailyRows[0]?.Date].map(rocDateToIso).filter(Boolean).sort();
   const report = {
     meta: {
       generatedAt: formatDateTimeTaipei(),
+      eventCheckedAt: eventsLayerData.fetchedAt ? formatDateTimeTaipei(new Date(eventsLayerData.fetchedAt)) : '本次未取得',
+      yahooNewsStatus,
+      yahooNewsCoverageRate,
       etfDate: yyyymmddToIso(data.meta.latest),
       priceDate: yyyymmddToIso(data.meta.price_date),
       marketDate: marketDates.at(-1) || yyyymmddToIso(data.meta.price_date),
@@ -1888,7 +1905,10 @@ async function main() {
       creditDate: creditHistory.dates[0] || null,
       tdccDate: tdccData.date,
       quarterlyFinancialPeriod: [...new Set(records.map(record => record.financialPeriod).filter(Boolean))].sort().at(-1) || null,
-      liveFreeze: liveTimes.length ? `${TODAY} ${liveTimes.at(-1)}` : '無可驗證即時報價',
+      liveDate: liveDates.at(-1) || null,
+      liveFreeze: liveTimes.length ? `${liveDates.at(-1) || TODAY} ${latestLiveTime}` : '無可驗證即時報價',
+      quotePhase,
+      priceLabel: quotePhase === 'close' ? '收盤價' : '即時價',
       etfCount: data.etfs.length,
       stockCount: stockEntries.length,
       listedUniverseCount: twseDailyRows.filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000).length,

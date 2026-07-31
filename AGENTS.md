@@ -18,7 +18,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 1. 先讀 `OPENCODE_HANDOFF.md`。每日更新不得改動 `full-professional-stock-screen.js` 的評分權重、硬性條件、資料來源、驗證門檻或版面。
 2. 不要重新閱讀完整 `index.html` 或 `professional-screen-report/latest.json`；它們很大，腳本已負責驗證。
-3. 成功時依腳本狀態回報：`published` 顯示資料日期、股票數、前三名、提交版本與公開網址；`no_new_data` 顯示檢查時間、資料日期及「來源已檢查但無實質變化」，不得虛構新提交。
+3. 成功時依腳本狀態回報：`published` 顯示本次檢查時間、資料日期、是否有實質資料變化、股票數、前三名、提交版本與公開網址。
 4. 失敗時停止，不要猜測、不降低門檻，也不要自行填造資料。只讀取腳本指出的紀錄檔尾端，說明失敗步驟。
 5. 若工作區原本有未提交變更，腳本會停止。不得清除或覆蓋這些變更。
 6. ETF 20 日資料只作背景，10 日確認延續，5 日看轉折；不得把 20 日累積直接寫成買進訊號。
@@ -49,8 +49,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 5. `proRankingPositionsV1`、成本價、登入狀態與追蹤 JSON 都是瀏覽器私人資料。測試可建立本機狀態，但不得把測試持倉、成本或帳密寫入 Git、公開 HTML、截圖文字或 Obsidian。
 6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。使用前必須確認沒有更動資料、評分、排名、門檻或日期；不得用此模式冒充每日資料更新。
 7. 同一日可多次執行受控更新。舊的 `published/YYYYMMDD` 只保留歷史稽核，不得再用來提前停止；每次都必須重新查詢行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
-8. 更新器以排除 `meta.generatedAt` 與 `eventsMeta.fetchedAt` 後的報告資料指紋判斷實質變化：有變化才提交發布並建立不可變的 `published/YYYYMMDD-HHmmss` 稽核標籤；只有抓取時間改變時，還原本次生成檔並回報 `STATUS=no_new_data`。
-9. `STATUS=no_new_data` 代表已完成當次來源檢查且無實質變化，不是失敗，也不得誤報為已發布新版本。`STATUS=published` 才表示有新資料並完成 Git、Pages 與線上驗證。
+8. 更新器以排除 `meta.generatedAt`、`meta.eventCheckedAt` 與 `eventsMeta.fetchedAt` 後的報告資料指紋判斷實質變化，但每次成功檢查都必須提交本次時間戳、發布並建立不可變的 `published/YYYYMMDD-HHmmss` 稽核標籤；`DATA_CHANGED=false` 只表示排除時間戳後沒有實質內容變化。
+9. `STATUS=published` 表示本次來源檢查、Git、Pages 與線上驗證都已完成；無論 `DATA_CHANGED` 為何，前台都必須顯示本次「報告產生」與「事件檢查」日期時間。<!-- REFRESH_TIMESTAMP_V1 -->
 10. 只要修改資料來源、評分、排名、動作規則、品質門檻或報告日期，就不屬於純 UI 例外；必須走完整受控更新，禁止沿用舊資料冒充新資料。
 11. 決策介面發布驗證至少包含 `positionDecisionSummary`、資料日期與既有表格標記。`Update-ProfessionalScreen.ps1` 與 `Test-OpenCodeHandoff.ps1` 必須同步檢查新標記。
 12. 視覺修改必須保存 `design-qa.md`：來源與實作並排比較、桌機與手機尺寸、測試狀態、互動清單、console error、差異修正紀錄及 `Final result: passed`。截圖本身不是完成證據，必須實際比較並修正可見差異。
@@ -94,4 +94,4 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 5. Yahoo RSS 新聞必須維持 `confirmed=false` 與 `eventType=news_pending`，只供查核，不得直接加減評分。
 6. 修改事件來源前，先保存一筆原始資料樣本並確認欄位語意，再新增映射；不得只依欄位名稱、排序或畫面推測。
 7. 發布後至少檢查：事件資料契約通過、未出現庫藏股結束日誤標、網頁清楚揭露實際來源與未實作範圍、GitHub Pages 對應本次提交。
-8. 每日發布必須重新產生 `latest-events.json`，且包含 `sourceStatus`；ETF股票代號不得少於300、Yahoo新聞成功讀取率不得低於80%，官方重大訊息與新聞不得為空。未通過時必須停止，不得沿用舊事件檔。
+8. 每日發布必須重新產生 `latest-events.json`，且包含 `sourceStatus`；ETF股票代號不得少於300，官方重大訊息不得為空。Yahoo RSS 是 C 級待確認資訊；成功率低於80%或完全受限流時，必須以 `complete`、`partial` 或 `unavailable` 揭露狀態與成功率，但不得因此阻斷官方事件、收盤價與報告時間的更新。不得把舊新聞冒充本次新抓取資料。<!-- OPTIONAL_YAHOO_NEWS_V1 -->

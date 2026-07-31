@@ -40,7 +40,7 @@ try {
         }
         else {
             $updaterStatus = $statusLine[0].Substring(7)
-            if ($updaterStatus -notin @('published', 'no_new_data')) {
+            if ($updaterStatus -ne 'published') {
                 "Unexpected updater status: $updaterStatus" | Add-Content -LiteralPath $RunLogPath -Encoding utf8
                 $exitCode = 1
             }

@@ -64,6 +64,7 @@ function Get-ReportFingerprint {
     $value = Get-Content -LiteralPath $Path -Raw -Encoding utf8 | ConvertFrom-Json
     if ($value.meta) {
         $value.meta.PSObject.Properties.Remove('generatedAt')
+        $value.meta.PSObject.Properties.Remove('eventCheckedAt')
     }
     if ($value.eventsMeta) {
         $value.eventsMeta.PSObject.Properties.Remove('fetchedAt')
@@ -76,30 +77,6 @@ function Get-ReportFingerprint {
     }
     finally {
         $sha256.Dispose()
-    }
-}
-
-function Restore-GeneratedChanges {
-    param([Parameter(Mandatory)][string[]]$Paths)
-
-    $tracked = @()
-    $untracked = @()
-    foreach ($path in $Paths) {
-        & git ls-files --error-unmatch -- $path *> $null
-        if ($LASTEXITCODE -eq 0) { $tracked += $path } else { $untracked += $path }
-    }
-    if ($tracked.Count -gt 0) {
-        Invoke-Git -Arguments (@('restore', '--worktree', '--') + $tracked) | Out-Null
-    }
-    foreach ($path in $untracked) {
-        $target = [IO.Path]::GetFullPath((Join-Path $RepoRoot $path))
-        $rootPrefix = [IO.Path]::GetFullPath($RepoRoot).TrimEnd('\') + '\'
-        if (-not $target.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
-            throw "Refusing to remove generated path outside the repository: $target"
-        }
-        if (Test-Path -LiteralPath $target -PathType Leaf) {
-            Remove-Item -LiteralPath $target -Force
-        }
     }
 }
 
@@ -228,14 +205,20 @@ try {
         throw 'Xiaoyu events or official material information returned no valid items.'
     }
     $newsStatus = $eventData.sourceStatus.yahooNews
-    if ([int]$newsStatus.requestedStocks -lt 300 -or [double]$newsStatus.coverageRate -lt 80 -or [int]$newsStatus.itemCount -lt 1) {
-        throw "Yahoo news coverage is insufficient: requested=$($newsStatus.requestedStocks), coverage=$($newsStatus.coverageRate)%, items=$($newsStatus.itemCount)"
+    if ([int]$newsStatus.requestedStocks -lt 300) {
+        throw "Yahoo news request scope is insufficient: requested=$($newsStatus.requestedStocks)"
+    }
+    if ([string]$newsStatus.status -notin @('complete', 'partial', 'unavailable')) {
+        throw "Yahoo news source status is invalid: $($newsStatus.status)"
     }
     $eventTypeNames = @($eventData.events | Group-Object eventType | ForEach-Object Name)
-    foreach ($requiredEventType in @('material_info', 'news_pending')) {
+    foreach ($requiredEventType in @('material_info')) {
         if ($eventTypeNames -notcontains $requiredEventType) {
             throw "Required event type is missing: $requiredEventType"
         }
+    }
+    if ([int]$newsStatus.itemCount -gt 0 -and $eventTypeNames -notcontains 'news_pending') {
+        throw 'Yahoo news items were fetched but news_pending events are missing.'
     }
 
     & node $Generator *>> $logPath
@@ -273,7 +256,7 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs')) {
+    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel')) {
         if ($requiredMetaField -notin $meta.PSObject.Properties.Name -or $null -eq $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
@@ -286,6 +269,10 @@ try {
     }
     if ([int]$meta.foreignHoldingHistoryDays -lt 11) {
         throw "TWSE foreign-holding history is too short: $($meta.foreignHoldingHistoryDays) valid trading days"
+    }
+    $todayTaipei = (Get-Date).ToString('yyyy-MM-dd')
+    if ([string]$meta.liveDate -eq $todayTaipei -and (Get-Date).TimeOfDay -ge [TimeSpan]::FromHours(13.5833) -and [string]$meta.quotePhase -ne 'close') {
+        throw "Current-day quotes were refreshed after 13:35 but were not identified as closing quotes: $($meta.liveFreeze)"
     }
     if (-not [bool]$meta.activeEtfDataComplete -and [int]$meta.bucketA -gt 0) {
         throw "Active ETF same-day coverage is incomplete ($($meta.activeUpdated)/$($meta.activeEtfs)), but report still contains $($meta.bucketA) buy-oriented A-bucket records."
@@ -375,19 +362,10 @@ try {
         throw "Generator changed unexpected files: $($unexpected -join ', ')"
     }
 
-    if (-not $dataChanged) {
-        Restore-GeneratedChanges -Paths $changedPaths
-        Copy-Item $IndexHtml $LatestHtml -Force
-        $changedPaths = @(Get-ChangedPaths)
-        if ($changedPaths.Count -gt 0) {
-            throw "No-new-data cleanup left repository changes: $($changedPaths -join ', ')"
-        }
-    }
-
     $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $datedFiles
     $commit = $null
-    $publishStatus = if ($dataChanged) { 'validated' } else { 'no_new_data' }
-    if ($Publish -and $dataChanged -and $changedPaths.Count -gt 0) {
+    $publishStatus = 'validated'
+    if ($Publish -and $changedPaths.Count -gt 0) {
         Invoke-Git -Arguments (@('add', '--') + $gitAddPaths) | Out-Null
         $stagedCheck = & git diff --cached --check 2>&1
         if ($LASTEXITCODE -ne 0) {
@@ -413,10 +391,7 @@ try {
 
     }
     elseif ($Publish) {
-        $commit = (Invoke-Git -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1).Trim()
-        Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
-        $publishStatus = 'no_new_data'
-
+        throw 'Refresh completed but did not produce a publishable checked-at timestamp change.'
     }
 
     if ($Publish) {

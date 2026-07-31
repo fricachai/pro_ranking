@@ -104,6 +104,22 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     }
 }
 
+$refreshTimestampRuleMarker = 'REFRESH_TIMESTAMP_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($refreshTimestampRuleMarker)) {
+        throw "Refresh timestamp rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
+$optionalYahooRuleMarker = 'OPTIONAL_YAHOO_NEWS_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($optionalYahooRuleMarker)) {
+        throw "Optional Yahoo news rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {
@@ -112,7 +128,7 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $updateCommand -notmatch 'STATUS=no_new_data' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
+if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
     throw 'The update command must start and poll the intraday-capable controlled background workflow.'
 }
 
@@ -154,7 +170,7 @@ foreach ($requiredForeignHistoryToken in @(
 }
 
 $eventFetcherContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'fetch-events.js') -Raw -Encoding utf8
-foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, 6')) {
+foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, CONFIG.newsConcurrency', 'rateLimitedStocks', "status !== 'complete'")) {
     if (-not $eventFetcherContent.Contains($requiredEventFetcherToken)) {
         throw "Event refresh safeguard is missing: $requiredEventFetcherToken"
     }
@@ -166,10 +182,11 @@ if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
 }
 foreach ($requiredIntradayToken in @(
     'function Get-ReportFingerprint',
-    'function Restore-GeneratedChanges',
-    "publishStatus = 'no_new_data'",
+    "publishStatus = 'validated'",
     'DATA_CHANGED=',
-    'published/$publicationStamp'
+    'published/$publicationStamp',
+    'eventCheckedAt',
+    "Yahoo news source status is invalid"
 )) {
     if (-not $updaterContent.Contains($requiredIntradayToken)) {
         throw "Intraday refresh safeguard is missing: $requiredIntradayToken"
@@ -184,8 +201,8 @@ foreach ($forbiddenDateLockToken in @(
     }
 }
 $runnerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Run-ProfessionalScreenUpdate.ps1') -Raw -Encoding utf8
-if (-not $runnerContent.Contains("'published', 'no_new_data'")) {
-    throw 'Background runner must propagate published and no_new_data statuses.'
+if (-not $runnerContent.Contains("updaterStatus -ne 'published'")) {
+    throw 'Background runner must propagate the published status.'
 }
 
 Push-Location $RepoRoot
@@ -277,8 +294,8 @@ try {
     if ($events.sourceScope.yahooNews -ne $true -or $events.sourceScope.officialMaterialInfo -ne $true) {
         throw 'The current event file does not include Yahoo news and official material information.'
     }
-    if ([double]$events.sourceStatus.yahooNews.coverageRate -lt 80) {
-        throw "Current Yahoo news feed coverage is below 80%: $($events.sourceStatus.yahooNews.coverageRate)%"
+    if ($events.sourceStatus.yahooNews.PSObject.Properties.Name -contains 'status' -and [string]$events.sourceStatus.yahooNews.status -notin @('complete', 'partial', 'unavailable')) {
+        throw "Current Yahoo news status is invalid: $($events.sourceStatus.yahooNews.status)"
     }
     $forbiddenDecisionTerms = @(
         (-join @([char]0x6CBB, [char]0x7406)),

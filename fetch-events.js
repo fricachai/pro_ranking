@@ -23,7 +23,9 @@ const CONFIG = {
   maxNewsPerStock: 5,
   maxStocksForNews: 500,
   minStockCodes: 300,
-  minNewsFeedCoverage: 0.8,
+  preferredNewsFeedCoverage: 0.8,
+  newsConcurrency: Math.max(1, Number(process.env.EVENTS_NEWS_CONCURRENCY || 2)),
+  newsPacingMs: Math.max(0, Number(process.env.EVENTS_NEWS_PACING_MS || 120)),
   requestTimeoutMs: Number(process.env.EVENTS_REQUEST_TIMEOUT_MS || 30000)
 };
 
@@ -327,9 +329,10 @@ async function fetchYahooNews(stockCodes) {
   }
   const codes = stockCodes.slice(0, CONFIG.maxStocksForNews);
   let completed = 0;
-  const outcomes = await mapLimit(codes, 6, async code => {
+  const outcomes = await mapLimit(codes, CONFIG.newsConcurrency, async code => {
     let outcome;
     try {
+      if (CONFIG.newsPacingMs > 0) await sleep(CONFIG.newsPacingMs);
       const rss = await fetchText(`${YAHOO_RSS_TPL}${code}.TW`);
       const items = [];
       const itemRegex = /<item>([\s\S]*?)<\/item>/g;
@@ -354,9 +357,14 @@ async function fetchYahooNews(stockCodes) {
         });
         if (items.length >= CONFIG.maxNewsPerStock) break;
       }
-      outcome = { code, items, fetched: true };
+      outcome = { code, items, fetched: true, rateLimited: false };
     } catch (err) {
-      outcome = { code, items: [], fetched: false };
+      outcome = {
+        code,
+        items: [],
+        fetched: false,
+        rateLimited: /\b429\b|Too Many Requests/i.test(String(err?.message || err))
+      };
     }
     completed += 1;
     if (completed % 50 === 0 || completed === codes.length) {
@@ -367,14 +375,20 @@ async function fetchYahooNews(stockCodes) {
   const results = outcomes.flatMap(outcome => outcome.items);
   const fetched = outcomes.filter(outcome => outcome.fetched).length;
   const failed = outcomes.length - fetched;
+  const rateLimited = outcomes.filter(outcome => outcome.rateLimited).length;
   const coverageRate = codes.length > 0 ? fetched / codes.length : 0;
-  log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; coverage=${(coverageRate * 100).toFixed(1)}%`);
+  const status = coverageRate >= CONFIG.preferredNewsFeedCoverage
+    ? 'complete'
+    : (fetched > 0 ? 'partial' : 'unavailable');
+  log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; rateLimited=${rateLimited}; coverage=${(coverageRate * 100).toFixed(1)}%; status=${status}`);
   return {
     items: results,
     requestedStocks: codes.length,
     fetchedStocks: fetched,
     failedStocks: failed,
-    coverageRate
+    rateLimitedStocks: rateLimited,
+    coverageRate,
+    status
   };
 }
 
@@ -513,10 +527,9 @@ async function main() {
   if (newsResult.requestedStocks < CONFIG.minStockCodes) {
     throw new Error(`Yahoo news requested-stock coverage is unexpectedly low: ${newsResult.requestedStocks}`);
   }
-  if (newsResult.coverageRate < CONFIG.minNewsFeedCoverage) {
-    throw new Error(`Yahoo news feed coverage is too low: ${(newsResult.coverageRate * 100).toFixed(1)}%`);
+  if (newsResult.status !== 'complete') {
+    log(`warning: Yahoo news is ${newsResult.status}; continuing because Yahoo RSS is C-level pending information and does not affect scoring`);
   }
-  if (newsItems.length === 0) throw new Error('Yahoo news returned no valid items.');
 
   const allEvents = [...xiaoyuItems, ...officialItems, ...newsItems];
   log(`raw items: xiaoyu=${xiaoyuItems.length}, official=${officialItems.length}, news=${newsItems.length}, total=${allEvents.length}`);
@@ -547,11 +560,14 @@ async function main() {
       xiaoyuItems: xiaoyuItems.length,
       officialMaterialItems: officialItems.length,
       yahooNews: {
+        status: newsResult.status,
         requestedStocks: newsResult.requestedStocks,
         fetchedStocks: newsResult.fetchedStocks,
         failedStocks: newsResult.failedStocks,
+        rateLimitedStocks: newsResult.rateLimitedStocks,
         itemCount: newsItems.length,
-        coverageRate: Number((newsResult.coverageRate * 100).toFixed(1))
+        coverageRate: Number((newsResult.coverageRate * 100).toFixed(1)),
+        preferredCoverageRate: Number((CONFIG.preferredNewsFeedCoverage * 100).toFixed(1))
       }
     },
     stats: {
