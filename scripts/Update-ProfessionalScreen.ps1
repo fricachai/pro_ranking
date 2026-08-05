@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [switch]$Publish,
-    [int]$PagesTimeoutSeconds = 900
+    [int]$PagesTimeoutSeconds = 900,
+    [ValidateRange(30, 600)][int]$PagesRetriggerSeconds = 90
 )
 
 Set-StrictMode -Version Latest
@@ -87,17 +88,28 @@ function Test-LiveReport {
     )
 
     $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
+    $retriggerAt = (Get-Date).AddSeconds($PagesRetriggerSeconds)
+    $retriggered = $false
     do {
         $raw = & gh api repos/fricachai/pro_ranking/pages/builds/latest 2>&1
         if ($LASTEXITCODE -ne 0) {
             throw "Unable to query GitHub Pages status:`n$($raw -join "`n")"
         }
         $build = ($raw -join "`n") | ConvertFrom-Json
-        if ($build.status -eq 'errored') {
+        if ($build.status -eq 'errored' -and $build.commit -eq $ExpectedCommit) {
             throw "GitHub Pages build failed. commit=$($build.commit)"
         }
         if ($build.status -eq 'built' -and $build.commit -eq $ExpectedCommit) {
             break
+        }
+        if (-not $retriggered -and (Get-Date) -ge $retriggerAt) {
+            Write-Host "GitHub Pages has not selected commit $ExpectedCommit within $PagesRetriggerSeconds seconds. Requesting a fresh build..."
+            $trigger = & gh api --method POST repos/fricachai/pro_ranking/pages/builds 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to retrigger GitHub Pages build:`n$($trigger -join "`n")"
+            }
+            $retriggered = $true
+            Write-Host 'GitHub Pages rebuild requested; continuing verification...'
         }
         Start-Sleep -Seconds 8
     } while ((Get-Date) -lt $deadline)

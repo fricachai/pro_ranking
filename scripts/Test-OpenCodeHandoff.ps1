@@ -128,8 +128,11 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
-    throw 'The update command must start and poll the intraday-capable controlled background workflow.'
+if ($updateCommand -notmatch 'Invoke-ProfessionalScreenUpdateCommand\.ps1' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
+    throw 'The update command must use the single-shell intraday-capable controlled workflow.'
+}
+if ($updateCommand -match 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds') {
+    throw 'The update command must not create repeated status Shell calls.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -180,6 +183,11 @@ $updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-
 if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
     throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
 }
+foreach ($requiredPagesRecoveryToken in @('[int]$PagesRetriggerSeconds = 90', 'gh api --method POST repos/fricachai/pro_ranking/pages/builds')) {
+    if (-not $updaterContent.Contains($requiredPagesRecoveryToken)) {
+        throw "Pages recovery safeguard is missing: $requiredPagesRecoveryToken"
+    }
+}
 foreach ($requiredIntradayToken in @(
     'function Get-ReportFingerprint',
     "publishStatus = 'validated'",
@@ -204,6 +212,12 @@ $runnerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Run-Prof
 foreach ($requiredRunnerToken in @("updaterStatus -ne 'published'", 'Add-Content -LiteralPath $RunLogPath')) {
     if (-not $runnerContent.Contains($requiredRunnerToken)) {
         throw "Background runner safeguard is missing: $requiredRunnerToken"
+    }
+}
+$controllerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Invoke-ProfessionalScreenUpdateCommand.ps1') -Raw -Encoding utf8
+foreach ($requiredControllerToken in @('CONTROLLED_UPDATE_WAITING=true', '-WaitSeconds 30', "currentStatus -eq 'failed'")) {
+    if (-not $controllerContent.Contains($requiredControllerToken)) {
+        throw "Single-shell update controller safeguard is missing: $requiredControllerToken"
     }
 }
 

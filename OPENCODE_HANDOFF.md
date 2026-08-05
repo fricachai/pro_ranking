@@ -24,7 +24,7 @@
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，並以命令 Shell 插補完成預檢、背景更新與自動輪詢；因此即使模型對話層沒有 Bash 工具，更新管線仍可執行。若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
+OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，並以單一 `Invoke-ProfessionalScreenUpdateCommand.ps1` Shell 項目完成預檢、背景更新、內部等待與終態輸出；不得由代理反覆建立 `Get-ProfessionalScreenUpdateStatus.ps1` Shell 項目。若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1

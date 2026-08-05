@@ -16,9 +16,10 @@ try {
 
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Starter
     if ($LASTEXITCODE -ne 0) { throw 'Controlled update could not be started.' }
+    Write-Output 'CONTROLLED_UPDATE_WAITING=true'
 
     do {
-        $statusOutput = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Status -WaitSeconds 60)
+        $statusOutput = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Status -WaitSeconds 30)
         $statusOutput | ForEach-Object { Write-Output $_ }
         $statusLine = @($statusOutput | Where-Object { $_ -like 'STATUS=*' } | Select-Object -First 1)
         if ($statusLine.Count -ne 1) { throw 'Update status output is invalid.' }
@@ -27,6 +28,9 @@ try {
 
     if ($currentStatus -notin @('published', 'failed')) {
         throw "Unexpected update status: $currentStatus"
+    }
+    if ($currentStatus -eq 'failed') {
+        exit 1
     }
 }
 finally {
