@@ -221,12 +221,14 @@ try {
         throw 'Yahoo news items were fetched but news_pending events are missing.'
     }
 
+    Write-Host "Event refresh complete. Yahoo status=$($newsStatus.status). Generating professional screen..."
     & node $Generator *>> $logPath
     if ($LASTEXITCODE -ne 0) {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
         throw "Report generation failed. Log: $logPath`n$($tail -join "`n")"
     }
     $reportGenerationCompleted = $true
+    Write-Host 'Report generation complete. Validating publishable output...'
 
     foreach ($path in @($LatestJson, $LatestHtml)) {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
@@ -366,6 +368,7 @@ try {
     $commit = $null
     $publishStatus = 'validated'
     if ($Publish -and $changedPaths.Count -gt 0) {
+        Write-Host 'Publishing refreshed report to GitHub Pages...'
         Invoke-Git -Arguments (@('add', '--') + $gitAddPaths) | Out-Null
         $stagedCheck = & git diff --cached --check 2>&1
         if ($LASTEXITCODE -ne 0) {
@@ -377,6 +380,7 @@ try {
         $branch = (Invoke-Git -Arguments @('branch', '--show-current') | Select-Object -First 1).Trim()
         Invoke-Git -Arguments @('push', 'origin', $branch) | Out-Null
         Test-LiveReport -ExpectedCommit $commit -ExpectedEtfDate ([string]$meta.etfDate)
+        Write-Host "GitHub Pages published commit $commit."
         $publishStatus = 'published'
         # Keep an immutable run tag for audit without blocking later same-day refreshes.
         $publicationStamp = (Get-Date).ToString('yyyyMMdd-HHmmss')
