@@ -29,9 +29,14 @@ $exitCode = 1
 $updaterStatus = $null
 try {
     Push-Location $RepoRoot
-    $output = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Updater -Publish 2>&1)
+    New-Item -ItemType Directory -Path (Split-Path -Parent $RunLogPath) -Force | Out-Null
+    New-Item -ItemType File -Path $RunLogPath -Force | Out-Null
+    $output = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Updater -Publish 2>&1 | ForEach-Object {
+        $line = [string]$_
+        $line | Add-Content -LiteralPath $RunLogPath -Encoding utf8
+        $line
+    })
     $exitCode = $LASTEXITCODE
-    $output | ForEach-Object { [string]$_ } | Add-Content -LiteralPath $RunLogPath -Encoding utf8
     if ($exitCode -eq 0) {
         $statusLine = @($output | ForEach-Object { [string]$_ } | Where-Object { $_ -like 'STATUS=*' } | Select-Object -Last 1)
         if ($statusLine.Count -ne 1) {

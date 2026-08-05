@@ -22,10 +22,27 @@ do {
     Start-Sleep -Seconds 5
 } while ($true)
 
+function Write-LogTail {
+    param([Parameter(Mandatory)][string]$Path)
+    if (Test-Path -LiteralPath $Path) {
+        $tail = @(Get-Content -LiteralPath $Path -Tail 25 -Encoding utf8)
+        if ($tail.Count -gt 0) {
+            Write-Output 'LOG_TAIL_BEGIN'
+            $tail
+            Write-Output 'LOG_TAIL_END'
+        }
+    }
+}
+
 if ($running) {
     Write-Output 'STATUS=running'
     Write-Output "PID=$($state.pid)"
     Write-Output "RUN_LOG=$($state.runLog)"
+    if ($state.startedAt) {
+        $elapsedSeconds = [math]::Max(0, [int]((Get-Date) - [DateTimeOffset]::Parse([string]$state.startedAt).LocalDateTime).TotalSeconds)
+        Write-Output "ELAPSED_SECONDS=$elapsedSeconds"
+    }
+    Write-LogTail -Path ([string]$state.runLog)
     exit 0
 }
 
@@ -39,11 +56,4 @@ else {
 Write-Output "EXIT_CODE=$($state.exitCode)"
 Write-Output "RUN_LOG=$($state.runLog)"
 Write-Output "COMPLETED_AT=$($state.completedAt)"
-if (Test-Path -LiteralPath $state.runLog) {
-    $tail = @(Get-Content -LiteralPath $state.runLog -Tail 25 -Encoding utf8)
-    if ($tail.Count -gt 0) {
-        Write-Output 'LOG_TAIL_BEGIN'
-        $tail
-        Write-Output 'LOG_TAIL_END'
-    }
-}
+Write-LogTail -Path ([string]$state.runLog)

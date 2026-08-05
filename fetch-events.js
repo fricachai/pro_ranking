@@ -26,7 +26,8 @@ const CONFIG = {
   preferredNewsFeedCoverage: 0.8,
   newsConcurrency: Math.max(1, Number(process.env.EVENTS_NEWS_CONCURRENCY || 2)),
   newsPacingMs: Math.max(0, Number(process.env.EVENTS_NEWS_PACING_MS || 120)),
-  requestTimeoutMs: Number(process.env.EVENTS_REQUEST_TIMEOUT_MS || 30000)
+  requestTimeoutMs: Math.max(1000, Number(process.env.EVENTS_REQUEST_TIMEOUT_MS || 30000)),
+  newsBudgetMs: Math.max(1000, Number(process.env.EVENTS_NEWS_BUDGET_MS || 240000))
 };
 
 function log(...args) {
@@ -56,20 +57,29 @@ async function mapLimit(items, limit, worker) {
   return results;
 }
 
-async function fetchText(url, attempts = 3) {
+async function fetchText(url, attempts = 3, deadlineMs = null) {
   let lastError;
+  const hasDeadline = Number.isFinite(deadlineMs);
   for (let i = 0; i < attempts; i += 1) {
+    const remainingMs = hasDeadline ? deadlineMs - Date.now() : CONFIG.requestTimeoutMs;
+    if (hasDeadline && remainingMs <= 0) {
+      lastError = new Error('overall fetch deadline exceeded');
+      break;
+    }
     try {
       const response = await fetch(url, {
         headers: { 'user-agent': 'Mozilla/5.0 (compatible; CodexResearch)' },
-        signal: AbortSignal.timeout(CONFIG.requestTimeoutMs)
+        signal: AbortSignal.timeout(Math.max(1, Math.min(CONFIG.requestTimeoutMs, remainingMs)))
       });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
       return await response.text();
     } catch (error) {
       lastError = error;
       log(`request failed (${i + 1}/${attempts}) for ${url}: ${error?.name || 'Error'} ${error?.message || error}`);
-      await sleep(500 * (i + 1));
+      const retryDelayMs = 500 * (i + 1);
+      const remainingAfterFailureMs = hasDeadline ? deadlineMs - Date.now() : retryDelayMs;
+      if (hasDeadline && remainingAfterFailureMs <= 0) break;
+      await sleep(Math.min(retryDelayMs, remainingAfterFailureMs));
     }
   }
   throw new Error(`Fetch failed: ${url}: ${lastError?.message || lastError}`);
@@ -328,43 +338,52 @@ async function fetchYahooNews(stockCodes) {
     return { items: [], requestedStocks: 0, fetchedStocks: 0, failedStocks: 0, coverageRate: 0 };
   }
   const codes = stockCodes.slice(0, CONFIG.maxStocksForNews);
+  const deadlineMs = Date.now() + CONFIG.newsBudgetMs;
   let completed = 0;
   const outcomes = await mapLimit(codes, CONFIG.newsConcurrency, async code => {
     let outcome;
-    try {
-      if (CONFIG.newsPacingMs > 0) await sleep(CONFIG.newsPacingMs);
-      const rss = await fetchText(`${YAHOO_RSS_TPL}${code}.TW`);
-      const items = [];
-      const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-      const extr = (s, tag) => {
-        const m = s.match(new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>'));
-        return m ? m[1].trim() : null;
-      };
-      let m;
-      while ((m = itemRegex.exec(rss)) !== null) {
-        const s = m[1];
-        const link = extr(s, 'link');
-        if (link && !link.includes('.tsrc=rss')) continue;
-        items.push({
+    if (Date.now() >= deadlineMs) {
+      outcome = { code, items: [], fetched: false, rateLimited: false, budgetExhausted: true };
+    }
+    else {
+      try {
+        if (CONFIG.newsPacingMs > 0) {
+          await sleep(Math.min(CONFIG.newsPacingMs, Math.max(0, deadlineMs - Date.now())));
+        }
+        const rss = await fetchText(`${YAHOO_RSS_TPL}${code}.TW`, 3, deadlineMs);
+        const items = [];
+        const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+        const extr = (s, tag) => {
+          const m = s.match(new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>'));
+          return m ? m[1].trim() : null;
+        };
+        let m;
+        while ((m = itemRegex.exec(rss)) !== null) {
+          const s = m[1];
+          const link = extr(s, 'link');
+          if (link && !link.includes('.tsrc=rss')) continue;
+          items.push({
+            code,
+            title: (extr(s, 'title') || '').replace(/<!\[CDATA\[|\]\]>/g, ''),
+            link: (link || '').replace(/\?\.tsrc=rss$/, ''),
+            pubDate: extr(s, 'pubDate'),
+            description: ((extr(s, 'description') || '')).replace(/<[^>]*>/g, '').trim().slice(0, 500),
+            source: 'yahoo_news',
+            confirmed: false,
+            dateKind: 'published'
+          });
+          if (items.length >= CONFIG.maxNewsPerStock) break;
+        }
+        outcome = { code, items, fetched: true, rateLimited: false };
+      } catch (err) {
+        outcome = {
           code,
-          title: (extr(s, 'title') || '').replace(/<!\[CDATA\[|\]\]>/g, ''),
-          link: (link || '').replace(/\?\.tsrc=rss$/, ''),
-          pubDate: extr(s, 'pubDate'),
-          description: ((extr(s, 'description') || '')).replace(/<[^>]*>/g, '').trim().slice(0, 500),
-          source: 'yahoo_news',
-          confirmed: false,
-          dateKind: 'published'
-        });
-        if (items.length >= CONFIG.maxNewsPerStock) break;
+          items: [],
+          fetched: false,
+          rateLimited: /\b429\b|Too Many Requests/i.test(String(err?.message || err)),
+          budgetExhausted: /deadline|timeout/i.test(String(err?.message || err))
+        };
       }
-      outcome = { code, items, fetched: true, rateLimited: false };
-    } catch (err) {
-      outcome = {
-        code,
-        items: [],
-        fetched: false,
-        rateLimited: /\b429\b|Too Many Requests/i.test(String(err?.message || err))
-      };
     }
     completed += 1;
     if (completed % 50 === 0 || completed === codes.length) {
@@ -376,17 +395,19 @@ async function fetchYahooNews(stockCodes) {
   const fetched = outcomes.filter(outcome => outcome.fetched).length;
   const failed = outcomes.length - fetched;
   const rateLimited = outcomes.filter(outcome => outcome.rateLimited).length;
+  const budgetExhausted = outcomes.filter(outcome => outcome.budgetExhausted).length;
   const coverageRate = codes.length > 0 ? fetched / codes.length : 0;
   const status = coverageRate >= CONFIG.preferredNewsFeedCoverage
     ? 'complete'
     : (fetched > 0 ? 'partial' : 'unavailable');
-  log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; rateLimited=${rateLimited}; coverage=${(coverageRate * 100).toFixed(1)}%; status=${status}`);
+  log(`yahoo news fetched: ${results.length} items; feeds=${fetched}/${codes.length}; failed=${failed}; rateLimited=${rateLimited}; budgetExhausted=${budgetExhausted}; coverage=${(coverageRate * 100).toFixed(1)}%; status=${status}`);
   return {
     items: results,
     requestedStocks: codes.length,
     fetchedStocks: fetched,
     failedStocks: failed,
     rateLimitedStocks: rateLimited,
+    budgetExhaustedStocks: budgetExhausted,
     coverageRate,
     status
   };
@@ -552,6 +573,7 @@ async function main() {
       yahooNews: CONFIG.newsEnabled,
       yahooNewsStockLimit: CONFIG.maxStocksForNews,
       yahooNewsItemsPerStock: CONFIG.maxNewsPerStock,
+      yahooNewsBudgetMs: CONFIG.newsBudgetMs,
       officialMaterialInfo: true,
       officialInvestorConference: 'material_info_keyword_only'
     },
@@ -565,6 +587,7 @@ async function main() {
         fetchedStocks: newsResult.fetchedStocks,
         failedStocks: newsResult.failedStocks,
         rateLimitedStocks: newsResult.rateLimitedStocks,
+        budgetExhaustedStocks: newsResult.budgetExhaustedStocks,
         itemCount: newsItems.length,
         coverageRate: Number((newsResult.coverageRate * 100).toFixed(1)),
         preferredCoverageRate: Number((CONFIG.preferredNewsFeedCoverage * 100).toFixed(1))

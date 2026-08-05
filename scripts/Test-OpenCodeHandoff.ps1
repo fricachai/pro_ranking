@@ -170,7 +170,7 @@ foreach ($requiredForeignHistoryToken in @(
 }
 
 $eventFetcherContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'fetch-events.js') -Raw -Encoding utf8
-foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, CONFIG.newsConcurrency', 'rateLimitedStocks', "status !== 'complete'")) {
+foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, CONFIG.newsConcurrency', 'rateLimitedStocks', 'EVENTS_NEWS_BUDGET_MS', 'budgetExhaustedStocks', "status !== 'complete'")) {
     if (-not $eventFetcherContent.Contains($requiredEventFetcherToken)) {
         throw "Event refresh safeguard is missing: $requiredEventFetcherToken"
     }
@@ -201,8 +201,10 @@ foreach ($forbiddenDateLockToken in @(
     }
 }
 $runnerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Run-ProfessionalScreenUpdate.ps1') -Raw -Encoding utf8
-if (-not $runnerContent.Contains("updaterStatus -ne 'published'")) {
-    throw 'Background runner must propagate the published status.'
+foreach ($requiredRunnerToken in @("updaterStatus -ne 'published'", 'Add-Content -LiteralPath $RunLogPath')) {
+    if (-not $runnerContent.Contains($requiredRunnerToken)) {
+        throw "Background runner safeguard is missing: $requiredRunnerToken"
+    }
 }
 
 Push-Location $RepoRoot
