@@ -58,3 +58,5 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
+
+使用者已明確授權的「短／中／長期評分明細介面」功能，改由專用 OpenCode 主代理接手規劃與執行。在 OpenCode Desktop 主工作階段輸入 `/implement-horizon-ui`；它會依 `.opencode/commands/implement-horizon-ui.md` 完成三頁籤介面、文件與驗證器同步、桌機／手機測試、提交、發布及線上驗證。日常 `/update-report` 的禁止任意改碼規則不受影響。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->

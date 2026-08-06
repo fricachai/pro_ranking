@@ -31,6 +31,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Professional
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1
 ```
 
+## 目前已授權 OpenCode 接手的功能任務
+
+使用者已於 2026-08-06 明確授權 OpenCode 規劃、實作、驗證並發布「短／中／長期評分明細介面」。在 OpenCode Desktop 的主工作階段輸入：
+
+```text
+/implement-horizon-ui
+```
+
+此命令使用專用的 `horizon-ui` 主代理，不是日常資料更新的 Build 代理。它可以修改本次功能所需的來源、文件與驗證器，並必須在同一工作階段完成測試、提交、推送、Pages 發布與線上驗證；不可只輸出規劃。完整且具約束力的需求保存在 `.opencode/commands/implement-horizon-ui.md`。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
+
+本次功能的核心邊界如下：
+
+- 短期為 1–20 個交易日（約 1 日至 1 個月）、中期約 1–6 個月、長期 1 年以上且價值投資宜觀察 3–5 年以上。
+- 同一明細視窗使用三個頁籤，一次只顯示一套構面；中期為預設頁籤與唯一排名主軸。
+- 短期只解釋時機，長期只作企業品質與估值初篩；頁籤及跨尺度解讀不得改變分數、排名、今天動作或任何硬門檻。
+- 長期資本配置品質 15 分維持「尚未計分」，不得顯示為 0 分或冒充完整價值評估。
+- 完成後必須更新兩支 PowerShell 驗證器與 `design-qa.md`，並以實際桌機、手機及線上 Pages 驗證收尾。
+
 ## 必須一起交接的檔案
 
 最安全的方式是直接複製完整 Git 儲存庫，或在新電腦執行 `git clone https://github.com/fricachai/pro_ranking.git`，不要挑檔複製。下列檔案是交接核心：
@@ -38,8 +56,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 | 類別 | 檔案 | 用途 |
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
-| OpenCode 權限 | `opencode.json` | 禁止代理直接改檔，只允許交接預檢與受控更新命令 |
-| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md` | 提供啟動與查詢快捷指令 |
+| OpenCode 權限 | `opencode.json` | 日常代理禁止直接改檔；只有本次明確授權的專用功能代理可編輯與測試 |
+| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md` | 提供日常更新、狀態查詢及本次授權功能的快捷指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
 | 交接預檢 | `scripts/Test-OpenCodeHandoff.ps1` | 檢查工具、登入、遠端、分支、檔案、資料契約與線上頁面 |
@@ -54,7 +72,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 明確使用 Windows `powershell.exe`，並啟用 Build 主代理的 Bash 工具；它只允許交接預檢、背景更新啟動、狀態查詢及受控管線。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；其他 Shell 命令維持拒絕。
+`opencode.json` 明確使用 Windows `powershell.exe`，並啟用 Build 主代理的 Bash 工具；日常 `/update-report` 仍禁止直接編輯。只有使用者已明確授權的 `/implement-horizon-ui` 會切換到專用 `horizon-ui` 主代理並開放功能開發所需的編輯與測試能力。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；不得把這個例外改成所有代理的全域編輯權限。
 
 ## 新電腦一次性準備
 

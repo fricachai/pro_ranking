@@ -52,6 +52,7 @@ $requiredFiles = @(
     'opencode.json',
     '.opencode/commands/update-report.md',
     '.opencode/commands/update-report-status.md',
+    '.opencode/commands/implement-horizon-ui.md',
     'fetch-events.js',
     'full-professional-stock-screen.js',
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
@@ -126,6 +127,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     }
 }
 
+$horizonUiHandoffMarker = 'OPENCODE_HORIZON_UI_HANDOFF_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/implement-horizon-ui.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($horizonUiHandoffMarker)) {
+        throw "Horizon UI handoff rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {
@@ -139,6 +148,11 @@ if ($updateCommand -notmatch 'Invoke-ProfessionalScreenUpdateCommand\.ps1' -or $
 }
 if ($updateCommand -match 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds') {
     throw 'The update command must not create repeated status Shell calls.'
+}
+
+$horizonUiCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/implement-horizon-ui.md') -Raw -Encoding utf8
+if ($horizonUiCommand -notmatch '(?mi)^agent\s*:\s*horizon-ui\s*$' -or $horizonUiCommand -notmatch 'OPENCODE_HORIZON_UI_HANDOFF_V1') {
+    throw 'The horizon UI command must select the dedicated horizon-ui primary agent and retain its task marker.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -259,6 +273,10 @@ try {
     $config = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
     if (-not $config.permission -or [string]$config.permission.edit -ne 'deny') {
         throw 'opencode.json must keep direct file editing disabled for the daily updater.'
+    }
+    $horizonUiAgent = $config.agent.'horizon-ui'
+    if (-not $horizonUiAgent -or [string]$horizonUiAgent.mode -ne 'primary' -or $horizonUiAgent.tools.bash -ne $true -or [string]$horizonUiAgent.permission.edit -ne 'allow' -or [string]$horizonUiAgent.permission.bash -ne 'allow' -or [string]$horizonUiAgent.permission.webfetch -ne 'deny') {
+        throw 'opencode.json must provide the dedicated horizon-ui primary agent with edit and shell access while keeping webfetch disabled.'
     }
     $bashRules = $config.permission.bash
     $allowedUpdatePatterns = @($bashRules.PSObject.Properties | Where-Object {
