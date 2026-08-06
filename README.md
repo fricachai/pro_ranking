@@ -64,3 +64,5 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps
 已授權的「短／中／長期評分明細介面」可在 OpenCode Desktop 的 Build 主工作階段輸入 `/implement-horizon-ui`；它會依 `.opencode/commands/implement-horizon-ui.md` 完成三頁籤介面、文件與驗證器同步、桌機／手機測試、提交、發布及線上驗證。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
 
 評分明細使用同一視窗的三個頁籤，預設「中期研究／排名主軸」。短期是1–20個交易日的進場時機，中期是約1–6個月的研究排序，長期是1年以上的企業品質與估值初篩；頁籤只解釋既有分數，不改排名、今天動作、建立新部位或已持有動作。長期資本配置品質15分仍顯示尚未計分，方法覆蓋固定85%。<!-- HORIZON_SCORE_DETAIL_UI_V1 -->
+
+前30名與完整排名表的短期時機、中期研究／排名、長期初篩表頭可點選排序；第一次由小到大，再次點選改為由大到小。這只改變表格顯示順序，不改變中期排名資料、分數、硬門檻或投資動作。

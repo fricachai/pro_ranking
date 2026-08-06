@@ -84,3 +84,13 @@ passed
 | P2 | Long-term score could be mistaken for a complete value score. | Added explicit 85% method coverage and "not scored / 15" capital allocation disclosure. |
 
 Final result: passed
+
+## 2026-08-06 horizon table sorting QA
+
+- The `前30名與主要風險` and `完整 465 檔上市股票排名` tables expose keyboard-accessible sort buttons for short, medium, and long score headers.
+- Each header sorts ascending on first activation and descending on the next activation; the visible arrow and `aria-sort` identify the active direction.
+- Sorting changes display order only. Report JSON, original rank, scores, entry action, holding action, today action, and hard gates are unchanged.
+- Sorting was checked after search and filter changes, with contained horizontal scrolling and mobile single-column behavior preserved.
+- Console errors and warnings: 0.
+
+Final result: passed
