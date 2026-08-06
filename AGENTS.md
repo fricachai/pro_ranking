@@ -25,12 +25,23 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 7. ETF 資料日、法人買賣超日、外資持股日、價量估值日與即時報價時間必須分開呈現。
 8. 報告是研究排序，不是保證報酬或個人化投資建議。
 9. 每次執行都會重新排序；掉出前三名不是賣出訊號。不得用本次排名取代既有部位的續抱、停加碼、減碼與出脫判斷。
-10. 每檔股票必須同時輸出 `entryAction` 與 `holdingAction`。新部位只有「可開始承接」才可進入分批布局；既有部位依基本面破壞、技術趨勢與 ETF／外資／投信轉弱程度判斷。
+10. 每檔股票必須同時輸出 `entryAction`、`holdingAction`、`todayAction` 與 `nextCheck`。新部位只有「可開始承接」才可進入分批布局；既有部位依基本面破壞、技術趨勢與 ETF／外資／投信轉弱程度判斷。
 11. 使用者標記的布局部位保存在瀏覽器 `proRankingPositionsV1`，不因重跑或掉出前三名自動移除；不得把本地持倉追蹤資料上傳或寫入公開報告。
-12. 技術面15分內，標準KD（9,3,3）只占1.5分，必須使用每日最高、最低與收盤價計算。KD不得用收盤價近似；低檔黃金交叉不可單獨列為買進，高檔死亡交叉不可單獨列為減碼或出脫。
+12. 標準KD（9,3,3）固定只占各技術單元的10%（短期最高3分、中期最高2分），必須使用每日最高、最低與收盤價計算。KD不得用收盤價近似；低檔黃金交叉不可單獨列為買進，高檔死亡交叉不可單獨列為減碼或出脫。
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
 14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的帳密清單。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、任何已設定帳號、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
 15. 治理資料排除規則：董監持股設質、內部人轉讓、裁處、資訊申報違規及其他治理查核資料，即使仍存在於原始事件來源，也不得進入評分、排名、風險原因、前三名資格、建立新部位、持有動作或前台顯示；不得產生 G 級、「待查核候選」、「治理查核」或「治理警示」。<!-- GOVERNANCE_EXCLUSION_RULE_V1 -->
+
+## 三時間尺度評分與資料健康契約
+
+1. 評分模型版本固定輸出 `HORIZON_SCORE_V2`，每檔股票必須有 `horizonScores.short`、`horizonScores.medium`、`horizonScores.long` 與獨立的 `dataHealth`。
+2. 只有 `horizonScores.medium.score` 是排名主軸，並向後相容映射到 `score`、`rawScore` 與 `adjustedScore`。短期分數只判斷時機；長期分數只作初篩，不得各自產生另一套排名或直接買賣動作。
+3. 短期權重固定為：技術與時機30、ETF／法人短期流向25、事件催化15、風險與流動性15、基本面護欄15。
+4. 中期權重固定為：盈餘與營收趨勢25、企業營運品質20、技術趨勢20、估值15、ETF／法人籌碼10、事件／風險／流動性10。
+5. 長期初篩目前只覆蓋85%方法權重：企業營運品質25、財務韌性20、成長耐久性15、估值25；資本配置品質15因尚缺完整自由現金流、ROIC與資本配置紀律資料而不計分。輸出須揭露 `methodCoverage=85` 與 `missingWeight=15`，不得冒充完整長期價值評估。
+6. `dataHealth` 只判斷資料可用性，不得進入任一時間尺度分數、風險分數或總分乘數；低於65%仍屬硬性品質淘汰，不能進入A級。
+7. 反重複計分固定規則：本益比只在估值構面計分，不再以盈餘殖利率重複；營收趨勢不再同時放入事件催化；資料健康度不得同時出現在分數、乘數與硬門檻。
+8. 介面顯示分數使用整數，JSON可保留一位小數供稽核；不得用過多小數營造不存在的精準度。<!-- HORIZON_SCORE_V2 -->
 
 ## 官方外資持股歷史完整性
 
@@ -43,11 +54,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 ## 持股決策總覽與純 UI 發布規則
 
 1. 「持股決策總覽」必須先回答目前動作，再回答執行時間、部位比例、觸發價、改變條件與原因。排名與新部位分類不得取代既有部位動作。
-2. 目前動作與確認時間必須分開：例如今天尚未觸發減碼時，動作顯示「持有不動」，時間顯示「下個交易日確認」；不得把「次日確認」誤作目前買賣動作。
-3. 摘要固定分為「減碼／出脫、次日確認、持有不動、可加碼」。卡片與摘要必須共同使用 `positionDecisionMeta` 的結果，不得各自建立另一套分類。
-4. 每張卡至少顯示：股票與現況、現在動作、執行門檻、主要原因；完整依據必須可展開。手機版改為單欄卡片，不得出現頁面級水平溢出。
+2. 目前狀態、今天動作與下一次確認必須分開。盤中跌破只顯示「保護持有／盤中待收盤」，不得直接當成已確認減碼；收盤跌破後仍依規則等待下一交易日收盤確認。
+3. 摘要固定分為「減碼／出脫、等待確認、正常／保護持有、符合加碼條件」。卡片與摘要必須共同使用 `positionDecisionMeta` 的結果，不得各自建立另一套分類。
+4. 每張卡至少顯示：股票與現況、目前狀態、今天動作、下一次確認、執行觀察區、改變條件與主要原因；完整依據必須可展開。手機版改為單欄卡片，不得出現頁面級水平溢出。
 5. `proRankingPositionsV1`、成本價、登入狀態與追蹤 JSON 都是瀏覽器私人資料。測試可建立本機狀態，但不得把測試持倉、成本或帳密寫入 Git、公開 HTML、截圖文字或 Obsidian。
-6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。使用前必須確認沒有更動資料、評分、排名、門檻或日期；不得用此模式冒充每日資料更新。
+6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。既有JSON必須是 `HORIZON_SCORE_V2`；使用前必須確認沒有更動資料、評分、排名、門檻或日期，不得用此模式冒充每日資料更新。
 7. 同一日可多次執行受控更新。舊的 `published/YYYYMMDD` 只保留歷史稽核，不得再用來提前停止；每次都必須重新查詢行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
 8. 更新器以排除 `meta.generatedAt`、`meta.eventCheckedAt` 與 `eventsMeta.fetchedAt` 後的報告資料指紋判斷實質變化，但每次成功檢查都必須提交本次時間戳、發布並建立不可變的 `published/YYYYMMDD-HHmmss` 稽核標籤；`DATA_CHANGED=false` 只表示排除時間戳後沒有實質內容變化。
 9. `STATUS=published` 表示本次來源檢查、Git、Pages 與線上驗證都已完成；無論 `DATA_CHANGED` 為何，前台都必須顯示本次「報告產生」與「事件檢查」日期時間。<!-- REFRESH_TIMESTAMP_V1 -->
@@ -71,7 +82,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 ## 重要檔案
 
 - `full-professional-stock-screen.js`：資料抓取、評分與報告產生器。
-- `fetch-events.js`：事件輔助層抓取、欄位語意驗證與去重；不直接改變六構面分數。
+- `fetch-events.js`：事件輔助層抓取、欄位語意驗證與去重；新聞與AI摘要不直接改變三時間尺度分數。
 - `scripts/Update-ProfessionalScreen.ps1`：每日更新、驗證與發布入口。
 - `scripts/Test-OpenCodeHandoff.ps1`：OpenCode、GitHub、資料契約與線上版本的交接預檢。
 - `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode CLI 非互動模式執行每日發布；Desktop 直接使用 `/update-report`。

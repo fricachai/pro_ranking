@@ -304,6 +304,31 @@ try {
     if (-not [bool]$report.meta.activeEtfDataComplete -and [int]$report.meta.bucketA -gt 0) {
         throw "Active ETF same-day coverage is incomplete ($($report.meta.activeUpdated)/$($report.meta.activeEtfs)), but report still contains $($report.meta.bucketA) buy-oriented A-bucket records."
     }
+    if ([string]$report.meta.scoringModelVersion -ne 'HORIZON_SCORE_V2' -or [string]$report.methodology.primaryRankingHorizon -ne 'medium') {
+        throw "Unexpected scoring model: meta=$($report.meta.scoringModelVersion) primary=$($report.methodology.primaryRankingHorizon)"
+    }
+    if ([bool]$report.methodology.dataHealthPolicy.affectsScore -or [int]$report.methodology.dataHealthPolicy.hardGate -ne 65) {
+        throw 'Data-health policy must remain score-independent with a hard gate of 65.'
+    }
+    $rankingRows = @($report.ranking)
+    $invalidHorizonRows = @($rankingRows | Where-Object {
+        $h = $_.horizonScores
+        $health = $_.dataHealth
+        if (-not $_.entryAction -or -not $_.holdingAction -or -not $_.todayAction -or -not $_.nextCheck) { return $true }
+        if (-not $h -or -not $h.short -or -not $h.medium -or -not $h.long -or -not $health) { return $true }
+        $shortScore = $h.short.score
+        $mediumScore = $h.medium.score
+        $longScore = $h.long.score
+        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $health.score) { return $true }
+        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
+        if ([math]::Abs([double]$_.score - [double]$mediumScore) -gt 0.05 -or [math]::Abs([double]$_.rawScore - [double]$mediumScore) -gt 0.05) { return $true }
+        if ([int]$h.long.methodCoverage -ne 85 -or [int]$h.long.missingWeight -ne 15) { return $true }
+        if ([bool]$health.affectsScore -or [int]$health.hardGate -ne 65) { return $true }
+        return $false
+    })
+    if ($invalidHorizonRows.Count -gt 0) {
+        throw "Horizon-score, data-health, or position-action contract is invalid for $($invalidHorizonRows.Count) stocks."
+    }
     if (-not $events.fetchedAt -or -not $events.sourceScope -or -not $events.sourceStatus) {
         throw 'latest-events.json is missing source freshness or source-status metadata.'
     }
@@ -350,7 +375,7 @@ try {
         }
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(

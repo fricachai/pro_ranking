@@ -120,11 +120,20 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 只有無結構性異動且具完整 5／10 日資料的 `trendReliable=true` 個股，外資持股趨勢才可參與評分與風險判斷。
 - 每次成功報告都必須包含 `meta.foreignHoldingHistoryDays >= 11`，網頁也會顯示有效交易日數。若不足，管線應停止並檢查最大可查日期、週末／休市與暫時性限流後重試，不調整選股權重。
 
+### 三時間尺度評分與資料健康度
+
+- 現行模型版本是 `HORIZON_SCORE_V2`。每檔股票必須同時輸出 `horizonScores.short`、`horizonScores.medium`、`horizonScores.long` 與 `dataHealth`。
+- 只有中期研究分數用於排名，並映射到相容欄位 `score`。短期分數只回答時機；長期分數只作初篩，不得各自建立另一套排名或直接買賣動作。
+- 長期初篩目前方法覆蓋率固定為85%，另有15%的資本配置品質因尚缺完整自由現金流、ROIC與資本配置紀律而不計分；不得把正規化後的100分稱為完整長期價值分數。
+- `dataHealth` 不進入任何分數、風險分數或分數乘數；低於65%仍屬硬性淘汰。發布驗證必須確認 `score` 等於 `horizonScores.medium.score`、所有分數介於0至100、長期 `methodCoverage=85`。
+- 本益比不得與盈餘殖利率重複計分；營收不得同時放入事件催化；畫面使用整數分數，JSON可保留一位小數。
+
 ### 持股決策總覽與純 UI 維護
 
-- 決策卡的閱讀順序固定為「目前動作 → 執行時間／比例 → 觸發價 → 改變條件 → 原因」。目前動作和確認時間不可混用；今天先不動時顯示「持有不動」，「下個交易日確認」只屬時間條件。
+- 決策卡的閱讀順序固定為「目前狀態 → 今天動作 → 下一次確認 → 執行觀察區 → 改變條件 → 原因」。盤中跌破只顯示「保護持有／盤中待收盤」，不得直接當成確認減碼。
+- 觀察價位使用符合台股跳動單位的區間呈現；底層仍以原始EMA執行判斷。區間是決策支援，不是保證成交、自動停損或精準預測。
 - 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
-- 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
+- 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；既有JSON必須已是 `HORIZON_SCORE_V2`。此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
 - 同一日可以重複執行 `/update-report`。舊的 `published/YYYYMMDD` 只是歷史紀錄，不再阻擋來源檢查；每次都會重新抓取盤中行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
 - 更新器會排除純生成／抓取時間戳後比較報告指紋，但每次成功檢查都會提交本次報告與事件檢查時間、發布並建立 `published/YYYYMMDD-HHmmss` 稽核標籤。`DATA_CHANGED=false` 代表沒有實質內容變化，不得說成失敗。<!-- REFRESH_TIMESTAMP_V1 -->
 - Yahoo RSS 是 C 級待確認資訊；若 429 限流造成部分或全部失敗，事件檔必須揭露 `partial` 或 `unavailable`、成功率與限流數，但仍以本次重新取得的官方重大訊息與結構化事件完成報告。不得沿用舊新聞冒充本次抓取。<!-- OPTIONAL_YAHOO_NEWS_V1 -->

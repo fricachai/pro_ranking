@@ -120,7 +120,7 @@ function Test-LiveReport {
 
     $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
     $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
-    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', $ExpectedEtfDate)
+    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'todayAction', 'nextCheck', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     if ($response.StatusCode -ne 200 -or $missing.Count -gt 0) {
         throw "Live page validation failed. HTTP=$($response.StatusCode); missing=$($missing -join ', ')"
@@ -246,7 +246,7 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle', 'id="quotePhaseBanner"', 'horizon-score-strip', 'horizonScores', 'dataHealth', 'todayAction', 'nextCheck', 'zoneText')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
@@ -270,7 +270,7 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel')) {
+    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel', 'scoringModelVersion')) {
         if ($requiredMetaField -notin $meta.PSObject.Properties.Name -or $null -eq $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
@@ -294,6 +294,12 @@ try {
     if (-not $report.macroOverlay -or -not $report.sourcePosture -or -not $report.sectorOverlay) {
         throw 'latest.json is missing macro, source-posture, or sector overlay.'
     }
+    if ([string]$meta.scoringModelVersion -ne 'HORIZON_SCORE_V2' -or [string]$report.methodology.primaryRankingHorizon -ne 'medium') {
+        throw "Unexpected scoring model: meta=$($meta.scoringModelVersion) primary=$($report.methodology.primaryRankingHorizon)"
+    }
+    if ([bool]$report.methodology.dataHealthPolicy.affectsScore -or [int]$report.methodology.dataHealthPolicy.hardGate -ne 65) {
+        throw 'Data-health policy must remain score-independent with a hard gate of 65.'
+    }
     if (-not $report.eventsMeta -or [string]$report.eventsMeta.fetchedAt -ne [string]$eventData.fetchedAt) {
         throw 'latest.json did not consume the events file refreshed in this run.'
     }
@@ -313,12 +319,29 @@ try {
     $validBuckets = @('A', 'B', 'C', 'D')
     $validHoldingStates = @('add', 'hold', 'protect', 'trim', 'exit')
     $missingDecisionRows = @($rankingRows | Where-Object {
-        -not $_.entryAction -or -not $_.holdingAction -or
+        -not $_.entryAction -or -not $_.holdingAction -or -not $_.todayAction -or -not $_.nextCheck -or
         $validBuckets -notcontains [string]$_.bucket -or
         $validHoldingStates -notcontains [string]$_.holdingState
     })
     if ($missingDecisionRows.Count -gt 0) {
         throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."
+    }
+    $invalidHorizonRows = @($rankingRows | Where-Object {
+        $h = $_.horizonScores
+        $health = $_.dataHealth
+        if (-not $h -or -not $h.short -or -not $h.medium -or -not $h.long -or -not $health) { return $true }
+        $shortScore = $h.short.score
+        $mediumScore = $h.medium.score
+        $longScore = $h.long.score
+        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $health.score) { return $true }
+        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
+        if ([math]::Abs([double]$_.score - [double]$mediumScore) -gt 0.05 -or [math]::Abs([double]$_.rawScore - [double]$mediumScore) -gt 0.05) { return $true }
+        if ([int]$h.long.methodCoverage -ne 85 -or [int]$h.long.missingWeight -ne 15) { return $true }
+        if ([bool]$health.affectsScore -or [int]$health.hardGate -ne 65) { return $true }
+        return $false
+    })
+    if ($invalidHorizonRows.Count -gt 0) {
+        throw "Horizon-score or data-health contract is invalid for $($invalidHorizonRows.Count) stocks."
     }
     $pendingReviewToken = -join @([char]0x5F85, [char]0x67E5, [char]0x6838)
     $governanceToken = -join @([char]0x6CBB, [char]0x7406)
@@ -351,7 +374,7 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', [string]$meta.etfDate)) {
+    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
