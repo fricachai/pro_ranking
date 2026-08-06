@@ -3,7 +3,8 @@ param(
     [switch]$SkipOpenCode,
     [switch]$RequireCli,
     [switch]$SkipLive,
-    [switch]$AllowDirty
+    [switch]$AllowDirty,
+    [int]$PagesTimeoutSeconds = 900
 )
 
 Set-StrictMode -Version Latest
@@ -11,6 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $LiveUrl = 'https://fricachai.github.io/pro_ranking/'
+$PagesWorkflow = 'deploy-pages.yml'
 
 function Assert-Command {
     param([Parameter(Mandatory)][string]$Name)
@@ -45,6 +47,17 @@ function Invoke-Checked {
     return @($output)
 }
 
+function Get-Sha256Hex {
+    param([Parameter(Mandatory)][byte[]]$Bytes)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash($Bytes))).Replace('-', '')
+    }
+    finally {
+        $sha256.Dispose()
+    }
+}
+
 $requiredFiles = @(
     'AGENTS.md',
     'OPENCODE_HANDOFF.md',
@@ -53,6 +66,7 @@ $requiredFiles = @(
     '.opencode/commands/update-report.md',
     '.opencode/commands/update-report-status.md',
     '.opencode/commands/implement-horizon-ui.md',
+    '.github/workflows/deploy-pages.yml',
     'fetch-events.js',
     'full-professional-stock-screen.js',
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
@@ -159,10 +173,31 @@ foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md', '.opencode/comma
     }
 }
 
+$pagesWorkflowMarker = 'PAGES_WORKFLOW_V1'
+$preflightBypassMarker = 'PREFLIGHT_BYPASS_GUARD_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($pagesWorkflowMarker) -or -not $ruleContent.Contains($preflightBypassMarker)) {
+        throw "Pages workflow or preflight-bypass guard is missing from the handoff surface: $relativePath"
+    }
+}
+
+$pagesWorkflowContent = Get-Content -LiteralPath (Join-Path $RepoRoot '.github/workflows/deploy-pages.yml') -Raw -Encoding utf8
+foreach ($requiredWorkflowToken in @('PAGES_WORKFLOW_V1', 'cancel-in-progress: false', 'actions/deploy-pages@v5', 'timeout: 900000')) {
+    if (-not $pagesWorkflowContent.Contains($requiredWorkflowToken)) {
+        throw "Explicit Pages workflow safeguard is missing: $requiredWorkflowToken"
+    }
+}
+
 $openCodeConfig = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
 $openCodeInstructions = @($openCodeConfig.instructions)
 if ($openCodeInstructions -notcontains 'OPENCODE_HANDOFF.md' -or -not ($openCodeInstructions | Where-Object { $_ -match 'pro_ranking.*SOP\.md$' })) {
     throw 'OpenCode config must auto-load the repository handoff and the pro_ranking Obsidian SOP.'
+}
+$buildBashPermissions = $openCodeConfig.agent.build.permission.bash
+$directPublishRule = $buildBashPermissions.PSObject.Properties['*Update-ProfessionalScreen.ps1* -Publish*']
+if (-not $directPublishRule -or [string]$directPublishRule.Value -ne 'deny') {
+    throw 'OpenCode Build must deny direct publication and require the controlled controller entry point.'
 }
 
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
@@ -233,7 +268,7 @@ $updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-
 if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
     throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
 }
-foreach ($requiredPagesSafeguardToken in @('DO NOT cancel or retrigger Pages builds automatically', 'single controlled rebuild', 'active Pages run', 'rebuildOnce', 'gh api --method POST repos/fricachai/pro_ranking/pages/builds')) {
+foreach ($requiredPagesSafeguardToken in @('DO NOT cancel active runs or use the legacy Pages build API', 'Wait-GitHubPagesQueueIdle', 'deploy-pages.yml', 'gh run rerun', 'one controlled failed-job rerun', 'PAGES_AUDIT_STATUS=')) {
     if (-not $updaterContent.Contains($requiredPagesSafeguardToken)) {
         throw "Pages deployment safeguard is missing: $requiredPagesSafeguardToken"
     }
@@ -305,8 +340,8 @@ try {
         throw 'opencode.json must keep global editing denied by default; the Build primary agent owns the explicit full-access override.'
     }
     $bashRules = $config.permission.bash
-    $allowedUpdatePatterns = @($bashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'allow' -and $_.Name -like '*Update-ProfessionalScreen.ps1*'
+    $deniedDirectPublishPatterns = @($bashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'deny' -and $_.Name -like '*Update-ProfessionalScreen.ps1*Publish*'
     })
     $allowedPreflightPatterns = @($bashRules.PSObject.Properties | Where-Object {
         [string]$_.Value -eq 'allow' -and $_.Name -like '*Test-OpenCodeHandoff.ps1*'
@@ -323,7 +358,11 @@ try {
     for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
         if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
     }
-    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.edit -ne 'allow' -or [string]$config.agent.build.permission.bash -ne 'allow' -or [string]$config.agent.build.permission.webfetch -ne 'allow' -or [string]$config.agent.build.permission.external_directory -ne 'ask' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
+    $buildBashRules = $config.agent.build.permission.bash
+    $buildDirectDeny = @($buildBashRules.PSObject.Properties | Where-Object {
+        [string]$_.Value -eq 'deny' -and $_.Name -like '*Update-ProfessionalScreen.ps1*Publish*'
+    })
+    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.edit -ne 'allow' -or [string]$buildBashRules.'*' -ne 'allow' -or $buildDirectDeny.Count -lt 1 -or [string]$config.agent.build.permission.webfetch -ne 'allow' -or [string]$config.agent.build.permission.external_directory -ne 'ask' -or [string]$bashRules.'*' -ne 'deny' -or $deniedDirectPublishPatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
         throw 'opencode.json must give the Build primary agent full project access, keep external directories gated, define powershell.exe, and retain controlled global defaults.'
     }
     foreach ($expectedCommand in @(
@@ -445,17 +484,51 @@ try {
     }
 
     if (-not $SkipLive) {
-        $buildRaw = Invoke-Checked -Name $gh.Source -Arguments @('api', 'repos/fricachai/pro_ranking/pages/builds/latest')
-        $build = ($buildRaw -join "`n") | ConvertFrom-Json
-        if ($build.status -ne 'built') {
-            throw "GitHub Pages is not built. status=$($build.status) pages=$($build.commit) HEAD=$head"
+        $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
+        $runList = @()
+        do {
+            $runListRaw = Invoke-Checked -Name $gh.Source -Arguments @('run', 'list', '--commit', $head, '--workflow', $PagesWorkflow, '--limit', '20', '--json', 'databaseId,status,conclusion,createdAt,updatedAt,headSha,name,workflowName,url')
+            $runListText = ($runListRaw -join "`n").Trim()
+            $runList = if ($runListText) { @(ConvertFrom-Json $runListText) } else { @() }
+            $activeRuns = @($runList | Where-Object { $_.status -in @('queued', 'in_progress', 'waiting', 'requested') })
+            if ($activeRuns.Count -eq 0) { break }
+            Write-Output "PAGES_PREFLIGHT_WAITING=$($activeRuns.Count)"
+            Start-Sleep -Seconds 10
+        } while ((Get-Date) -lt $deadline)
+        if ($activeRuns.Count -gt 0) {
+            throw "Pages workflow is still active after $PagesTimeoutSeconds seconds; preflight cannot be bypassed."
         }
-        if ($build.commit -ne $head) {
-            Write-Output "PAGES_COMMIT=$($build.commit)"
-            Write-Output "PAGES_HEAD_LAG=$head"
-        }
+
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
+        if ($response.RawContentStream.CanSeek) { $response.RawContentStream.Position = 0 }
+        $memory = New-Object System.IO.MemoryStream
+        try {
+            $response.RawContentStream.CopyTo($memory)
+            $liveBytes = $memory.ToArray()
+        }
+        finally {
+            $memory.Dispose()
+        }
+        $localBytes = [IO.File]::ReadAllBytes((Join-Path $RepoRoot 'index.html'))
+        $localHash = Get-Sha256Hex -Bytes $localBytes
+        $liveHash = Get-Sha256Hex -Bytes $liveBytes
+        $liveByteMatch = $localHash -eq $liveHash
+        if (-not $liveByteMatch) {
+            $latestRun = $runList | Sort-Object createdAt -Descending | Select-Object -First 1
+            $runStatus = if ($latestRun) { "$($latestRun.status)/$($latestRun.conclusion)" } else { 'missing' }
+            throw "GitHub Pages content is not current. workflow=$runStatus live=$liveHash local=$localHash HEAD=$head"
+        }
+
+        $successfulRuns = @($runList | Where-Object { $_.status -eq 'completed' -and $_.conclusion -eq 'success' })
+        if ($successfulRuns.Count -gt 0) {
+            $pagesAuditStatus = 'complete'
+        }
+        else {
+            $pagesAuditStatus = 'content_live_actions_incomplete'
+        }
+        Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
+        Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
         foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
@@ -480,7 +553,7 @@ try {
     }
     Write-Output "BRANCH=$branch"
     Write-Output "COMMIT=$head"
-    if (-not $SkipLive) { Write-Output "PAGES_BUILD_COMMIT=$($build.commit)" }
+    if (-not $SkipLive) { Write-Output "PAGES_ACTIONS_COMMIT=$head" }
     Write-Output "ETF_DATE=$($report.meta.etfDate)"
     Write-Output "MARKET_DATE=$($report.meta.marketDate)"
     Write-Output "FOREIGN_HOLDING_HISTORY_DAYS=$($report.meta.foreignHoldingHistoryDays)"

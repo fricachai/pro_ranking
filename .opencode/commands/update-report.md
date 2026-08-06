@@ -9,7 +9,7 @@ agent: build
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1
 ```
 
-控制命令會在同一個 Shell 項目內完成預檢、背景啟動、等待與終態輸出。不得另外重複呼叫 `Get-ProfessionalScreenUpdateStatus.ps1`。當 Pages 為 `queued` / `building` 或有 active run 時，不得取消或自動重觸發；只能由控制腳本在無 active run 且預期 commit 明確失敗時請求一次 rebuild。線上 byte match 已成立、Pages API 尚延遲時，分開回報內容上線與 Pages 稽核狀態，不得重跑報告。使用者不需要輸入第二個 slash command。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 -->
+控制命令會在同一個 Shell 項目內完成預檢、背景啟動、等待與終態輸出。不得另外重複呼叫 `Get-ProfessionalScreenUpdateStatus.ps1`。預檢失敗就必須停止，不得跳過，也不得改為直接呼叫 `Update-ProfessionalScreen.ps1 -Publish`。Pages 由 `deploy-pages.yml` 單一 workflow 負責；active run 只等待、不取消，推送前必須排空佇列，明確失敗只 rerun 原 failed job 一次。線上 byte match 與 Actions 稽核狀態分開回報。使用者不需要輸入第二個 slash command。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
 
 `STATUS=published` 代表本次已重新檢查盤中／收盤行情、新聞、重大訊息與其他來源，並把本次報告及事件檢查時間發布。`DATA_CHANGED=false` 只表示排除時間戳後沒有實質內容變化。Yahoo RSS 若受 429 限流可降級為 `partial` 或 `unavailable`，但官方重大訊息、收盤價及其他品質閘門仍須通過。成功時回報狀態、檢查時間、資料是否實質變更、提交、公開網址與 `RUN_LOG`；失敗時只回報失敗關卡與 `RUN_LOG`。不要猜測結果或以舊資料發布。<!-- BUILD_BASH_DAILY_UPDATE_V1 --><!-- INTRADAY_REFRESH_V1 --><!-- REFRESH_TIMESTAMP_V1 --><!-- OPTIONAL_YAHOO_NEWS_V1 -->
 

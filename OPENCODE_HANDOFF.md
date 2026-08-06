@@ -16,7 +16,7 @@ OpenCode 原本只有 Obsidian MCP 工具，不會因此自動掃描或讀取 va
 - 換電腦或 Google Drive 磁碟代號改變時，只需更新 `opencode.json` 的 Obsidian 絕對路徑，再以 `opencode debug config` 確認 `instructions` 已出現。
 - Obsidian 用來保存完整理由與歷史；實際執行以 repo 的腳本、驗證器與當前 `AGENTS.md` 為準。每次發現可重用的新做法時，必須同時更新 repo 與原 Obsidian SOP，不只留在對話中。<!-- OBSIDIAN_AUTOREAD_V1 -->
 
-Pages 建置防迴圈規則：當預期 commit 已有 active run，或 Pages 回報 `queued` / `building` 時，只能等待，不取消、不另行重觸發。只有在沒有 active run，且預期 commit 明確 `failed` / `errored` 時，受控更新器才可請求一次 rebuild。HTTP 200 與線上檔案 byte match 已證明內容上線、但 Pages API 仍延遲時，回報「內容已上線／Pages 稽核尚未同步」，不得再執行整份報告更新。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 -->
+Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把 legacy `pages/builds/latest` 當成成敗單一來源。預檢要等待 active Actions run，更新器推送前要再等待佇列排空；workflow 設為 `cancel-in-progress: false` 與 15 分鐘 deploy timeout。失敗時僅允許對原 workflow 執行一次 failed-job rerun，不重抓資料、不製造空白 commit。HTTP 200 與線上 byte match 代表內容上線；Actions 結論是獨立稽核狀態。任何代理都不得說「跳過預檢」並直接執行 `Update-ProfessionalScreen.ps1 -Publish`；OpenCode 權限已否決此命令，只允許單一控制入口。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
 
 ## 最簡單的日常操作
 

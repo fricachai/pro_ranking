@@ -29,6 +29,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 同一日可重複執行。每次都會重新查詢盤中／收盤行情、新聞、重大訊息與其他來源，不再被日期標籤提前攔截。每次成功檢查都會回報 `STATUS=published`、更新前台的報告與事件檢查時間，並建立 `published/YYYYMMDD-HHmmss` 稽核標籤；`DATA_CHANGED=false` 表示排除時間戳後沒有實質內容變化。Yahoo RSS 若受 429 限流會標示為部分成功或暫時無法取得，但不阻斷官方事件與行情更新。<!-- INTRADAY_REFRESH_V1 --><!-- REFRESH_TIMESTAMP_V1 --><!-- OPTIONAL_YAHOO_NEWS_V1 -->
 
+GitHub Pages 由 `.github/workflows/deploy-pages.yml` 單一發布，Actions 與線上檔案 byte match 才是完成依據。工作流不取消執行中部署，deploy 最長等待 15 分鐘。預檢不得繞過，OpenCode 不得直接執行底層 `Update-ProfessionalScreen.ps1 -Publish`。<!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
+
 只在本機更新與驗證：
 
 ```powershell

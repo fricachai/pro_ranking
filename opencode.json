@@ -28,7 +28,10 @@
       },
       "permission": {
         "edit": "allow",
-        "bash": "allow",
+        "bash": {
+          "*": "allow",
+          "*Update-ProfessionalScreen.ps1* -Publish*": "deny"
+        },
         "webfetch": "allow",
         "question": "allow",
         "plan_enter": "allow",
@@ -55,8 +58,7 @@
       "pwsh* -File *Get-ProfessionalScreenUpdateStatus.ps1*": "allow",
       "powershell* -File *Invoke-ProfessionalScreenUpdateCommand.ps1": "allow",
       "pwsh* -File *Invoke-ProfessionalScreenUpdateCommand.ps1": "allow",
-      "powershell* -File *Update-ProfessionalScreen.ps1 -Publish": "allow",
-      "pwsh* -File *Update-ProfessionalScreen.ps1 -Publish": "allow"
+      "*Update-ProfessionalScreen.ps1* -Publish*": "deny"
     }
   }
 }

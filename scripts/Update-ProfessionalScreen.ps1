@@ -16,6 +16,7 @@ $LatestHtml = Join-Path $ReportDir 'latest.html'
 $IndexHtml = Join-Path $RepoRoot 'index.html'
 $LogDir = Join-Path $ReportDir 'logs'
 $LiveUrl = 'https://fricachai.github.io/pro_ranking/'
+$PagesWorkflow = 'deploy-pages.yml'
 $LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
 $latestEventsExistedBeforeRun = $false
 $latestEventsBytesBeforeRun = $null
@@ -86,76 +87,144 @@ function Get-ReportFingerprint {
     }
 }
 
+function Get-Sha256Hex {
+    param([Parameter(Mandatory)][byte[]]$Bytes)
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash($Bytes))).Replace('-', '')
+    }
+    finally {
+        $sha256.Dispose()
+    }
+}
+
+function Get-PagesWorkflowRuns {
+    param([AllowNull()][string]$Commit)
+
+    $arguments = @('run', 'list', '--workflow', $PagesWorkflow, '--limit', '20', '--json', 'databaseId,status,conclusion,createdAt,updatedAt,headSha,name,workflowName,url')
+    if (-not [string]::IsNullOrWhiteSpace($Commit)) {
+        $arguments = @('run', 'list', '--commit', $Commit, '--workflow', $PagesWorkflow, '--limit', '20', '--json', 'databaseId,status,conclusion,createdAt,updatedAt,headSha,name,workflowName,url')
+    }
+    $raw = & gh @arguments 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to query Pages workflow runs:`n$($raw -join "`n")"
+    }
+    $joined = ($raw -join "`n").Trim()
+    if (-not $joined) { return @() }
+    return @(ConvertFrom-Json $joined)
+}
+
+function Get-LiveReportState {
+    param([Parameter(Mandatory)][string]$ExpectedEtfDate)
+
+    $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
+    if ($response.RawContentStream.CanSeek) { $response.RawContentStream.Position = 0 }
+    $memory = New-Object System.IO.MemoryStream
+    try {
+        $response.RawContentStream.CopyTo($memory)
+        $liveBytes = $memory.ToArray()
+    }
+    finally {
+        $memory.Dispose()
+    }
+    $localBytes = [IO.File]::ReadAllBytes($IndexHtml)
+    $localHash = Get-Sha256Hex -Bytes $localBytes
+    $liveHash = Get-Sha256Hex -Bytes $liveBytes
+    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
+    $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
+    return [pscustomobject]@{
+        StatusCode = [int]$response.StatusCode
+        ByteMatch = ($localHash -eq $liveHash)
+        LocalHash = $localHash
+        LiveHash = $liveHash
+        Missing = $missing
+    }
+}
+
+function Wait-GitHubPagesQueueIdle {
+    $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        $runs = @(Get-PagesWorkflowRuns)
+        $activeRuns = @($runs | Where-Object { $_.status -in @('queued', 'in_progress', 'waiting', 'requested') })
+        if ($activeRuns.Count -eq 0) {
+            Write-Host 'GitHub Pages deployment queue is idle.'
+            return
+        }
+        $ids = @($activeRuns | ForEach-Object { [string]$_.databaseId }) -join ','
+        Write-Host "Waiting for active Pages workflow run(s) before push: $ids"
+        Start-Sleep -Seconds 10
+    }
+    throw "GitHub Pages deployment queue did not become idle within $PagesTimeoutSeconds seconds."
+}
+
 function Test-LiveReport {
     param(
         [Parameter(Mandatory)][string]$ExpectedCommit,
         [Parameter(Mandatory)][string]$ExpectedEtfDate
     )
 
-    # Pages deployment rule: DO NOT cancel or retrigger Pages builds automatically.
-    # If there is an active run for the expected commit, wait until it finishes.
-    # Only if no active run exists and the latest build failed for the expected commit,
-    # request a single controlled rebuild. Never retry more than once.
+    # Pages deployment rule: DO NOT cancel active runs or use the legacy Pages build API.
+    # The explicit workflow and exact live byte match are authoritative.
+    # Retry the failed workflow at most once and never create another data commit.
     $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
-    $rebuildOnce = $false
-    $build = $null
+    $retryOnce = $false
+    $dispatchGraceDeadline = (Get-Date).AddSeconds(45)
+    $lastLiveState = $null
     while ((Get-Date) -lt $deadline) {
-        $activeRuns = @()
-        $runListRaw = & gh run list --commit $ExpectedCommit --workflow "pages build and deployment" --json databaseId,status,conclusion,createdAt,name 2>&1
-        if ($LASTEXITCODE -eq 0) {
-            $runList = ($runListRaw -join "`n") | ConvertFrom-Json
-            $activeRuns = @($runList | Where-Object { $_.status -in @('queued', 'in_progress', 'waiting', 'requested') })
-        }
-        else {
-            Write-Warning "Unable to query active Pages runs for commit $ExpectedCommit; relying on Pages build status only."
-        }
-
-        $raw = & gh api repos/fricachai/pro_ranking/pages/builds/latest 2>&1
-        if ($LASTEXITCODE -ne 0) {
-            throw "Unable to query GitHub Pages status:`n$($raw -join "`n")"
-        }
-        $build = ($raw -join "`n") | ConvertFrom-Json
-
+        $runs = @(Get-PagesWorkflowRuns -Commit $ExpectedCommit)
+        $activeRuns = @($runs | Where-Object { $_.status -in @('queued', 'in_progress', 'waiting', 'requested') })
         if ($activeRuns.Count -gt 0) {
-            Write-Host "Waiting for $($activeRuns.Count) active Pages run(s) for commit $ExpectedCommit..."
+            Write-Host "Waiting for $($activeRuns.Count) active Pages workflow run(s) for commit $ExpectedCommit..."
             Start-Sleep -Seconds 10
             continue
         }
 
-        if ($build.status -eq 'built' -and $build.commit -eq $ExpectedCommit) {
-            break
-        }
-
-        if ($build.commit -eq $ExpectedCommit -and $build.status -in @('errored', 'failed') -and -not $rebuildOnce) {
-            Write-Host "GitHub Pages build failed for commit $ExpectedCommit. Requesting one single controlled rebuild..."
-            $trigger = & gh api --method POST repos/fricachai/pro_ranking/pages/builds 2>&1
-            if ($LASTEXITCODE -ne 0) {
-                throw "Unable to request GitHub Pages rebuild:`n$($trigger -join "`n")"
+        $lastLiveState = Get-LiveReportState -ExpectedEtfDate $ExpectedEtfDate
+        if ($lastLiveState.StatusCode -eq 200 -and $lastLiveState.ByteMatch -and $lastLiveState.Missing.Count -eq 0) {
+            $successfulRuns = @($runs | Where-Object { $_.status -eq 'completed' -and $_.conclusion -eq 'success' })
+            if ($successfulRuns.Count -gt 0) {
+                Write-Host "PAGES_AUDIT_STATUS=complete commit=$ExpectedCommit"
             }
-            $rebuildOnce = $true
+            else {
+                Write-Host "PAGES_AUDIT_STATUS=content_live_actions_incomplete commit=$ExpectedCommit"
+            }
+            return
+        }
+
+        $failedRuns = @($runs | Where-Object { $_.status -eq 'completed' -and $_.conclusion -in @('failure', 'cancelled', 'timed_out', 'stale', 'startup_failure', 'action_required') })
+        if ($failedRuns.Count -gt 0 -and -not $retryOnce) {
+            $failedRun = $failedRuns | Sort-Object createdAt -Descending | Select-Object -First 1
+            Write-Host "Pages workflow failed for commit $ExpectedCommit. Requesting one controlled failed-job rerun: $($failedRun.databaseId)"
+            $retryRaw = & gh run rerun $failedRun.databaseId --failed 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to rerun the failed Pages workflow:`n$($retryRaw -join "`n")"
+            }
+            $retryOnce = $true
+            Start-Sleep -Seconds 10
+            continue
+        }
+        if ($failedRuns.Count -gt 0 -and $retryOnce) {
+            throw "GitHub Pages workflow failed again after one controlled rerun. commit=$ExpectedCommit live=$($lastLiveState.LiveHash) local=$($lastLiveState.LocalHash)"
+        }
+
+        if ($runs.Count -eq 0 -and (Get-Date) -ge $dispatchGraceDeadline -and -not $retryOnce) {
+            Write-Host "No Pages workflow run was discovered for commit $ExpectedCommit. Requesting one controlled workflow dispatch."
+            $dispatchRaw = & gh workflow run $PagesWorkflow --ref main 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                throw "Unable to dispatch the Pages workflow:`n$($dispatchRaw -join "`n")"
+            }
+            $retryOnce = $true
             Start-Sleep -Seconds 10
             continue
         }
 
-        if ($build.commit -eq $ExpectedCommit -and $build.status -in @('errored', 'failed') -and $rebuildOnce) {
-            throw "GitHub Pages build failed again after one single controlled rebuild. commit=$($build.commit) status=$($build.status)"
-        }
-
-        Write-Host "Latest Pages build status=$($build.status) commit=$($build.commit); waiting for commit $ExpectedCommit..."
+        Write-Host "Waiting for Pages workflow/CDN propagation. commit=$ExpectedCommit liveMatch=$($lastLiveState.ByteMatch)"
         Start-Sleep -Seconds 8
     }
 
-    if ($build.status -ne 'built' -or $build.commit -ne $ExpectedCommit) {
-        throw "GitHub Pages did not publish commit $ExpectedCommit within $PagesTimeoutSeconds seconds. status=$($build.status) commit=$($build.commit)"
-    }
-
-    $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-    $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
-    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
-    $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
-    if ($response.StatusCode -ne 200 -or $missing.Count -gt 0) {
-        throw "Live page validation failed. HTTP=$($response.StatusCode); missing=$($missing -join ', ')"
-    }
+    $liveSummary = if ($lastLiveState) { "live=$($lastLiveState.LiveHash) local=$($lastLiveState.LocalHash) missing=$($lastLiveState.Missing -join ',')" } else { 'live=not_checked' }
+    throw "GitHub Pages did not publish commit $ExpectedCommit within $PagesTimeoutSeconds seconds. $liveSummary"
 }
 
 Assert-Command -Name 'node'
@@ -461,6 +530,7 @@ try {
     $publishStatus = 'validated'
     if ($Publish -and $changedPaths.Count -gt 0) {
         Write-Host 'Publishing refreshed report to GitHub Pages...'
+        Wait-GitHubPagesQueueIdle
         Invoke-Git -Arguments (@('add', '--') + $gitAddPaths) | Out-Null
         $stagedCheck = & git diff --cached --check 2>&1
         if ($LASTEXITCODE -ne 0) {
