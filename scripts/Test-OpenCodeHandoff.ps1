@@ -143,6 +143,28 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md')) {
     }
 }
 
+$obsidianAutoreadMarker = 'OBSIDIAN_AUTOREAD_V1'
+foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($obsidianAutoreadMarker)) {
+        throw "Obsidian auto-read rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
+$pagesDeploymentLoopMarker = 'PAGES_DEPLOYMENT_LOOP_GUARD_V1'
+foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($pagesDeploymentLoopMarker)) {
+        throw "Pages deployment-loop guard is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
+$openCodeConfig = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
+$openCodeInstructions = @($openCodeConfig.instructions)
+if ($openCodeInstructions -notcontains 'OPENCODE_HANDOFF.md' -or -not ($openCodeInstructions | Where-Object { $_ -match 'pro_ranking.*SOP\.md$' })) {
+    throw 'OpenCode config must auto-load the repository handoff and the pro_ranking Obsidian SOP.'
+}
+
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {

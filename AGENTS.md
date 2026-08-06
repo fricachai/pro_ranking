@@ -1,8 +1,21 @@
 # 上市股票專業選股報告操作規則
 
+## Obsidian 與 OpenCode 自動交接
+
+1. 專案 `opencode.json` 的 `instructions` 已列入 `OPENCODE_HANDOFF.md` 與 Obsidian 的 `Codex操作累積/pro_ranking上市股票專業選股系統-開發與部署SOP.md`；OpenCode 必須在新工作階段啟動時自動載入兩者。
+2. Obsidian MCP 只是讀寫工具；若沒有 `instructions` 或本檔明確要求，OpenCode 不會自行掃描整個 vault。更新必讀規則後要開新工作階段，不要假設舊工作階段會回溯替換已載入的指示。
+3. 權威層級依序為：可執行的腳本與驗證器、repo `AGENTS.md` / `OPENCODE_HANDOFF.md`、Obsidian 歷史理由與 SOP。若舊筆記與現行腳本衝突，不得依舊筆記操作；必須同步更新這三層。<!-- OBSIDIAN_AUTOREAD_V1 -->
+
 ## 專案用途
 
 本專案每日重新抓取 ETF、證交所、公開資訊觀測站與即時行情資料，產生台灣上市股票研究排序報告並發布到 GitHub Pages。
+
+## Obsidian 與 OpenCode 自動交接
+
+1. 專案 `opencode.json` 的 `instructions` 已列入 `OPENCODE_HANDOFF.md` 與 Obsidian 的 `Codex操作累積/pro_ranking上市股票專業選股系統-開發與部署SOP.md`；OpenCode 必須在新工作階段啟動時自動載入兩者。
+2. Obsidian MCP 只是讀寫工具；若沒有 `instructions` 或本檔明確要求，OpenCode 不會自行掃描整個 vault。更新必讀規則後要開新工作階段，不要假設舊工作階段會回溯替換已載入的指示。
+3. 權威層級依序為：可執行的腳本與驗證器、repo `AGENTS.md` / `OPENCODE_HANDOFF.md`、Obsidian 歷史理由與 SOP。若舊筆記與現行腳本衝突，不得依舊筆記操作；必須同步更新這三層。<!-- OBSIDIAN_AUTOREAD_V1 -->
+4. Pages 建置為 `building`、`queued` 或同一提交已有執行中 run 時，只能等待，不得自動取消或重觸發。只有在「沒有 active run」且「預期 commit 最新 build 明確為 `failed` / `errored`」時，才可由受控更新器請求一次 rebuild；失敗後不得無限重試。線上內容已與預期檔案一致、但 Pages API 狀態尚未同步時，必須分別回報 `content-live` 與 `Pages-audit-complete`，不得再跑一次資料更新。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 -->
 
 ## 盤中／每日更新唯一入口
 

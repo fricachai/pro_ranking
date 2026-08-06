@@ -1,5 +1,9 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "OPENCODE_HANDOFF.md",
+    "G:\\我的雲端硬碟\\Obsidian\\2ndbrain\\Codex操作累積\\pro_ranking上市股票專業選股系統-開發與部署SOP.md"
+  ],
   "shell": "powershell.exe",
   "tools": {
     "bash": true

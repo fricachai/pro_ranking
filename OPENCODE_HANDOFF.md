@@ -4,6 +4,20 @@
 
 可以交給 OpenCode Desktop 或 OpenCode CLI 執行，但 OpenCode 是流程操作者，不是資料來源。實際資料抓取、新聞彙整、評分、產檔、Git 提交、推送與 GitHub Pages 驗證，全部由本專案既有腳本完成。只要新電腦具備必要工具與個人登入權限，OpenCode 可用單一指令完成完整更新。
 
+## Obsidian 已設為新工作階段自動必讀
+
+OpenCode 原本只有 Obsidian MCP 工具，不會因此自動掃描或讀取 vault。本專案現已在 `opencode.json` 的 `instructions` 同時載入本交接檔與下列 Obsidian SOP：
+
+`G:\我的雲端硬碟\Obsidian\2ndbrain\Codex操作累積\pro_ranking上市股票專業選股系統-開發與部署SOP.md`
+
+使用規則：
+
+- 更新 `opencode.json`、`AGENTS.md` 或 Obsidian SOP 後，必須回到 OpenCode 主工作階段並開新對話；舊對話可能已經載入舊版指示。
+- 換電腦或 Google Drive 磁碟代號改變時，只需更新 `opencode.json` 的 Obsidian 絕對路徑，再以 `opencode debug config` 確認 `instructions` 已出現。
+- Obsidian 用來保存完整理由與歷史；實際執行以 repo 的腳本、驗證器與當前 `AGENTS.md` 為準。每次發現可重用的新做法時，必須同時更新 repo 與原 Obsidian SOP，不只留在對話中。<!-- OBSIDIAN_AUTOREAD_V1 -->
+
+Pages 建置防迴圈規則：當預期 commit 已有 active run，或 Pages 回報 `queued` / `building` 時，只能等待，不取消、不另行重觸發。只有在沒有 active run，且預期 commit 明確 `failed` / `errored` 時，受控更新器才可請求一次 rebuild。HTTP 200 與線上檔案 byte match 已證明內容上線、但 Pages API 仍延遲時，回報「內容已上線／Pages 稽核尚未同步」，不得再執行整份報告更新。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 -->
+
 ## 最簡單的日常操作
 
 ### 已安裝 OpenCode Desktop
