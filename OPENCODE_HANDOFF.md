@@ -49,6 +49,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 - 長期資本配置品質 15 分維持「尚未計分」，不得顯示為 0 分或冒充完整價值評估。
 - 完成後必須更新兩支 PowerShell 驗證器與 `design-qa.md`，並以實際桌機、手機及線上 Pages 驗證收尾。
 
+### 評分明細 UI 契約
+
+同一分數明細視窗提供短期時機、中期研究／排名主軸、長期初篩三頁籤，預設中期；短期範圍為1–20個交易日，中期約1–6個月，長期為1年以上且價值投資宜觀察3–5年以上。每頁顯示既有構面、實得／最高、證據、來源、改變條件與下一次檢查時間。頁籤與跨時間尺度解讀只解釋分數，不改變排名、今天動作、新部位、持有動作或硬門檻；長期資本配置品質15分尚未計分，方法覆蓋固定85%。<!-- HORIZON_SCORE_DETAIL_UI_V1 -->
+
 ## 必須一起交接的檔案
 
 最安全的方式是直接複製完整 Git 儲存庫，或在新電腦執行 `git clone https://github.com/fricachai/pro_ranking.git`，不要挑檔複製。下列檔案是交接核心：
