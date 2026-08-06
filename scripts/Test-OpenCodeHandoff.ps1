@@ -211,9 +211,9 @@ $updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-
 if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
     throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
 }
-foreach ($requiredPagesRecoveryToken in @('[int]$PagesRetriggerSeconds = 90', 'gh api --method POST repos/fricachai/pro_ranking/pages/builds')) {
-    if (-not $updaterContent.Contains($requiredPagesRecoveryToken)) {
-        throw "Pages recovery safeguard is missing: $requiredPagesRecoveryToken"
+foreach ($requiredPagesSafeguardToken in @('DO NOT cancel or retrigger Pages builds automatically', 'single controlled rebuild', 'active Pages run', 'rebuildOnce', 'gh api --method POST repos/fricachai/pro_ranking/pages/builds')) {
+    if (-not $updaterContent.Contains($requiredPagesSafeguardToken)) {
+        throw "Pages deployment safeguard is missing: $requiredPagesSafeguardToken"
     }
 }
 foreach ($requiredIntradayToken in @(

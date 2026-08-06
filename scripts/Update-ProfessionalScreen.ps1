@@ -1,8 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$Publish,
-    [int]$PagesTimeoutSeconds = 900,
-    [ValidateRange(30, 600)][int]$PagesRetriggerSeconds = 90
+    [int]$PagesTimeoutSeconds = 900
 )
 
 Set-StrictMode -Version Latest
@@ -93,35 +92,61 @@ function Test-LiveReport {
         [Parameter(Mandatory)][string]$ExpectedEtfDate
     )
 
+    # Pages deployment rule: DO NOT cancel or retrigger Pages builds automatically.
+    # If there is an active run for the expected commit, wait until it finishes.
+    # Only if no active run exists and the latest build failed for the expected commit,
+    # request a single controlled rebuild. Never retry more than once.
     $deadline = (Get-Date).AddSeconds($PagesTimeoutSeconds)
-    $retriggerAt = (Get-Date).AddSeconds($PagesRetriggerSeconds)
-    $retriggered = $false
-    do {
+    $rebuildOnce = $false
+    $build = $null
+    while ((Get-Date) -lt $deadline) {
+        $activeRuns = @()
+        $runListRaw = & gh run list --commit $ExpectedCommit --workflow "pages build and deployment" --json databaseId,status,conclusion,createdAt,name 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            $runList = ($runListRaw -join "`n") | ConvertFrom-Json
+            $activeRuns = @($runList | Where-Object { $_.status -in @('queued', 'in_progress', 'waiting', 'requested') })
+        }
+        else {
+            Write-Warning "Unable to query active Pages runs for commit $ExpectedCommit; relying on Pages build status only."
+        }
+
         $raw = & gh api repos/fricachai/pro_ranking/pages/builds/latest 2>&1
         if ($LASTEXITCODE -ne 0) {
             throw "Unable to query GitHub Pages status:`n$($raw -join "`n")"
         }
         $build = ($raw -join "`n") | ConvertFrom-Json
-        if ($build.status -eq 'errored' -and $build.commit -eq $ExpectedCommit) {
-            throw "GitHub Pages build failed. commit=$($build.commit)"
+
+        if ($activeRuns.Count -gt 0) {
+            Write-Host "Waiting for $($activeRuns.Count) active Pages run(s) for commit $ExpectedCommit..."
+            Start-Sleep -Seconds 10
+            continue
         }
+
         if ($build.status -eq 'built' -and $build.commit -eq $ExpectedCommit) {
             break
         }
-        if (-not $retriggered -and (Get-Date) -ge $retriggerAt) {
-            Write-Host "GitHub Pages has not selected commit $ExpectedCommit within $PagesRetriggerSeconds seconds. Requesting a fresh build..."
+
+        if ($build.commit -eq $ExpectedCommit -and $build.status -in @('errored', 'failed') -and -not $rebuildOnce) {
+            Write-Host "GitHub Pages build failed for commit $ExpectedCommit. Requesting one single controlled rebuild..."
             $trigger = & gh api --method POST repos/fricachai/pro_ranking/pages/builds 2>&1
             if ($LASTEXITCODE -ne 0) {
-                throw "Unable to retrigger GitHub Pages build:`n$($trigger -join "`n")"
+                throw "Unable to request GitHub Pages rebuild:`n$($trigger -join "`n")"
             }
-            $retriggered = $true
-            Write-Host 'GitHub Pages rebuild requested; continuing verification...'
+            $rebuildOnce = $true
+            Start-Sleep -Seconds 10
+            continue
         }
+
+        if ($build.commit -eq $ExpectedCommit -and $build.status -in @('errored', 'failed') -and $rebuildOnce) {
+            throw "GitHub Pages build failed again after one single controlled rebuild. commit=$($build.commit) status=$($build.status)"
+        }
+
+        Write-Host "Latest Pages build status=$($build.status) commit=$($build.commit); waiting for commit $ExpectedCommit..."
         Start-Sleep -Seconds 8
-    } while ((Get-Date) -lt $deadline)
+    }
 
     if ($build.status -ne 'built' -or $build.commit -ne $ExpectedCommit) {
-        throw "GitHub Pages did not publish commit $ExpectedCommit within $PagesTimeoutSeconds seconds."
+        throw "GitHub Pages did not publish commit $ExpectedCommit within $PagesTimeoutSeconds seconds. status=$($build.status) commit=$($build.commit)"
     }
 
     $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()

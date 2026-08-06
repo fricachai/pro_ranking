@@ -21,11 +21,16 @@
       }
     }
   },
-  "permission": {
+    "permission": {
     "edit": "deny",
     "webfetch": "deny",
     "bash": {
       "*": "deny",
+      "gh run cancel*": "ask",
+      "gh api --method POST*pages/builds*": "ask",
+      "git push --force*": "ask",
+      "git push -f*": "ask",
+      "git reset --hard*": "ask",
       "powershell* -File *Test-OpenCodeHandoff.ps1": "allow",
       "pwsh* -File *Test-OpenCodeHandoff.ps1": "allow",
       "powershell* -File *Start-ProfessionalScreenUpdate.ps1": "allow",
