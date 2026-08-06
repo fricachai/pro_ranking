@@ -44,6 +44,23 @@ No remaining P0, P1, or P2 visual differences were found in the final comparison
 1. Iteration 1: identified the P2 badge-copy mismatch.
 2. Iteration 2: corrected the action/timing separation, re-rendered, and re-captured the full comparison.
 
+## 2026-08-06 live horizon-score and filing-transition QA
+
+- Live report commit: `a12fa3308c2902da5d3733c452a3bd6a9b841b82`.
+- Desktop viewport: 1440 x 1000 CSS px; `scrollWidth = clientWidth = 1440`.
+- Mobile viewport: 390 x 844 CSS px; `scrollWidth = clientWidth = 390`.
+- Live header showed report generation `2026/08/06 14:58:48`, event check `2026/08/06 14:58:28`, closing quote freeze `2026-08-06 13:33:00`, and complete Yahoo news coverage.
+- Filing-transition banner matched the report contract: 81 current-quarter records, 374 verified prior snapshots, 10 unavailable records, total 465.
+- The 2376 score dialog showed short/medium/long scores 82/78/54, data health `91% 可用`, financial period `2026Q1`, verified-snapshot provenance, a 10-point freshness penalty, and 100% stock-level long-screen data coverage.
+- The same dialog exposed today action, next check, six medium-term component scores, actual evidence values, and source links without horizontal clipping.
+- Tracking 2376 created exactly one `符合加碼條件` position card. The card showed the current state, today action, next close check, 334.5-338.5 pullback zone, and the condition that cancels adding.
+- Desktop and mobile console errors and warnings: 0.
+
+| Severity | Finding | Resolution |
+|---|---|---|
+| P1 | During quarterly filing transition, the current official endpoint contained only companies that had already filed Q2, so non-filers lost previously verified Q1 financial evidence. | Added a maximum-one-quarter verified official snapshot fallback with explicit period, source mode, source file, missing/stale disclosure, and validation counts. |
+| P2 | A verified prior-quarter snapshot could still display 100% data health even though its status was `可用`. | Added an independent freshness penalty: 5 points for a same-quarter snapshot and 10 points for a prior-quarter snapshot; investment scores are unchanged. |
+
 ## Final result
 
 passed
