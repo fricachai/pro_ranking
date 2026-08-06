@@ -357,7 +357,7 @@ try {
         $fundamentals = $_.fundamentals
         if (-not $fundamentals) { return $true }
         $fundamentalProperties = @($fundamentals.PSObject.Properties.Name)
-        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
+        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'freshnessPenalty' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
         if ('financialSourceMode' -notin $fundamentalProperties -or 'financialPeriod' -notin $fundamentalProperties -or 'financialSnapshotSourceFile' -notin $fundamentalProperties) { return $true }
         $sourceMode = [string]$health.financialSourceMode
         if ($sourceMode -notin @('current_official', 'prior_verified_official_snapshot', 'unavailable') -or $sourceMode -ne [string]$fundamentals.financialSourceMode) { return $true }
@@ -366,8 +366,9 @@ try {
         if ($sourceMode -eq 'prior_verified_official_snapshot') {
             $rowFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$fundamentals.financialPeriod)
             if ($null -eq $rowFinancialOrdinal -or $currentFinancialOrdinal - $rowFinancialOrdinal -lt 0 -or $currentFinancialOrdinal - $rowFinancialOrdinal -gt 1) { return $true }
-            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1) { return $true }
+            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1 -or [double]$health.freshnessPenalty -le 0) { return $true }
         }
+        if ($sourceMode -eq 'current_official' -and [double]$health.freshnessPenalty -ne 0) { return $true }
         if ($sourceMode -eq 'unavailable' -and $fundamentals.financialPeriod) { return $true }
         return $false
     })
@@ -405,7 +406,7 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 

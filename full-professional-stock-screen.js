@@ -1048,6 +1048,7 @@ function scoreRecords(records) {
       eligible: record.confidence >= DATA_HEALTH_HARD_GATE,
       hardGate: DATA_HEALTH_HARD_GATE,
       affectsScore: false,
+      freshnessPenalty: record.financialFreshnessPenalty || 0,
       financialPeriod: record.financialPeriod || null,
       financialSourceMode: record.financialSourceMode || 'unavailable',
       missingCore,
@@ -1815,7 +1816,8 @@ function openScore(code,updateHash=true){
   const h=r.horizonScores||{};const c=h.medium&&h.medium.components||r.components||{};const health=r.dataHealth||{};const f=r.fundamentals||{};const v=r.valuation||{};const etf=r.etf||{};const foreign=r.foreign||{};const trust=r.investmentTrust||{};const dealer=r.dealer||{};const t=r.technical||{};const risk=r.riskInputs||{};const credit=r.credit||{};const tdcc=r.tdcc||{};
   const financialModeText=f.financialSourceMode==='current_official'?'本次官方端點資料':f.financialSourceMode==='prior_verified_official_snapshot'?'先前已驗證官方快照':'無可用季報';
   const healthDetails=[...(health.staleCore||[]),...(health.missingCore||[])];
-  const healthNotice='<div class="score-judgment"><b>資料健康說明：</b>'+e(healthDetails.length?healthDetails.join('；'):'核心資料已通過本模型完整性檢查')+'<br><b>季報來源：</b>'+e(financialModeText)+(f.financialPeriod?'（'+e(f.financialPeriod)+'）':'')+'；長期初篩個股資料覆蓋 '+n(h.long&&h.long.dataCoverage,0)+'%。</div>';
+  const freshnessPenaltyText=health.freshnessPenalty?'；資料健康度已反映時效扣 '+n(health.freshnessPenalty,0)+' 點':'';
+  const healthNotice='<div class="score-judgment"><b>資料健康說明：</b>'+e(healthDetails.length?healthDetails.join('；'):'核心資料已通過本模型完整性檢查')+'<br><b>季報來源：</b>'+e(financialModeText)+(f.financialPeriod?'（'+e(f.financialPeriod)+'）':'')+freshnessPenaltyText+'；長期初篩個股資料覆蓋 '+n(h.long&&h.long.dataCoverage,0)+'%。</div>';
   const catalystEvents=(r.events&&r.events.buyback?'有進行中庫藏股':'未偵測進行中庫藏股')+'；'+(r.events&&r.events.disposal?'有處置或交易限制事件':'未偵測處置事件');
   const detailRows=[
     componentRow('盈餘與營收趨勢',c.earningsTrend,25,[
@@ -2070,6 +2072,10 @@ async function main() {
     if (institutionalHistory.snapshots.some(snapshot => snapshot.rows.has(code))) confidence += 5;
     if (foreignHolding.trendReliable) confidence += 5;
     else if (Number.isFinite(foreignHolding.heldShares)) confidence += 2;
+    const financialFreshnessPenalty = usePriorFinancial
+      ? (financialPeriod === financialCurrentPeriod ? 5 : 10)
+      : 0;
+    confidence -= financialFreshnessPenalty;
     confidence -= Math.min(12, etf.laggingExposure * 0.35);
     confidence = clamp(confidence, 0, 100);
     const dailyValue = number(dailyRow?.TradeValue ?? dailyRow?.TransactionAmount);
@@ -2080,7 +2086,7 @@ async function main() {
     return {
       code, name: stock.name, market, industry, sector: broadSector(industry), etf, foreignHolding, technical, events: event,
       eventsLayer: stockEvents, credit, tdcc, officialMaterialRisk, financialPeriod, financialSourceMode,
-      financialCurrentPeriod, financialSnapshotSourceFile: usePriorFinancial ? priorFinancial.sourceFile : null,
+      financialCurrentPeriod, financialFreshnessPenalty, financialSnapshotSourceFile: usePriorFinancial ? priorFinancial.sourceFile : null,
       financialSnapshotGeneratedAt: usePriorFinancial ? priorFinancial.sourceGeneratedAt : null,
       closeDate: yyyymmddToIso(data.meta.price_date), confidence: round(confidence, 1), live: null,
       metrics: {

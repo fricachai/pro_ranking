@@ -348,7 +348,7 @@ try {
         $fundamentals = $_.fundamentals
         if (-not $fundamentals) { return $true }
         $fundamentalProperties = @($fundamentals.PSObject.Properties.Name)
-        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
+        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'freshnessPenalty' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
         if ('financialSourceMode' -notin $fundamentalProperties -or 'financialPeriod' -notin $fundamentalProperties -or 'financialSnapshotSourceFile' -notin $fundamentalProperties) { return $true }
         $sourceMode = [string]$health.financialSourceMode
         if ($sourceMode -notin @('current_official', 'prior_verified_official_snapshot', 'unavailable') -or $sourceMode -ne [string]$fundamentals.financialSourceMode) { return $true }
@@ -357,8 +357,9 @@ try {
         if ($sourceMode -eq 'prior_verified_official_snapshot') {
             $rowFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$fundamentals.financialPeriod)
             if ($null -eq $rowFinancialOrdinal -or $currentFinancialOrdinal - $rowFinancialOrdinal -lt 0 -or $currentFinancialOrdinal - $rowFinancialOrdinal -gt 1) { return $true }
-            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1) { return $true }
+            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1 -or [double]$health.freshnessPenalty -le 0) { return $true }
         }
+        if ($sourceMode -eq 'current_official' -and [double]$health.freshnessPenalty -ne 0) { return $true }
         if ($sourceMode -eq 'unavailable' -and $fundamentals.financialPeriod) { return $true }
         return $false
     })
@@ -411,7 +412,7 @@ try {
         }
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(
