@@ -98,7 +98,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 只有使用者明確要求新增欄位、修改評分、調整版面或修正錯誤時，才分析與編輯產生器。完成後必須遵守「Codex／OpenCode 統一完成條件」，不得留下只有其中一個工具知道的未提交版本。
 
-2026-08-06 使用者已明確授權 OpenCode 以 `/implement-horizon-ui` 接手短／中／長期評分明細介面的規劃與執行。只有專用 `horizon-ui` 主代理可使用這個功能開發例外；日常 `/update-report` 仍不得直接改碼。這次任務必須維持中期為唯一排名主軸，短期為 1–20 個交易日的時機判斷，中期為約 1–6 個月的研究排序，長期為 1 年以上且價值投資宜觀察 3–5 年以上的初篩。三頁籤與跨尺度解讀只能解釋既有分數，不得改變分數、排名、動作或硬門檻；長期資本配置品質 15 分維持尚未計分。完整驗收契約以 `.opencode/commands/implement-horizon-ui.md` 為準。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
+2026-08-06 使用者已明確授權 OpenCode 的 Build 主代理具備完整專案權限，可自行規劃、編輯、測試、查詢網路、提交、推送與發布，權限不再只限每日更新。模型由使用者在 OpenCode 選擇，專案不得鎖死 GPT‑5.6 Luna、Kimi K3 或其他特定模型。完整權限不取消安全邊界：不得清除不明變更、不得未經授權操作外部資料夾、不得跳過資料契約、瀏覽器與 Pages 驗證，日常 `/update-report` 仍只執行受控更新器。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
+
+同日使用者也授權 OpenCode 以 `/implement-horizon-ui` 接手短／中／長期評分明細介面的規劃與執行。這次任務必須維持中期為唯一排名主軸，短期為 1–20 個交易日的時機判斷，中期為約 1–6 個月的研究排序，長期為 1 年以上且價值投資宜觀察 3–5 年以上的初篩。三頁籤與跨尺度解讀只能解釋既有分數，不得改變分數、排名、動作或硬門檻；長期資本配置品質 15 分維持尚未計分。完整驗收契約以 `.opencode/commands/implement-horizon-ui.md` 為準。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
 
 ## 事件資料契約與限制
 

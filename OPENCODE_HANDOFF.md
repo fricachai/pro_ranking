@@ -39,7 +39,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 /implement-horizon-ui
 ```
 
-此命令使用專用的 `horizon-ui` 主代理，不是日常資料更新的 Build 代理。它可以修改本次功能所需的來源、文件與驗證器，並必須在同一工作階段完成測試、提交、推送、Pages 發布與線上驗證；不可只輸出規劃。完整且具約束力的需求保存在 `.opencode/commands/implement-horizon-ui.md`。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
+此命令使用具完整專案權限的 Build 主代理。它可以修改本次功能所需的來源、文件與驗證器，並必須在同一工作階段完成測試、提交、推送、Pages 發布與線上驗證；不可只輸出規劃。完整且具約束力的需求保存在 `.opencode/commands/implement-horizon-ui.md`。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
 
 本次功能的核心邊界如下：
 
@@ -56,7 +56,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 | 類別 | 檔案 | 用途 |
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
-| OpenCode 權限 | `opencode.json` | 日常代理禁止直接改檔；只有本次明確授權的專用功能代理可編輯與測試 |
+| OpenCode 權限 | `opencode.json` | Build 主代理可完整規劃、編輯、測試、查網路、提交與發布；外部資料夾仍需確認 |
 | OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md` | 提供日常更新、狀態查詢及本次授權功能的快捷指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
@@ -72,7 +72,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 明確使用 Windows `powershell.exe`，並啟用 Build 主代理的 Bash 工具；日常 `/update-report` 仍禁止直接編輯。只有使用者已明確授權的 `/implement-horizon-ui` 會切換到專用 `horizon-ui` 主代理並開放功能開發所需的編輯與測試能力。OpenCode 的匹配以最後規則為準，因此萬用 deny 規則必須置於前面、特定 allow 規則必須置於後面；不得把這個例外改成所有代理的全域編輯權限。
+`opencode.json` 明確使用 Windows `powershell.exe`，並依使用者授權讓 Build 主代理具備完整專案權限：可規劃、直接編輯、執行 Shell 與測試、查詢網路、提交、推送及發布。專案不鎖定模型，使用者可在 OpenCode 自行選擇 GPT‑5.6 Luna、Kimi K3 或其他可用高階模型。外部資料夾維持逐次確認；AGENTS.md 的不清除不明變更、不做未授權破壞性操作及發布前完整驗證仍然有效。日常 `/update-report` 雖由同一 Build 代理執行，但指令本身仍固定只跑受控更新器，不得藉機改碼。全域預設仍維持 deny，完整權限只在 Build 主代理覆寫。OpenCode 的匹配以最後規則為準。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
 
 ## 新電腦一次性準備
 

@@ -135,6 +135,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     }
 }
 
+$buildFullAccessMarker = 'OPENCODE_BUILD_FULL_ACCESS_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($buildFullAccessMarker)) {
+        throw "Build full-access rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
     $commandContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if ($commandContent -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $commandContent -notmatch 'BUILD_BASH_DAILY_UPDATE_V1') {
@@ -151,8 +159,8 @@ if ($updateCommand -match 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds'
 }
 
 $horizonUiCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/implement-horizon-ui.md') -Raw -Encoding utf8
-if ($horizonUiCommand -notmatch '(?mi)^agent\s*:\s*horizon-ui\s*$' -or $horizonUiCommand -notmatch 'OPENCODE_HORIZON_UI_HANDOFF_V1') {
-    throw 'The horizon UI command must select the dedicated horizon-ui primary agent and retain its task marker.'
+if ($horizonUiCommand -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $horizonUiCommand -notmatch 'OPENCODE_HORIZON_UI_HANDOFF_V1') {
+    throw 'The horizon UI command must select the full-access Build primary agent and retain its task marker.'
 }
 
 $node = Assert-Command -Name 'node'
@@ -272,11 +280,7 @@ try {
 
     $config = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
     if (-not $config.permission -or [string]$config.permission.edit -ne 'deny') {
-        throw 'opencode.json must keep direct file editing disabled for the daily updater.'
-    }
-    $horizonUiAgent = $config.agent.'horizon-ui'
-    if (-not $horizonUiAgent -or [string]$horizonUiAgent.mode -ne 'primary' -or $horizonUiAgent.tools.bash -ne $true -or [string]$horizonUiAgent.permission.edit -ne 'allow' -or [string]$horizonUiAgent.permission.bash -ne 'allow' -or [string]$horizonUiAgent.permission.webfetch -ne 'deny') {
-        throw 'opencode.json must provide the dedicated horizon-ui primary agent with edit and shell access while keeping webfetch disabled.'
+        throw 'opencode.json must keep global editing denied by default; the Build primary agent owns the explicit full-access override.'
     }
     $bashRules = $config.permission.bash
     $allowedUpdatePatterns = @($bashRules.PSObject.Properties | Where-Object {
@@ -297,8 +301,8 @@ try {
     for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
         if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
     }
-    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.bash -ne 'allow' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
-        throw 'opencode.json must explicitly allow bash for the Build primary agent, define powershell.exe, and retain the controlled global shell rules.'
+    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.edit -ne 'allow' -or [string]$config.agent.build.permission.bash -ne 'allow' -or [string]$config.agent.build.permission.webfetch -ne 'allow' -or [string]$config.agent.build.permission.external_directory -ne 'ask' -or [string]$bashRules.'*' -ne 'deny' -or $allowedUpdatePatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
+        throw 'opencode.json must give the Build primary agent full project access, keep external directories gated, define powershell.exe, and retain controlled global defaults.'
     }
     foreach ($expectedCommand in @(
         'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',

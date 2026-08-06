@@ -11,19 +11,13 @@
         "bash": true
       },
       "permission": {
-        "bash": "allow"
-      }
-    },
-    "horizon-ui": {
-      "description": "使用者明確授權的三時間尺度明細介面功能開發、驗證與發布代理",
-      "mode": "primary",
-      "tools": {
-        "bash": true
-      },
-      "permission": {
         "edit": "allow",
         "bash": "allow",
-        "webfetch": "deny"
+        "webfetch": "allow",
+        "question": "allow",
+        "plan_enter": "allow",
+        "plan_exit": "allow",
+        "external_directory": "ask"
       }
     }
   },

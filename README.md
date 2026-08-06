@@ -59,4 +59,6 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-使用者已明確授權的「短／中／長期評分明細介面」功能，改由專用 OpenCode 主代理接手規劃與執行。在 OpenCode Desktop 主工作階段輸入 `/implement-horizon-ui`；它會依 `.opencode/commands/implement-horizon-ui.md` 完成三頁籤介面、文件與驗證器同步、桌機／手機測試、提交、發布及線上驗證。日常 `/update-report` 的禁止任意改碼規則不受影響。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
+使用者已授權 OpenCode 的 Build 主代理具備完整專案權限，可自行規劃、編輯、測試、查詢網路、提交、推送與發布；外部資料夾仍需逐次確認，且不得清除不明變更或跳過驗證。模型不在專案內鎖定，可由使用者在 OpenCode 選擇 GPT‑5.6 Luna、Kimi K3 或其他可用高階模型。日常 `/update-report` 仍只執行受控更新器。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
+
+已授權的「短／中／長期評分明細介面」可在 OpenCode Desktop 的 Build 主工作階段輸入 `/implement-horizon-ui`；它會依 `.opencode/commands/implement-horizon-ui.md` 完成三頁籤介面、文件與驗證器同步、桌機／手機測試、提交、發布及線上驗證。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
