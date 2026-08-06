@@ -58,6 +58,12 @@ function Get-ChangedPaths {
     } | Where-Object { $_ })
 }
 
+function Get-FinancialPeriodOrdinal {
+    param([AllowNull()][string]$Period)
+    if ([string]::IsNullOrWhiteSpace($Period) -or $Period -notmatch '^(\d{4})Q([1-4])$') { return $null }
+    return ([int]$Matches[1] * 4) + [int]$Matches[2]
+}
+
 function Get-ReportFingerprint {
     param([Parameter(Mandatory)][string]$Path)
 
@@ -270,7 +276,7 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel', 'scoringModelVersion')) {
+    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel', 'scoringModelVersion', 'financialCurrentPeriod', 'financialCurrentCount', 'financialFallbackCount', 'financialUnavailableCount')) {
         if ($requiredMetaField -notin $meta.PSObject.Properties.Name -or $null -eq $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
@@ -299,6 +305,14 @@ try {
     }
     if ([bool]$report.methodology.dataHealthPolicy.affectsScore -or [int]$report.methodology.dataHealthPolicy.hardGate -ne 65) {
         throw 'Data-health policy must remain score-independent with a hard gate of 65.'
+    }
+    $currentFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$meta.financialCurrentPeriod)
+    if ($null -eq $currentFinancialOrdinal) {
+        throw "Invalid current financial period: $($meta.financialCurrentPeriod)"
+    }
+    $financialCoverageTotal = [int]$meta.financialCurrentCount + [int]$meta.financialFallbackCount + [int]$meta.financialUnavailableCount
+    if ($financialCoverageTotal -ne [int]$meta.stockCount) {
+        throw "Financial coverage counts do not match stock count: $financialCoverageTotal/$($meta.stockCount)"
     }
     if (-not $report.eventsMeta -or [string]$report.eventsMeta.fetchedAt -ne [string]$eventData.fetchedAt) {
         throw 'latest.json did not consume the events file refreshed in this run.'
@@ -333,11 +347,28 @@ try {
         $shortScore = $h.short.score
         $mediumScore = $h.medium.score
         $longScore = $h.long.score
-        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $health.score) { return $true }
-        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
+        $longDataCoverage = $h.long.dataCoverage
+        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $longDataCoverage -or $null -eq $health.score) { return $true }
+        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$longDataCoverage -lt 0 -or [double]$longDataCoverage -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
         if ([math]::Abs([double]$_.score - [double]$mediumScore) -gt 0.05 -or [math]::Abs([double]$_.rawScore - [double]$mediumScore) -gt 0.05) { return $true }
         if ([int]$h.long.methodCoverage -ne 85 -or [int]$h.long.missingWeight -ne 15) { return $true }
         if ([bool]$health.affectsScore -or [int]$health.hardGate -ne 65) { return $true }
+        $healthProperties = @($health.PSObject.Properties.Name)
+        $fundamentals = $_.fundamentals
+        if (-not $fundamentals) { return $true }
+        $fundamentalProperties = @($fundamentals.PSObject.Properties.Name)
+        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
+        if ('financialSourceMode' -notin $fundamentalProperties -or 'financialPeriod' -notin $fundamentalProperties -or 'financialSnapshotSourceFile' -notin $fundamentalProperties) { return $true }
+        $sourceMode = [string]$health.financialSourceMode
+        if ($sourceMode -notin @('current_official', 'prior_verified_official_snapshot', 'unavailable') -or $sourceMode -ne [string]$fundamentals.financialSourceMode) { return $true }
+        if ([string]$health.financialPeriod -ne [string]$fundamentals.financialPeriod) { return $true }
+        if ($sourceMode -eq 'current_official' -and [string]$fundamentals.financialPeriod -ne [string]$meta.financialCurrentPeriod) { return $true }
+        if ($sourceMode -eq 'prior_verified_official_snapshot') {
+            $rowFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$fundamentals.financialPeriod)
+            if ($null -eq $rowFinancialOrdinal -or $currentFinancialOrdinal - $rowFinancialOrdinal -lt 0 -or $currentFinancialOrdinal - $rowFinancialOrdinal -gt 1) { return $true }
+            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1) { return $true }
+        }
+        if ($sourceMode -eq 'unavailable' -and $fundamentals.financialPeriod) { return $true }
         return $false
     })
     if ($invalidHorizonRows.Count -gt 0) {
@@ -374,7 +405,7 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 

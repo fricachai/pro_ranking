@@ -42,6 +42,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 6. `dataHealth` 只判斷資料可用性，不得進入任一時間尺度分數、風險分數或總分乘數；低於65%仍屬硬性品質淘汰，不能進入A級。
 7. 反重複計分固定規則：本益比只在估值構面計分，不再以盈餘殖利率重複；營收趨勢不再同時放入事件催化；資料健康度不得同時出現在分數、乘數與硬門檻。
 8. 介面顯示分數使用整數，JSON可保留一位小數供稽核；不得用過多小數營造不存在的精準度。<!-- HORIZON_SCORE_V2 -->
+9. 季報申報切換期間，本次官方端點有回傳者一律使用本次資料；未回傳者只可沿用既有日期版報告中同季或前一季、已驗證的官方季報快照，且必須輸出實際 `financialPeriod`、`financialSourceMode` 與快照檔名。不得跨越一季、不得把歷史快照冒充本次取得資料、不得用中性預設值替缺漏證據加分。
+10. 長期初篩除固定的 `methodCoverage=85` 外，每檔股票還必須揭露 `dataCoverage`。當季、歷史快照與無可用季報三類數量之和必須等於股票總數；歷史快照列入 `dataHealth.staleCore`，真正缺漏列入 `missingCore`。
 
 ## 官方外資持股歷史完整性
 

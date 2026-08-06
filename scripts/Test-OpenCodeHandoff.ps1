@@ -19,6 +19,12 @@ function Assert-Command {
     return $command
 }
 
+function Get-FinancialPeriodOrdinal {
+    param([AllowNull()][string]$Period)
+    if ([string]::IsNullOrWhiteSpace($Period) -or $Period -notmatch '^(\d{4})Q([1-4])$') { return $null }
+    return ([int]$Matches[1] * 4) + [int]$Matches[2]
+}
+
 function Invoke-Checked {
     param(
         [Parameter(Mandatory)][string]$Name,
@@ -310,6 +316,19 @@ try {
     if ([bool]$report.methodology.dataHealthPolicy.affectsScore -or [int]$report.methodology.dataHealthPolicy.hardGate -ne 65) {
         throw 'Data-health policy must remain score-independent with a hard gate of 65.'
     }
+    foreach ($requiredFinancialMeta in @('financialCurrentPeriod', 'financialCurrentCount', 'financialFallbackCount', 'financialUnavailableCount')) {
+        if ($requiredFinancialMeta -notin $report.meta.PSObject.Properties.Name -or $null -eq $report.meta.$requiredFinancialMeta) {
+            throw "Current report is missing financial coverage metadata: $requiredFinancialMeta"
+        }
+    }
+    $currentFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$report.meta.financialCurrentPeriod)
+    if ($null -eq $currentFinancialOrdinal) {
+        throw "Invalid current financial period: $($report.meta.financialCurrentPeriod)"
+    }
+    $financialCoverageTotal = [int]$report.meta.financialCurrentCount + [int]$report.meta.financialFallbackCount + [int]$report.meta.financialUnavailableCount
+    if ($financialCoverageTotal -ne [int]$report.meta.stockCount) {
+        throw "Financial coverage counts do not match stock count: $financialCoverageTotal/$($report.meta.stockCount)"
+    }
     $rankingRows = @($report.ranking)
     $invalidHorizonRows = @($rankingRows | Where-Object {
         $h = $_.horizonScores
@@ -319,11 +338,28 @@ try {
         $shortScore = $h.short.score
         $mediumScore = $h.medium.score
         $longScore = $h.long.score
-        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $health.score) { return $true }
-        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
+        $longDataCoverage = $h.long.dataCoverage
+        if ($null -eq $shortScore -or $null -eq $mediumScore -or $null -eq $longScore -or $null -eq $longDataCoverage -or $null -eq $health.score) { return $true }
+        if ([double]$shortScore -lt 0 -or [double]$shortScore -gt 100 -or [double]$mediumScore -lt 0 -or [double]$mediumScore -gt 100 -or [double]$longScore -lt 0 -or [double]$longScore -gt 100 -or [double]$longDataCoverage -lt 0 -or [double]$longDataCoverage -gt 100 -or [double]$health.score -lt 0 -or [double]$health.score -gt 100) { return $true }
         if ([math]::Abs([double]$_.score - [double]$mediumScore) -gt 0.05 -or [math]::Abs([double]$_.rawScore - [double]$mediumScore) -gt 0.05) { return $true }
         if ([int]$h.long.methodCoverage -ne 85 -or [int]$h.long.missingWeight -ne 15) { return $true }
         if ([bool]$health.affectsScore -or [int]$health.hardGate -ne 65) { return $true }
+        $healthProperties = @($health.PSObject.Properties.Name)
+        $fundamentals = $_.fundamentals
+        if (-not $fundamentals) { return $true }
+        $fundamentalProperties = @($fundamentals.PSObject.Properties.Name)
+        if ('financialSourceMode' -notin $healthProperties -or 'financialPeriod' -notin $healthProperties -or 'missingCore' -notin $healthProperties -or 'staleCore' -notin $healthProperties) { return $true }
+        if ('financialSourceMode' -notin $fundamentalProperties -or 'financialPeriod' -notin $fundamentalProperties -or 'financialSnapshotSourceFile' -notin $fundamentalProperties) { return $true }
+        $sourceMode = [string]$health.financialSourceMode
+        if ($sourceMode -notin @('current_official', 'prior_verified_official_snapshot', 'unavailable') -or $sourceMode -ne [string]$fundamentals.financialSourceMode) { return $true }
+        if ([string]$health.financialPeriod -ne [string]$fundamentals.financialPeriod) { return $true }
+        if ($sourceMode -eq 'current_official' -and [string]$fundamentals.financialPeriod -ne [string]$report.meta.financialCurrentPeriod) { return $true }
+        if ($sourceMode -eq 'prior_verified_official_snapshot') {
+            $rowFinancialOrdinal = Get-FinancialPeriodOrdinal -Period ([string]$fundamentals.financialPeriod)
+            if ($null -eq $rowFinancialOrdinal -or $currentFinancialOrdinal - $rowFinancialOrdinal -lt 0 -or $currentFinancialOrdinal - $rowFinancialOrdinal -gt 1) { return $true }
+            if (-not $fundamentals.financialSnapshotSourceFile -or @($health.staleCore).Count -lt 1) { return $true }
+        }
+        if ($sourceMode -eq 'unavailable' -and $fundamentals.financialPeriod) { return $true }
         return $false
     })
     if ($invalidHorizonRows.Count -gt 0) {
@@ -375,7 +411,7 @@ try {
         }
         $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
         $response = Invoke-WebRequest -Uri "${LiveUrl}?handoff=$cacheBust" -UseBasicParsing
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'dataCoverage', 'financialSourceMode', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(

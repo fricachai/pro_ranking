@@ -765,6 +765,60 @@ function createLookup(rows, codeKeys) {
   return lookup;
 }
 
+function financialPeriodFromRow(row) {
+  if (!row?.['年度'] || !row?.['季別']) return null;
+  return `${Number(row['年度']) + 1911}Q${Number(row['季別'])}`;
+}
+
+function financialPeriodOrdinal(period) {
+  const match = /^(\d{4})Q([1-4])$/.exec(String(period || ''));
+  return match ? Number(match[1]) * 4 + Number(match[2]) : null;
+}
+
+function loadPriorFinancialSnapshots(currentPeriod) {
+  const currentOrdinal = financialPeriodOrdinal(currentPeriod);
+  const snapshots = new Map();
+  if (!Number.isFinite(currentOrdinal) || !fs.existsSync(OUT_DIR)) return snapshots;
+  const files = fs.readdirSync(OUT_DIR)
+    .filter(name => /^full-professional-screen-\d{8}\.json$/.test(name))
+    .sort()
+    .reverse();
+  for (const name of files) {
+    try {
+      const report = JSON.parse(fs.readFileSync(path.join(OUT_DIR, name), 'utf8'));
+      for (const row of report.ranking || []) {
+        const fundamentals = row.fundamentals || {};
+        const period = fundamentals.financialPeriod;
+        const ordinal = financialPeriodOrdinal(period);
+        if (!Number.isFinite(ordinal) || ordinal > currentOrdinal || currentOrdinal - ordinal > 1) continue;
+        const values = {
+          operatingMargin: number(fundamentals.operatingMargin),
+          grossMargin: number(fundamentals.grossMargin),
+          netMargin: number(fundamentals.netMargin),
+          nonOperatingContributionPct: number(fundamentals.nonOperatingContributionPct),
+          eps: number(fundamentals.eps),
+          debtRatio: number(fundamentals.debtRatio),
+          currentRatio: number(fundamentals.currentRatio)
+        };
+        if (!Object.values(values).some(Number.isFinite)) continue;
+        const existing = snapshots.get(String(row.code));
+        if (!existing || ordinal > existing.ordinal) {
+          snapshots.set(String(row.code), {
+            ...values,
+            period,
+            ordinal,
+            sourceFile: name,
+            sourceGeneratedAt: report.meta?.generatedAt || null
+          });
+        }
+      }
+    } catch (_) {
+      // A malformed historical derivative is ignored; current official data remains authoritative.
+    }
+  }
+  return snapshots;
+}
+
 function flowLabel(record) {
   const f = record.etf;
   if (f.flowPct[5] > 0 && f.flowPct[10] > 0 && f.activeChanges[5] >= 0) return '5/10日延續加碼';
@@ -774,7 +828,7 @@ function flowLabel(record) {
 }
 
 function idealRsiScore(value) {
-  if (!Number.isFinite(value)) return 0.35;
+  if (!Number.isFinite(value)) return 0;
   if (value >= 48 && value <= 66) return 1;
   if (value >= 42 && value < 48) return 0.75;
   if (value > 66 && value <= 72) return 0.65;
@@ -784,7 +838,7 @@ function idealRsiScore(value) {
 }
 
 function inRangeScore(value, idealLow, idealHigh, outerLow, outerHigh) {
-  if (!Number.isFinite(value)) return 0.35;
+  if (!Number.isFinite(value)) return 0;
   if (value >= idealLow && value <= idealHigh) return 1;
   if (value < outerLow || value > outerHigh) return 0;
   if (value < idealLow) return (value - outerLow) / (idealLow - outerLow);
@@ -792,7 +846,7 @@ function inRangeScore(value, idealLow, idealHigh, outerLow, outerHigh) {
 }
 
 function kdTimingScore(technical) {
-  if (!technical || !Number.isFinite(technical.kdK) || !Number.isFinite(technical.kdD)) return 0.35;
+  if (!technical || !Number.isFinite(technical.kdK) || !Number.isFinite(technical.kdD)) return 0;
   const { kdK: k, kdD: d } = technical;
   const trendConfirmed = technical.close >= technical.ema20 && technical.ma20Slope5 > 0;
   if (technical.kdDeathCrossRecent && Math.max(k, d) >= 80) return 0.05;
@@ -819,9 +873,10 @@ function scoreRecords(records) {
   for (const [sector, rows] of bySector) {
     sectorValues.set(sector, Object.fromEntries(fields.map(field => [field, rows.map(row => row.metrics[field]).filter(Number.isFinite)])));
   }
-  const p = (record, field, higher = true, sector = false) => percentile(
-    sector ? sectorValues.get(record.sector)[field] : globalValues[field], record.metrics[field], higher
-  );
+  const p = (record, field, higher = true, sector = false) => {
+    if (!Number.isFinite(record.metrics[field])) return 0;
+    return percentile(sector ? sectorValues.get(record.sector)[field] : globalValues[field], record.metrics[field], higher);
+  };
 
   for (const record of records) {
     const m = record.metrics;
@@ -829,15 +884,15 @@ function scoreRecords(records) {
     const analysisPrice = record.live?.analysisPrice ?? t?.close;
     const financial = isFinancial(record.industry);
     const growthConsistency = Number.isFinite(m.revenueYoy) && Number.isFinite(m.revenueYtdYoy)
-      ? (m.revenueYoy > 0 && m.revenueYtdYoy > 0 ? 1 : (m.revenueYoy > 0 || m.revenueYtdYoy > 0 ? 0.55 : 0.1)) : 0.35;
+      ? (m.revenueYoy > 0 && m.revenueYtdYoy > 0 ? 1 : (m.revenueYoy > 0 || m.revenueYtdYoy > 0 ? 0.55 : 0.1)) : 0;
     let operatingQuality = Number.isFinite(m.operatingMargin)
       ? (0.4 * p(record, 'operatingMargin', true, true) + 0.3 * p(record, 'grossMargin', true, true) + 0.3 * p(record, 'netMargin', true, true))
-      : (financial ? (m.eps > 0 ? 0.65 : 0.2) : 0.35);
+      : (financial && Number.isFinite(m.eps) ? (m.eps > 0 ? 0.65 : 0.2) : 0);
     if (!financial && Number.isFinite(m.nonOperatingContributionPct) && m.nonOperatingContributionPct > 50) operatingQuality *= 0.8;
     const balanceQuality = financial
-      ? (m.eps > 0 ? 0.6 : 0.2)
+      ? (Number.isFinite(m.eps) ? (m.eps > 0 ? 0.6 : 0.2) : 0)
       : 0.62 * p(record, 'debtRatio', false, true) + 0.38 * p(record, 'currentRatio', true, true);
-    const profitabilityContinuity = Number.isFinite(m.eps) ? (m.eps > 0 ? 1 : 0.05) : 0.35;
+    const profitabilityContinuity = Number.isFinite(m.eps) ? (m.eps > 0 ? 1 : 0.05) : 0;
     const earningsTrendUnit = (
       0.38 * p(record, 'revenueYoy', true, true) +
       0.38 * p(record, 'revenueYtdYoy', true, true) +
@@ -850,10 +905,10 @@ function scoreRecords(records) {
       0.26 * p(record, 'yield', true, true)
     );
     const acceleration = Number.isFinite(m.etfFlow5) && Number.isFinite(m.etfFlow10)
-      ? clamp(0.5 + (m.etfFlow5 - m.etfFlow10 / 2) / 8, 0, 1) : 0.35;
+      ? clamp(0.5 + (m.etfFlow5 - m.etfFlow10 / 2) / 8, 0, 1) : 0;
     const activeBreadth = record.etf.activeBreadth[5];
     const breadthScore = activeBreadth.buyers + activeBreadth.sellers > 0
-      ? activeBreadth.buyers / (activeBreadth.buyers + activeBreadth.sellers) : 0.5;
+      ? activeBreadth.buyers / (activeBreadth.buyers + activeBreadth.sellers) : 0;
     const trustConsistency = Number.isFinite(m.trustConsistency10) ? m.trustConsistency10 : 0.5;
     const ownershipUnit = (
       0.14 * p(record, 'etfFlow5', true) +
@@ -888,22 +943,23 @@ function scoreRecords(records) {
       (t.ma20Slope5 > 0 ? 0.2 : 0) +
       (t.ema60Slope > 0 ? 0.15 : 0)
     ) : 0.35;
-    const macdScore = t ? clamp(0.5 + (t.macdHistogramDelta || 0) / Math.max(Math.abs(t.close) * 0.002, 0.01), 0, 1) : 0.35;
+    const macdScore = t && Number.isFinite(t.macdHistogramDelta)
+      ? clamp(0.5 + t.macdHistogramDelta / Math.max(Math.abs(t.close) * 0.002, 0.01), 0, 1) : 0;
     const extensionScore = t ? inRangeScore(pctChange(analysisPrice, t.ema20), -2, 5, -10, 13) : 0.35;
-    const technicalUnit = (
+    const technicalUnit = t ? (
       0.40 * trendScore +
       0.20 * idealRsiScore(t?.rsi14) +
       (2 / 15) * macdScore +
       0.10 * kdTimingScore(t) +
       (1 / 6) * extensionScore
-    );
+    ) : 0;
 
     const supportiveBuyback = record.events.buyback && /維護公司信用|股東權益/.test(record.events.buyback.why || '');
     const eventCatalystUnit = supportiveBuyback ? 0.9 : (record.events.buyback ? 0.42 : (record.events.disposal ? 0.15 : 0.5));
 
-    const volatilityScore = t ? inRangeScore(t.dailyVolatility20, 0, 2.5, 0, 7) : 0.35;
+    const volatilityScore = t ? inRangeScore(t.dailyVolatility20, 0, 2.5, 0, 7) : 0;
     const concentrationScore = Number.isFinite(record.etf.top1Concentration)
-      ? clamp(1 - Math.max(0, record.etf.top1Concentration - 35) / 65, 0, 1) : 0.35;
+      ? clamp(1 - Math.max(0, record.etf.top1Concentration - 35) / 65, 0, 1) : 0;
     const riskLiquidityUnit = (
       0.45 * p(record, 'dailyValue', true) +
       0.35 * volatilityScore +
@@ -939,7 +995,30 @@ function scoreRecords(records) {
       capitalAllocation: null
     };
     const longAvailablePoints = sum(Object.values(longComponents));
-    const healthStatus = record.confidence >= 85 ? '完整' : record.confidence >= 70 ? '可用' : record.confidence >= DATA_HEALTH_HARD_GATE ? '最低門檻' : '不足';
+    const operatingCoverage = financial
+      ? (Number.isFinite(m.eps) ? 1 : 0)
+      : 0.4 * Number(Number.isFinite(m.operatingMargin)) + 0.3 * Number(Number.isFinite(m.grossMargin)) + 0.3 * Number(Number.isFinite(m.netMargin));
+    const businessCoverage = 0.72 * operatingCoverage + 0.28 * Number(Number.isFinite(m.eps));
+    const resilienceCoverage = financial
+      ? 0.5 * Number(Number.isFinite(m.eps))
+      : 0.62 * Number(Number.isFinite(m.debtRatio)) + 0.38 * Number(Number.isFinite(m.currentRatio));
+    const growthCoverage = 0.38 * Number(Number.isFinite(m.revenueYoy)) + 0.38 * Number(Number.isFinite(m.revenueYtdYoy)) + 0.24 * Number(Number.isFinite(m.revenueYoy) && Number.isFinite(m.revenueYtdYoy));
+    const valuationCoverage = 0.47 * Number(Number.isFinite(m.pe)) + 0.27 * Number(Number.isFinite(m.pb)) + 0.26 * Number(Number.isFinite(m.yield));
+    const longDataCoverage = round((25 * businessCoverage + 20 * resilienceCoverage + 15 * growthCoverage + 25 * valuationCoverage) / HORIZON_MODELS.long.scoredWeight * 100, 0);
+    const missingCore = [];
+    if (!Number.isFinite(m.revenueYoy) || !Number.isFinite(m.revenueYtdYoy)) missingCore.push('月營收趨勢');
+    if (!record.financialPeriod || !Number.isFinite(m.eps) || (!financial && !Number.isFinite(m.operatingMargin))) missingCore.push('季報獲利品質');
+    if (!financial && (!Number.isFinite(m.debtRatio) || !Number.isFinite(m.currentRatio))) missingCore.push('資產負債資料');
+    if (![m.pe, m.pb, m.yield].some(Number.isFinite)) missingCore.push('估值資料');
+    if (!t) missingCore.push('技術資料');
+    if (!record.foreignHolding?.trendReliable) missingCore.push('外資持股趨勢');
+    const fallbackFinancialNote = record.financialPeriod === record.financialCurrentPeriod
+      ? `本次官方端點未回傳個股季報，沿用 ${record.financialPeriod} 已驗證官方快照`
+      : `季報沿用 ${record.financialPeriod} 已驗證官方快照；官方最新申報季為 ${record.financialCurrentPeriod}，等待公司完成申報`;
+    const staleCore = record.financialSourceMode === 'prior_verified_official_snapshot' ? [fallbackFinancialNote] : [];
+    const healthStatus = record.confidence >= 85 && missingCore.length === 0 && staleCore.length === 0
+      ? '完整'
+      : record.confidence >= 70 ? '可用' : record.confidence >= DATA_HEALTH_HARD_GATE ? '最低門檻' : '不足';
     record.horizonScores = {
       short: {
         label: HORIZON_MODELS.short.label,
@@ -957,6 +1036,7 @@ function scoreRecords(records) {
         score: round(longAvailablePoints / HORIZON_MODELS.long.scoredWeight * 100, 1),
         preliminary: true,
         methodCoverage: HORIZON_MODELS.long.scoredWeight,
+        dataCoverage: longDataCoverage,
         missingWeight: HORIZON_MODELS.long.missingWeight,
         availablePoints: round(longAvailablePoints, 1),
         components: longComponents
@@ -968,7 +1048,11 @@ function scoreRecords(records) {
       eligible: record.confidence >= DATA_HEALTH_HARD_GATE,
       hardGate: DATA_HEALTH_HARD_GATE,
       affectsScore: false,
-      note: '只判斷資料可用性，不加減投資分數；低於門檻不得進入A級。'
+      financialPeriod: record.financialPeriod || null,
+      financialSourceMode: record.financialSourceMode || 'unavailable',
+      missingCore,
+      staleCore,
+      note: '只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。'
     };
     record.components = mediumComponents;
     record.primaryScore = record.horizonScores.medium.score;
@@ -1361,6 +1445,10 @@ function recordForOutput(record, rank) {
       netMargin: round(record.metrics.netMargin, 2),
       nonOperatingContributionPct: round(record.metrics.nonOperatingContributionPct, 2),
       financialPeriod: record.financialPeriod || null,
+      financialCurrentPeriod: record.financialCurrentPeriod || null,
+      financialSourceMode: record.financialSourceMode || 'unavailable',
+      financialSnapshotSourceFile: record.financialSnapshotSourceFile || null,
+      financialSnapshotGeneratedAt: record.financialSnapshotGeneratedAt || null,
       eps: round(record.metrics.eps, 2),
       debtRatio: round(record.metrics.debtRatio, 2),
       currentRatio: round(record.metrics.currentRatio, 2)
@@ -1525,7 +1613,7 @@ function buildHtml(report) {
     ? `<div class="quote-phase-banner is-close" id="quotePhaseBanner"><b>收盤資料已確認</b><span>本次價格與技術訊號使用 ${escapeHtml(report.meta.liveFreeze)} 的收盤狀態；持倉門檻仍須依下一交易日收盤確認，不以單一價位機械式下單。</span></div>`
     : `<div class="quote-phase-banner is-intraday" id="quotePhaseBanner"><b>盤中訊號，尚未定案</b><span>本次價格凍結於 ${escapeHtml(report.meta.liveFreeze)}；盤中跌破或站回只先列觀察，請等待今日收盤後再確認持倉動作。</span></div>`;
   const scoreLink = row => `<a class="score-link" href="#score-${escapeHtml(row.code)}" data-score-code="${escapeHtml(row.code)}" title="查看 ${escapeHtml(row.name)} 的三時間尺度評分、判斷資料與來源">${fmt(row.score, 0)}</a>`;
-  const horizonScoreStripHtml = row => `<div class="horizon-score-strip" aria-label="短中長期研究分數"><span><small>短期時機</small><b>${fmt(row.horizonScores?.short?.score, 0)}</b></span><span class="is-primary"><small>中期研究／排名</small><b>${fmt(row.horizonScores?.medium?.score, 0)}</b></span><span><small>長期初篩</small><b>${fmt(row.horizonScores?.long?.score, 0)}</b><em>方法覆蓋 ${fmt(row.horizonScores?.long?.methodCoverage, 0)}%</em></span></div>`;
+  const horizonScoreStripHtml = row => `<div class="horizon-score-strip" aria-label="短中長期研究分數"><span><small>短期時機</small><b>${fmt(row.horizonScores?.short?.score, 0)}</b></span><span class="is-primary"><small>中期研究／排名</small><b>${fmt(row.horizonScores?.medium?.score, 0)}</b></span><span><small>長期初篩</small><b>${fmt(row.horizonScores?.long?.score, 0)}</b><em>方法 ${fmt(row.horizonScores?.long?.methodCoverage, 0)}%／個股資料 ${fmt(row.horizonScores?.long?.dataCoverage, 0)}%</em></span></div>`;
   const topCards = report.topThree.map((row, index) => `
     <article class="pick">
       <div class="pick-head"><span class="rank">${index + 1}</span><div><h3><a class="stock-link" href="${yahooTechnicalUrl(row.code)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析">${escapeHtml(row.code)} ${escapeHtml(row.name)}</a></h3><p>${escapeHtml(row.industry)}</p></div><strong class="primary-score"><small>中期排名分</small>${scoreLink(row)}</strong></div>
@@ -1619,6 +1707,7 @@ ${degradedNewsNotice}
 ${quotePhaseNotice}
 <div class="warning"><b>外資持股歷史完整性：</b>本次由證交所取得 ${report.meta.foreignHoldingHistoryDays} 個有效交易日；至少 11 日才計算並發布 10 日持股變化。</div>
 <div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `未完整：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；本次不提供「可分批布局」新建部位。`}</div>
+<div class="warning" id="financialCoverageBanner"><b>季報申報過渡期：</b>官方最新申報季為 ${escapeHtml(report.meta.financialCurrentPeriod || '未確認')}；本次 ${report.meta.financialCurrentCount} 檔使用本次官方端點資料、${report.meta.financialFallbackCount} 檔明確沿用先前已驗證官方快照（同季或前一季）、${report.meta.financialUnavailableCount} 檔仍無可用季報。個股評分明細會標示實際季別與來源狀態，不把歷史資料冒充本次新取得資料。</div>
 <div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市普通股，約占當日 ${report.meta.listedUniverseCount} 檔上市普通股的 ${report.meta.coverageRate}%，不是全體上市股票。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
 
 <section class="section"><h2>宏觀與市場環境覆蓋</h2><p class="section-lead">狀態：<b>${escapeHtml(report.macroOverlay.status)}</b>（訊號分數 ${fmt(report.macroOverlay.signalScore, 0)}）。本層使用官方公開資料，只調整研究時的環境認知，不直接改個股100分與排名。</p><div class="summary-grid"><div><b>${signed(report.macroOverlay.metrics.exportOrdersYoy, 1, '%')}</b><span>外銷訂單年增｜${escapeHtml(report.macroOverlay.metrics.exportOrdersPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.manufacturingYoy, 1, '%')}</b><span>製造業生產年增｜${escapeHtml(report.macroOverlay.metrics.manufacturingPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.m1bYoy, 1, '%')}</b><span>M1B年增｜${escapeHtml(report.macroOverlay.metrics.m1bPeriod)}</span></div><div><b>${fmt(report.macroOverlay.metrics.marketBreadth, 1)}%</b><span>上市普通股上漲家數占比｜${report.macroOverlay.metrics.advances}漲／${report.macroOverlay.metrics.declines}跌</span></div></div><p class="framework-note">新台幣兌美元 ${fmt(report.macroOverlay.metrics.usdTwd, 3)}（${escapeHtml(report.macroOverlay.metrics.usdTwdDate)}；20筆變化 ${signed(report.macroOverlay.metrics.usdTwdChange20, 2, '%')}）；重貼現率 ${fmt(report.macroOverlay.metrics.policyRate, 3)}%（${escapeHtml(report.macroOverlay.metrics.policyRateDate)}）。</p></section>
@@ -1724,6 +1813,9 @@ function renderPositions(){
 function openScore(code,updateHash=true){
   const r=rows.find(row=>row.code===String(code));if(!r)return;
   const h=r.horizonScores||{};const c=h.medium&&h.medium.components||r.components||{};const health=r.dataHealth||{};const f=r.fundamentals||{};const v=r.valuation||{};const etf=r.etf||{};const foreign=r.foreign||{};const trust=r.investmentTrust||{};const dealer=r.dealer||{};const t=r.technical||{};const risk=r.riskInputs||{};const credit=r.credit||{};const tdcc=r.tdcc||{};
+  const financialModeText=f.financialSourceMode==='current_official'?'本次官方端點資料':f.financialSourceMode==='prior_verified_official_snapshot'?'先前已驗證官方快照':'無可用季報';
+  const healthDetails=[...(health.staleCore||[]),...(health.missingCore||[])];
+  const healthNotice='<div class="score-judgment"><b>資料健康說明：</b>'+e(healthDetails.length?healthDetails.join('；'):'核心資料已通過本模型完整性檢查')+'<br><b>季報來源：</b>'+e(financialModeText)+(f.financialPeriod?'（'+e(f.financialPeriod)+'）':'')+'；長期初篩個股資料覆蓋 '+n(h.long&&h.long.dataCoverage,0)+'%。</div>';
   const catalystEvents=(r.events&&r.events.buyback?'有進行中庫藏股':'未偵測進行中庫藏股')+'；'+(r.events&&r.events.disposal?'有處置或交易限制事件':'未偵測處置事件');
   const detailRows=[
     componentRow('盈餘與營收趨勢',c.earningsTrend,25,[
@@ -1731,7 +1823,7 @@ function openScore(code,updateHash=true){
       '同產業相對位置與正負成長一致性合併判斷；不在事件構面重複計分'
     ],'fundamentals',r.code),
     componentRow('企業營運品質',c.businessQuality,20,[
-      '季報 '+e(f.financialPeriod||'—')+'；毛利率／營業利益率／淨利率 '+n(f.grossMargin,1)+'%／'+n(f.operatingMargin,1)+'%／'+n(f.netMargin,1)+'%；EPS '+n(f.eps,2),
+      '季報 '+e(f.financialPeriod||'—')+'（'+e(financialModeText)+'）；毛利率／營業利益率／淨利率 '+n(f.grossMargin,1)+'%／'+n(f.operatingMargin,1)+'%／'+n(f.netMargin,1)+'%；EPS '+n(f.eps,2),
       '稅前獲利的營業外貢獻 '+n(f.nonOperatingContributionPct,1)+'%（超過50%列警示）',
       '金融業與一般產業採不同獲利品質判斷；本項不含估值'
     ],'fundamentals',r.code),
@@ -1763,9 +1855,9 @@ function openScore(code,updateHash=true){
   const overlayHtml='<div class="score-judgment"><b>不重複計分的官方覆蓋：</b><br>融資餘額 '+n(credit.financingBalance,0)+' 張（5日 '+s(credit.financingD5,0,'張')+'）；借券賣出餘額 '+n(credit.borrowedShortBalance,0)+' 張（5日 '+s(credit.borrowedShortD5,0,'張')+'）。<br>集保持股分級13–15占比 '+n(tdcc.largeHolderRatio,2)+'%；分級1–5占比 '+n(tdcc.retailRatio,2)+'%。<br>產業20日相對樣本 '+s(r.sectorContext&&r.sectorContext.relativeToSample,1,'%')+'（'+e(r.sectorContext&&r.sectorContext.status||'—')+'）。</div>';
   eventsHtml=overlayHtml+eventsHtml;
   const risks=(r.rejectionReasons||[]).length?(r.rejectionReasons||[]).join('；'):'目前未觸發硬性或時機風險，但仍應分批並設定風險上限。';
-  const horizonNotes='<div class="score-horizon-note"><div><b>短期時機</b>回答現在是否適合觀察、等待或分批；不預測單日漲跌。</div><div><b>中期研究／排名主軸</b>回答未來數週至數月最值得先研究誰；本表下方只拆解這個分數。</div><div><b>長期初篩</b>方法覆蓋 '+n(h.long&&h.long.methodCoverage,0)+'%；缺完整自由現金流、ROIC與資本配置紀律，不單獨形成買賣動作。</div></div>';
+  const horizonNotes='<div class="score-horizon-note"><div><b>短期時機</b>回答現在是否適合觀察、等待或分批；不預測單日漲跌。</div><div><b>中期研究／排名主軸</b>回答未來數週至數月最值得先研究誰；本表下方只拆解這個分數。</div><div><b>長期初篩</b>方法覆蓋 '+n(h.long&&h.long.methodCoverage,0)+'%，本股資料覆蓋 '+n(h.long&&h.long.dataCoverage,0)+'%；缺完整自由現金流、ROIC與資本配置紀律，不單獨形成買賣動作。</div></div>';
   scoreDialogTitle.textContent=r.code+' '+r.name+'｜三時間尺度評分';scoreDialogSub.textContent=r.industry+' · 中期排名第 '+r.rank;
-  scoreDialogBody.innerHTML='<div class="score-dates"><span>ETF '+e(reportMeta.etfDate)+'</span><span>法人買賣超 '+e(reportMeta.institutionalDate)+'</span><span>外資持股 '+e(reportMeta.foreignHoldingDate)+'</span><span>價量／估值 '+e(reportMeta.marketDate)+'</span></div><div class="score-summary"><div><span>短期時機</span><b>'+n(h.short&&h.short.score,0)+'</b></div><div><span>中期研究／排名</span><b>'+n(h.medium&&h.medium.score,0)+'</b></div><div><span>長期初篩</span><b>'+n(h.long&&h.long.score,0)+'</b></div><div><span>資料健康</span><b>'+n(health.score,0)+'% '+e(health.status||'')+'</b></div></div>'+horizonNotes+'<div class="decision-strip"><span><small>尚未持有</small><b>'+e(r.entryAction)+'</b></span><span class="state-'+e(r.holdingState)+'"><small>已經持有</small><b>'+e(r.holdingAction)+'</b></span></div><div class="score-judgment"><b>今天動作：</b>'+e(r.todayAction||'依持股決策總覽確認')+'<br><b>下一次確認：</b>'+e(r.nextCheck||'每個交易日收盤後')+'</div><label class="position-toggle"><input type="checkbox" data-position-toggle="'+e(r.code)+'"> <span>我已開始布局，持續追蹤</span></label><div class="score-detail-wrap"><table class="score-breakdown"><thead><tr><th>中期評估項目</th><th>實得／最高</th><th>本股判斷數據</th><th>資料與消息來源</th></tr></thead><tbody>'+detailRows+'</tbody></table></div>'+eventsHtml+'<div class="score-judgment"><b>已持有部位：</b>'+e(r.holdingPlan)+'<br><b>最先注意的風險：</b>'+e(risks)+'</div><p class="score-formula">中期研究分數＝六個中期構面的實得分直接相加，不再乘上資料完整度係數。資料健康度只判斷這份研究是否可採用，低於65%不得進入A級。長期初篩分數＝目前可評估的85分正規化為100分，並非完整長期價值評估。來源連結代表本次計算所用資料的出處，仍應再查公司公告與財報原文。</p>';
+  scoreDialogBody.innerHTML='<div class="score-dates"><span>ETF '+e(reportMeta.etfDate)+'</span><span>法人買賣超 '+e(reportMeta.institutionalDate)+'</span><span>外資持股 '+e(reportMeta.foreignHoldingDate)+'</span><span>價量／估值 '+e(reportMeta.marketDate)+'</span></div><div class="score-summary"><div><span>短期時機</span><b>'+n(h.short&&h.short.score,0)+'</b></div><div><span>中期研究／排名</span><b>'+n(h.medium&&h.medium.score,0)+'</b></div><div><span>長期初篩</span><b>'+n(h.long&&h.long.score,0)+'</b></div><div><span>資料健康</span><b>'+n(health.score,0)+'% '+e(health.status||'')+'</b></div></div>'+horizonNotes+healthNotice+'<div class="decision-strip"><span><small>尚未持有</small><b>'+e(r.entryAction)+'</b></span><span class="state-'+e(r.holdingState)+'"><small>已經持有</small><b>'+e(r.holdingAction)+'</b></span></div><div class="score-judgment"><b>今天動作：</b>'+e(r.todayAction||'依持股決策總覽確認')+'<br><b>下一次確認：</b>'+e(r.nextCheck||'每個交易日收盤後')+'</div><label class="position-toggle"><input type="checkbox" data-position-toggle="'+e(r.code)+'"> <span>我已開始布局，持續追蹤</span></label><div class="score-detail-wrap"><table class="score-breakdown"><thead><tr><th>中期評估項目</th><th>實得／最高</th><th>本股判斷數據</th><th>資料與消息來源</th></tr></thead><tbody>'+detailRows+'</tbody></table></div>'+eventsHtml+'<div class="score-judgment"><b>已持有部位：</b>'+e(r.holdingPlan)+'<br><b>最先注意的風險：</b>'+e(risks)+'</div><p class="score-formula">中期研究分數＝六個中期構面的實得分直接相加，不再乘上資料完整度係數。資料健康度只判斷這份研究是否可採用；個別證據缺漏時該證據不給分，低於65%不得進入A級。長期初篩分數＝目前方法可評估的85分正規化為100分，並另外揭露每股資料覆蓋率，並非完整長期價值評估。來源連結代表本次計算所用資料的出處，仍應再查公司公告與財報原文。</p>';
   syncPositionChecks();if(!scoreDialog.open)scoreDialog.showModal();if(updateHash&&history.replaceState)history.replaceState(null,'','#score-'+encodeURIComponent(r.code));
 }
 function setupTableScroller(wrap,scroll,sizer,table,leftButton,rightButton){let syncing=false;const syncWidth=()=>{sizer.style.width=table.scrollWidth+'px';scroll.scrollLeft=wrap.scrollLeft};scroll.addEventListener('scroll',()=>{if(syncing)return;syncing=true;wrap.scrollLeft=scroll.scrollLeft;requestAnimationFrame(()=>{syncing=false})});wrap.addEventListener('scroll',()=>{if(syncing)return;syncing=true;scroll.scrollLeft=wrap.scrollLeft;requestAnimationFrame(()=>{syncing=false})});leftButton.addEventListener('click',()=>wrap.scrollBy({left:-Math.max(320,wrap.clientWidth*.75),behavior:'smooth'}));rightButton.addEventListener('click',()=>wrap.scrollBy({left:Math.max(320,wrap.clientWidth*.75),behavior:'smooth'}));window.addEventListener('resize',syncWidth);requestAnimationFrame(syncWidth);return syncWidth}
@@ -1863,6 +1955,13 @@ async function main() {
   const twseDaily = createLookup(twseDailyRows, ['Code']);
   const twseBalance = createLookup(balancePayloads.flat(), ['公司代號']);
   const twseIncome = createLookup(incomePayloads.flat(), ['公司代號']);
+  const financialCurrentPeriod = [...incomePayloads.flat(), ...balancePayloads.flat(), ...twseEpsRows]
+    .map(financialPeriodFromRow)
+    .filter(Boolean)
+    .sort((a, b) => financialPeriodOrdinal(a) - financialPeriodOrdinal(b))
+    .at(-1) || null;
+  const priorFinancialSnapshots = loadPriorFinancialSnapshots(financialCurrentPeriod);
+  console.log(`  季報最新申報季 ${financialCurrentPeriod || '未知'}；可用同季或前一季官方驗證快照 ${priorFinancialSnapshots.size} 檔。`);
   const tdccData = tdccFeatures(tdccRows);
 
   const instDates = institutionalHistory.dates.slice(0, 20);
@@ -1906,26 +2005,39 @@ async function main() {
     const dailyRow = twseDaily.get(code);
     const balanceRow = twseBalance.get(code);
     const incomeRow = twseIncome.get(code);
+    const marginRow = twseMargin.get(code);
+    const priorFinancial = priorFinancialSnapshots.get(code) || null;
+    const currentRowFinancialPeriod = [incomeRow, balanceRow, epsRow, marginRow]
+      .map(financialPeriodFromRow)
+      .filter(Boolean)
+      .sort((a, b) => financialPeriodOrdinal(a) - financialPeriodOrdinal(b))
+      .at(-1) || null;
+    const usePriorFinancial = !currentRowFinancialPeriod && Boolean(priorFinancial);
+    const financialPeriod = currentRowFinancialPeriod || (usePriorFinancial ? priorFinancial.period : null);
+    const financialSourceMode = currentRowFinancialPeriod ? 'current_official' : usePriorFinancial ? 'prior_verified_official_snapshot' : 'unavailable';
     const industry = revenueRow?.['產業別'] || epsRow?.['產業別'] || '未分類';
-    const eps = number(epsRow?.['基本每股盈餘(元)'] ?? epsRow?.['基本每股盈餘']);
-    const opMargin = market === 'TWSE'
+    const currentEps = number(epsRow?.['基本每股盈餘(元)'] ?? epsRow?.['基本每股盈餘']);
+    const eps = currentEps ?? (usePriorFinancial ? priorFinancial.eps : null);
+    const currentOpMargin = market === 'TWSE'
       ? number(twseMargin.get(code)?.['營業利益率(%)(營業利益)/(營業收入)'])
       : (() => {
           const operatingIncome = number(epsRow?.['營業利益']);
           const revenue = number(epsRow?.['營業收入']);
           return Number.isFinite(operatingIncome) && revenue ? operatingIncome / revenue * 100 : null;
         })();
+    const opMargin = currentOpMargin ?? (usePriorFinancial ? priorFinancial.operatingMargin : null);
     const quarterRevenue = number(incomeRow?.['營業收入']);
     const quarterGrossProfit = number(incomeRow?.['營業毛利（毛損）']);
     const quarterOperatingIncome = number(incomeRow?.['營業利益（損失）']);
     const quarterPretaxIncome = number(incomeRow?.['稅前淨利（淨損）']);
     const quarterParentNetIncome = number(incomeRow?.['淨利（淨損）歸屬於母公司業主'] ?? incomeRow?.['本期淨利（淨損）']);
-    const marginRow = twseMargin.get(code);
-    const grossMargin = number(marginRow?.['毛利率(%)(營業毛利)/(營業收入)']) ?? (quarterRevenue ? quarterGrossProfit / quarterRevenue * 100 : null);
-    const netMargin = number(marginRow?.['稅後純益率(%)(稅後損益)/(營業收入)']) ?? (quarterRevenue ? quarterParentNetIncome / quarterRevenue * 100 : null);
-    const nonOperatingContributionPct = Number.isFinite(quarterPretaxIncome) && quarterPretaxIncome > 0 && Number.isFinite(quarterOperatingIncome)
+    const currentGrossMargin = number(marginRow?.['毛利率(%)(營業毛利)/(營業收入)']) ?? (quarterRevenue ? quarterGrossProfit / quarterRevenue * 100 : null);
+    const currentNetMargin = number(marginRow?.['稅後純益率(%)(稅後損益)/(營業收入)']) ?? (quarterRevenue ? quarterParentNetIncome / quarterRevenue * 100 : null);
+    const currentNonOperatingContributionPct = Number.isFinite(quarterPretaxIncome) && quarterPretaxIncome > 0 && Number.isFinite(quarterOperatingIncome)
       ? (quarterPretaxIncome - quarterOperatingIncome) / Math.abs(quarterPretaxIncome) * 100 : null;
-    const financialPeriod = incomeRow?.['年度'] && incomeRow?.['季別'] ? `${Number(incomeRow['年度']) + 1911}Q${incomeRow['季別']}` : null;
+    const grossMargin = currentGrossMargin ?? (usePriorFinancial ? priorFinancial.grossMargin : null);
+    const netMargin = currentNetMargin ?? (usePriorFinancial ? priorFinancial.netMargin : null);
+    const nonOperatingContributionPct = currentNonOperatingContributionPct ?? (usePriorFinancial ? priorFinancial.nonOperatingContributionPct : null);
     const price = number(stock.price) || number(dailyRow?.ClosingPrice ?? dailyRow?.Close);
     const pe = number(valuationRow?.PEratio ?? valuationRow?.PriceEarningRatio);
     const pb = number(valuationRow?.PBratio ?? valuationRow?.PriceBookRatio);
@@ -1934,8 +2046,10 @@ async function main() {
     const liabilities = number(balanceRow?.['負債總額'] ?? balanceRow?.['負債總計']);
     const currentAssets = number(balanceRow?.['流動資產']);
     const currentLiabilities = number(balanceRow?.['流動負債']);
-    const debtRatio = Number.isFinite(assets) && assets > 0 && Number.isFinite(liabilities) ? liabilities / assets * 100 : null;
-    const currentRatio = Number.isFinite(currentAssets) && Number.isFinite(currentLiabilities) && currentLiabilities > 0 ? currentAssets / currentLiabilities * 100 : null;
+    const currentDebtRatio = Number.isFinite(assets) && assets > 0 && Number.isFinite(liabilities) ? liabilities / assets * 100 : null;
+    const currentLiquidityRatio = Number.isFinite(currentAssets) && Number.isFinite(currentLiabilities) && currentLiabilities > 0 ? currentAssets / currentLiabilities * 100 : null;
+    const debtRatio = currentDebtRatio ?? (usePriorFinancial ? priorFinancial.debtRatio : null);
+    const currentRatio = currentLiquidityRatio ?? (usePriorFinancial ? priorFinancial.currentRatio : null);
     const inst = institutional(code);
     const foreignHolding = foreignHoldingFeatures(foreignHoldingHistory, code);
     const etf = stockEtfFeatures(stock, detail, activeSet, activeSignalSet, activeCoverage, laggingSet);
@@ -1947,9 +2061,9 @@ async function main() {
     let confidence = 20;
     if (detail && detail.snap_dates?.length >= 21) confidence += 20;
     if (revenueRow) confidence += 13;
-    if (epsRow) confidence += 8;
-    if (Number.isFinite(opMargin) || isFinancial(industry)) confidence += 4;
-    if (balanceRow) confidence += 5;
+    if (Number.isFinite(eps)) confidence += usePriorFinancial ? 6 : 8;
+    if (Number.isFinite(opMargin) || (isFinancial(industry) && Number.isFinite(eps))) confidence += usePriorFinancial ? 3 : 4;
+    if (Number.isFinite(debtRatio) || Number.isFinite(currentRatio)) confidence += usePriorFinancial ? 4 : 5;
     if (valuationRow) confidence += 12;
     if (technical) confidence += 11;
     if (Number.isFinite(technical?.kdK) && Number.isFinite(technical?.kdD)) confidence += 2;
@@ -1965,7 +2079,9 @@ async function main() {
     const officialMaterialRisk = stockEvents.some(ev => ev.source === 'twse_material' && /停止交易|終止上市|下市|重整|破產|重大損失|財務報告.*延|裁罰|訴訟|資金貸與|背書保證|掏空|財報重編/.test(`${ev.title || ''} ${ev.description || ''}`));
     return {
       code, name: stock.name, market, industry, sector: broadSector(industry), etf, foreignHolding, technical, events: event,
-      eventsLayer: stockEvents, credit, tdcc, officialMaterialRisk, financialPeriod,
+      eventsLayer: stockEvents, credit, tdcc, officialMaterialRisk, financialPeriod, financialSourceMode,
+      financialCurrentPeriod, financialSnapshotSourceFile: usePriorFinancial ? priorFinancial.sourceFile : null,
+      financialSnapshotGeneratedAt: usePriorFinancial ? priorFinancial.sourceGeneratedAt : null,
       closeDate: yyyymmddToIso(data.meta.price_date), confidence: round(confidence, 1), live: null,
       metrics: {
         price, revenueYoy, revenueYtdYoy, operatingMargin: opMargin, grossMargin, netMargin, nonOperatingContributionPct, eps, debtRatio, currentRatio,
@@ -2049,6 +2165,10 @@ async function main() {
       creditDate: creditHistory.dates[0] || null,
       tdccDate: tdccData.date,
       quarterlyFinancialPeriod: [...new Set(records.map(record => record.financialPeriod).filter(Boolean))].sort().at(-1) || null,
+      financialCurrentPeriod,
+      financialCurrentCount: records.filter(record => record.financialSourceMode === 'current_official').length,
+      financialFallbackCount: records.filter(record => record.financialSourceMode === 'prior_verified_official_snapshot').length,
+      financialUnavailableCount: records.filter(record => record.financialSourceMode === 'unavailable').length,
       liveDate: liveDates.at(-1) || null,
       liveFreeze: liveTimes.length ? `${liveDates.at(-1) || TODAY} ${latestLiveTime}` : '無可驗證即時報價',
       quotePhase,

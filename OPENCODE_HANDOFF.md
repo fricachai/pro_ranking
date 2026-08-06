@@ -127,6 +127,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 長期初篩目前方法覆蓋率固定為85%，另有15%的資本配置品質因尚缺完整自由現金流、ROIC與資本配置紀律而不計分；不得把正規化後的100分稱為完整長期價值分數。
 - `dataHealth` 不進入任何分數、風險分數或分數乘數；低於65%仍屬硬性淘汰。發布驗證必須確認 `score` 等於 `horizonScores.medium.score`、所有分數介於0至100、長期 `methodCoverage=85`。
 - 本益比不得與盈餘殖利率重複計分；營收不得同時放入事件催化；畫面使用整數分數，JSON可保留一位小數。
+- 季報申報切換時，本次官方端點有資料者使用本次資料；未回傳者只可沿用日期版報告中同季或前一季的已驗證官方快照。每檔必須揭露 `financialPeriod`、`financialSourceMode`、`dataHealth.missingCore`、`dataHealth.staleCore` 與長期 `dataCoverage`；歷史快照不得跨越一季，也不得冒充本次新取得資料。
+- 發布驗證必須確認 `financialCurrentCount + financialFallbackCount + financialUnavailableCount = stockCount`。個別計分證據缺漏時該證據不給分，不得以中性預設值墊高分數。
 
 ### 持股決策總覽與純 UI 維護
 
