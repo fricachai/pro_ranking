@@ -102,16 +102,17 @@ function Get-PagesWorkflowRuns {
     param([AllowNull()][string]$Commit)
 
     $arguments = @('run', 'list', '--workflow', $PagesWorkflow, '--limit', '20', '--json', 'databaseId,status,conclusion,createdAt,updatedAt,headSha,name,workflowName,url')
-    if (-not [string]::IsNullOrWhiteSpace($Commit)) {
-        $arguments = @('run', 'list', '--commit', $Commit, '--workflow', $PagesWorkflow, '--limit', '20', '--json', 'databaseId,status,conclusion,createdAt,updatedAt,headSha,name,workflowName,url')
-    }
     $raw = & gh @arguments 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Unable to query Pages workflow runs:`n$($raw -join "`n")"
     }
     $joined = ($raw -join "`n").Trim()
     if (-not $joined) { return @() }
-    return @(ConvertFrom-Json $joined)
+    $runs = @(ConvertFrom-Json $joined)
+    if (-not [string]::IsNullOrWhiteSpace($Commit)) {
+        $runs = @($runs | Where-Object { $_.headSha -eq $Commit })
+    }
+    return $runs
 }
 
 function Get-LiveReportState {
