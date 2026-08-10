@@ -85,6 +85,16 @@ passed
 
 Final result: passed
 
+## 2026-08-10 持股決策卡縮放與手機版 QA
+
+- 問題來源：原本 `max-width:1100px` 僅把四欄格線改為兩欄，DOM 的第三欄「下一次確認」因自動排版落到股票欄下方；此時「目前狀態／今天動作」欄也可能過窄而難以完整閱讀。
+- 修正：761–1180px 改採三欄語意格線：股票與現況／目前狀態與今天動作／下一次確認與條件；主要原因置於中欄下方。761–900px 再改為股票左欄、其餘資訊依閱讀順序排列於右欄；760px 以下維持單欄直排。
+- 以追蹤中的 2382 廣達卡片驗證，1050×900 視窗的卡片截圖：`.playwright-cli/element-2026-08-10T00-53-34-483Z.png`；「目前狀態｜收盤已跌破」、「今天動作」、「下一次確認」、防守區與主要原因均完整可見。
+- 390×844 手機視窗的卡片截圖：`.playwright-cli/element-2026-08-10T00-54-05-948Z.png`；資訊依股票現況 → 目前狀態／今天動作 → 下一次確認與條件 → 主要原因順序直排，無欄位裁切。
+- 在 1050px 與 390px 寬度分別驗證 `document.documentElement.scrollWidth <= window.innerWidth`，結果皆為 true；瀏覽器 console errors/warnings：0。
+
+Final result: passed
+
 ## 2026-08-06 horizon table sorting QA
 
 - The `前30名與主要風險` and `完整 465 檔上市股票排名` tables expose keyboard-accessible sort buttons for short, medium, and long score headers.
