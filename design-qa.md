@@ -85,6 +85,18 @@ passed
 
 Final result: passed
 
+## 2026-08-10 持股決策卡上下排序 QA
+
+- Change: added keyboard-accessible `上移`／`下移` controls to each tracked position card. The first card disables `上移`; the last card disables `下移`.
+- Privacy boundary: ordering is stored only in browser `proRankingPositionsV1.positionOrder`; report JSON, scores, ranking, actions, costs, and credentials are unchanged and not committed.
+- Desktop viewport: 1050 x 900; moving 2347 upward changed card order from `8271, 2347, 2603` to `2347, 8271, 2603`, and persisted the swapped order after render.
+- Mobile viewport: 390 x 844; controls remained available with accessible labels and the card list stayed single-column.
+- `document.documentElement.scrollWidth <= window.innerWidth`: true at both tested viewports.
+- Browser console errors and warnings: 0.
+- Visual evidence: `output/playwright/position-reorder-desktop.png`, `output/playwright/position-reorder-mobile.png`.
+
+Final result: passed
+
 ## 2026-08-10 持股決策卡縮放與手機版 QA
 
 - 問題來源：原本 `max-width:1100px` 僅把四欄格線改為兩欄，DOM 的第三欄「下一次確認」因自動排版落到股票欄下方；此時「目前狀態／今天動作」欄也可能過窄而難以完整閱讀。
