@@ -72,6 +72,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 2. 目前狀態、今天動作與下一次確認必須分開。盤中跌破只顯示「保護持有／盤中待收盤」，不得直接當成已確認減碼；收盤跌破後仍依規則等待下一交易日收盤確認。
 3. 摘要固定分為「減碼／出脫、等待確認、正常／保護持有、符合加碼條件」。卡片與摘要必須共同使用 `positionDecisionMeta` 的結果，不得各自建立另一套分類。
 4. 每張卡至少顯示：股票與現況、目前狀態、今天動作、下一次確認、執行觀察區、改變條件與主要原因；完整依據必須可展開。手機版改為單欄卡片，不得出現頁面級水平溢出。
+4a. 中等寬度（761–1180px）不可讓「主要原因」形成內容稀少的大面積空白欄位：上列應保留標的摘要與今天動作，下列決策區應把下一次確認／執行觀察區／改變條件，與主要原因／持有計畫一起有效使用。持有計畫應直接可見，完整依據仍維持可展開；900px 以下可收為單欄。任何調整必須實測 1050×900 與 390×844，確認無頁面級水平溢出及 console warnings。<!-- POSITION_CARD_RESPONSIVE_DENSITY_V1 -->
 5. `proRankingPositionsV1`、成本價、登入狀態與追蹤 JSON 都是瀏覽器私人資料。測試可建立本機狀態，但不得把測試持倉、成本或帳密寫入 Git、公開 HTML、截圖文字或 Obsidian。
 6. 純 UI／說明文字修改且使用者明確要求發布時，可用 `node .\full-professional-stock-screen.js --render-existing` 沿用已驗證的 `latest.json`，同步重產日期版 HTML、`latest.html` 與根目錄 `index.html`。既有JSON必須是 `HORIZON_SCORE_V2`；使用前必須確認沒有更動資料、評分、排名、門檻或日期，不得用此模式冒充每日資料更新。
 7. 同一日可多次執行受控更新。舊的 `published/YYYYMMDD` 只保留歷史稽核，不得再用來提前停止；每次都必須重新查詢行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->

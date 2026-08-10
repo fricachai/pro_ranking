@@ -173,6 +173,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
 - 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；既有JSON必須已是 `HORIZON_SCORE_V2`。此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
 - 同一日可以重複執行 `/update-report`。舊的 `published/YYYYMMDD` 只是歷史紀錄，不再阻擋來源檢查；每次都會重新抓取盤中行情、新聞、重大訊息與其他來源。<!-- INTRADAY_REFRESH_V1 -->
+- 決策卡中等寬度（761–1180px）採「標的摘要／今天動作」上列與全寬決策區下列；下列並排下一次確認／執行觀察區／改變條件，以及主要原因／直接可見的持有計畫，禁止留下內容稀少的大面積原因空白區。900px 以下收為單欄，完整依據仍可展開。純 UI 調整後必測 1050×900 與 390×844，無頁面級水平溢出與 console warnings 才可發布。<!-- POSITION_CARD_RESPONSIVE_DENSITY_V1 -->
 - 更新器會排除純生成／抓取時間戳後比較報告指紋，但每次成功檢查都會提交本次報告與事件檢查時間、發布並建立 `published/YYYYMMDD-HHmmss` 稽核標籤。`DATA_CHANGED=false` 代表沒有實質內容變化，不得說成失敗。<!-- REFRESH_TIMESTAMP_V1 -->
 - Yahoo RSS 是 C 級待確認資訊；若 429 限流造成部分或全部失敗，事件檔必須揭露 `partial` 或 `unavailable`、成功率與限流數，但仍以本次重新取得的官方重大訊息與結構化事件完成報告。不得沿用舊新聞冒充本次抓取。<!-- OPTIONAL_YAHOO_NEWS_V1 -->
 - 只要涉及資料來源、資料日期、評分、排名、動作規則或品質門檻，就不得使用純 UI 例外流程。
