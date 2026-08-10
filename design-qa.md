@@ -85,6 +85,18 @@ passed
 
 Final result: passed
 
+## 2026-08-10 持股決策卡滑鼠拖曳排序 QA
+
+- Change: the left stock-title block now supports left-button press and vertical drag. The existing `上移`／`下移` buttons remain available.
+- Desktop viewport: 1050 x 900; dragging 8271 above 2347 changed the visible order from `2347, 8271, 2603` to `8271, 2347, 2603` and saved `positionOrder` as `0, 1, 2`.
+- Drag scope: only the stock-title block starts a drag; cost inputs, tracking checkbox, buttons, and links remain separate controls.
+- Mobile viewport: 390 x 844; drag handles retained the instruction title and the card list remained single-column.
+- `document.documentElement.scrollWidth <= window.innerWidth`: true at both tested viewports.
+- Browser console errors and warnings: 0.
+- Dragging state cleanup: no cards remained marked `.is-dragging` or `.is-drag-over` after release.
+
+Final result: passed
+
 ## 2026-08-10 持股決策卡上下排序 QA
 
 - Change: added keyboard-accessible `上移`／`下移` controls to each tracked position card. The first card disables `上移`; the last card disables `下移`.
