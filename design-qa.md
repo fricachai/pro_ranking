@@ -104,3 +104,15 @@ Final result: passed
 - Console errors and warnings: 0.
 
 Final result: passed
+
+## 2026-08-10 position decision card empty-space QA
+
+- Issue: the previous medium-width two-by-two layout isolated `Primary reasons` in its own lower-right panel. A short reasons list left most of that panel empty.
+- Change: at 761-1180px the card now has a stock-summary/action row followed by one full-width decision zone. In that zone, next confirmation, operating range, and change conditions sit beside primary reasons and the holding plan. Narrow tablet width collapses that decision zone safely to one column.
+- Information completeness: the existing `holdingPlan` is now visible inside the reasons pane; the expandable detail keeps the current decision basis available on demand. Rendering still uses the established report fields (`holdingPlan`, `basis`, and `reasonChips`) without changing screening or decision logic.
+- Desktop viewport: 1050 x 900; tracked 2382 card used the lower area for next confirmation on the left and reasons plus holding plan on the right, with no large isolated blank pane.
+- Mobile viewport: 390 x 844; the card reads as one column in the order summary, today action, next confirmation/operating range, reasons, holding plan, and detail. `document.documentElement.scrollWidth <= window.innerWidth` was `true`.
+- Interaction and errors: expandable detail still worked; console warnings were 0 at both desktop and mobile sizes.
+- Visual evidence: `.playwright-cli/element-2026-08-10T01-18-31-925Z.png` (1050 x 900) and `.playwright-cli/element-2026-08-10T01-18-25-836Z.png` (390 x 844).
+
+Final result: passed
