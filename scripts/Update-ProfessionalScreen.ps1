@@ -527,7 +527,7 @@ try {
     $dataChanged = -not $previousReportFingerprint -or $previousReportFingerprint -ne $currentReportFingerprint
 
     $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $generatedFiles
-    $allowedPrefixes = @('professional-screen-report/events/')
+    $allowedPrefixes = @('professional-screen-report/events/', 'professional-screen-report/backtest-snapshots/')
     $changedPaths = @(Get-ChangedPaths)
     $unexpected = @($changedPaths | Where-Object {
         $path = $_
