@@ -169,7 +169,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 ### 離線策略驗證與 V3 實驗邊界
 
 - 新因子、權重或核心／衛星配置先使用 `node .\scripts\Backtest-HorizonStrategy.js`，不得直接改動正式 `HORIZON_SCORE_V2`。
-- 工具只讀取日期版 `full-professional-screen-YYYYMMDD.json`；舊模型會明確排除，並揭露交易成本、資料日期、快照間隔、benchmark 與樣本長度。
+- 正式發布流程會由 `Capture-HorizonBacktestSnapshot.js` 自動建立 close-only point-in-time 快照；工具只讀取 `professional-screen-report/backtest-snapshots/`，舊模型及盤中／隔日快照會明確排除，並揭露交易成本、資料日期、快照間隔、benchmark 與樣本長度。
 - `insufficient_data` 只能表示資料不足，不能解讀成策略失敗或成功；`shadow-qvm` 是非生產實驗，不代表已完成 ROIC、自由現金流或 12 個月動能因子。
 - 升級 `HORIZON_SCORE_V3` 前，必須完成含未來資料隔離、交易成本、存活者偏誤控制、完整市場階段及大盤 ETF 基準的樣本外驗證。<!-- STRATEGY_VALIDATION_V1 -->
 

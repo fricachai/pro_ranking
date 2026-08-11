@@ -61,7 +61,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 ## 離線策略驗證契約
 
 1. 任何新因子、權重或核心／衛星配置想法，先執行 `node .\scripts\Backtest-HorizonStrategy.js`；不得直接修改正式 `HORIZON_SCORE_V2`。
-2. 回測工具只讀取日期版 `full-professional-screen-YYYYMMDD.json`，非 `HORIZON_SCORE_V2` 檔案必須排除並列出，不得混合舊模型。
+2. 回測工具只讀取 `professional-screen-report/backtest-snapshots/` 的 close-only point-in-time 快照；快照必須是 `HORIZON_SCORE_V2` 且 `quotePhase=close`、`liveDate=priceDate`。其他日期版或舊模型檔案必須排除並列出，不得混合舊模型。
 3. 回測訊號只能使用 `asOf` 當日已存在的資料，未來價格只能用後續快照；交易成本、快照間隔、樣本長度與 benchmark 缺漏都必須揭露。
 4. 工具回傳 `insufficient_data` 時不得宣稱策略有效、優於大盤或已完成樣本外驗證；`shadow-qvm` 只作非生產實驗，不能取代 ROIC、自由現金流或完整長期動能資料。<!-- STRATEGY_VALIDATION_V1 -->
 

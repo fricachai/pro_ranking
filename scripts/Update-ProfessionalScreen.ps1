@@ -11,6 +11,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ReportDir = Join-Path $RepoRoot 'professional-screen-report'
 $Generator = Join-Path $RepoRoot 'full-professional-stock-screen.js'
 $EventFetcher = Join-Path $RepoRoot 'fetch-events.js'
+$SnapshotCapture = Join-Path $RepoRoot 'scripts/Capture-HorizonBacktestSnapshot.js'
 $LatestJson = Join-Path $ReportDir 'latest.json'
 $LatestHtml = Join-Path $ReportDir 'latest.html'
 $IndexHtml = Join-Path $RepoRoot 'index.html'
@@ -268,7 +269,7 @@ try {
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $logPath = Join-Path $LogDir "daily-refresh-$timestamp.log"
 
-    foreach ($scriptPath in @($Generator, $EventFetcher)) {
+    foreach ($scriptPath in @($Generator, $EventFetcher, $SnapshotCapture)) {
         & node --check $scriptPath *>> $logPath
         if ($LASTEXITCODE -ne 0) {
             throw "JavaScript syntax check failed: $scriptPath. Log: $logPath"
@@ -482,6 +483,14 @@ try {
         throw "Governance data must not appear in ranking decisions or position actions."
     }
 
+    if ($Publish) {
+        Write-Host 'Capturing close-only point-in-time strategy snapshot...'
+        & node $SnapshotCapture --report $LatestJson --output-dir (Join-Path $ReportDir 'backtest-snapshots') *>> $logPath
+        if ($LASTEXITCODE -ne 0) {
+            throw "Point-in-time strategy snapshot capture failed. Log: $logPath"
+        }
+    }
+
     $etfDate = [datetime]::ParseExact([string]$meta.etfDate, 'yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture)
     $dateSlug = $etfDate.ToString('yyyyMMdd')
     $datedFiles = @(
@@ -493,6 +502,12 @@ try {
         if (-not (Test-Path (Join-Path $RepoRoot $relativePath))) {
             throw "Dated output is missing: $relativePath"
         }
+    }
+    $backtestSnapshotRelative = "professional-screen-report/backtest-snapshots/full-professional-screen-$dateSlug.json"
+    $backtestSnapshotPath = Join-Path $RepoRoot $backtestSnapshotRelative.Replace('/', '\')
+    $generatedFiles = @($datedFiles)
+    if (Test-Path -LiteralPath $backtestSnapshotPath) {
+        $generatedFiles += $backtestSnapshotRelative
     }
 
     Copy-Item $LatestHtml $IndexHtml -Force
@@ -511,7 +526,7 @@ try {
     }
     $dataChanged = -not $previousReportFingerprint -or $previousReportFingerprint -ne $currentReportFingerprint
 
-    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $datedFiles
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $generatedFiles
     $allowedPrefixes = @('professional-screen-report/events/')
     $changedPaths = @(Get-ChangedPaths)
     $unexpected = @($changedPaths | Where-Object {
@@ -526,7 +541,7 @@ try {
         throw "Generator changed unexpected files: $($unexpected -join ', ')"
     }
 
-    $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $datedFiles
+    $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $generatedFiles
     $commit = $null
     $publishStatus = 'validated'
     if ($Publish -and $changedPaths.Count -gt 0) {

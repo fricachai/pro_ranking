@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const DEFAULT_REPORT_DIR = path.join(ROOT, 'professional-screen-report');
+const DEFAULT_REPORT_DIR = path.join(ROOT, 'professional-screen-report', 'backtest-snapshots');
 const MODEL_VERSION = 'HORIZON_SCORE_V2';
 const SCHEMA_VERSION = 'HORIZON_BACKTEST_V1';
 const DEFAULT_STRATEGIES = ['v2-a', 'v2-medium', 'shadow-qvm'];
@@ -222,7 +222,9 @@ function normalizeRow(row) {
 }
 
 function loadSnapshots(reportDir) {
-  if (!fs.existsSync(reportDir)) throw new Error(`Report directory not found: ${reportDir}`);
+  if (!fs.existsSync(reportDir)) {
+    return { files: [], snapshots: [], duplicateDates: [], versions: [], incompatibleFiles: [], archiveMissing: true };
+  }
   const files = fs.readdirSync(reportDir)
     .filter(name => /^full-professional-screen-\d{8}\.json$/.test(name))
     .sort();
@@ -241,8 +243,16 @@ function loadSnapshots(reportDir) {
     }
     const version = payload?.meta?.scoringModelVersion || payload?.methodology?.modelVersion;
     versions.add(version || 'missing');
-    if (version !== MODEL_VERSION) {
-      incompatibleFiles.push({ file, version: version || null });
+    if (version !== MODEL_VERSION || payload?.schemaVersion !== 'HORIZON_BACKTEST_SNAPSHOT_V1' ||
+        payload?.meta?.quotePhase !== 'close' || payload?.meta?.liveDate !== payload?.meta?.priceDate) {
+      incompatibleFiles.push({
+        file,
+        version: version || null,
+        schemaVersion: payload?.schemaVersion || null,
+        quotePhase: payload?.meta?.quotePhase || null,
+        liveDate: payload?.meta?.liveDate || null,
+        priceDate: payload?.meta?.priceDate || null
+      });
       continue;
     }
     const rows = Array.isArray(payload.ranking) ? payload.ranking.map(normalizeRow).filter(row => row.code) : [];
@@ -610,7 +620,8 @@ function buildReport(options) {
       dateTo: last,
       modelVersions: loaded.versions,
       duplicateDates: loaded.duplicateDates,
-      incompatibleFiles: loaded.incompatibleFiles
+      incompatibleFiles: loaded.incompatibleFiles,
+      archiveMissing: loaded.archiveMissing || false
     },
     assumptions: {
       modelVersion: MODEL_VERSION,
@@ -624,6 +635,7 @@ function buildReport(options) {
     },
     strategies: results,
     warnings: [
+      loaded.archiveMissing ? '尚未建立收盤後 point-in-time 快照封存區' : null,
       loaded.snapshots.length < options.minSnapshots ? `快照數不足：${loaded.snapshots.length}/${options.minSnapshots}` : null,
       loaded.incompatibleFiles.length ? `已排除非${MODEL_VERSION}檔案：${loaded.incompatibleFiles.length} 個` : null,
       !benchmark ? '未提供 benchmark CSV，無法比較大盤 ETF 基準' : null,

@@ -76,6 +76,9 @@ $requiredFiles = @(
     'scripts/Run-ProfessionalScreenUpdate.ps1',
     'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
     'scripts/Update-ProfessionalScreen.ps1',
+    'scripts/Capture-HorizonBacktestSnapshot.js',
+    'scripts/Backtest-HorizonStrategy.js',
+    'STRATEGY_VALIDATION.md',
     'professional-screen-report/latest.json',
     'professional-screen-report/events/latest-events.json',
     'index.html'
@@ -138,6 +141,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md', '.o
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains($optionalYahooRuleMarker)) {
         throw "Optional Yahoo news rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
+$strategyValidationMarker = 'STRATEGY_VALIDATION_V1'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($strategyValidationMarker)) {
+        throw "Strategy validation rule is missing from the OpenCode handoff surface: $relativePath"
     }
 }
 
@@ -240,7 +251,7 @@ $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
 if ($nodeMajor -lt 18) { throw "Node.js 18 or newer is required. Found: $nodeVersion" }
 
-foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js')) {
+foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js')) {
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 
@@ -271,6 +282,12 @@ if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
 foreach ($requiredPagesSafeguardToken in @('DO NOT cancel active runs or use the legacy Pages build API', 'Wait-GitHubPagesQueueIdle', 'deploy-pages.yml', 'gh run rerun', 'one controlled failed-job rerun', 'PAGES_AUDIT_STATUS=')) {
     if (-not $updaterContent.Contains($requiredPagesSafeguardToken)) {
         throw "Pages deployment safeguard is missing: $requiredPagesSafeguardToken"
+    }
+}
+$strategyUpdaterContentTokens = @('Capture-HorizonBacktestSnapshot.js', 'backtest-snapshots', 'quotePhase')
+foreach ($requiredStrategyUpdaterToken in $strategyUpdaterContentTokens) {
+    if (-not $updaterContent.Contains($requiredStrategyUpdaterToken)) {
+        throw "Strategy snapshot safeguard is missing: $requiredStrategyUpdaterToken"
     }
 }
 foreach ($requiredIntradayToken in @(

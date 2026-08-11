@@ -55,7 +55,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 node .\scripts\Backtest-HorizonStrategy.js
 ```
 
-工具會比較現行 A 級候選、中期分數候選及非生產環境的品質／價值／動能實驗模型，並納入樣本長度、未來資料隔離、交易成本與快照間隔檢查。完整規則見 [`STRATEGY_VALIDATION.md`](STRATEGY_VALIDATION.md)。
+正式發布流程會在收盤後自動保存 close-only point-in-time 快照；盤中報告會跳過，避免下一交易日行情污染前一日訊號。工具會比較現行 A 級候選、中期分數候選及非生產環境的品質／價值／動能實驗模型，並納入樣本長度、未來資料隔離、交易成本與快照間隔檢查。完整規則見 [`STRATEGY_VALIDATION.md`](STRATEGY_VALIDATION.md)。
+<!-- STRATEGY_VALIDATION_V1 -->
 
 ## OpenCode 交接
 
