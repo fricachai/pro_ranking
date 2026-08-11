@@ -34,6 +34,17 @@ const TODAY = new Intl.DateTimeFormat('en-CA', {
     twseDaily: 'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
     twseForeignHolding: 'https://www.twse.com.tw/rwd/zh/fund/MI_QFIIS',
     twseInstitutional: 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html',
+    tpexDaily: 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes',
+    tpexValuation: 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis',
+    tpexRevenue: 'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap05_O',
+    tpexEps: 'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap14_O',
+    tpexMargin: 'https://www.tpex.org.tw/openapi/v1/mopsfin_187ap17_O',
+    tpexForeignHolding: 'https://www.tpex.org.tw/openapi/v1/tpex_3insti_qfii',
+    tpexInstitutional: 'https://www.tpex.org.tw/openapi/v1/tpex_3insti_daily_trading',
+    tpexMarginTrading: 'https://www.tpex.org.tw/openapi/v1/tpex_mainboard_margin_balance',
+    twseSecurities: 'https://openapi.twse.com.tw/v1/opendata/t187ap03_L',
+    tpexSecurities: 'https://www.tpex.org.tw/openapi/v1/tpex_securities',
+    tpex: 'https://www.tpex.org.tw/',
     twse: 'https://www.twse.com.tw/',
     mops: 'https://mops.twse.com.tw/',
     yahooChart: 'https://query1.finance.yahoo.com/v8/finance/chart/',
@@ -62,11 +73,13 @@ const HORIZON_MODELS = Object.freeze({
 const DATA_HEALTH_HARD_GATE = 65;
 
 const BALANCE_ENDPOINTS = {
-  TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap07_L_${type}`)
+  TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap07_L_${type}`),
+  TPEX: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap07_O_${type}`)
 };
 
 const INCOME_ENDPOINTS = {
-  TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap06_L_${type}`)
+  TWSE: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://openapi.twse.com.tw/v1/opendata/t187ap06_L_${type}`),
+  TPEX: ['ci', 'fh', 'basi', 'ins', 'mim', 'bd'].map(type => `https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap06_O_${type}`)
 };
 
 const FOREIGN_HOLDING_REQUIRED_DAYS = 11;
@@ -288,8 +301,9 @@ function technicalFromCloses(rawCloses, rawOhlc = []) {
   };
 }
 
-async function fetchYahooOhlc(code) {
-  const url = `${SOURCES.yahooChart}${encodeURIComponent(code)}.TW?range=6mo&interval=1d&events=div%2Csplits`;
+async function fetchYahooOhlc(code, market = 'TWSE') {
+  const suffix = market === 'TPEX' ? '.TWO' : '.TW';
+  const url = `${SOURCES.yahooChart}${encodeURIComponent(code)}${suffix}?range=6mo&interval=1d&events=div%2Csplits`;
   const payload = await fetchJson(url, 2);
   const result = payload?.chart?.result?.[0];
   const quote = result?.indicators?.quote?.[0];
@@ -442,6 +456,20 @@ function foreignHoldingFeatures(history, code) {
   };
 }
 
+function tpexForeignHoldingFeatures(row, fallbackDate) {
+  const shares = number(row?.['CurrentlySharesOC/FIHeld']);
+  return {
+    date: rocDateToIso(row?.Date) || fallbackDate || null,
+    heldShares: shares,
+    heldLots: Number.isFinite(shares) ? shares / 1000 : null,
+    ratio: number(row?.['PercentageOfSharesOC/FMIHeld']),
+    d1Lots: null, d5Lots: null, d10Lots: null, d20Lots: null,
+    d1RatioPp: null, d5RatioPp: null, d10RatioPp: null, d20RatioPp: null,
+    trendReliable: false,
+    structuralChanges: []
+  };
+}
+
 function fieldIndex(fields, pattern, fallback) {
   const index = (fields || []).findIndex(field => pattern.test(String(field)));
   return index >= 0 ? index : fallback;
@@ -518,6 +546,30 @@ function institutionalFeatures(history, code) {
   };
 }
 
+function mergeTpexInstitutionalSnapshot(history, rows) {
+  const date = rocDateToIso(rows?.[0]?.Date);
+  if (!date || !Array.isArray(rows) || !rows.length) return history;
+  const tpexRows = rows.map(row => {
+    const value = keys => number(keys.map(key => row?.[key]).find(item => item !== undefined));
+    return [String(row?.SecuritiesCompanyCode || '').trim(), {
+      foreign: (value(['ForeignInvestorsInclude MainlandAreaInvestors-Difference']) || 0) / 1000,
+      trust: (value(['SecuritiesInvestmentTrustCompanies-Difference']) || 0) / 1000,
+      dealer: (value(['Dealers-Difference']) || 0) / 1000,
+      total: (value(['TotalDifference']) || 0) / 1000
+    }];
+  }).filter(([code]) => /^\d{4}$/.test(code));
+  if (!tpexRows.length) return history;
+  const snapshots = history.snapshots.map(snapshot => ({ ...snapshot, rows: new Map(snapshot.rows) }));
+  const existingIndex = snapshots.findIndex(snapshot => snapshot.date === date);
+  if (existingIndex >= 0) {
+    for (const [code, value] of tpexRows) snapshots[existingIndex].rows.set(code, value);
+  } else {
+    snapshots.unshift({ date, rows: new Map(tpexRows), officialTpex: true });
+  }
+  snapshots.sort((a, b) => b.date.localeCompare(a.date));
+  return { ...history, snapshots: snapshots.slice(0, 20), dates: snapshots.slice(0, 20).map(snapshot => snapshot.date) };
+}
+
 async function fetchTwseCreditHistory(asOfIso) {
   const payloads = await mapLimit(calendarDatesEnding(asOfIso, 22), 4, async iso => {
     const date = isoToYyyymmdd(iso);
@@ -570,6 +622,21 @@ function creditFeatures(history, code, return5 = null, dailyVolumeLots = null) {
       borrowedShortD5 > Math.max(1000, (current.borrowedShortBalance || 0) * 0.15, (dailyVolumeLots || 0) * 0.05) ||
       borrowedShortSell5 > Math.max(2000, (current.borrowedShortBalance || 0) * 0.25, (dailyVolumeLots || 0) * 0.15)
     )
+  };
+}
+
+function tpexCreditFeatures(row, fallbackDate) {
+  return {
+    date: rocDateToIso(row?.Date) || fallbackDate || null,
+    financingBalance: number(row?.MarginPurchaseBalance),
+    financingD5: null,
+    shortBalance: number(row?.ShortSaleBalance),
+    shortD5: null,
+    borrowedShortBalance: null,
+    borrowedShortD5: null,
+    borrowedShortSell5: null,
+    financingCrowding: false,
+    shortPressure: false
   };
 }
 
@@ -766,8 +833,12 @@ function createLookup(rows, codeKeys) {
 }
 
 function financialPeriodFromRow(row) {
-  if (!row?.['年度'] || !row?.['季別']) return null;
-  return `${Number(row['年度']) + 1911}Q${Number(row['季別'])}`;
+  const year = row?.['年度'] ?? row?.Year;
+  const quarter = row?.['季別'] ?? row?.Quarter;
+  if (!year || !quarter) return null;
+  const numericYear = Number(year);
+  const westernYear = numericYear < 1911 ? numericYear + 1911 : numericYear;
+  return `${westernYear}Q${Number(quarter)}`;
 }
 
 function financialPeriodOrdinal(period) {
@@ -1260,13 +1331,16 @@ async function fetchMisQuotes(records) {
   const requests = [];
   for (let i = 0; i < records.length; i += 70) {
     const chunk = records.slice(i, i + 70);
-    const exCh = chunk.map(record => `tse_${record.code}.tw`).join('|');
+    const exCh = chunk.map(record => `${record.market === 'TPEX' ? 'otc' : 'tse'}_${record.code}.tw`).join('|');
     requests.push(`https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=${encodeURIComponent(exCh)}&json=1&delay=0&_=${Date.now() + i}`);
   }
   const payloads = await mapLimit(requests, 3, url => fetchJson(url));
   const quotes = new Map();
   for (const payload of payloads) {
-    for (const row of payload?.msgArray || []) quotes.set(String(row.c), row);
+    for (const row of payload?.msgArray || []) {
+      const match = /_(\w+)\.tw$/i.exec(String(row.c || ''));
+      quotes.set(match?.[1] || String(row.c), row);
+    }
   }
   return quotes;
 }
@@ -1277,8 +1351,9 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function yahooTechnicalUrl(code) {
-  return `https://tw.stock.yahoo.com/quote/${encodeURIComponent(code)}.TW/technical-analysis`;
+function yahooTechnicalUrl(code, market = 'TWSE') {
+  const suffix = market === 'TPEX' ? '.TWO' : '.TW';
+  return `https://tw.stock.yahoo.com/quote/${encodeURIComponent(code)}${suffix}/technical-analysis`;
 }
 
 function fmt(value, digits = 1, fallback = '—') {
@@ -1602,6 +1677,9 @@ function refreshPositionLanguage(report) {
 
 function buildHtml(report) {
   refreshPositionLanguage(report);
+  const marketScopeNotice = report.meta.unknownMarketStockCount > 0
+    ? `<div class="warning"><b>ETF 持股範圍提醒：</b>來源快照另含 ${report.meta.unknownMarketStockCount} 筆無法由當日 TWSE／TPEX 官方市場清單辨識的數字代碼（其中可能是海外 ETF 持有的海外股票）；本報告保留在來源稽核計數中，但不納入臺股上市／上櫃排名、不補造價格或評分。</div>`
+    : '';
   const newsStatusLabels = {
     complete: '完整',
     partial: '部分成功',
@@ -1619,7 +1697,7 @@ function buildHtml(report) {
   const horizonScoreStripHtml = row => `<div class="horizon-score-strip" aria-label="短中長期研究分數"><span><small>短期時機</small><b>${scoreValueLink(row, 'short', row.horizonScores?.short?.score)}</b></span><span class="is-primary"><small>中期研究／排名</small><b>${scoreValueLink(row, 'medium', row.horizonScores?.medium?.score)}</b></span><span><small>長期初篩</small><b>${scoreValueLink(row, 'long', row.horizonScores?.long?.score)}</b><em>方法 ${fmt(row.horizonScores?.long?.methodCoverage, 0)}%／個股資料 ${fmt(row.horizonScores?.long?.dataCoverage, 0)}%</em></span></div>`;
   const topCards = report.topThree.map((row, index) => `
     <article class="pick">
-      <div class="pick-head"><span class="rank">${index + 1}</span><div><h3><a class="stock-link" href="${yahooTechnicalUrl(row.code)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析">${escapeHtml(row.code)} ${escapeHtml(row.name)}</a></h3><p>${escapeHtml(row.industry)}</p></div><strong class="primary-score"><small>中期排名分</small>${scoreLink(row)}</strong></div>
+      <div class="pick-head"><span class="rank">${index + 1}</span><div><h3><a class="stock-link" href="${yahooTechnicalUrl(row.code, row.market)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析">${escapeHtml(row.code)} ${escapeHtml(row.name)}</a></h3><p>${escapeHtml(row.market === 'TPEX' ? '上櫃' : '上市')}｜${escapeHtml(row.industry)}</p></div><strong class="primary-score"><small>中期排名分</small>${scoreLink(row)}</strong></div>
       <div class="decision-strip"><span><small>建立新部位</small><b>${escapeHtml(row.entryAction)}</b></span><span class="state-${escapeHtml(row.holdingState)}"><small>已經持有</small><b>${escapeHtml(row.holdingAction)}</b></span></div>
       ${horizonScoreStripHtml(row)}
       <div class="metrics"><span>${escapeHtml(report.meta.priceLabel || '最新報價')}<b>${fmt(row.livePrice ?? row.close, 2)}</b></span><span>資料健康<b>${fmt(row.dataHealth?.score, 0)}% ${escapeHtml(row.dataHealth?.status || '')}</b></span><span>本益比<b>${fmt(row.valuation.pe)}</b></span><span>RSI／K／D<b>${fmt(row.technical.rsi14, 0)}／${fmt(row.technical.kdK, 0)}／${fmt(row.technical.kdD, 0)}</b></span></div>
@@ -1629,17 +1707,17 @@ function buildHtml(report) {
     </article>`).join('');
 
   const topRows = report.ranking.slice(0, 30).map(row => `
-    <tr><td>${row.rank}</td><td><a class="stock-link" href="${yahooTechnicalUrl(row.code)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析"><b>${escapeHtml(row.code)}</b> ${escapeHtml(row.name)}</a></td><td><input class="table-position-check" type="checkbox" data-position-toggle="${escapeHtml(row.code)}" aria-label="追蹤 ${escapeHtml(row.code)} ${escapeHtml(row.name)}"></td><td>${escapeHtml(row.entryAction)}</td><td class="state-${escapeHtml(row.holdingState)}">${escapeHtml(row.holdingAction)}</td><td>${scoreValueLink(row, 'short', row.horizonScores?.short?.score)}</td><td>${scoreLink(row)}</td><td>${scoreValueLink(row, 'long', row.horizonScores?.long?.score)}</td><td>${fmt(row.dataHealth?.score, 0)}% ${escapeHtml(row.dataHealth?.status || '')}</td><td>${signed(row.fundamentals.revenueYoy, 1, '%')}</td><td>${fmt(row.valuation.pe)}</td><td>${signed(row.etf.d5, 0)}</td><td>${signed(row.etf.activeD5, 0)}</td><td>${signed(row.foreign.holdingD5, 0)}</td><td>${signed(row.foreign.holdingD10, 0)}</td><td>${signed(row.foreign.netBuy5, 0)}</td><td>${signed(row.investmentTrust.netBuy5, 0)}</td><td>${fmt(row.technical.rsi14)}</td><td>${fmt(row.technical.kdK, 1)}／${fmt(row.technical.kdD, 1)}</td><td>${escapeHtml(row.rejectionReasons[0] || '—')}</td></tr>`).join('');
+    <tr><td>${row.rank}</td><td><a class="stock-link" href="${yahooTechnicalUrl(row.code, row.market)}" target="_blank" rel="noreferrer" title="開啟 ${escapeHtml(row.name)} Yahoo技術分析"><b>${escapeHtml(row.code)}</b> ${escapeHtml(row.name)}</a></td><td>${escapeHtml(row.market === 'TPEX' ? '上櫃' : '上市')}</td><td><input class="table-position-check" type="checkbox" data-position-toggle="${escapeHtml(row.code)}" aria-label="追蹤 ${escapeHtml(row.code)} ${escapeHtml(row.name)}"></td><td>${escapeHtml(row.entryAction)}</td><td class="state-${escapeHtml(row.holdingState)}">${escapeHtml(row.holdingAction)}</td><td>${scoreValueLink(row, 'short', row.horizonScores?.short?.score)}</td><td>${scoreLink(row)}</td><td>${scoreValueLink(row, 'long', row.horizonScores?.long?.score)}</td><td>${fmt(row.dataHealth?.score, 0)}% ${escapeHtml(row.dataHealth?.status || '')}</td><td>${signed(row.fundamentals.revenueYoy, 1, '%')}</td><td>${fmt(row.valuation.pe)}</td><td>${signed(row.etf.d5, 0)}</td><td>${signed(row.etf.activeD5, 0)}</td><td>${signed(row.foreign.holdingD5, 0)}</td><td>${signed(row.foreign.holdingD10, 0)}</td><td>${signed(row.foreign.netBuy5, 0)}</td><td>${signed(row.investmentTrust.netBuy5, 0)}</td><td>${fmt(row.technical.rsi14)}</td><td>${fmt(row.technical.kdK, 1)}／${fmt(row.technical.kdD, 1)}</td><td>${escapeHtml(row.rejectionReasons[0] || '—')}</td></tr>`).join('');
 
   const dataJson = JSON.stringify(report.ranking).replace(/</g, '\\u003c');
   const sourceGroupsJson = JSON.stringify(report.sourceGroups).replace(/</g, '\\u003c');
   const metaJson = JSON.stringify(report.meta).replace(/</g, '\\u003c');
   const sourceRows = Object.entries(report.sources).map(([label, url]) => `<li><a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a></li>`).join('');
-  return `<!doctype html>
+  const html = `<!doctype html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
-<title>ETF持有上市股多因子研究報告</title>
+<title>ETF持有普通股多因子研究報告</title>
 <style>
 :root{--ink:#17211d;--muted:#63706a;--line:#d8dfdb;--paper:#f6f8f6;--white:#fff;--green:#176b49;--red:#a13b32;--amber:#9a6814;--blue:#255f85}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;letter-spacing:0}a{color:var(--blue)}.stock-link{color:#174f73;text-decoration:none}.stock-link:hover,.stock-link:focus-visible{text-decoration:underline;text-underline-offset:3px}.pick h3 .stock-link::after{content:' ↗';font-size:.72em;font-weight:600}header{background:#12251d;color:#fff;padding:34px max(24px,calc((100vw - 1240px)/2)) 30px;border-bottom:5px solid #c9a85b}header h1{font-size:clamp(28px,4vw,44px);margin:0 0 10px;letter-spacing:0}header p{margin:5px 0;color:#d5dfda;line-height:1.6}.freeze{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:14px}.freeze b{color:#fff}main{max-width:1240px;margin:auto;padding:26px 24px 70px}.warning{border-left:5px solid var(--amber);background:#fff8e6;padding:16px 18px;margin-bottom:24px;line-height:1.7}.quote-phase-banner{display:flex;gap:12px;align-items:flex-start;margin-bottom:24px;padding:15px 18px;border:1px solid #b8c9c0;border-left:6px solid var(--green);background:#f1f7f4;line-height:1.65}.quote-phase-banner.is-intraday{border-left-color:var(--amber);background:#fff8e7}.quote-phase-banner b{flex:0 0 auto}.section{margin:30px 0}.section h2{font-size:23px;margin:0 0 8px}.section-lead{color:var(--muted);margin:0 0 18px;line-height:1.65}.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.pick{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}.pick-head{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:13px}.pick-head .rank{width:32px;height:32px;display:grid;place-items:center;background:#c9a85b;color:#12251d;font-weight:800}.pick h3{font-size:20px;margin:0}.pick h3+p{font-size:13px;color:var(--muted);margin:4px 0 0}.pick-head .primary-score{display:grid;gap:2px;text-align:right;color:var(--green)}.pick-head .primary-score small{color:var(--muted);font-size:10px;font-weight:700}.pick-head .primary-score .score-link{font-size:25px}.horizon-score-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:12px 0;border:1px solid var(--line);border-radius:5px;background:#fff;overflow:hidden}.horizon-score-strip span{padding:9px 10px;text-align:center}.horizon-score-strip span+span{border-left:1px solid var(--line)}.horizon-score-strip .is-primary{background:#edf7f1}.horizon-score-strip small,.horizon-score-strip em{display:block;color:var(--muted);font-size:10px;font-style:normal}.horizon-score-strip b{display:block;margin-top:2px;font-size:20px}.horizon-score-strip em{margin-top:2px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}.metrics span{font-size:11px;color:var(--muted);border-right:1px solid var(--line)}.metrics span:last-child{border:0}.metrics b{display:block;color:var(--ink);font-size:15px;margin-top:3px}.pick dl{margin:0}.pick dt{font-size:12px;text-transform:uppercase;color:var(--green);font-weight:800;margin-top:12px}.pick dd{margin:3px 0 0;line-height:1.58;font-size:14px}.flow{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.flow span{font-size:12px;background:#eef3f0;padding:5px 7px;border-radius:3px}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);background:#fff}.summary-grid div{padding:16px;border-right:1px solid var(--line)}.summary-grid div:last-child{border:0}.summary-grid b{display:block;font-size:25px;color:var(--green);margin-bottom:4px}.summary-grid span{font-size:13px;color:var(--muted)}.table-wrap{overflow:auto;border:1px solid var(--line);background:#fff}table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;white-space:nowrap}th,td{padding:10px 11px;border-bottom:1px solid #e7ebe8;text-align:right}th{position:sticky;top:0;background:#edf2ef;color:#35433d;z-index:1}th:nth-child(2),td:nth-child(2),th:last-child,td:last-child{text-align:left}tr:hover td{background:#f7faf8}.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.filters input,.filters select{height:38px;border:1px solid #bfc9c3;background:#fff;padding:0 10px;font:inherit;border-radius:3px}.filters input{min-width:240px}.table-scroll-tools{position:sticky;top:0;z-index:9;display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;padding:7px 0;background:var(--paper)}.scroll-button{width:38px;height:38px;border:1px solid #aebbb4;background:#fff;color:var(--ink);font:700 20px/1 sans-serif;border-radius:4px;cursor:pointer}.scroll-button:hover,.scroll-button:focus-visible{background:#e9f0ec;border-color:var(--green)}.top-scroll{height:18px;overflow-x:auto;overflow-y:hidden;border:1px solid #c9d2cd;background:#fff}.top-scroll-sizer{height:1px}.top-scroll,.full-table-wrap{scrollbar-color:#71857a #edf2ef;scrollbar-width:auto}.top-scroll::-webkit-scrollbar,.full-table-wrap::-webkit-scrollbar{height:14px;width:12px}.top-scroll::-webkit-scrollbar-track,.full-table-wrap::-webkit-scrollbar-track{background:#edf2ef}.top-scroll::-webkit-scrollbar-thumb,.full-table-wrap::-webkit-scrollbar-thumb{background:#71857a;border:3px solid #edf2ef;border-radius:7px}.full-table-wrap{max-height:72vh;overscroll-behavior:contain}.full-table{min-width:1880px}.full-table th:nth-child(1),.full-table td:nth-child(1){position:sticky;left:0;min-width:54px;width:54px;background:#fff;z-index:3}.full-table th:nth-child(2),.full-table td:nth-child(2){position:sticky;left:54px;min-width:178px;background:#fff;z-index:3;box-shadow:5px 0 7px -7px #425048}.full-table thead th:nth-child(1),.full-table thead th:nth-child(2){background:#edf2ef;z-index:6}.full-table tbody tr:hover td:nth-child(1),.full-table tbody tr:hover td:nth-child(2){background:#f7faf8}.method{display:grid;grid-template-columns:1.2fr .8fr;gap:24px}.method article{background:#fff;border-top:3px solid var(--green);padding:18px}.method h3{margin:0 0 10px;font-size:17px}.method p,.method li{line-height:1.7;color:#3f4b46}.weights{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.weights span{background:#eef3f0;padding:10px}.weights b{display:block;font-size:19px}.sources{columns:2;line-height:1.8}.small{font-size:12px;color:var(--muted)}.tag-A{color:var(--green);font-weight:700}.tag-B{color:var(--amber);font-weight:700}.tag-C,.tag-D{color:var(--red);font-weight:700}@media(max-width:950px){.picks{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.method{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:18px 12px 50px}header{padding:26px 16px}.quote-phase-banner{display:block}.summary-grid{grid-template-columns:1fr}.summary-grid div{border-right:0;border-bottom:1px solid var(--line)}.filters input{min-width:100%}.sources{columns:1}.full-table th:nth-child(2),.full-table td:nth-child(2){min-width:145px}.table-scroll-tools{grid-template-columns:36px minmax(0,1fr) 36px}.scroll-button{width:36px;height:36px}}
 </style>
@@ -1734,14 +1812,15 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
   </div>
 </div>
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
-<header><div class="header-row"><h1>ETF持有上市股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為 ETF 持有且可辨識的上市普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
+<header><div class="header-row"><h1>ETF持有普通股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>研究母體為所有 ETF 持有且可辨識的上市／上櫃普通股；整合官方財務、估值、法人、外資持股、信用交易、集保、技術面、事件與宏觀環境。這是研究優先順序工具，不是無條件買賣建議。</p><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></header>
 <main>
 ${degradedNewsNotice}
+${marketScopeNotice}
 ${quotePhaseNotice}
 <div class="warning"><b>外資持股歷史完整性：</b>本次由證交所取得 ${report.meta.foreignHoldingHistoryDays} 個有效交易日；至少 11 日才計算並發布 10 日持股變化。</div>
 <div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `未完整：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；本次不提供「可分批布局」新建部位。`}</div>
 <div class="warning" id="financialCoverageBanner"><b>季報申報過渡期：</b>官方最新申報季為 ${escapeHtml(report.meta.financialCurrentPeriod || '未確認')}；本次 ${report.meta.financialCurrentCount} 檔使用本次官方端點資料、${report.meta.financialFallbackCount} 檔明確沿用先前已驗證官方快照（同季或前一季）、${report.meta.financialUnavailableCount} 檔仍無可用季報。個股評分明細會標示實際季別與來源狀態，不把歷史資料冒充本次新取得資料。</div>
-<div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市普通股，約占當日 ${report.meta.listedUniverseCount} 檔上市普通股的 ${report.meta.coverageRate}%，不是全體上市股票。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
+<div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股（上市 ${report.meta.twseHeldStockCount} 檔／上櫃 ${report.meta.tpexHeldStockCount} 檔）。上櫃股票的上市專屬官方欄位若無資料會保留缺漏，不以中性值補造。${report.meta.laggingEtfs} 檔 ETF 資料落後；ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
 
 <section class="section"><h2>宏觀與市場環境覆蓋</h2><p class="section-lead">狀態：<b>${escapeHtml(report.macroOverlay.status)}</b>（訊號分數 ${fmt(report.macroOverlay.signalScore, 0)}）。本層使用官方公開資料，只調整研究時的環境認知，不直接改個股100分與排名。</p><div class="summary-grid"><div><b>${signed(report.macroOverlay.metrics.exportOrdersYoy, 1, '%')}</b><span>外銷訂單年增｜${escapeHtml(report.macroOverlay.metrics.exportOrdersPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.manufacturingYoy, 1, '%')}</b><span>製造業生產年增｜${escapeHtml(report.macroOverlay.metrics.manufacturingPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.m1bYoy, 1, '%')}</b><span>M1B年增｜${escapeHtml(report.macroOverlay.metrics.m1bPeriod)}</span></div><div><b>${fmt(report.macroOverlay.metrics.marketBreadth, 1)}%</b><span>上市普通股上漲家數占比｜${report.macroOverlay.metrics.advances}漲／${report.macroOverlay.metrics.declines}跌</span></div></div><p class="framework-note">新台幣兌美元 ${fmt(report.macroOverlay.metrics.usdTwd, 3)}（${escapeHtml(report.macroOverlay.metrics.usdTwdDate)}；20筆變化 ${signed(report.macroOverlay.metrics.usdTwdChange20, 2, '%')}）；重貼現率 ${fmt(report.macroOverlay.metrics.policyRate, 3)}%（${escapeHtml(report.macroOverlay.metrics.policyRateDate)}）。</p></section>
 
@@ -1769,7 +1848,7 @@ ${quotePhaseNotice}
   </div>
 </section>
 
-<section class="section"><h2>篩選覆蓋</h2><div class="summary-grid"><div><b>${report.meta.stockCount}／${report.meta.listedUniverseCount}</b><span>ETF持有上市普通股／全體上市普通股</span></div><div><b>${report.meta.foreignHoldingCovered}</b><span>具官方外資持股趨勢</span></div><div><b>${report.meta.bucketA}</b><span>A級：通過初步布局門檻</span></div><div><b>${report.meta.rejected}</b><span>D級：硬性條件排除</span></div></div></section>
+<section class="section"><h2>篩選覆蓋</h2><div class="summary-grid"><div><b>${report.meta.stockCount}／${report.meta.allEtfHeldStocks}</b><span>本次納入普通股／ETF持股可辨識母體</span></div><div><b>${report.meta.foreignHoldingCovered}</b><span>具官方外資持股趨勢</span></div><div><b>${report.meta.bucketA}</b><span>A級：通過初步布局門檻</span></div><div><b>${report.meta.rejected}</b><span>D級：硬性條件排除</span></div></div></section>
 
   <section class="section"><h2>前30名與主要風險</h2><p class="section-lead">排名只使用「中期研究分數」；短期分數回答時機，長期分數是方法覆蓋85%的初篩，資料健康度則獨立顯示。點擊分數可查看明細；點選 #、短期、中期或長期表頭可切換由小到大／由大到小排序。</p><div class="table-scroll-tools"><button class="scroll-button" id="top30ScrollLeft" type="button" title="向左捲動" aria-label="前30名表格向左捲動">&#8592;</button><div class="top-scroll" id="top30TopScroll" aria-label="前30名表格水平捲軸"><div class="top-scroll-sizer" id="top30TopScrollSizer"></div></div><button class="scroll-button" id="top30ScrollRight" type="button" title="向右捲動" aria-label="前30名表格向右捲動">&#8594;</button></div><div class="table-wrap top30-table-wrap" id="top30TableWrap"><table class="top30-table" id="top30Table"><thead><tr><th>${sortButton('#','rank')}</th><th>股票</th><th>追蹤</th><th>建立新部位</th><th>已經持有</th><th>${sortButton('短期時機','short')}</th><th>${sortButton('中期研究／排名','medium')}</th><th>${sortButton('長期初篩','long')}</th><th>資料健康</th><th>營收YoY</th><th>PE</th><th>ETF 5日</th><th>主動ETF 5日</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信買賣超5日</th><th>RSI</th><th>K／D</th><th>最先注意風險</th></tr></thead><tbody>${topRows}</tbody></table></div></section>
 
@@ -1793,7 +1872,7 @@ const rows=${dataJson};const sourceGroups=${sourceGroupsJson};const reportMeta=$
 const appShell=document.getElementById('appShell');const loginGate=document.getElementById('loginGate');const loginForm=document.getElementById('loginForm');const loginUsername=document.getElementById('loginUsername');const loginPassword=document.getElementById('loginPassword');const rememberLogin=document.getElementById('rememberLogin');const loginStatus=document.getElementById('loginStatus');const logoutButton=document.getElementById('logoutButton');
 const AUTH_ACCOUNTS=[{username:'frica',password:'stock2026'},{username:'Amanda',password:'frica'},{username:'frank',password:'stock2026'}];const AUTH_STORAGE_KEY='pro-ranking-auth-v1';
 function n(v,d=1){return Number.isFinite(v)?v.toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'}function s(v,d=0,x=''){return Number.isFinite(v)?(v>0?'+':'')+n(v,d)+x:'—'}function e(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-function stockUrl(code){return 'https://tw.stock.yahoo.com/quote/'+encodeURIComponent(code)+'.TW/technical-analysis'}
+function stockUrl(code,market){const row=rows.find(item=>item.code===String(code));const suffix=(market||row?.market)==='TPEX'?'.TWO':'.TW';return 'https://tw.stock.yahoo.com/quote/'+encodeURIComponent(code)+suffix+'/technical-analysis'}
  function scoreAnchor(r,tab='medium',value=r.score){return '<a class="score-link" href="#score-'+encodeURIComponent(r.code)+'" data-score-code="'+e(r.code)+'" data-score-tab="'+tab+'" title="查看 '+e(r.name)+' 的'+(tab==='short'?'短期':tab==='long'?'長期':'中期')+'評分明細">'+n(value,0)+'</a>'}
  function horizonMini(r){const h=r.horizonScores||{};return '<div class="horizon-mini" aria-label="短中長期研究分數"><span>短 '+scoreAnchor(r,'short',h.short&&h.short.score)+'</span><span class="is-primary">中 '+scoreAnchor(r,'medium',h.medium&&h.medium.score)+'</span><span>長 '+scoreAnchor(r,'long',h.long&&h.long.score)+'</span></div>'}
  const tableSortState={top30:null,full:null};
@@ -1950,18 +2029,36 @@ let syncTop30ScrollWidth=()=>{};let syncFullScrollWidth=()=>{};let scrollersInit
 let appStarted=false;function startApp(){if(!scrollersInitialized){syncTop30ScrollWidth=setupTableScroller(top30TableWrap,top30TopScroll,top30TopScrollSizer,top30Table,document.getElementById('top30ScrollLeft'),document.getElementById('top30ScrollRight'));syncFullScrollWidth=setupTableScroller(tableWrap,topScroll,topScrollSizer,fullTable,document.getElementById('scrollLeft'),document.getElementById('scrollRight'));scrollersInitialized=true}renderPositions();draw();syncPositionChecks();const initialScore=location.hash.startsWith('#score-')?decodeURIComponent(location.hash.slice(7)):'';if(initialScore)openScore(initialScore,false)}function bootstrap(){if(appStarted)return;appStarted=true;startApp()}function handleLoginSubmit(event){event.preventDefault();const username=loginUsername.value.trim();const password=loginPassword.value;const authorized=AUTH_ACCOUNTS.some(account=>username===account.username&&password===account.password);if(!authorized){setLoginStatus('帳號或密碼錯誤。','error');loginPassword.value='';loginPassword.focus();return}persistAuth(rememberLogin.checked);setLoginStatus('登入成功。');setGateLocked(false);bootstrap()}function handleLogout(){clearAuth();setGateLocked(true);setLoginStatus('請輸入帳號與密碼。');loginPassword.value='';loginUsername.focus()}
  [search,bucket,sector,positionOnly].forEach(el=>el.addEventListener('input',draw));exportPositionsButton.addEventListener('click',exportPositions);importPositionsButton.addEventListener('click',()=>{importPositionsFile.value='';importPositionsFile.click()});importPositionsFile.addEventListener('change',()=>{const file=importPositionsFile.files&&importPositionsFile.files[0];if(file)importPositionsBackup(file)});document.addEventListener('change',event=>{const toggle=event.target.closest('[data-position-toggle]');if(toggle){setPosition(toggle.dataset.positionToggle,toggle.checked);return}const cost=event.target.closest('[data-position-cost]');if(cost&&positions[cost.dataset.positionCost]){const value=Number(cost.value);if(Number.isFinite(value)&&value>0){positions[cost.dataset.positionCost].entryPrice=value;savePositions();renderPositions()}}});document.addEventListener('click',event=>{const sort=event.target.closest('[data-table-sort]');if(sort){event.preventDefault();setTableSort(sort.dataset.tableSort);return}const tab=event.target.closest('[data-score-tab]');if(tab&&document.getElementById('scoreTabPanel')){event.preventDefault();if(tab.dataset.scoreCode){openScore(tab.dataset.scoreCode,true,tab.dataset.scoreTab||'medium')}else scoreTab(tab.dataset.scoreTab||'medium');return}const link=event.target.closest('[data-score-code]');if(!link)return;event.preventDefault();openScore(link.dataset.scoreCode,true,link.dataset.scoreTab||'medium')});document.getElementById('scoreClose').addEventListener('click',()=>scoreDialog.close());scoreDialog.addEventListener('click',event=>{if(event.target===scoreDialog)scoreDialog.close()});scoreDialog.addEventListener('close',()=>{if(location.hash.startsWith('#score-'))history.replaceState(null,'',location.pathname+location.search)});loginForm.addEventListener('submit',handleLoginSubmit);logoutButton.addEventListener('click',handleLogout);if(hasStoredAuth()){setGateLocked(false);bootstrap()}else{setGateLocked(true);setLoginStatus('請輸入帳號與密碼。');loginUsername.focus()}
 </script></body></html>`;
+  return html
+    .replaceAll('ETF持有上市股多因子研究報告', 'ETF持有普通股多因子研究報告')
+    .replaceAll('研究母體為 ETF 持有且可辨識的上市普通股', '研究母體為所有 ETF 持有且可辨識的上市／上櫃普通股')
+    .replaceAll('檔上市股票排名', '檔 ETF持有普通股排名')
+    .replaceAll('ETF持有上市普通股／全體上市普通股', '本次納入普通股／ETF持股可辨識母體')
+    .replaceAll('目前不在本次ETF持股上市股票母體', '目前不在本次 ETF 持股普通股母體')
+    .replace(/(<a class="stock-link"[^>]*>.*?<\/a>)<\/td><td>(?:上櫃|上市)<\/td><td><input class="table-position-check"/g, '$1</td><td><input class="table-position-check"')
+    .replace(`${report.meta.stockCount}／${report.meta.listedUniverseCount}`, `${report.meta.stockCount}／${report.meta.allEtfHeldStocks}`)
+    .replace(/研究母體是 \d+ 檔上市普通股，約占當日 \d+ 檔上市普通股的 [\d.]+%，不是全體上市股票。/, `研究母體是 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股。`);
 }
 
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  console.log('1/7 讀取ETF資料與上市股票官方市場資料...');
+  console.log('1/7 讀取ETF資料與上市／上櫃官方市場資料...');
   const dataTextPromise = fetchText(SOURCES.etf);
   const [institution, events, twseValuationRows, twseRevenueRows, twseEpsRows,
-    twseMarginRows, twseDailyRows, balancePayloads, incomePayloads, tdccRows] = await Promise.all([
+    twseMarginRows, twseDailyRows, twseSecuritiesRows, balancePayloads, incomePayloads, tdccRows] = await Promise.all([
       fetchJson(SOURCES.institution), fetchJson(SOURCES.events), fetchJson(SOURCES.twseValuation),
       fetchJson(SOURCES.twseRevenue), fetchJson(SOURCES.twseEps), fetchJson(SOURCES.twseMargin),
-      fetchJson(SOURCES.twseDaily), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url))),
+      fetchJson(SOURCES.twseDaily), fetchJson(SOURCES.twseSecurities), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url))),
       Promise.all(INCOME_ENDPOINTS.TWSE.map(url => fetchJson(url))), fetchJson(SOURCES.tdccHoldingLevels)
+    ]);
+  const [tpexValuationRows, tpexRevenueRows, tpexEpsRows, tpexMarginRows,
+    tpexDailyRows, tpexForeignHoldingRows, tpexInstitutionalRows, tpexCreditRows,
+    tpexSecuritiesRows, tpexBalancePayloads, tpexIncomePayloads] = await Promise.all([
+      fetchJson(SOURCES.tpexValuation), fetchJson(SOURCES.tpexRevenue), fetchJson(SOURCES.tpexEps),
+      fetchJson(SOURCES.tpexMargin), fetchJson(SOURCES.tpexDaily), fetchJson(SOURCES.tpexForeignHolding),
+      fetchJson(SOURCES.tpexInstitutional), fetchJson(SOURCES.tpexMarginTrading), fetchJson(SOURCES.tpexSecurities),
+      Promise.all(BALANCE_ENDPOINTS.TPEX.map(url => fetchJson(url))),
+      Promise.all(INCOME_ENDPOINTS.TPEX.map(url => fetchJson(url)))
     ]);
 
   let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null, sourceStatus: null };
@@ -1991,9 +2088,23 @@ async function main() {
   const twseListedCodes = new Set([
     ...twseDailyRows.map(row => String(row.Code || '')),
     ...twseRevenueRows.map(row => String(row['公司代號'] || '')),
-    ...twseValuationRows.map(row => String(row.Code || ''))
+    ...twseValuationRows.map(row => String(row.Code || '')),
+    ...twseSecuritiesRows.map(row => String(row['公司代號'] || '').trim())
   ]);
-  const stockEntries = allStockEntries.filter(([code]) => /^\d{4}$/.test(code) && twseListedCodes.has(code));
+  const tpexListedCodes = new Set([
+    ...tpexDailyRows.map(row => String(row.SecuritiesCompanyCode || '').trim()),
+    ...tpexSecuritiesRows.map(row => String(row['證券代號'] || '').trim())
+  ]);
+  const candidateStockEntries = allStockEntries.filter(([code]) => /^\d{4}$/.test(code));
+  const marketByCode = new Map(candidateStockEntries.map(([code]) => [
+    code,
+    twseListedCodes.has(code) ? 'TWSE' : tpexListedCodes.has(code) ? 'TPEX' : 'UNKNOWN'
+  ]));
+  // The ETF snapshot also contains numeric codes from foreign holdings (for
+  // example, the global ETF 009826). Keep them in the source universe for
+  // auditability, but do not rank them as Taiwan-listed/OTC stocks without an
+  // official TWSE or TPEX market match.
+  const stockEntries = candidateStockEntries.filter(([code]) => ['TWSE', 'TPEX'].includes(marketByCode.get(code)));
   const activeEtfs = data.etfs.filter(etf => etf.type === 'active');
   const activeSet = new Set(activeEtfs.map(etf => etf.code));
   const activeSignalSet = new Set(activeEtfs.filter(etf => etf.updated).map(etf => etf.code));
@@ -2006,9 +2117,9 @@ async function main() {
     staleEtfs: activeStaleEtfs
   };
   const laggingSet = new Set(data.etfs.filter(etf => !etf.updated).map(etf => etf.code));
-  console.log(`ETF ${data.etfs.length} 檔，ETF持股共 ${allStockEntries.length} 檔，保留上市股票 ${stockEntries.length} 檔，主動ETF ${activeSet.size} 檔。`);
+  console.log(`ETF ${data.etfs.length} 檔，ETF持股共 ${allStockEntries.length} 檔，納入上市／上櫃普通股 ${stockEntries.length} 檔，主動ETF ${activeSet.size} 檔。`);
 
-  console.log(`2/7 讀取${stockEntries.length}檔上市股票ETF快照與官方外資持股歷史...`);
+  console.log(`2/7 讀取${stockEntries.length}檔上市／上櫃普通股ETF快照與可用官方持股歷史...`);
   const asOfIso = latestUsableSourceDate(
     yyyymmddToIso(data.meta.latest),
     yyyymmddToIso(data.meta.price_date)
@@ -2024,21 +2135,32 @@ async function main() {
   console.log('  讀取Yahoo Finance完整日K高低收，供標準KD計算...');
   const ohlcSeries = await mapLimit(stockEntries, 12, async ([code], index) => {
     if ((index + 1) % 100 === 0) console.log(`  KD日K已完成 ${index + 1}/${stockEntries.length}`);
-    return fetchYahooOhlc(code);
+    return fetchYahooOhlc(code, marketByCode.get(code));
   });
-  const [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay] = await Promise.all([
+  let [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay] = await Promise.all([
     foreignHoldingPromise, institutionalHistoryPromise, creditHistoryPromise, macroOverlayPromise
   ]);
+  institutionalHistory = mergeTpexInstitutionalSnapshot(institutionalHistory, tpexInstitutionalRows);
   console.log(`  外資持股已取得 ${foreignHoldingHistory.dates.length} 個交易日，最新 ${foreignHoldingHistory.dates[0]}`);
 
   const twseValuation = createLookup(twseValuationRows, ['Code']);
   const twseRevenue = createLookup(twseRevenueRows, ['公司代號']);
-  const twseEps = createLookup(twseEpsRows, ['公司代號']);
+  const twseEps = createLookup(twseEpsRows, ['公司代號', 'SecuritiesCompanyCode']);
   const twseMargin = createLookup(twseMarginRows, ['公司代號']);
   const twseDaily = createLookup(twseDailyRows, ['Code']);
   const twseBalance = createLookup(balancePayloads.flat(), ['公司代號']);
   const twseIncome = createLookup(incomePayloads.flat(), ['公司代號']);
-  const financialCurrentPeriod = [...incomePayloads.flat(), ...balancePayloads.flat(), ...twseEpsRows]
+  const tpexValuation = createLookup(tpexValuationRows, ['SecuritiesCompanyCode']);
+  const tpexRevenue = createLookup(tpexRevenueRows, ['公司代號', 'SecuritiesCompanyCode']);
+  const tpexEps = createLookup(tpexEpsRows, ['SecuritiesCompanyCode', '公司代號']);
+  const tpexMargin = createLookup(tpexMarginRows, ['SecuritiesCompanyCode', '公司代號']);
+  const tpexDaily = createLookup(tpexDailyRows, ['SecuritiesCompanyCode']);
+  const tpexForeignHolding = createLookup(tpexForeignHoldingRows, ['SecuritiesCompanyCode']);
+  const tpexCredit = createLookup(tpexCreditRows, ['SecuritiesCompanyCode']);
+  const tpexBalance = createLookup(tpexBalancePayloads.flat(), ['公司代號', 'SecuritiesCompanyCode']);
+  const tpexIncome = createLookup(tpexIncomePayloads.flat(), ['公司代號', 'SecuritiesCompanyCode']);
+  const financialCurrentPeriod = [...incomePayloads.flat(), ...balancePayloads.flat(), ...twseEpsRows,
+    ...tpexIncomePayloads.flat(), ...tpexBalancePayloads.flat(), ...tpexEpsRows]
     .map(financialPeriodFromRow)
     .filter(Boolean)
     .sort((a, b) => financialPeriodOrdinal(a) - financialPeriodOrdinal(b))
@@ -2081,14 +2203,14 @@ async function main() {
   const records = stockEntries.map(([code, stock], index) => {
     const detail = details[index]?.__error ? null : details[index];
     const ohlc = ohlcSeries[index]?.__error ? [] : ohlcSeries[index];
-    const market = 'TWSE';
-    const valuationRow = twseValuation.get(code);
-    const revenueRow = twseRevenue.get(code);
-    const epsRow = twseEps.get(code);
-    const dailyRow = twseDaily.get(code);
-    const balanceRow = twseBalance.get(code);
-    const incomeRow = twseIncome.get(code);
-    const marginRow = twseMargin.get(code);
+    const market = marketByCode.get(code) || 'UNKNOWN';
+    const valuationRow = market === 'TPEX' ? tpexValuation.get(code) : twseValuation.get(code);
+    const revenueRow = market === 'TPEX' ? tpexRevenue.get(code) : twseRevenue.get(code);
+    const epsRow = market === 'TPEX' ? tpexEps.get(code) : twseEps.get(code);
+    const dailyRow = market === 'TPEX' ? tpexDaily.get(code) : twseDaily.get(code);
+    const balanceRow = market === 'TPEX' ? tpexBalance.get(code) : twseBalance.get(code);
+    const incomeRow = market === 'TPEX' ? tpexIncome.get(code) : twseIncome.get(code);
+    const marginRow = market === 'TPEX' ? tpexMargin.get(code) : twseMargin.get(code);
     const priorFinancial = priorFinancialSnapshots.get(code) || null;
     const currentRowFinancialPeriod = [incomeRow, balanceRow, epsRow, marginRow]
       .map(financialPeriodFromRow)
@@ -2102,20 +2224,16 @@ async function main() {
     const currentEps = number(epsRow?.['基本每股盈餘(元)'] ?? epsRow?.['基本每股盈餘']);
     const eps = currentEps ?? (usePriorFinancial ? priorFinancial.eps : null);
     const currentOpMargin = market === 'TWSE'
-      ? number(twseMargin.get(code)?.['營業利益率(%)(營業利益)/(營業收入)'])
-      : (() => {
-          const operatingIncome = number(epsRow?.['營業利益']);
-          const revenue = number(epsRow?.['營業收入']);
-          return Number.isFinite(operatingIncome) && revenue ? operatingIncome / revenue * 100 : null;
-        })();
+      ? number(marginRow?.['營業利益率(%)(營業利益)/(營業收入)'])
+      : number(marginRow?.['營業利益率']);
     const opMargin = currentOpMargin ?? (usePriorFinancial ? priorFinancial.operatingMargin : null);
-    const quarterRevenue = number(incomeRow?.['營業收入']);
+    const quarterRevenue = number(incomeRow?.['營業收入'] ?? incomeRow?.['收益']);
     const quarterGrossProfit = number(incomeRow?.['營業毛利（毛損）']);
-    const quarterOperatingIncome = number(incomeRow?.['營業利益（損失）']);
-    const quarterPretaxIncome = number(incomeRow?.['稅前淨利（淨損）']);
+    const quarterOperatingIncome = number(incomeRow?.['營業利益（損失）'] ?? incomeRow?.['營業利益']);
+    const quarterPretaxIncome = number(incomeRow?.['稅前淨利（淨損）'] ?? incomeRow?.['稅前淨利']);
     const quarterParentNetIncome = number(incomeRow?.['淨利（淨損）歸屬於母公司業主'] ?? incomeRow?.['本期淨利（淨損）']);
-    const currentGrossMargin = number(marginRow?.['毛利率(%)(營業毛利)/(營業收入)']) ?? (quarterRevenue ? quarterGrossProfit / quarterRevenue * 100 : null);
-    const currentNetMargin = number(marginRow?.['稅後純益率(%)(稅後損益)/(營業收入)']) ?? (quarterRevenue ? quarterParentNetIncome / quarterRevenue * 100 : null);
+    const currentGrossMargin = number(marginRow?.['毛利率(%)(營業毛利)/(營業收入)'] ?? marginRow?.['毛利率']) ?? (quarterRevenue ? quarterGrossProfit / quarterRevenue * 100 : null);
+    const currentNetMargin = number(marginRow?.['稅後純益率(%)(稅後損益)/(營業收入)'] ?? marginRow?.['稅後純益率']) ?? (quarterRevenue ? quarterParentNetIncome / quarterRevenue * 100 : null);
     const currentNonOperatingContributionPct = Number.isFinite(quarterPretaxIncome) && quarterPretaxIncome > 0 && Number.isFinite(quarterOperatingIncome)
       ? (quarterPretaxIncome - quarterOperatingIncome) / Math.abs(quarterPretaxIncome) * 100 : null;
     const grossMargin = currentGrossMargin ?? (usePriorFinancial ? priorFinancial.grossMargin : null);
@@ -2134,11 +2252,15 @@ async function main() {
     const debtRatio = currentDebtRatio ?? (usePriorFinancial ? priorFinancial.debtRatio : null);
     const currentRatio = currentLiquidityRatio ?? (usePriorFinancial ? priorFinancial.currentRatio : null);
     const inst = institutional(code);
-    const foreignHolding = foreignHoldingFeatures(foreignHoldingHistory, code);
+    const foreignHolding = market === 'TPEX'
+      ? tpexForeignHoldingFeatures(tpexForeignHolding.get(code), asOfIso)
+      : foreignHoldingFeatures(foreignHoldingHistory, code);
     const etf = stockEtfFeatures(stock, detail, activeSet, activeSignalSet, activeCoverage, laggingSet);
     const closes = (detail?.px || []).map(number).filter(Number.isFinite).reverse();
     const technical = technicalFromCloses(closes, ohlc);
-    const credit = creditFeatures(creditHistory, code, technical?.return5, (number(dailyRow?.TradeVolume) || 0) / 1000);
+    const credit = market === 'TPEX'
+      ? tpexCreditFeatures(tpexCredit.get(code), asOfIso)
+      : creditFeatures(creditHistory, code, technical?.return5, (number(dailyRow?.TradeVolume) || 0) / 1000);
     const tdcc = tdccData.byCode.get(code) || null;
     const event = eventFeatures(events, code, yyyymmddToIso(data.meta.latest));
     let confidence = 20;
@@ -2234,7 +2356,13 @@ async function main() {
   const quotePhase = latestLiveTime && latestLiveTime >= '13:30:00' ? 'close' : 'intraday';
   const yahooNewsStatus = eventsLayerData.sourceStatus?.yahooNews?.status || 'unavailable';
   const yahooNewsCoverageRate = number(eventsLayerData.sourceStatus?.yahooNews?.coverageRate) || 0;
-  const marketDates = [twseDailyRows[0]?.Date].map(rocDateToIso).filter(Boolean).sort();
+  const marketDates = [twseDailyRows[0]?.Date, tpexDailyRows[0]?.Date].map(rocDateToIso).filter(Boolean).sort();
+  const marketUniverseCodes = new Set([
+    ...twseDailyRows.map(row => String(row.Code || '').trim()),
+    ...twseSecuritiesRows.map(row => String(row['公司代號'] || '').trim()),
+    ...tpexDailyRows.map(row => String(row.SecuritiesCompanyCode || '').trim()),
+    ...tpexSecuritiesRows.map(row => String(row['證券代號'] || '').trim())
+  ].filter(code => /^\d{4}$/.test(code)));
   const report = {
     meta: {
       generatedAt: formatDateTimeTaipei(),
@@ -2247,7 +2375,7 @@ async function main() {
       foreignHoldingDate: foreignHoldingHistory.dates[0],
       foreignHoldingHistoryDays: foreignHoldingHistory.snapshots.length,
       institutionalDate: instDates[0] || null,
-      institutionalSource: institutionalHistory.sourceMode,
+      institutionalSource: `${institutionalHistory.sourceMode} + TPEX official current snapshot`,
       institutionalOfficialDays: institutionalHistory.primaryDays,
       creditDate: creditHistory.dates[0] || null,
       tdccDate: tdccData.date,
@@ -2263,9 +2391,14 @@ async function main() {
       scoringModelVersion: 'HORIZON_SCORE_V2',
       etfCount: data.etfs.length,
       stockCount: stockEntries.length,
-      listedUniverseCount: twseDailyRows.filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000).length,
-      coverageRate: round(stockEntries.length / Math.max(1, twseDailyRows.filter(row => /^\d{4}$/.test(String(row.Code || '')) && Number(row.Code) >= 1000).length) * 100, 1),
-      allEtfHeldStocks: allStockEntries.length,
+      listedUniverseCount: marketUniverseCodes.size,
+      coverageRate: round(stockEntries.length / Math.max(1, allStockEntries.length) * 100, 1),
+      allEtfHeldStocks: stockEntries.length,
+      rawEtfHeldStocks: allStockEntries.length,
+      taiwanEtfHeldStocks: stockEntries.length,
+      twseHeldStockCount: stockEntries.filter(([code]) => marketByCode.get(code) === 'TWSE').length,
+      tpexHeldStockCount: stockEntries.filter(([code]) => marketByCode.get(code) === 'TPEX').length,
+      unknownMarketStockCount: candidateStockEntries.filter(([code]) => marketByCode.get(code) === 'UNKNOWN').length,
       foreignHoldingCovered: records.filter(record => record.foreignHolding?.trendReliable).length,
       kdCovered: records.filter(record => Number.isFinite(record.technical?.kdK) && Number.isFinite(record.technical?.kdD)).length,
       activeEtfs: activeSet.size,
@@ -2278,7 +2411,7 @@ async function main() {
       deepScored: records.filter(record => record.dataHealth?.eligible).length,
       bucketA: records.filter(record => record.bucket === 'A').length,
       rejected: records.filter(record => record.bucket === 'D').length,
-      scope: '只篩選籌碼小宇ETF持股資料集中的上市股票；上櫃股票已排除，不等於全部上市股票'
+      scope: '涵蓋籌碼小宇ETF持股資料集中的全部可辨識四碼普通股，含上市與上櫃；TWSE專屬官方欄位對上櫃股票可能缺漏，缺漏不以中性值補造'
     },
     macroOverlay,
     sectorOverlay,
@@ -2302,7 +2435,7 @@ async function main() {
         '營收趨勢只在各時間尺度的單一基本面構面出現，不再放入事件催化構面',
         '資料健康度不進入風險分數、不乘分數，只保留獨立硬門檻'
       ],
-      hierarchy: '只看上市股票；ETF以20日看背景、10日看延續、5日看反轉；外資持股存量、外資買賣超、投信與自營商買賣超分開計算；KD只作進出場時機輔助，避免與RSI、MACD重複加權',
+      hierarchy: '看所有ETF持有的上市與上櫃普通股；ETF以20日看背景、10日看延續、5日看反轉；外資持股存量、外資買賣超、投信與自營商買賣超分開計算；KD只作進出場時機輔助，避免與RSI、MACD重複加權',
       hardFilters: ['資料健康度>=65%', '單日成交金額>=5,000萬元', '營收未同步明顯衰退', '中期趨勢未明顯向下', 'ETF 5/10日未同步減碼', '外資持股5/10日與外資買賣超未同步轉弱', '投信未持續且具金額意義地賣超', 'KD高低收資料完整且高檔死亡交叉僅作時機警示', '最終布局需具ETF加碼經濟金額或跨基金共識', '未處於處置風險'],
       caveat: '中期分數只用於研究排序；短期分數是時機，長期分數是資料尚不完整的初篩。未取得完整一致預估、自由現金流、ROIC、資本配置紀律、目標價與個人風險承受度，不是個人化投資建議。'
     },
@@ -2320,6 +2453,8 @@ async function main() {
     topThree,
     ranking,
     sources: {
+      'Official TWSE security master for market classification': SOURCES.twseSecurities,
+      'Official TPEX security master for market classification': SOURCES.tpexSecurities,
       '[A 官方原始] 證交所 T86 三大法人逐日買賣超': 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html',
       '[A 官方原始] 公開資訊觀測站重大訊息': SOURCES.twseMaterialInfo,
       '[A 官方原始] 公開資訊觀測站上市季損益表': INCOME_ENDPOINTS.TWSE[0],
@@ -2342,6 +2477,15 @@ async function main() {
       '公開資訊觀測站 上市資產負債表': BALANCE_ENDPOINTS.TWSE[0],
       '證交所 上市日行情': SOURCES.twseDaily,
       '證交所 即時行情': 'https://mis.twse.com.tw/stock/index.jsp',
+      '櫃買中心 上櫃估值': SOURCES.tpexValuation,
+      '櫃買中心 上櫃月營收': SOURCES.tpexRevenue,
+      '櫃買中心 上櫃EPS': SOURCES.tpexEps,
+      '櫃買中心 上櫃財務資料': BALANCE_ENDPOINTS.TPEX[0],
+      '櫃買中心 上櫃日行情': SOURCES.tpexDaily,
+      '櫃買中心 上櫃三大法人': SOURCES.tpexInstitutional,
+      '櫃買中心 上櫃外資持股': SOURCES.tpexForeignHolding,
+      '櫃買中心 上櫃融資融券': SOURCES.tpexMarginTrading,
+      '證交所／櫃買中心 即時行情': 'https://mis.twse.com.tw/stock/index.jsp',
       'Yahoo Finance 即時新聞 (僅列待確認資訊)': SOURCES.yahooFinanceRss
     },
     sourceGroups: {
@@ -2349,21 +2493,31 @@ async function main() {
         { label: '公開資訊觀測站上市公司季損益表', url: INCOME_ENDPOINTS.TWSE[0] },
         { label: '證交所上市公司月營收', url: SOURCES.twseRevenue },
         { label: '證交所上市公司EPS', url: SOURCES.twseEps },
-        { label: '證交所上市公司財務比率與資產負債資料', url: BALANCE_ENDPOINTS.TWSE[0] }
+        { label: '證交所上市公司財務比率與資產負債資料', url: BALANCE_ENDPOINTS.TWSE[0] },
+        { label: '櫃買中心上櫃公司季損益表', url: INCOME_ENDPOINTS.TPEX[0] },
+        { label: '櫃買中心上櫃公司月營收', url: SOURCES.tpexRevenue },
+        { label: '櫃買中心上櫃公司EPS', url: SOURCES.tpexEps },
+        { label: '櫃買中心上櫃公司財務比率與資產負債資料', url: BALANCE_ENDPOINTS.TPEX[0] }
       ],
-      valuation: [{ label: '證交所本益比、股價淨值比與殖利率', url: SOURCES.twseValuation }],
+      valuation: [
+        { label: '證交所本益比、股價淨值比與殖利率', url: SOURCES.twseValuation },
+        { label: '櫃買中心上櫃本益比、股價淨值比與殖利率', url: SOURCES.tpexValuation }
+      ],
       ownership: [
         { label: '證交所 T86 三大法人逐日買賣超', url: 'https://www.twse.com.tw/rwd/zh/fund/T86?response=html' },
         { label: '集保股權分散表', url: SOURCES.tdccHoldingLevels },
         { label: '籌碼小宇ETF持股資料', url: SOURCES.etf },
         { label: '籌碼小宇法人逐日買賣超整理', url: SOURCES.institution },
         { label: '證交所三大法人買賣超日報', url: SOURCES.twseInstitutional },
-        { label: '證交所外資持股資料', url: `${SOURCES.twseForeignHolding}?response=html&selectType=01` }
+        { label: '證交所外資持股資料', url: `${SOURCES.twseForeignHolding}?response=html&selectType=01` },
+        { label: '櫃買中心上櫃三大法人買賣明細', url: SOURCES.tpexInstitutional },
+        { label: '櫃買中心上櫃外資持股比例', url: SOURCES.tpexForeignHolding }
       ],
       technical: [
         { label: '籌碼小宇個股價格序列', url: `${XIAOYU}/data/stock/` },
         { label: 'Yahoo Finance日K高低收（標準KD）', url: `${SOURCES.yahooChart}{code}.TW?range=6mo&interval=1d` },
         { label: '證交所每日行情', url: SOURCES.twseDaily },
+        { label: '櫃買中心上櫃每日行情', url: SOURCES.tpexDaily },
         { label: '證交所即時行情', url: 'https://mis.twse.com.tw/stock/index.jsp' }
       ],
       catalyst: [
@@ -2372,6 +2526,7 @@ async function main() {
       ],
       risk: [
         { label: '證交所融資融券與借券賣出', url: `${SOURCES.twseMarginTrading}?response=html` },
+        { label: '櫃買中心上櫃融資融券', url: SOURCES.tpexMarginTrading },
         { label: '集保股權分散表', url: SOURCES.tdccHoldingLevels },
         { label: '證交所每日行情與成交金額', url: SOURCES.twseDaily },
         { label: '籌碼小宇ETF持股與資料更新狀態', url: SOURCES.etf },
