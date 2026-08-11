@@ -8,7 +8,7 @@
 
 ## 專案用途
 
-本專案每日重新抓取 ETF、證交所、公開資訊觀測站與即時行情資料，產生台灣上市股票研究排序報告並發布到 GitHub Pages。
+本專案每日重新抓取 ETF、證交所、公開資訊觀測站與即時行情資料，產生「目前 ETF 持有且經官方主檔辨識的臺灣上市／上櫃普通股」研究排序報告並發布到 GitHub Pages。
 
 ## Obsidian 與 OpenCode 自動交接
 
@@ -57,6 +57,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 8. 介面顯示分數使用整數，JSON可保留一位小數供稽核；不得用過多小數營造不存在的精準度。<!-- HORIZON_SCORE_V2 -->
 9. 季報申報切換期間，本次官方端點有回傳者一律使用本次資料；未回傳者只可沿用既有日期版報告中同季或前一季、已驗證的官方季報快照，且必須輸出實際 `financialPeriod`、`financialSourceMode`、快照檔名與 `freshnessPenalty`。同季快照扣5點資料健康度，前一季快照扣10點；不得跨越一季、不得把歷史快照冒充本次取得資料、不得用中性預設值替缺漏證據加分。
 10. 長期初篩除固定的 `methodCoverage=85` 外，每檔股票還必須揭露 `dataCoverage`。當季、歷史快照與無可用季報三類數量之和必須等於股票總數；歷史快照列入 `dataHealth.staleCore`，真正缺漏列入 `missingCore`。
+
+## ETF 母體、證據與新鮮度契約
+
+1. 研究母體固定為當次 B 級籌碼小宇 ETF 快照中，與當日 TWSE／TPEX 官方證券主檔相符的四碼臺灣上市／上櫃普通股；不得只保留 TWSE、以名稱猜市場別，或把先前 473 檔上市子集合稱為完整母體。
+2. 來源中的四碼代碼若沒有 TWSE／TPEX 主檔相符項，可能是全球型 ETF 的海外持股；必須保留在來源稽核計數，卻不得補造臺股價格、財報、評分或排名。每次輸出須能驗證 `rawEtfHeldStocks = taiwanEtfHeldStocks + unknownMarketStockCount`。
+3. 官方主檔只確認市場別；ETF 持股本身仍屬 B 級快照，未有逐檔基金公司／投信官方對帳前，前台與回報不得宣稱為「所有 ETF 官方持股」。Yahoo RSS 為 C 級待確認資訊，保持不計分。
+4. `lagging_etfs` 必須與實際 `etf.updated=false` 清單一致，否則產生器停止。落後 ETF 的持股仍保留在母體避免漏股，但其流向不可宣稱為全體同日完整訊號；個股以 `laggingExposure`／`laggingHolderCount` 揭露資料健康限制，該限制不得進入投資分數或乘數。
+5. `activeEtfDataComplete=false` 時，`bucketA` 必須為 0。上櫃若缺官方外資持股 5／10 日歷史，標示 `comparisonStatus=部分可比`、不給該趨勢分，不能把缺值解讀為轉弱。<!-- ETF_UNIVERSE_FRESHNESS_V1 -->
 
 ## 離線策略驗證契約
 
@@ -135,3 +143,4 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 6. 修改事件來源前，先保存一筆原始資料樣本並確認欄位語意，再新增映射；不得只依欄位名稱、排序或畫面推測。
 7. 發布後至少檢查：事件資料契約通過、未出現庫藏股結束日誤標、網頁清楚揭露實際來源與未實作範圍、GitHub Pages 對應本次提交。
 8. 每日發布必須重新產生 `latest-events.json`，且包含 `sourceStatus`；ETF股票代號不得少於300，官方重大訊息不得為空。Yahoo RSS 是 C 級待確認資訊；成功率低於80%或完全受限流時，必須以 `complete`、`partial` 或 `unavailable` 揭露狀態與成功率，但不得因此阻斷官方事件、收盤價與報告時間的更新。不得把舊新聞冒充本次新抓取資料。<!-- OPTIONAL_YAHOO_NEWS_V1 -->
+9. 更新器在事件抓取實際開始前的預檢失敗（例如髒工作區）不得刪除、還原或覆寫既有 `latest-events.json`；只有事件抓取已開始而後續失敗時，才可還原已驗證的先前版本。維持回歸檢查 `PRECHECK_PRESERVES_EVENT_FILE=PASS`。<!-- EVENT_PREFLIGHT_PRESERVATION_V1 -->
