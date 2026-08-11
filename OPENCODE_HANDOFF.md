@@ -16,6 +16,17 @@ OpenCode 原本只有 Obsidian MCP 工具，不會因此自動掃描或讀取 va
 - 換電腦或 Google Drive 磁碟代號改變時，只需更新 `opencode.json` 的 Obsidian 絕對路徑，再以 `opencode debug config` 確認 `instructions` 已出現。
 - Obsidian 用來保存完整理由與歷史；實際執行以 repo 的腳本、驗證器與當前 `AGENTS.md` 為準。每次發現可重用的新做法時，必須同時更新 repo 與原 Obsidian SOP，不只留在對話中。<!-- OBSIDIAN_AUTOREAD_V1 -->
 
+## 後續規劃／執行立即接續規則
+
+這是本次對話完成後的固定接手方式：
+
+1. 在同一個 `pro_ranking` 專案根目錄開啟 OpenCode，回到主工作階段並建立新對話；不要在 `Subagent sessions cannot be prompted` 的子代理結果頁繼續輸入。
+2. 選擇 `Build` 主代理。`opencode.json` 已明確授權它在本專案內規劃、編輯、執行 Shell、查詢網路、測試、提交、推送與發布；外部資料夾仍逐次確認，強制破壞性操作仍受安全規則限制。
+3. 新對話會自動載入 `OPENCODE_HANDOFF.md`、`AGENTS.md` 與指定的 Obsidian SOP；若剛修改這些檔案，必須開新對話，不要依賴舊對話回溯更新。可用 `opencode debug config` 確認三份 `instructions` 都存在。
+4. 每日資料更新直接輸入 `/update-report`；已授權的評分介面功能輸入 `/implement-horizon-ui`；其他規劃、修正或新功能直接描述目標，Build 主代理必須先建立計畫，再在同一工作階段執行、測試、提交、推送與發布，不需要第二個「開始執行」指令。
+5. `Build` 的完整權限不等於跳過品質門檻：每日發布仍只能走 `Invoke-ProfessionalScreenUpdateCommand.ps1`，不可直接執行被拒絕的 `Update-ProfessionalScreen.ps1 -Publish`；資料契約、瀏覽器、GitHub Pages 與線上 byte match 仍必須完成。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
+6. Codex 或其他工具每次完成 Obsidian 寫回後，必須執行 `Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有 `HANDOFF_READY=true` 才算可交接。若驗證失敗，先修正指示路徑、契約或權限，不得只把筆記寫入就宣稱已完成。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
+
 Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把 legacy `pages/builds/latest` 當成成敗單一來源。預檢要等待 active Actions run，更新器推送前要再等待佇列排空；workflow 設為 `cancel-in-progress: false` 與 15 分鐘 deploy timeout。失敗時僅允許對原 workflow 執行一次 failed-job rerun，不重抓資料、不製造空白 commit。HTTP 200 與線上 byte match 代表內容上線；Actions 結論是獨立稽核狀態。任何代理都不得說「跳過預檢」並直接執行 `Update-ProfessionalScreen.ps1 -Publish`；OpenCode 權限已否決此命令，只允許單一控制入口。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
 
 ## 最簡單的日常操作
@@ -75,10 +86,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
 | OpenCode 權限 | `opencode.json` | Build 主代理可完整規劃、編輯、測試、查網路、提交與發布；外部資料夾仍需確認 |
-| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md` | 提供日常更新、狀態查詢及本次授權功能的快捷指令 |
+| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md`、`continue-codex-handoff.md` | 提供日常更新、狀態查詢、功能開發及 Codex 寫回後的接手指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
 | 交接預檢 | `scripts/Test-OpenCodeHandoff.ps1` | 檢查工具、登入、遠端、分支、檔案、資料契約與線上頁面 |
+| Codex→OpenCode 接手驗證 | `scripts/Sync-OpenCodeObsidianHandoff.ps1` | 每次 Obsidian 寫回後確認三份指示、Build 權限與現行契約，輸出 `HANDOFF_READY=true` |
 | 背景更新啟動 | `scripts/Start-ProfessionalScreenUpdate.ps1` | 以獨立 PowerShell 程序啟動完整更新，避免 Shell 等待上限中止工作 |
 | 背景更新狀態 | `scripts/Get-ProfessionalScreenUpdateStatus.ps1` | 回報 running、published 或 failed 與紀錄檔位置 |
 | 每日管線 | `scripts/Update-ProfessionalScreen.ps1` | 抓取、重算、驗證、提交、推送與 Pages 驗證 |
@@ -148,7 +160,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 研究母體是當次 ETF 快照中，與 TWSE／TPEX 官方證券主檔相符的所有臺灣上市／上櫃普通股；先前「473 檔上市」只是當時 TWSE 子集合，不能再當成完整母體。
 - 全球型 ETF 的海外四碼代碼保留在來源稽核，卻不補造臺股資料或排名。官方主檔只確認市場別；未逐檔對帳基金公司／投信官方檔案前，ETF 持股仍是 B 級，不得稱為全部官方持股。
 - 落後 ETF 的持股保留避免漏股，但個股須顯示 `laggingExposure` 的資料健康限制，流向不可宣稱全體同日完整。`lagging_etfs` 與實際 `updated=false` 清單不一致時，產生器必須停止；主動 ETF 當日不完整時 A 級必為 0。
-- 上櫃若沒有官方外資持股 5／10 日歷史，只可標示「部分可比」且不給該趨勢分，不能當成籌碼轉弱。資料健康度不進入任何分數或乘數。<!-- ETF_UNIVERSE_FRESHNESS_V1 -->
+- 上櫃若沒有官方外資持股 5／10 日歷史，只可標示「部分可比」且不給該趨勢分，不能當成籌碼轉弱。資料健康度不進入任何分數或乘數。<!-- ETF_UNIVERSE_FRESHNESS_V1 ETF_FRESHNESS_EXPOSURE_V1 -->
 
 新聞會去重、保留來源連結與抓取時間，並與個股報告一起呈現。沒有 AI 金鑰時仍會完成新聞彙整；若另以環境變數提供 `AI_PROVIDER`、`AI_API_KEY`，才會對新事件加上選配的 AI 影響摘要。任何 AI 摘要仍不得直接改變評分。金鑰只能放在使用者環境變數，不可寫進本專案。
 

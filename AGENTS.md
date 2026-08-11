@@ -44,6 +44,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
 14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的帳密清單。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、任何已設定帳號、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
 15. 治理資料排除規則：董監持股設質、內部人轉讓、裁處、資訊申報違規及其他治理查核資料，即使仍存在於原始事件來源，也不得進入評分、排名、風險原因、前三名資格、建立新部位、持有動作或前台顯示；不得產生 G 級、「待查核候選」、「治理查核」或「治理警示」。<!-- GOVERNANCE_EXCLUSION_RULE_V1 -->
+16. 後續非日常規劃與執行統一使用 `opencode.json` 的 `build` 主代理；其權限為專案內編輯、Shell、網路查詢、提問、規劃、提交、推送與發布均可，外部資料夾逐次確認。根目錄的受限預設權限不代表 Build 主代理受限；每日更新仍不得直接呼叫底層 `Update-ProfessionalScreen.ps1 -Publish`，必須走受控入口。
+17. 每次更新 `AGENTS.md`、`OPENCODE_HANDOFF.md`、`opencode.json` 或 Obsidian 必讀 SOP 後，舊 OpenCode 對話不可視為已更新；必須回到主工作階段開新對話，選擇 Build 主代理，讓 `instructions` 重新載入，才能立即依現行規則接續。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
+18. 任何任務完成 Obsidian 寫回後，必須在回報完成前執行 `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有輸出 `HANDOFF_READY=true` 才可宣稱已完成 Codex→OpenCode 交接。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
 
 ## 三時間尺度評分與資料健康契約
 
@@ -64,7 +67,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 2. 來源中的四碼代碼若沒有 TWSE／TPEX 主檔相符項，可能是全球型 ETF 的海外持股；必須保留在來源稽核計數，卻不得補造臺股價格、財報、評分或排名。每次輸出須能驗證 `rawEtfHeldStocks = taiwanEtfHeldStocks + unknownMarketStockCount`。
 3. 官方主檔只確認市場別；ETF 持股本身仍屬 B 級快照，未有逐檔基金公司／投信官方對帳前，前台與回報不得宣稱為「所有 ETF 官方持股」。Yahoo RSS 為 C 級待確認資訊，保持不計分。
 4. `lagging_etfs` 必須與實際 `etf.updated=false` 清單一致，否則產生器停止。落後 ETF 的持股仍保留在母體避免漏股，但其流向不可宣稱為全體同日完整訊號；個股以 `laggingExposure`／`laggingHolderCount` 揭露資料健康限制，該限制不得進入投資分數或乘數。
-5. `activeEtfDataComplete=false` 時，`bucketA` 必須為 0。上櫃若缺官方外資持股 5／10 日歷史，標示 `comparisonStatus=部分可比`、不給該趨勢分，不能把缺值解讀為轉弱。<!-- ETF_UNIVERSE_FRESHNESS_V1 -->
+5. `activeEtfDataComplete=false` 時，`bucketA` 必須為 0。上櫃若缺官方外資持股 5／10 日歷史，標示 `comparisonStatus=部分可比`、不給該趨勢分，不能把缺值解讀為轉弱。<!-- ETF_UNIVERSE_FRESHNESS_V1 ETF_FRESHNESS_EXPOSURE_V1 -->
 
 ## 離線策略驗證契約
 
@@ -116,6 +119,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 - `fetch-events.js`：事件輔助層抓取、欄位語意驗證與去重；新聞與AI摘要不直接改變三時間尺度分數。
 - `scripts/Update-ProfessionalScreen.ps1`：每日更新、驗證與發布入口。
 - `scripts/Test-OpenCodeHandoff.ps1`：OpenCode、GitHub、資料契約與線上版本的交接預檢。
+- `scripts/Sync-OpenCodeObsidianHandoff.ps1`：每次 Obsidian 寫回後驗證三份指示、Build 權限與現行契約，輸出 `HANDOFF_READY=true`。
 - `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode CLI 非互動模式執行每日發布；Desktop 直接使用 `/update-report`。
 - `OPENCODE_HANDOFF.md`：完整交接清單、一次性設定與故障邊界。
 - `opencode.json`、`.opencode/commands/update-report.md`：限制 OpenCode 權限並提供 `/update-report`。
