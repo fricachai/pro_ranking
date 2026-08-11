@@ -21,6 +21,7 @@ $PagesWorkflow = 'deploy-pages.yml'
 $LatestEventsJson = Join-Path $ReportDir 'events/latest-events.json'
 $latestEventsExistedBeforeRun = $false
 $latestEventsBytesBeforeRun = $null
+$eventRefreshStarted = $false
 $reportGenerationCompleted = $false
 $previousReportFingerprint = $null
 $currentReportFingerprint = $null
@@ -294,6 +295,7 @@ try {
     if (-not (Test-Path $EventFetcher)) { throw "Event fetcher not found: $EventFetcher" }
     $refreshStartedUtc = [DateTime]::UtcNow
     Write-Host 'Fetching and validating events and news data...'
+    $eventRefreshStarted = $true
     & node $EventFetcher *>> $logPath
     if ($LASTEXITCODE -ne 0) {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
@@ -607,7 +609,10 @@ try {
     Write-Output "LOG=$logPath"
 }
 catch {
-    if (-not $reportGenerationCompleted) {
+    # The source event file is only replaceable after the refresh command has
+    # actually started. A preflight failure (for example a dirty worktree)
+    # must leave the prior checked-in event file untouched.
+    if (-not $reportGenerationCompleted -and $eventRefreshStarted) {
         if ($latestEventsExistedBeforeRun -and $null -ne $latestEventsBytesBeforeRun) {
             [IO.File]::WriteAllBytes($LatestEventsJson, $latestEventsBytesBeforeRun)
         }
