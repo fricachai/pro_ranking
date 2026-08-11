@@ -47,6 +47,16 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 線上版本：<https://fricachai.github.io/pro_ranking/>
 
+## 離線策略驗證
+
+策略改良先使用離線回測工具，不直接修改正式 `HORIZON_SCORE_V2`：
+
+```powershell
+node .\scripts\Backtest-HorizonStrategy.js
+```
+
+工具會比較現行 A 級候選、中期分數候選及非生產環境的品質／價值／動能實驗模型，並納入樣本長度、未來資料隔離、交易成本與快照間隔檢查。完整規則見 [`STRATEGY_VALIDATION.md`](STRATEGY_VALIDATION.md)。
+
 ## OpenCode 交接
 
 完整交接清單、一次性安裝、權限設計、新聞彙整方式與失敗防護請見 [`OPENCODE_HANDOFF.md`](OPENCODE_HANDOFF.md)。先執行：

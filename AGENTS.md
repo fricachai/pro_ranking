@@ -58,6 +58,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 9. 季報申報切換期間，本次官方端點有回傳者一律使用本次資料；未回傳者只可沿用既有日期版報告中同季或前一季、已驗證的官方季報快照，且必須輸出實際 `financialPeriod`、`financialSourceMode`、快照檔名與 `freshnessPenalty`。同季快照扣5點資料健康度，前一季快照扣10點；不得跨越一季、不得把歷史快照冒充本次取得資料、不得用中性預設值替缺漏證據加分。
 10. 長期初篩除固定的 `methodCoverage=85` 外，每檔股票還必須揭露 `dataCoverage`。當季、歷史快照與無可用季報三類數量之和必須等於股票總數；歷史快照列入 `dataHealth.staleCore`，真正缺漏列入 `missingCore`。
 
+## 離線策略驗證契約
+
+1. 任何新因子、權重或核心／衛星配置想法，先執行 `node .\scripts\Backtest-HorizonStrategy.js`；不得直接修改正式 `HORIZON_SCORE_V2`。
+2. 回測工具只讀取日期版 `full-professional-screen-YYYYMMDD.json`，非 `HORIZON_SCORE_V2` 檔案必須排除並列出，不得混合舊模型。
+3. 回測訊號只能使用 `asOf` 當日已存在的資料，未來價格只能用後續快照；交易成本、快照間隔、樣本長度與 benchmark 缺漏都必須揭露。
+4. 工具回傳 `insufficient_data` 時不得宣稱策略有效、優於大盤或已完成樣本外驗證；`shadow-qvm` 只作非生產實驗，不能取代 ROIC、自由現金流或完整長期動能資料。<!-- STRATEGY_VALIDATION_V1 -->
+
 ## 官方外資持股歷史完整性
 
 1. 證交所 `MI_QFIIS` 最近 45 個日曆日必須逐日、循序抓取，日期間保留短暫延遲；不得恢復多日期並行，因來源曾在並行查詢時只回傳 10 個有效交易日。

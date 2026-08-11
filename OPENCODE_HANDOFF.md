@@ -166,6 +166,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - 季報申報切換時，本次官方端點有資料者使用本次資料；未回傳者只可沿用日期版報告中同季或前一季的已驗證官方快照。每檔必須揭露 `financialPeriod`、`financialSourceMode`、`dataHealth.freshnessPenalty`、`dataHealth.missingCore`、`dataHealth.staleCore` 與長期 `dataCoverage`；同季快照扣5點資料健康度，前一季快照扣10點，歷史快照不得跨越一季，也不得冒充本次新取得資料。
 - 發布驗證必須確認 `financialCurrentCount + financialFallbackCount + financialUnavailableCount = stockCount`。個別計分證據缺漏時該證據不給分，不得以中性預設值墊高分數。
 
+### 離線策略驗證與 V3 實驗邊界
+
+- 新因子、權重或核心／衛星配置先使用 `node .\scripts\Backtest-HorizonStrategy.js`，不得直接改動正式 `HORIZON_SCORE_V2`。
+- 工具只讀取日期版 `full-professional-screen-YYYYMMDD.json`；舊模型會明確排除，並揭露交易成本、資料日期、快照間隔、benchmark 與樣本長度。
+- `insufficient_data` 只能表示資料不足，不能解讀成策略失敗或成功；`shadow-qvm` 是非生產實驗，不代表已完成 ROIC、自由現金流或 12 個月動能因子。
+- 升級 `HORIZON_SCORE_V3` 前，必須完成含未來資料隔離、交易成本、存活者偏誤控制、完整市場階段及大盤 ETF 基準的樣本外驗證。<!-- STRATEGY_VALIDATION_V1 -->
+
 ### 持股決策總覽與純 UI 維護
 
 - 決策卡的閱讀順序固定為「目前狀態 → 今天動作 → 下一次確認 → 執行觀察區 → 改變條件 → 原因」。盤中跌破只顯示「保護持有／盤中待收盤」，不得直接當成確認減碼。
