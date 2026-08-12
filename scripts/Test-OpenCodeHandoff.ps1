@@ -529,9 +529,11 @@ try {
         finally {
             $memory.Dispose()
         }
-        $localBytes = [IO.File]::ReadAllBytes((Join-Path $RepoRoot 'index.html'))
+        $localText = [IO.File]::ReadAllText((Join-Path $RepoRoot 'index.html')) -replace "`r`n", "`n"
+        $localBytes = [System.Text.Encoding]::UTF8.GetBytes($localText)
         $localHash = Get-Sha256Hex -Bytes $localBytes
-        $liveHash = Get-Sha256Hex -Bytes $liveBytes
+        $liveText = [System.Text.Encoding]::UTF8.GetString($liveBytes) -replace "`r`n", "`n"
+        $liveHash = Get-Sha256Hex -Bytes ([System.Text.Encoding]::UTF8.GetBytes($liveText))
         $liveByteMatch = $localHash -eq $liveHash
         if (-not $liveByteMatch) {
             $latestRun = $runList | Sort-Object createdAt -Descending | Select-Object -First 1
