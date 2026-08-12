@@ -219,6 +219,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 8. 線上頁面 HTTP、資料日期或必要畫面標記驗證失敗。
 9. 預檢在事件抓取開始前失敗後，既有 `latest-events.json` 被改動；此情況必須以 `PRECHECK_PRESERVES_EVENT_FILE=PASS` 回歸檢查防止。<!-- EVENT_PREFLIGHT_PRESERVATION_V1 -->
 
+### Pages artifact 與本機 hash 的換行格式誤判
+
+若 `deploy-pages.yml` 的 `pages_build_version` 已等於目前 HEAD，workflow 為 `completed/success`，且下載的 artifact `index.html` 與線上頁面 hash 相同，但本機 hash 不同，先檢查 Jekyll 將 CRLF 正規化為 LF 的差異。此情況標記為 `PAGES_LINE_ENDING_FALSE_MISMATCH_V1`：不是 CDN 尚未傳播，不得重抓資料、製造空白 commit、跳過預檢或直接執行 `Update-ProfessionalScreen.ps1 -Publish`。預檢器應先正規化換行再比較內容，並保留 workflow SHA、HTTP、必要頁面標記與資料契約驗證。
+
 ## 成功後的完成證據
 
 OpenCode 必須依結果回報：

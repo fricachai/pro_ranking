@@ -148,3 +148,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 7. 發布後至少檢查：事件資料契約通過、未出現庫藏股結束日誤標、網頁清楚揭露實際來源與未實作範圍、GitHub Pages 對應本次提交。
 8. 每日發布必須重新產生 `latest-events.json`，且包含 `sourceStatus`；ETF股票代號不得少於300，官方重大訊息不得為空。Yahoo RSS 是 C 級待確認資訊；成功率低於80%或完全受限流時，必須以 `complete`、`partial` 或 `unavailable` 揭露狀態與成功率，但不得因此阻斷官方事件、收盤價與報告時間的更新。不得把舊新聞冒充本次新抓取資料。<!-- OPTIONAL_YAHOO_NEWS_V1 -->
 9. 更新器在事件抓取實際開始前的預檢失敗（例如髒工作區）不得刪除、還原或覆寫既有 `latest-events.json`；只有事件抓取已開始而後續失敗時，才可還原已驗證的先前版本。維持回歸檢查 `PRECHECK_PRESERVES_EVENT_FILE=PASS`。<!-- EVENT_PREFLIGHT_PRESERVATION_V1 -->
+
+## GitHub Pages byte-match 換行格式防呆
+
+Pages workflow 使用 Jekyll 建置時，可能將 Windows CRLF HTML 正規化為 LF。若 workflow 的 `pages_build_version` 等於本機 HEAD，且 artifact hash 與線上頁面 hash 相同，但本機原始 `index.html` hash 不同，先檢查換行格式；這是已驗證的 `PAGES_LINE_ENDING_FALSE_MISMATCH_V1` 情況，不得當成 CDN 尚未傳播，也不得跳過預檢或直接執行 `Update-ProfessionalScreen.ps1 -Publish`。預檢器應正規化換行後比較內容，並保留 workflow SHA、HTTP、頁面標記與資料契約驗證。
