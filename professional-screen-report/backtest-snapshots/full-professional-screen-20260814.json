@@ -1,6 +1,6 @@
 {
   "schemaVersion": "HORIZON_BACKTEST_SNAPSHOT_V1",
-  "capturedAt": "2026-08-16T01:31:31.488Z",
+  "capturedAt": "2026-08-16T12:23:51.454Z",
   "asOf": "2026-08-14",
   "meta": {
     "priceDate": "2026-08-14",
@@ -917,6 +917,104 @@
       }
     },
     {
+      "code": "6446",
+      "name": "藥華藥",
+      "sector": "民生消費",
+      "bucket": "B",
+      "score": 73.5,
+      "rawScore": 73.5,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 77,
+          "components": {
+            "technicalTiming": 21.4,
+            "ownershipFlow": 21.8,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 11.6,
+            "fundamentalGuardrail": 14.7
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 73.5,
+          "primary": true,
+          "components": {
+            "earningsTrend": 24.6,
+            "businessQuality": 19.5,
+            "technical": 14.3,
+            "valuation": 0.5,
+            "ownership": 8.5,
+            "eventRisk": 6.1
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 68.9,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 58.6,
+          "components": {
+            "businessQuality": 24.3,
+            "financialResilience": 18.7,
+            "growthDurability": 14.8,
+            "valuation": 0.8,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 1500,
+      "fundamentals": {
+        "revenueYoy": 92.59,
+        "revenueYtdYoy": 77.46,
+        "operatingMargin": 43.77,
+        "grossMargin": 91.51,
+        "netMargin": 39.07,
+        "nonOperatingContributionPct": 5.27,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 11.35,
+        "debtRatio": 16.54,
+        "currentRatio": 527.8
+      },
+      "valuation": {
+        "pe": 73.46,
+        "pb": 15.22
+      },
+      "technical": {
+        "return20": 25.52,
+        "return60": 108.51,
+        "dailyVolatility20": 5.02
+      },
+      "riskInputs": {
+        "dailyValue": 5981875155
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
       "code": "2330",
       "name": "台積電",
       "sector": "半導體",
@@ -1408,108 +1506,6 @@
       },
       "riskInputs": {
         "dailyValue": 1976782313
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
-      "code": "6446",
-      "name": "藥華藥",
-      "sector": "民生消費",
-      "bucket": "B",
-      "score": 71.7,
-      "rawScore": 71.7,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 73.5,
-          "components": {
-            "technicalTiming": 21.4,
-            "ownershipFlow": 18.3,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 11.6,
-            "fundamentalGuardrail": 14.7
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 71.7,
-          "primary": true,
-          "components": {
-            "earningsTrend": 24.6,
-            "businessQuality": 19.5,
-            "technical": 14.3,
-            "valuation": 0.5,
-            "ownership": 6.7,
-            "eventRisk": 6.1
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 68.9,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 58.6,
-          "components": {
-            "businessQuality": 24.3,
-            "financialResilience": 18.7,
-            "growthDurability": 14.8,
-            "valuation": 0.8,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "可用",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [
-          "外資持股趨勢"
-        ],
-        "staleCore": [],
-        "comparisonStatus": "部分可比",
-        "comparisonLimits": [
-          "外資持股只有當日快照、缺少5／10日趨勢；此項不給分，也不能解讀為轉弱，跨市場籌碼比較受限"
-        ],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 1500,
-      "fundamentals": {
-        "revenueYoy": 92.59,
-        "revenueYtdYoy": 77.46,
-        "operatingMargin": 43.77,
-        "grossMargin": 91.51,
-        "netMargin": 39.07,
-        "nonOperatingContributionPct": 5.27,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 11.35,
-        "debtRatio": 16.54,
-        "currentRatio": 527.8
-      },
-      "valuation": {
-        "pe": 73.46,
-        "pb": 15.22
-      },
-      "technical": {
-        "return20": 25.52,
-        "return60": 108.51,
-        "dailyVolatility20": 5.02
-      },
-      "riskInputs": {
-        "dailyValue": 5981875155
       },
       "officialMaterialRisk": false,
       "events": {
@@ -3301,106 +3297,6 @@
       }
     },
     {
-      "code": "3231",
-      "name": "緯創",
-      "sector": "電子科技",
-      "bucket": "B",
-      "score": 69,
-      "rawScore": 69,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 71.6,
-          "components": {
-            "technicalTiming": 24.7,
-            "ownershipFlow": 15.9,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 12.8,
-            "fundamentalGuardrail": 10.7
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 69,
-          "primary": true,
-          "components": {
-            "earningsTrend": 22,
-            "businessQuality": 8,
-            "technical": 16.5,
-            "valuation": 9.1,
-            "ownership": 6.7,
-            "eventRisk": 6.7
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 46,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 39.1,
-          "components": {
-            "businessQuality": 10,
-            "financialResilience": 0.8,
-            "growthDurability": 13.2,
-            "valuation": 15.1,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "可用",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [
-          "ETF持股中約 0.0% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
-        ],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 193.5,
-      "fundamentals": {
-        "revenueYoy": 60.76,
-        "revenueYtdYoy": 88.16,
-        "operatingMargin": 3.59,
-        "grossMargin": 5.44,
-        "netMargin": 1.4,
-        "nonOperatingContributionPct": -14.64,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 7.78,
-        "debtRatio": 82.37,
-        "currentRatio": 118.14
-      },
-      "valuation": {
-        "pe": 15.37,
-        "pb": 3.17
-      },
-      "technical": {
-        "return20": 39.21,
-        "return60": 38.21,
-        "dailyVolatility20": 4.23
-      },
-      "riskInputs": {
-        "dailyValue": 18829679790
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
       "code": "3003",
       "name": "健和興",
       "sector": "電子科技",
@@ -4588,6 +4484,110 @@
       },
       "riskInputs": {
         "dailyValue": 79307047
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "3231",
+      "name": "緯創",
+      "sector": "電子科技",
+      "bucket": "B",
+      "score": 67.2,
+      "rawScore": 67.2,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 68.2,
+          "components": {
+            "technicalTiming": 24.7,
+            "ownershipFlow": 12.5,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 12.8,
+            "fundamentalGuardrail": 10.7
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 67.2,
+          "primary": true,
+          "components": {
+            "earningsTrend": 22,
+            "businessQuality": 8,
+            "technical": 16.5,
+            "valuation": 9.1,
+            "ownership": 4.9,
+            "eventRisk": 6.7
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 46,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 39.1,
+          "components": {
+            "businessQuality": 10,
+            "financialResilience": 0.8,
+            "growthDurability": 13.2,
+            "valuation": 15.1,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "可用",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [
+          "外資持股趨勢"
+        ],
+        "staleCore": [],
+        "comparisonStatus": "部分可比",
+        "comparisonLimits": [
+          "外資持股只有當日快照、缺少5／10日趨勢；此項不給分，也不能解讀為轉弱，跨市場籌碼比較受限"
+        ],
+        "freshnessLimits": [
+          "ETF持股中約 0.0% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
+        ],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 193.5,
+      "fundamentals": {
+        "revenueYoy": 60.76,
+        "revenueYtdYoy": 88.16,
+        "operatingMargin": 3.59,
+        "grossMargin": 5.44,
+        "netMargin": 1.4,
+        "nonOperatingContributionPct": -14.64,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 7.78,
+        "debtRatio": 82.37,
+        "currentRatio": 118.14
+      },
+      "valuation": {
+        "pe": 15.37,
+        "pb": 3.17
+      },
+      "technical": {
+        "return20": 39.21,
+        "return60": 38.21,
+        "dailyVolatility20": 4.23
+      },
+      "riskInputs": {
+        "dailyValue": 18829679790
       },
       "officialMaterialRisk": false,
       "events": {
@@ -6619,10 +6619,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 61.4,
+          "score": 61.5,
           "components": {
             "technicalTiming": 23.8,
-            "ownershipFlow": 14.7,
+            "ownershipFlow": 14.8,
             "eventCatalyst": 7.5,
             "riskLiquidity": 7.8,
             "fundamentalGuardrail": 7.6
@@ -8711,10 +8711,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 66.5,
+          "score": 66.4,
           "components": {
             "technicalTiming": 24.2,
-            "ownershipFlow": 12.1,
+            "ownershipFlow": 12,
             "eventCatalyst": 7.5,
             "riskLiquidity": 12.7,
             "fundamentalGuardrail": 10
@@ -9090,108 +9090,6 @@
       },
       "riskInputs": {
         "dailyValue": 2307657319
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
-      "code": "2891",
-      "name": "中信金",
-      "sector": "金融",
-      "bucket": "B",
-      "score": 60.8,
-      "rawScore": 60.8,
-      "confidence": 91,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 69.5,
-          "components": {
-            "technicalTiming": 24.4,
-            "ownershipFlow": 15.7,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 13.6,
-            "fundamentalGuardrail": 8.3
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 60.8,
-          "primary": true,
-          "components": {
-            "earningsTrend": 11.3,
-            "businessQuality": 15,
-            "technical": 16.2,
-            "valuation": 4.9,
-            "ownership": 6.3,
-            "eventRisk": 7.1
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 53.8,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 88,
-          "missingWeight": 15,
-          "availablePoints": 45.7,
-          "components": {
-            "businessQuality": 18.7,
-            "financialResilience": 12,
-            "growthDurability": 6.8,
-            "valuation": 8.2,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 91,
-        "status": "可用",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 10,
-        "financialPeriod": "2026Q1",
-        "financialSourceMode": "prior_verified_official_snapshot",
-        "missingCore": [],
-        "staleCore": [
-          "季報沿用 2026Q1 已驗證官方快照；官方最新申報季為 2026Q2，等待公司完成申報"
-        ],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [
-          "ETF持股中約 0.0% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
-        ],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 65.8,
-      "fundamentals": {
-        "revenueYoy": -18.42,
-        "revenueYtdYoy": 66.45,
-        "operatingMargin": null,
-        "grossMargin": null,
-        "netMargin": null,
-        "nonOperatingContributionPct": null,
-        "financialPeriod": "2026Q1",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "prior_verified_official_snapshot",
-        "eps": 1.18,
-        "debtRatio": 93.83,
-        "currentRatio": null
-      },
-      "valuation": {
-        "pe": 15.86,
-        "pb": 2.35
-      },
-      "technical": {
-        "return20": 5.96,
-        "return60": 14.43,
-        "dailyVolatility20": 1.32
-      },
-      "riskInputs": {
-        "dailyValue": 1720563069
       },
       "officialMaterialRisk": false,
       "events": {
@@ -10090,6 +9988,112 @@
       },
       "riskInputs": {
         "dailyValue": 446627257
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "2891",
+      "name": "中信金",
+      "sector": "金融",
+      "bucket": "B",
+      "score": 59.1,
+      "rawScore": 59.1,
+      "confidence": 88,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 66.1,
+          "components": {
+            "technicalTiming": 24.4,
+            "ownershipFlow": 12.3,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 13.6,
+            "fundamentalGuardrail": 8.3
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 59.1,
+          "primary": true,
+          "components": {
+            "earningsTrend": 11.3,
+            "businessQuality": 15,
+            "technical": 16.2,
+            "valuation": 4.9,
+            "ownership": 4.6,
+            "eventRisk": 7.1
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 53.8,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 88,
+          "missingWeight": 15,
+          "availablePoints": 45.7,
+          "components": {
+            "businessQuality": 18.7,
+            "financialResilience": 12,
+            "growthDurability": 6.8,
+            "valuation": 8.2,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 88,
+        "status": "可用",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 10,
+        "financialPeriod": "2026Q1",
+        "financialSourceMode": "prior_verified_official_snapshot",
+        "missingCore": [
+          "外資持股趨勢"
+        ],
+        "staleCore": [
+          "季報沿用 2026Q1 已驗證官方快照；官方最新申報季為 2026Q2，等待公司完成申報"
+        ],
+        "comparisonStatus": "部分可比",
+        "comparisonLimits": [
+          "外資持股只有當日快照、缺少5／10日趨勢；此項不給分，也不能解讀為轉弱，跨市場籌碼比較受限"
+        ],
+        "freshnessLimits": [
+          "ETF持股中約 0.0% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
+        ],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 65.8,
+      "fundamentals": {
+        "revenueYoy": -18.42,
+        "revenueYtdYoy": 66.45,
+        "operatingMargin": null,
+        "grossMargin": null,
+        "netMargin": null,
+        "nonOperatingContributionPct": null,
+        "financialPeriod": "2026Q1",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "prior_verified_official_snapshot",
+        "eps": 1.18,
+        "debtRatio": 93.83,
+        "currentRatio": null
+      },
+      "valuation": {
+        "pe": 15.86,
+        "pb": 2.35
+      },
+      "technical": {
+        "return20": 5.96,
+        "return60": 14.43,
+        "dailyVolatility20": 1.32
+      },
+      "riskInputs": {
+        "dailyValue": 1720563069
       },
       "officialMaterialRisk": false,
       "events": {
@@ -15699,8 +15703,8 @@
       "name": "健鼎",
       "sector": "電子科技",
       "bucket": "C",
-      "score": 69.4,
-      "rawScore": 69.4,
+      "score": 69.3,
+      "rawScore": 69.3,
       "confidence": 100,
       "horizonScores": {
         "short": {
@@ -15716,14 +15720,14 @@
         },
         "medium": {
           "label": "中期研究",
-          "score": 69.4,
+          "score": 69.3,
           "primary": true,
           "components": {
             "earningsTrend": 19.8,
             "businessQuality": 16.2,
             "technical": 15.7,
             "valuation": 7,
-            "ownership": 4.5,
+            "ownership": 4.4,
             "eventRisk": 6.2
           }
         },
@@ -18691,10 +18695,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 68.4,
+          "score": 68.5,
           "components": {
             "technicalTiming": 28.4,
-            "ownershipFlow": 12.4,
+            "ownershipFlow": 12.5,
             "eventCatalyst": 7.5,
             "riskLiquidity": 12.3,
             "fundamentalGuardrail": 7.8
@@ -21683,10 +21687,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 55.9,
+          "score": 56,
           "components": {
             "technicalTiming": 20.5,
-            "ownershipFlow": 7.8,
+            "ownershipFlow": 7.9,
             "eventCatalyst": 7.5,
             "riskLiquidity": 10.5,
             "fundamentalGuardrail": 9.6
@@ -22979,10 +22983,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 50.4,
+          "score": 50.3,
           "components": {
             "technicalTiming": 14.2,
-            "ownershipFlow": 8.2,
+            "ownershipFlow": 8.1,
             "eventCatalyst": 7.5,
             "riskLiquidity": 11.5,
             "fundamentalGuardrail": 9
@@ -25971,104 +25975,6 @@
       }
     },
     {
-      "code": "2478",
-      "name": "大毅",
-      "sector": "電子科技",
-      "bucket": "C",
-      "score": 55.9,
-      "rawScore": 55.9,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 44.3,
-          "components": {
-            "technicalTiming": 14.8,
-            "ownershipFlow": 5.6,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 5.8,
-            "fundamentalGuardrail": 10.6
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 55.9,
-          "primary": true,
-          "components": {
-            "earningsTrend": 17.2,
-            "businessQuality": 15,
-            "technical": 9.9,
-            "valuation": 5.9,
-            "ownership": 3,
-            "eventRisk": 4.9
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 65.5,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 55.7,
-          "components": {
-            "businessQuality": 18.8,
-            "financialResilience": 16.8,
-            "growthDurability": 10.3,
-            "valuation": 9.8,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "完整",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 128,
-      "fundamentals": {
-        "revenueYoy": 47.49,
-        "revenueYtdYoy": 19.84,
-        "operatingMargin": 15.93,
-        "grossMargin": 27.02,
-        "netMargin": 13.27,
-        "nonOperatingContributionPct": -2.54,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 2.91,
-        "debtRatio": 29.93,
-        "currentRatio": 259.07
-      },
-      "valuation": {
-        "pe": 26.34,
-        "pb": 2.51
-      },
-      "technical": {
-        "return20": -10.18,
-        "return60": 10.34,
-        "dailyVolatility20": 6.22
-      },
-      "riskInputs": {
-        "dailyValue": 930733267
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
       "code": "6291",
       "name": "沛亨",
       "sector": "半導體",
@@ -26164,6 +26070,104 @@
       },
       "riskInputs": {
         "dailyValue": 171683024
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "2478",
+      "name": "大毅",
+      "sector": "電子科技",
+      "bucket": "C",
+      "score": 55.8,
+      "rawScore": 55.8,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 44.3,
+          "components": {
+            "technicalTiming": 14.8,
+            "ownershipFlow": 5.6,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 5.8,
+            "fundamentalGuardrail": 10.6
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 55.8,
+          "primary": true,
+          "components": {
+            "earningsTrend": 17.2,
+            "businessQuality": 15,
+            "technical": 9.9,
+            "valuation": 5.9,
+            "ownership": 2.9,
+            "eventRisk": 4.9
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 65.5,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 55.7,
+          "components": {
+            "businessQuality": 18.8,
+            "financialResilience": 16.8,
+            "growthDurability": 10.3,
+            "valuation": 9.8,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 128,
+      "fundamentals": {
+        "revenueYoy": 47.49,
+        "revenueYtdYoy": 19.84,
+        "operatingMargin": 15.93,
+        "grossMargin": 27.02,
+        "netMargin": 13.27,
+        "nonOperatingContributionPct": -2.54,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 2.91,
+        "debtRatio": 29.93,
+        "currentRatio": 259.07
+      },
+      "valuation": {
+        "pe": 26.34,
+        "pb": 2.51
+      },
+      "technical": {
+        "return20": -10.18,
+        "return60": 10.34,
+        "dailyVolatility20": 6.22
+      },
+      "riskInputs": {
+        "dailyValue": 930733267
       },
       "officialMaterialRisk": false,
       "events": {
@@ -26567,8 +26571,8 @@
       "name": "矽格",
       "sector": "半導體",
       "bucket": "C",
-      "score": 55.4,
-      "rawScore": 55.4,
+      "score": 55.3,
+      "rawScore": 55.3,
       "confidence": 100,
       "horizonScores": {
         "short": {
@@ -26584,14 +26588,14 @@
         },
         "medium": {
           "label": "中期研究",
-          "score": 55.4,
+          "score": 55.3,
           "primary": true,
           "components": {
             "earningsTrend": 13.7,
             "businessQuality": 13.8,
             "technical": 9.3,
             "valuation": 8.9,
-            "ownership": 3.6,
+            "ownership": 3.5,
             "eventRisk": 6.1
           }
         },
@@ -26752,106 +26756,6 @@
       },
       "riskInputs": {
         "dailyValue": 312487957
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
-      "code": "2449",
-      "name": "京元電子",
-      "sector": "半導體",
-      "bucket": "C",
-      "score": 55,
-      "rawScore": 55,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 46.8,
-          "components": {
-            "technicalTiming": 10.6,
-            "ownershipFlow": 6.5,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 11.3,
-            "fundamentalGuardrail": 10.9
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 55,
-          "primary": true,
-          "components": {
-            "earningsTrend": 18,
-            "businessQuality": 14.8,
-            "technical": 7.1,
-            "valuation": 6,
-            "ownership": 3.1,
-            "eventRisk": 6
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 50,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 42.5,
-          "components": {
-            "businessQuality": 18.6,
-            "financialResilience": 3.1,
-            "growthDurability": 10.8,
-            "valuation": 10,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "可用",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [
-          "ETF持股中約 1.1% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
-        ],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 247,
-      "fundamentals": {
-        "revenueYoy": 36.75,
-        "revenueYtdYoy": 36.18,
-        "operatingMargin": 26.25,
-        "grossMargin": 39.61,
-        "netMargin": 22.4,
-        "nonOperatingContributionPct": 4.83,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 3.91,
-        "debtRatio": 51.32,
-        "currentRatio": 147.28
-      },
-      "valuation": {
-        "pe": 32.37,
-        "pb": 4.82
-      },
-      "technical": {
-        "return20": -9.48,
-        "return60": -9.32,
-        "dailyVolatility20": 5.16
-      },
-      "riskInputs": {
-        "dailyValue": 4267136246
       },
       "officialMaterialRisk": false,
       "events": {
@@ -27057,6 +26961,110 @@
       }
     },
     {
+      "code": "2449",
+      "name": "京元電子",
+      "sector": "半導體",
+      "bucket": "C",
+      "score": 54.9,
+      "rawScore": 54.9,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 46.6,
+          "components": {
+            "technicalTiming": 10.6,
+            "ownershipFlow": 6.3,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 11.3,
+            "fundamentalGuardrail": 10.9
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 54.9,
+          "primary": true,
+          "components": {
+            "earningsTrend": 18,
+            "businessQuality": 14.8,
+            "technical": 7.1,
+            "valuation": 6,
+            "ownership": 3,
+            "eventRisk": 6
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 50,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 42.5,
+          "components": {
+            "businessQuality": 18.6,
+            "financialResilience": 3.1,
+            "growthDurability": 10.8,
+            "valuation": 10,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "可用",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [
+          "外資持股趨勢"
+        ],
+        "staleCore": [],
+        "comparisonStatus": "部分可比",
+        "comparisonLimits": [
+          "外資持股只有當日快照、缺少5／10日趨勢；此項不給分，也不能解讀為轉弱，跨市場籌碼比較受限"
+        ],
+        "freshnessLimits": [
+          "ETF持股中約 1.1% 來自資料日期非當日的ETF；持股母體仍保留避免漏股，ETF流向不可視為全體ETF同日完整訊號"
+        ],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 247,
+      "fundamentals": {
+        "revenueYoy": 36.75,
+        "revenueYtdYoy": 36.18,
+        "operatingMargin": 26.25,
+        "grossMargin": 39.61,
+        "netMargin": 22.4,
+        "nonOperatingContributionPct": 4.83,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 3.91,
+        "debtRatio": 51.32,
+        "currentRatio": 147.28
+      },
+      "valuation": {
+        "pe": 32.37,
+        "pb": 4.82
+      },
+      "technical": {
+        "return20": -9.48,
+        "return60": -9.32,
+        "dailyVolatility20": 5.16
+      },
+      "riskInputs": {
+        "dailyValue": 4267136246
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
       "code": "5876",
       "name": "上海商銀",
       "sector": "金融",
@@ -27173,10 +27181,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 61.4,
+          "score": 61.3,
           "components": {
             "technicalTiming": 20.4,
-            "ownershipFlow": 12.1,
+            "ownershipFlow": 12,
             "eventCatalyst": 7.5,
             "riskLiquidity": 12.7,
             "fundamentalGuardrail": 8.7
@@ -27971,10 +27979,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 51.2,
+          "score": 51.1,
           "components": {
             "technicalTiming": 12.1,
-            "ownershipFlow": 13.5,
+            "ownershipFlow": 13.4,
             "eventCatalyst": 7.5,
             "riskLiquidity": 11,
             "fundamentalGuardrail": 7.1
@@ -28367,10 +28375,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 62,
+          "score": 62.1,
           "components": {
             "technicalTiming": 26.3,
-            "ownershipFlow": 10.4,
+            "ownershipFlow": 10.5,
             "eventCatalyst": 7.5,
             "riskLiquidity": 11,
             "fundamentalGuardrail": 6.8
@@ -32231,104 +32239,6 @@
       }
     },
     {
-      "code": "6271",
-      "name": "同欣電",
-      "sector": "半導體",
-      "bucket": "C",
-      "score": 50.6,
-      "rawScore": 50.6,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 44.4,
-          "components": {
-            "technicalTiming": 12.6,
-            "ownershipFlow": 9.8,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 7.3,
-            "fundamentalGuardrail": 7.2
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 50.6,
-          "primary": true,
-          "components": {
-            "earningsTrend": 10.5,
-            "businessQuality": 11.8,
-            "technical": 8.4,
-            "valuation": 10.6,
-            "ownership": 3.7,
-            "eventRisk": 5.6
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 62.5,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 53.1,
-          "components": {
-            "businessQuality": 14.7,
-            "financialResilience": 14.5,
-            "growthDurability": 6.3,
-            "valuation": 17.6,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "完整",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 194,
-      "fundamentals": {
-        "revenueYoy": 22.42,
-        "revenueYtdYoy": 4.47,
-        "operatingMargin": 16.16,
-        "grossMargin": 29.62,
-        "netMargin": 15.31,
-        "nonOperatingContributionPct": 13.62,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 4.37,
-        "debtRatio": 24.15,
-        "currentRatio": 259.54
-      },
-      "valuation": {
-        "pe": 21.82,
-        "pb": 1.49
-      },
-      "technical": {
-        "return20": -4.43,
-        "return60": -5.83,
-        "dailyVolatility20": 4.78
-      },
-      "riskInputs": {
-        "dailyValue": 716359026
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
       "code": "3550",
       "name": "聯穎",
       "sector": "電子科技",
@@ -32420,6 +32330,104 @@
       },
       "riskInputs": {
         "dailyValue": 53642781
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "6271",
+      "name": "同欣電",
+      "sector": "半導體",
+      "bucket": "C",
+      "score": 50.5,
+      "rawScore": 50.5,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 44.4,
+          "components": {
+            "technicalTiming": 12.6,
+            "ownershipFlow": 9.8,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 7.3,
+            "fundamentalGuardrail": 7.2
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 50.5,
+          "primary": true,
+          "components": {
+            "earningsTrend": 10.5,
+            "businessQuality": 11.8,
+            "technical": 8.4,
+            "valuation": 10.6,
+            "ownership": 3.6,
+            "eventRisk": 5.6
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 62.5,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 53.1,
+          "components": {
+            "businessQuality": 14.7,
+            "financialResilience": 14.5,
+            "growthDurability": 6.3,
+            "valuation": 17.6,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 194,
+      "fundamentals": {
+        "revenueYoy": 22.42,
+        "revenueYtdYoy": 4.47,
+        "operatingMargin": 16.16,
+        "grossMargin": 29.62,
+        "netMargin": 15.31,
+        "nonOperatingContributionPct": 13.62,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 4.37,
+        "debtRatio": 24.15,
+        "currentRatio": 259.54
+      },
+      "valuation": {
+        "pe": 21.82,
+        "pb": 1.49
+      },
+      "technical": {
+        "return20": -4.43,
+        "return60": -5.83,
+        "dailyVolatility20": 4.78
+      },
+      "riskInputs": {
+        "dailyValue": 716359026
       },
       "officialMaterialRisk": false,
       "events": {
@@ -32925,6 +32933,106 @@
       }
     },
     {
+      "code": "3673",
+      "name": "TPK-KY",
+      "sector": "電子科技",
+      "bucket": "C",
+      "score": 49.7,
+      "rawScore": 49.7,
+      "confidence": 91,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 46.1,
+          "components": {
+            "technicalTiming": 10.7,
+            "ownershipFlow": 14.1,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 6.7,
+            "fundamentalGuardrail": 7.1
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 49.7,
+          "primary": true,
+          "components": {
+            "earningsTrend": 13.2,
+            "businessQuality": 7.4,
+            "technical": 7.1,
+            "valuation": 10.8,
+            "ownership": 5.9,
+            "eventRisk": 5.3
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 54.5,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 46.3,
+          "components": {
+            "businessQuality": 9.2,
+            "financialResilience": 11.1,
+            "growthDurability": 7.9,
+            "valuation": 18.1,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 91,
+        "status": "可用",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 10,
+        "financialPeriod": "2026Q1",
+        "financialSourceMode": "prior_verified_official_snapshot",
+        "missingCore": [],
+        "staleCore": [
+          "季報沿用 2026Q1 已驗證官方快照；官方最新申報季為 2026Q2，等待公司完成申報"
+        ],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 61.6,
+      "fundamentals": {
+        "revenueYoy": 16.67,
+        "revenueYtdYoy": 15.13,
+        "operatingMargin": -0.32,
+        "grossMargin": 9.38,
+        "netMargin": 3.02,
+        "nonOperatingContributionPct": 115.33,
+        "financialPeriod": "2026Q1",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "prior_verified_official_snapshot",
+        "eps": 1.33,
+        "debtRatio": 47.04,
+        "currentRatio": 216.68
+      },
+      "valuation": {
+        "pe": 16.92,
+        "pb": 0.62
+      },
+      "technical": {
+        "return20": -5.95,
+        "return60": -16.98,
+        "dailyVolatility20": 3.96
+      },
+      "riskInputs": {
+        "dailyValue": 169657471
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
       "code": "3622",
       "name": "洋華",
       "sector": "電子科技",
@@ -33114,106 +33222,6 @@
       },
       "riskInputs": {
         "dailyValue": 1491735037
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
-      "code": "3673",
-      "name": "TPK-KY",
-      "sector": "電子科技",
-      "bucket": "C",
-      "score": 49.6,
-      "rawScore": 49.6,
-      "confidence": 91,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 46.1,
-          "components": {
-            "technicalTiming": 10.7,
-            "ownershipFlow": 14.1,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 6.7,
-            "fundamentalGuardrail": 7.1
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 49.6,
-          "primary": true,
-          "components": {
-            "earningsTrend": 13.2,
-            "businessQuality": 7.4,
-            "technical": 7.1,
-            "valuation": 10.8,
-            "ownership": 5.8,
-            "eventRisk": 5.3
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 54.5,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 46.3,
-          "components": {
-            "businessQuality": 9.2,
-            "financialResilience": 11.1,
-            "growthDurability": 7.9,
-            "valuation": 18.1,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 91,
-        "status": "可用",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 10,
-        "financialPeriod": "2026Q1",
-        "financialSourceMode": "prior_verified_official_snapshot",
-        "missingCore": [],
-        "staleCore": [
-          "季報沿用 2026Q1 已驗證官方快照；官方最新申報季為 2026Q2，等待公司完成申報"
-        ],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 61.6,
-      "fundamentals": {
-        "revenueYoy": 16.67,
-        "revenueYtdYoy": 15.13,
-        "operatingMargin": -0.32,
-        "grossMargin": 9.38,
-        "netMargin": 3.02,
-        "nonOperatingContributionPct": 115.33,
-        "financialPeriod": "2026Q1",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "prior_verified_official_snapshot",
-        "eps": 1.33,
-        "debtRatio": 47.04,
-        "currentRatio": 216.68
-      },
-      "valuation": {
-        "pe": 16.92,
-        "pb": 0.62
-      },
-      "technical": {
-        "return20": -5.95,
-        "return60": -16.98,
-        "dailyVolatility20": 3.96
-      },
-      "riskInputs": {
-        "dailyValue": 169657471
       },
       "officialMaterialRisk": false,
       "events": {
@@ -38777,10 +38785,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 47.1,
+          "score": 47,
           "components": {
             "technicalTiming": 23.8,
-            "ownershipFlow": 2.2,
+            "ownershipFlow": 2.1,
             "eventCatalyst": 7.5,
             "riskLiquidity": 7.9,
             "fundamentalGuardrail": 5.7
@@ -39857,8 +39865,8 @@
       "name": "燿華",
       "sector": "電子科技",
       "bucket": "C",
-      "score": 29.4,
-      "rawScore": 29.4,
+      "score": 29.5,
+      "rawScore": 29.5,
       "confidence": 100,
       "horizonScores": {
         "short": {
@@ -39874,14 +39882,14 @@
         },
         "medium": {
           "label": "中期研究",
-          "score": 29.4,
+          "score": 29.5,
           "primary": true,
           "components": {
             "earningsTrend": 8.6,
             "businessQuality": 1.1,
             "technical": 8.4,
             "valuation": 2.4,
-            "ownership": 3.7,
+            "ownership": 3.8,
             "eventRisk": 5.2
           }
         },
@@ -42010,10 +42018,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 68.7,
+          "score": 68.6,
           "components": {
             "technicalTiming": 24.2,
-            "ownershipFlow": 18.2,
+            "ownershipFlow": 18.1,
             "eventCatalyst": 7.5,
             "riskLiquidity": 7.5,
             "fundamentalGuardrail": 11.3
@@ -46164,10 +46172,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 59.1,
+          "score": 59,
           "components": {
             "technicalTiming": 22.5,
-            "ownershipFlow": 14.9,
+            "ownershipFlow": 14.8,
             "eventCatalyst": 2.3,
             "riskLiquidity": 8.4,
             "fundamentalGuardrail": 11
@@ -46467,6 +46475,104 @@
       }
     },
     {
+      "code": "4736",
+      "name": "泰博",
+      "sector": "民生消費",
+      "bucket": "D",
+      "score": 57.7,
+      "rawScore": 57.7,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 59.3,
+          "components": {
+            "technicalTiming": 23.5,
+            "ownershipFlow": 14.5,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 8.2,
+            "fundamentalGuardrail": 5.6
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 57.7,
+          "primary": true,
+          "components": {
+            "earningsTrend": 4.5,
+            "businessQuality": 14.9,
+            "technical": 15.7,
+            "valuation": 11.1,
+            "ownership": 5.9,
+            "eventRisk": 5.6
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 67.8,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 57.6,
+          "components": {
+            "businessQuality": 18.6,
+            "financialResilience": 17.8,
+            "growthDurability": 2.7,
+            "valuation": 18.5,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 139,
+      "fundamentals": {
+        "revenueYoy": -11.91,
+        "revenueYtdYoy": -1.06,
+        "operatingMargin": 19.54,
+        "grossMargin": 45.51,
+        "netMargin": 74.2,
+        "nonOperatingContributionPct": 75.83,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 16.6,
+        "debtRatio": 21,
+        "currentRatio": 319.04
+      },
+      "valuation": {
+        "pe": 5.1,
+        "pb": 1.19
+      },
+      "technical": {
+        "return20": 7.75,
+        "return60": 13.01,
+        "dailyVolatility20": 1.5
+      },
+      "riskInputs": {
+        "dailyValue": 61789558
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
       "code": "2897",
       "name": "王道銀行",
       "sector": "金融",
@@ -46560,104 +46666,6 @@
       },
       "riskInputs": {
         "dailyValue": 29385889
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
-      "code": "4736",
-      "name": "泰博",
-      "sector": "民生消費",
-      "bucket": "D",
-      "score": 57.6,
-      "rawScore": 57.6,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 59.3,
-          "components": {
-            "technicalTiming": 23.5,
-            "ownershipFlow": 14.5,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 8.2,
-            "fundamentalGuardrail": 5.6
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 57.6,
-          "primary": true,
-          "components": {
-            "earningsTrend": 4.5,
-            "businessQuality": 14.9,
-            "technical": 15.7,
-            "valuation": 11.1,
-            "ownership": 5.8,
-            "eventRisk": 5.6
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 67.8,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 57.6,
-          "components": {
-            "businessQuality": 18.6,
-            "financialResilience": 17.8,
-            "growthDurability": 2.7,
-            "valuation": 18.5,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "完整",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 139,
-      "fundamentals": {
-        "revenueYoy": -11.91,
-        "revenueYtdYoy": -1.06,
-        "operatingMargin": 19.54,
-        "grossMargin": 45.51,
-        "netMargin": 74.2,
-        "nonOperatingContributionPct": 75.83,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 16.6,
-        "debtRatio": 21,
-        "currentRatio": 319.04
-      },
-      "valuation": {
-        "pe": 5.1,
-        "pb": 1.19
-      },
-      "technical": {
-        "return20": 7.75,
-        "return60": 13.01,
-        "dailyVolatility20": 1.5
-      },
-      "riskInputs": {
-        "dailyValue": 61789558
       },
       "officialMaterialRisk": false,
       "events": {
@@ -52022,104 +52030,6 @@
       }
     },
     {
-      "code": "9917",
-      "name": "中保科",
-      "sector": "其他",
-      "bucket": "D",
-      "score": 48.3,
-      "rawScore": 48.3,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 43.8,
-          "components": {
-            "technicalTiming": 10.5,
-            "ownershipFlow": 10.2,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 6.6,
-            "fundamentalGuardrail": 9
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 48.3,
-          "primary": true,
-          "components": {
-            "earningsTrend": 13.5,
-            "businessQuality": 14.2,
-            "technical": 7,
-            "valuation": 3.9,
-            "ownership": 4.5,
-            "eventRisk": 5.2
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 44.6,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 37.9,
-          "components": {
-            "businessQuality": 17.8,
-            "financialResilience": 5.5,
-            "growthDurability": 8.1,
-            "valuation": 6.5,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "完整",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 107.5,
-      "fundamentals": {
-        "revenueYoy": 4.94,
-        "revenueYtdYoy": 2.09,
-        "operatingMargin": 17.46,
-        "grossMargin": 33.42,
-        "netMargin": 15.57,
-        "nonOperatingContributionPct": 9.5,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 3.35,
-        "debtRatio": 58.36,
-        "currentRatio": 98.74
-      },
-      "valuation": {
-        "pe": 15.67,
-        "pb": 3.8
-      },
-      "technical": {
-        "return20": -1.38,
-        "return60": -4.44,
-        "dailyVolatility20": 0.67
-      },
-      "riskInputs": {
-        "dailyValue": 20363401
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
       "code": "4755",
       "name": "三福化",
       "sector": "原物料",
@@ -52211,6 +52121,104 @@
       },
       "riskInputs": {
         "dailyValue": 17007752
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "9917",
+      "name": "中保科",
+      "sector": "其他",
+      "bucket": "D",
+      "score": 48.2,
+      "rawScore": 48.2,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 43.8,
+          "components": {
+            "technicalTiming": 10.5,
+            "ownershipFlow": 10.2,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 6.6,
+            "fundamentalGuardrail": 9
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 48.2,
+          "primary": true,
+          "components": {
+            "earningsTrend": 13.5,
+            "businessQuality": 14.2,
+            "technical": 7,
+            "valuation": 3.9,
+            "ownership": 4.4,
+            "eventRisk": 5.2
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 44.6,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 37.9,
+          "components": {
+            "businessQuality": 17.8,
+            "financialResilience": 5.5,
+            "growthDurability": 8.1,
+            "valuation": 6.5,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 107.5,
+      "fundamentals": {
+        "revenueYoy": 4.94,
+        "revenueYtdYoy": 2.09,
+        "operatingMargin": 17.46,
+        "grossMargin": 33.42,
+        "netMargin": 15.57,
+        "nonOperatingContributionPct": 9.5,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 3.35,
+        "debtRatio": 58.36,
+        "currentRatio": 98.74
+      },
+      "valuation": {
+        "pe": 15.67,
+        "pb": 3.8
+      },
+      "technical": {
+        "return20": -1.38,
+        "return60": -4.44,
+        "dailyVolatility20": 0.67
+      },
+      "riskInputs": {
+        "dailyValue": 20363401
       },
       "officialMaterialRisk": false,
       "events": {
@@ -53427,104 +53435,6 @@
       }
     },
     {
-      "code": "2415",
-      "name": "錩新",
-      "sector": "電子科技",
-      "bucket": "D",
-      "score": 45.9,
-      "rawScore": 45.9,
-      "confidence": 100,
-      "horizonScores": {
-        "short": {
-          "label": "短期時機",
-          "score": 34.4,
-          "components": {
-            "technicalTiming": 6,
-            "ownershipFlow": 8.2,
-            "eventCatalyst": 7.5,
-            "riskLiquidity": 5.4,
-            "fundamentalGuardrail": 7.3
-          }
-        },
-        "medium": {
-          "label": "中期研究",
-          "score": 45.9,
-          "primary": true,
-          "components": {
-            "earningsTrend": 11.2,
-            "businessQuality": 11.3,
-            "technical": 4,
-            "valuation": 10.7,
-            "ownership": 3.9,
-            "eventRisk": 4.8
-          }
-        },
-        "long": {
-          "label": "長期初篩",
-          "score": 48.5,
-          "preliminary": true,
-          "methodCoverage": 85,
-          "dataCoverage": 100,
-          "missingWeight": 15,
-          "availablePoints": 41.2,
-          "components": {
-            "businessQuality": 14.2,
-            "financialResilience": 2.4,
-            "growthDurability": 6.7,
-            "valuation": 17.9,
-            "capitalAllocation": null
-          }
-        }
-      },
-      "dataHealth": {
-        "score": 100,
-        "status": "完整",
-        "eligible": true,
-        "hardGate": 65,
-        "affectsScore": false,
-        "freshnessPenalty": 0,
-        "financialPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "missingCore": [],
-        "staleCore": [],
-        "comparisonStatus": "可比",
-        "comparisonLimits": [],
-        "freshnessLimits": [],
-        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
-      },
-      "close": 29.3,
-      "fundamentals": {
-        "revenueYoy": 8.33,
-        "revenueYtdYoy": 9.96,
-        "operatingMargin": 6.5,
-        "grossMargin": 23,
-        "netMargin": 3.39,
-        "nonOperatingContributionPct": -19.48,
-        "financialPeriod": "2026Q2",
-        "financialCurrentPeriod": "2026Q2",
-        "financialSourceMode": "current_official",
-        "eps": 0.47,
-        "debtRatio": 71.54,
-        "currentRatio": 127.59
-      },
-      "valuation": {
-        "pe": 18.66,
-        "pb": 1.53
-      },
-      "technical": {
-        "return20": -10.53,
-        "return60": 6.55,
-        "dailyVolatility20": 2.77
-      },
-      "riskInputs": {
-        "dailyValue": 4520107
-      },
-      "officialMaterialRisk": false,
-      "events": {
-        "disposal": null
-      }
-    },
-    {
       "code": "8163",
       "name": "達方",
       "sector": "電子科技",
@@ -53714,6 +53624,104 @@
       },
       "riskInputs": {
         "dailyValue": 24290817
+      },
+      "officialMaterialRisk": false,
+      "events": {
+        "disposal": null
+      }
+    },
+    {
+      "code": "2415",
+      "name": "錩新",
+      "sector": "電子科技",
+      "bucket": "D",
+      "score": 45.8,
+      "rawScore": 45.8,
+      "confidence": 100,
+      "horizonScores": {
+        "short": {
+          "label": "短期時機",
+          "score": 34.4,
+          "components": {
+            "technicalTiming": 6,
+            "ownershipFlow": 8.2,
+            "eventCatalyst": 7.5,
+            "riskLiquidity": 5.4,
+            "fundamentalGuardrail": 7.3
+          }
+        },
+        "medium": {
+          "label": "中期研究",
+          "score": 45.8,
+          "primary": true,
+          "components": {
+            "earningsTrend": 11.2,
+            "businessQuality": 11.3,
+            "technical": 4,
+            "valuation": 10.7,
+            "ownership": 3.8,
+            "eventRisk": 4.8
+          }
+        },
+        "long": {
+          "label": "長期初篩",
+          "score": 48.5,
+          "preliminary": true,
+          "methodCoverage": 85,
+          "dataCoverage": 100,
+          "missingWeight": 15,
+          "availablePoints": 41.2,
+          "components": {
+            "businessQuality": 14.2,
+            "financialResilience": 2.4,
+            "growthDurability": 6.7,
+            "valuation": 17.9,
+            "capitalAllocation": null
+          }
+        }
+      },
+      "dataHealth": {
+        "score": 100,
+        "status": "完整",
+        "eligible": true,
+        "hardGate": 65,
+        "affectsScore": false,
+        "freshnessPenalty": 0,
+        "financialPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "missingCore": [],
+        "staleCore": [],
+        "comparisonStatus": "可比",
+        "comparisonLimits": [],
+        "freshnessLimits": [],
+        "note": "只判斷資料可用性，不加減投資分數；缺少個別計分證據時該證據不給分，低於門檻不得進入A級。"
+      },
+      "close": 29.3,
+      "fundamentals": {
+        "revenueYoy": 8.33,
+        "revenueYtdYoy": 9.96,
+        "operatingMargin": 6.5,
+        "grossMargin": 23,
+        "netMargin": 3.39,
+        "nonOperatingContributionPct": -19.48,
+        "financialPeriod": "2026Q2",
+        "financialCurrentPeriod": "2026Q2",
+        "financialSourceMode": "current_official",
+        "eps": 0.47,
+        "debtRatio": 71.54,
+        "currentRatio": 127.59
+      },
+      "valuation": {
+        "pe": 18.66,
+        "pb": 1.53
+      },
+      "technical": {
+        "return20": -10.53,
+        "return60": 6.55,
+        "dailyVolatility20": 2.77
+      },
+      "riskInputs": {
+        "dailyValue": 4520107
       },
       "officialMaterialRisk": false,
       "events": {
@@ -55623,10 +55631,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 52.4,
+          "score": 52.5,
           "components": {
             "technicalTiming": 24.4,
-            "ownershipFlow": 12.1,
+            "ownershipFlow": 12.2,
             "eventCatalyst": 7.5,
             "riskLiquidity": 6.9,
             "fundamentalGuardrail": 1.5
@@ -57321,10 +57329,10 @@
       "horizonScores": {
         "short": {
           "label": "短期時機",
-          "score": 39.6,
+          "score": 39.5,
           "components": {
             "technicalTiming": 13.2,
-            "ownershipFlow": 7.5,
+            "ownershipFlow": 7.4,
             "eventCatalyst": 7.5,
             "riskLiquidity": 8,
             "fundamentalGuardrail": 3.4
