@@ -1,14 +1,20 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$StatePath,
-    [Parameter(Mandatory)][string]$RunLogPath
+    [Parameter(Mandatory)][string]$RunLogPath,
+    [string]$UpdaterPath = ''
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$Updater = Join-Path $PSScriptRoot 'Update-ProfessionalScreen.ps1'
+$Updater = if ([string]::IsNullOrWhiteSpace($UpdaterPath)) {
+    Join-Path $PSScriptRoot 'Update-ProfessionalScreen.ps1'
+}
+else {
+    (Resolve-Path -LiteralPath $UpdaterPath).Path
+}
 
 function Write-State {
     param([Parameter(Mandatory)]$Value)
@@ -31,12 +37,29 @@ try {
     Push-Location $RepoRoot
     New-Item -ItemType Directory -Path (Split-Path -Parent $RunLogPath) -Force | Out-Null
     New-Item -ItemType File -Path $RunLogPath -Force | Out-Null
-    $output = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $Updater -Publish 2>&1 | ForEach-Object {
-        $line = [string]$_
-        $line | Add-Content -LiteralPath $RunLogPath -Encoding utf8
-        $line
-    })
-    $exitCode = $LASTEXITCODE
+    $previousPreference = $ErrorActionPreference
+    try {
+        # Native stderr is diagnostic output. The child exit code is the
+        # authoritative success/failure signal for this controlled runner.
+        $ErrorActionPreference = 'Continue'
+        $childArguments = @(
+            '-NoProfile',
+            '-ExecutionPolicy',
+            'Bypass',
+            '-File',
+            $Updater,
+            '-Publish'
+        )
+        $output = @(& powershell.exe @childArguments 2>&1 | ForEach-Object {
+            $line = [string]$_
+            $line | Add-Content -LiteralPath $RunLogPath -Encoding utf8
+            $line
+        })
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
     if ($exitCode -eq 0) {
         $statusLine = @($output | ForEach-Object { [string]$_ } | Where-Object { $_ -like 'STATUS=*' } | Select-Object -Last 1)
         if ($statusLine.Count -ne 1) {

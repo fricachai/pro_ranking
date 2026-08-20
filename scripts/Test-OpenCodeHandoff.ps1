@@ -81,6 +81,7 @@ $requiredFiles = @(
     'scripts/Capture-HorizonBacktestSnapshot.js',
     'scripts/Backtest-HorizonStrategy.js',
     'scripts/Test-ProfessionalScreenFetchResilience.js',
+    'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1',
     'STRATEGY_VALIDATION.md',
     'professional-screen-report/latest.json',
     'professional-screen-report/events/latest-events.json',
@@ -100,7 +101,8 @@ foreach ($relativePath in @(
     'scripts/Start-ProfessionalScreenUpdate.ps1',
     'scripts/Run-ProfessionalScreenUpdate.ps1',
     'scripts/Get-ProfessionalScreenUpdateStatus.ps1',
-    'scripts/Update-ProfessionalScreen.ps1'
+    'scripts/Update-ProfessionalScreen.ps1',
+    'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1'
 )) {
     $scriptPath = Join-Path $RepoRoot $relativePath
     $nonAsciiByte = [IO.File]::ReadAllBytes($scriptPath) | Where-Object { $_ -gt 127 } | Select-Object -First 1
@@ -258,6 +260,7 @@ foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.j
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenFetchResilience.js')) | Out-Null
+Invoke-Checked -Name 'powershell.exe' -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1')) | Out-Null
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
 foreach ($requiredForeignHistoryToken in @(
@@ -286,6 +289,19 @@ foreach ($requiredFetchResilienceToken in @(
         throw "Fetch resilience safeguard is missing: $requiredFetchResilienceToken"
     }
 }
+foreach ($requiredT86Token in @(
+    'const T86_LOOKBACK_CALENDAR_DAYS = 45',
+    'const T86_REQUIRED_OFFICIAL_DAYS = 20',
+    'const T86_MAX_PASSES = 3',
+    'const T86_REQUEST_DELAY_MS = 700',
+    'fetchJson(url, REQUIRED_SOURCE_ATTEMPTS',
+    'label: ''TWSE T86 '' + iso',
+    'TWSE T86 history is incomplete'
+)) {
+    if (-not $generatorContent.Contains($requiredT86Token)) {
+        throw "T86 fetch safeguard is missing: $requiredT86Token"
+    }
+}
 
 $eventFetcherContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'fetch-events.js') -Raw -Encoding utf8
 foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(codes, CONFIG.newsConcurrency', 'rateLimitedStocks', 'EVENTS_NEWS_BUDGET_MS', 'budgetExhaustedStocks', "status !== 'complete'")) {
@@ -295,6 +311,11 @@ foreach ($requiredEventFetcherToken in @('async function mapLimit(', 'mapLimit(c
 }
 
 $updaterContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Update-ProfessionalScreen.ps1') -Raw -Encoding utf8
+foreach ($requiredNodeRunnerToken in @('function Invoke-NodeLogged', 'Invoke-NodeLogged -Arguments', 'Node stderr is retained in the run log')) {
+    if (-not $updaterContent.Contains($requiredNodeRunnerToken)) {
+        throw "Node runner safeguard is missing: $requiredNodeRunnerToken"
+    }
+}
 if (-not $updaterContent.Contains('[int]$PagesTimeoutSeconds = 900')) {
     throw 'Pages publication timeout must allow at least the 900-second controlled verification window.'
 }

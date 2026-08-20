@@ -53,6 +53,27 @@ function Invoke-Git {
     return $output
 }
 
+function Invoke-NodeLogged {
+    param(
+        [Parameter(Mandatory)][string[]]$Arguments,
+        [Parameter(Mandatory)][string]$LogPath
+    )
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        # Node stderr is retained in the run log; exit code controls the gate.
+        $output = @(& node @Arguments 2>&1)
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    foreach ($item in $output) {
+        ([string]$item) | Add-Content -LiteralPath $LogPath -Encoding utf8
+    }
+    return $exitCode
+}
+
 function Get-ChangedPaths {
     $lines = @(Invoke-Git -Arguments @('status', '--porcelain=v1'))
     return @($lines | ForEach-Object {
@@ -271,8 +292,8 @@ try {
     $logPath = Join-Path $LogDir "daily-refresh-$timestamp.log"
 
     foreach ($scriptPath in @($Generator, $EventFetcher, $SnapshotCapture)) {
-        & node --check $scriptPath *>> $logPath
-        if ($LASTEXITCODE -ne 0) {
+        $syntaxExitCode = Invoke-NodeLogged -Arguments @('--check', $scriptPath) -LogPath $logPath
+        if ($syntaxExitCode -ne 0) {
             throw "JavaScript syntax check failed: $scriptPath. Log: $logPath"
         }
     }
@@ -296,8 +317,8 @@ try {
     $refreshStartedUtc = [DateTime]::UtcNow
     Write-Host 'Fetching and validating events and news data...'
     $eventRefreshStarted = $true
-    & node $EventFetcher *>> $logPath
-    if ($LASTEXITCODE -ne 0) {
+    $eventExitCode = Invoke-NodeLogged -Arguments @($EventFetcher) -LogPath $logPath
+    if ($eventExitCode -ne 0) {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
         throw "Event and news refresh failed. Publishing stale events is not allowed. Log: $logPath`n$($tail -join "`n")"
     }
@@ -338,8 +359,8 @@ try {
     }
 
     Write-Host "Event refresh complete. Yahoo status=$($newsStatus.status). Generating professional screen..."
-    & node $Generator *>> $logPath
-    if ($LASTEXITCODE -ne 0) {
+    $generatorExitCode = Invoke-NodeLogged -Arguments @($Generator) -LogPath $logPath
+    if ($generatorExitCode -ne 0) {
         $tail = Get-Content $logPath -Tail 60 -Encoding utf8
         throw "Report generation failed. Log: $logPath`n$($tail -join "`n")"
     }
@@ -487,8 +508,14 @@ try {
 
     if ($Publish) {
         Write-Host 'Capturing close-only point-in-time strategy snapshot...'
-        & node $SnapshotCapture --report $LatestJson --output-dir (Join-Path $ReportDir 'backtest-snapshots') *>> $logPath
-        if ($LASTEXITCODE -ne 0) {
+        $snapshotExitCode = Invoke-NodeLogged -Arguments @(
+            $SnapshotCapture,
+            '--report',
+            $LatestJson,
+            '--output-dir',
+            (Join-Path $ReportDir 'backtest-snapshots')
+        ) -LogPath $logPath
+        if ($snapshotExitCode -ne 0) {
             throw "Point-in-time strategy snapshot capture failed. Log: $logPath"
         }
     }

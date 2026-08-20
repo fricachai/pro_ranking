@@ -173,7 +173,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 - `MI_QFIIS` 最近 45 個日曆日採逐日循序查詢並保留短暫延遲。2026-07-21 曾因多日期並行查詢暫時只取得 10 個有效交易日；改為循序查詢後，同一官方來源取得 24 日，證明這不是官方只能提供 10 日。
 - 10 日變化需要目前快照與第 10 個交易日前快照，因此最低門檻是 11 個有效交易日。不得為完成更新而放寬、補值或縮短後仍稱為 10 日。
 - 只有無結構性異動且具完整 5／10 日資料的 `trendReliable=true` 個股，外資持股趨勢才可參與評分與風險判斷。
-- 每次成功報告都必須包含 `meta.foreignHoldingHistoryDays >= 11`，網頁也會顯示有效交易日數。若不足，管線應停止並檢查最大可查日期、週末／休市與暫時性限流後重試，不調整選股權重。
+### 官方 T86 與 Windows runner 執行契約
+
+- T86 最近 45 個日曆日必須逐日循序查詢並保留延遲；暫時失敗日期最多重試三輪，不得使用 4 路並行。
+- T86 歷史優先使用官方有效資料；至少要有 5 個官方有效交易日，報告驗證器仍須拒絕不足的正式歷史，不得降低門檻或冒充當日資料。
+- 每次成功報告都必須包含 meta.foreignHoldingHistoryDays >= 11；若不足，管線應停止並檢查最大可查日期、週末／休市與暫時性限流後重試，不調整選股權重。
+- Node stderr 只保留在 run log；PowerShell runner 以 Node exit code 判斷成功或失敗，不能把正常 retry 診斷轉成 NativeCommandError。交接預檢必須執行 scripts/Test-ProfessionalScreenPowerShellBoundary.ps1。
 
 ### 三時間尺度評分與資料健康度
 

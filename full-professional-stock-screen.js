@@ -98,6 +98,11 @@ const REQUIRED_SOURCE_TIMEOUT_MS = 30000;
 const REQUIRED_SOURCE_RETRY_DELAY_MS = 1200;
 const REQUIRED_SOURCE_CONCURRENCY = 3;
 const REQUIRED_BATCH_CONCURRENCY = 2;
+const T86_LOOKBACK_CALENDAR_DAYS = 45;
+const T86_REQUIRED_OFFICIAL_DAYS = 20;
+const T86_MAX_PASSES = 3;
+const T86_REQUEST_DELAY_MS = 700;
+const T86_RETRY_DELAY_MS = 2500;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -171,7 +176,7 @@ async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
       lastAttempt = i + 1;
       const retryable = isRetryableFetchError(normalizedError);
       if (config.logAttempts === true || !retryable || i === maxAttempts - 1) {
-        console.warn('[fetch] ' + label + ' attempt ' + (i + 1) + '/' + maxAttempts +
+        console.log('[fetch] ' + label + ' attempt ' + (i + 1) + '/' + maxAttempts +
           ' failed after ' + (Date.now() - startedAt) + 'ms; retryable=' + retryable +
           '; ' + formatFetchError(normalizedError));
       }
@@ -252,7 +257,7 @@ function startRequiredTask(task, label) {
   return Promise.resolve().then(task).then(
     value => ({ label, value }),
     error => {
-      console.error('[required-task] ' + label + ' failed: ' + formatFetchError(error));
+      console.log('[required-task] ' + label + ' failed: ' + formatFetchError(error));
       return { label, error };
     }
   );
@@ -574,7 +579,7 @@ async function fetchTwseForeignHoldingHistory(asOfIso) {
       return { snapshots, dates: snapshots.map(snapshot => snapshot.date) };
     }
     if (pass < FOREIGN_HOLDING_MAX_PASSES) {
-      console.warn(`  MI_QFIIS 第 ${pass} 輪僅取得 ${snapshotsByDate.size}/${FOREIGN_HOLDING_REQUIRED_DAYS} 個有效交易日；重試暫時失敗日期。`);
+      console.log(`  MI_QFIIS 第 ${pass} 輪僅取得 ${snapshotsByDate.size}/${FOREIGN_HOLDING_REQUIRED_DAYS} 個有效交易日；重試暫時失敗日期。`);
       await sleep(FOREIGN_HOLDING_RETRY_DELAY_MS * pass);
     }
   }
@@ -626,25 +631,84 @@ function fieldIndex(fields, pattern, fallback) {
 }
 
 async function fetchTwseInstitutionalHistory(asOfIso, fallbackData = null) {
-  const payloads = await mapLimit(calendarDatesEnding(asOfIso, 45), 4, async iso => {
-    const url = `https://www.twse.com.tw/rwd/zh/fund/T86?date=${isoToYyyymmdd(iso)}&selectType=ALLBUT0999&response=json`;
-    const payload = await fetchJson(url);
-    if (payload.stat !== 'OK' || !payload.data?.length) return null;
-    const fields = payload.fields || [];
-    const foreignIndex = fieldIndex(fields, /^外陸資買賣超股數\(不含外資自營商\)$/, 4);
-    const trustIndex = fieldIndex(fields, /^投信買賣超股數$/, 10);
-    const dealerIndex = fieldIndex(fields, /^自營商買賣超股數$/, 11);
-    const totalIndex = fieldIndex(fields, /^三大法人買賣超股數$/, 18);
-    const rows = new Map(payload.data.map(row => [String(row[0]).trim(), {
-      foreign: (number(row[foreignIndex]) || 0) / 1000,
-      trust: (number(row[trustIndex]) || 0) / 1000,
-      dealer: (number(row[dealerIndex]) || 0) / 1000,
-      total: (number(row[totalIndex]) || 0) / 1000
-    }]).filter(([code]) => /^\d{4}$/.test(code)));
-    return { date: yyyymmddToIso(payload.date) || iso, rows };
-  });
+  if (!isIsoDate(asOfIso)) throw new Error('法人資料日期錨點無效：' + (asOfIso || 'missing'));
+  const calendarDates = calendarDatesEnding(asOfIso, T86_LOOKBACK_CALENDAR_DAYS);
+  const snapshotsByDate = new Map();
+  const completedRequestDates = new Set();
+  const passDiagnostics = [];
+
+  for (let pass = 1; pass <= T86_MAX_PASSES; pass += 1) {
+    const diagnostics = { pass, requested: 0, empty: 0, errors: [] };
+    const retryDates = calendarDates.filter(iso => !completedRequestDates.has(iso));
+
+    await mapLimit(retryDates, 1, async iso => {
+      if (snapshotsByDate.size >= T86_REQUIRED_OFFICIAL_DAYS) return null;
+      diagnostics.requested += 1;
+      if (diagnostics.requested > 1) await sleep(T86_REQUEST_DELAY_MS);
+      const url = 'https://www.twse.com.tw/rwd/zh/fund/T86?date=' +
+        isoToYyyymmdd(iso) + '&selectType=ALLBUT0999&response=json';
+      try {
+        const payload = await fetchJson(url, REQUIRED_SOURCE_ATTEMPTS, {
+          label: 'TWSE T86 ' + iso,
+          timeoutMs: REQUIRED_SOURCE_TIMEOUT_MS,
+          retryBaseDelayMs: REQUIRED_SOURCE_RETRY_DELAY_MS,
+          retryMaxDelayMs: 10000,
+          logAttempts: true
+        });
+        if (payload.stat !== 'OK' || !payload.data?.length) {
+          completedRequestDates.add(iso);
+          diagnostics.empty += 1;
+          return null;
+        }
+        const fields = payload.fields || [];
+        const foreignIndex = fieldIndex(fields, /^外陸資買賣超股數\(不含外資自營商\)$/, 4);
+        const trustIndex = fieldIndex(fields, /^投信買賣超股數$/, 10);
+        const dealerIndex = fieldIndex(fields, /^自營商買賣超股數$/, 11);
+        const totalIndex = fieldIndex(fields, /^三大法人買賣超股數$/, 18);
+        const rows = new Map(payload.data.map(row => [String(row[0]).trim(), {
+          foreign: (number(row[foreignIndex]) || 0) / 1000,
+          trust: (number(row[trustIndex]) || 0) / 1000,
+          dealer: (number(row[dealerIndex]) || 0) / 1000,
+          total: (number(row[totalIndex]) || 0) / 1000
+        }]).filter(([code]) => /^\d{4}$/.test(code)));
+        const date = yyyymmddToIso(payload.date) || iso;
+        if (!date || !rows.size) {
+          completedRequestDates.add(iso);
+          diagnostics.empty += 1;
+          return null;
+        }
+        completedRequestDates.add(iso);
+        snapshotsByDate.set(date, { date, rows });
+      } catch (error) {
+        diagnostics.errors.push(iso + ': ' + formatFetchError(error));
+      }
+      return null;
+    });
+
+    passDiagnostics.push(diagnostics);
+    if (snapshotsByDate.size >= T86_REQUIRED_OFFICIAL_DAYS) {
+      const snapshots = [...snapshotsByDate.values()]
+        .sort((a, b) => b.date.localeCompare(a.date));
+      console.log('  TWSE T86：以 ' + asOfIso + ' 為錨點，取得 ' +
+        snapshots.length + ' 個官方交易日；最新 ' + snapshots[0].date);
+      return {
+        snapshots: snapshots.slice(0, 20),
+        dates: snapshots.slice(0, 20).map(snapshot => snapshot.date),
+        primaryDays: snapshots.length,
+        sourceMode: 'TWSE T86 direct'
+      };
+    }
+    if (pass < T86_MAX_PASSES) {
+      console.log('  TWSE T86 第 ' + pass + ' 輪僅取得 ' +
+        snapshotsByDate.size + '/' + T86_REQUIRED_OFFICIAL_DAYS +
+        ' 個官方交易日；重試暫時失敗日期。');
+      await sleep(T86_RETRY_DELAY_MS * pass);
+    }
+  }
+
   const seen = new Set();
-  const snapshots = payloads.filter(payload => payload && !payload.__error && !seen.has(payload.date) && seen.add(payload.date))
+  const snapshots = [...snapshotsByDate.values()]
+    .filter(snapshot => snapshot && !seen.has(snapshot.date) && seen.add(snapshot.date))
     .sort((a, b) => b.date.localeCompare(a.date));
   const primaryDays = snapshots.length;
   if (snapshots.length < 20 && fallbackData?.dates && fallbackData?.days) {
@@ -665,7 +729,15 @@ async function fetchTwseInstitutionalHistory(asOfIso, fallbackData = null) {
     }
     snapshots.sort((a, b) => b.date.localeCompare(a.date));
   }
-  if (primaryDays < 5 || snapshots.length < 20) throw new Error(`TWSE T86 history is incomplete: official=${primaryDays}, combined=${snapshots.length}`);
+  if (primaryDays < 5 || snapshots.length < 20) {
+    const diagnosticText = passDiagnostics.map(item =>
+      'pass ' + item.pass + ': requested=' + item.requested +
+      ', empty=' + item.empty + ', errors=' + item.errors.length +
+      (item.errors.length ? ' (' + item.errors.slice(0, 3).join(' | ') + ')' : '')
+    ).join('; ');
+    throw new Error('TWSE T86 history is incomplete: official=' + primaryDays +
+      ', combined=' + snapshots.length + '; ' + diagnosticText);
+  }
   return {
     snapshots: snapshots.slice(0, 20),
     dates: snapshots.slice(0, 20).map(snapshot => snapshot.date),
@@ -2813,7 +2885,7 @@ const run = process.argv.includes('--render-existing') ? renderExistingReport : 
 if (require.main === module) {
   Promise.resolve(run()).catch(error => {
     console.log('GENERATOR_ERROR ' + JSON.stringify(serializeErrorForLog(error)));
-    console.error(error.stack || error);
+    console.log(error.stack || error);
     process.exitCode = 1;
   });
 }

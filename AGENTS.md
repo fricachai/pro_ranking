@@ -84,6 +84,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 4. 報告必須輸出 `meta.foreignHoldingHistoryDays` 並在頁面揭露有效交易日數；每日管線與交接預檢都必須確認至少 11 日。
 5. 再次不足時，先檢查官方最大可查日期、週末／休市日、回應狀態及暫時性限流，再以循序方式重試。這是資料取得故障，不是修改選股權重或放寬品質標準的理由。
 
+## 官方 T86 抓取與 Windows 執行邊界
+
+1. 證交所 T86 最近 45 個日曆日採逐日循序查詢，保留短暫延遲；暫時失敗日期最多重試三輪。不得恢復 4 路並行，也不得把單一日期失敗直接當成整個來源永久不可用。<!-- OFFICIAL_FETCH_RUNTIME_V2 -->
+2. T86 至少保留 5 個官方有效交易日，正式 20 日歷史優先使用官方資料；不足時仍須依現有來源契約與報告驗證器處理，不能降低官方資料門檻或冒充當日新資料。
+3. Node 的 stderr 只作為執行紀錄；PowerShell runner 必須以 Node exit code 判斷成功或失敗，不得因 console.warn／console.error 自動產生 NativeCommandError。所有 Node 輸出都要保留在 run log。
+4. scripts/Test-ProfessionalScreenPowerShellBoundary.ps1 必須在交接預檢中執行，驗證 stderr 能被記錄、成功 exit code 能成功、失敗 exit code 仍會 fail-closed。
+
 ## 持股決策總覽與純 UI 發布規則
 
 1. 「持股決策總覽」必須先回答目前動作，再回答執行時間、部位比例、觸發價、改變條件與原因。排名與新部位分類不得取代既有部位動作。
