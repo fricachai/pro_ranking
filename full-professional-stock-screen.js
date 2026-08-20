@@ -89,33 +89,181 @@ const FOREIGN_HOLDING_LOOKBACK_CALENDAR_DAYS = 45;
 const FOREIGN_HOLDING_MAX_PASSES = 3;
 const FOREIGN_HOLDING_REQUEST_DELAY_MS = 700;
 const FOREIGN_HOLDING_RETRY_DELAY_MS = 2500;
+const FETCH_DEFAULT_ATTEMPTS = 4;
+const FETCH_TIMEOUT_MS = 30000;
+const FETCH_RETRY_BASE_DELAY_MS = 1000;
+const FETCH_RETRY_MAX_DELAY_MS = 8000;
+const REQUIRED_SOURCE_ATTEMPTS = 5;
+const REQUIRED_SOURCE_TIMEOUT_MS = 30000;
+const REQUIRED_SOURCE_RETRY_DELAY_MS = 1200;
+const REQUIRED_SOURCE_CONCURRENCY = 3;
+const REQUIRED_BATCH_CONCURRENCY = 2;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchText(url, attempts = 3) {
+function formatFetchError(error) {
+  if (!error) return 'unknown error';
+  const clean = value => String(value).replace(/\s+/g, ' ').trim();
+  const parts = [];
+  if (error.name) parts.push('name=' + clean(error.name));
+  if (error.code) parts.push('code=' + clean(error.code));
+  if (error.status) parts.push('status=' + clean(error.status));
+  if (error.message) parts.push('message=' + clean(error.message));
+  const cause = error.cause;
+  if (cause && cause !== error) {
+    if (cause.name) parts.push('causeName=' + clean(cause.name));
+    if (cause.code) parts.push('causeCode=' + clean(cause.code));
+    if (cause.message && cause.message !== error.message) parts.push('causeMessage=' + clean(cause.message));
+  }
+  return parts.join(' ') || clean(error);
+}
+
+function isRetryableFetchError(error) {
+  const status = Number(error?.status);
+  if (!Number.isFinite(status)) return true;
+  return status === 408 || status === 425 || status === 429 || status >= 500;
+}
+
+async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
+  const config = options || {};
+  const requestedAttempts = Number(attempts);
+  const maxAttempts = Number.isInteger(requestedAttempts) && requestedAttempts > 0
+    ? requestedAttempts : FETCH_DEFAULT_ATTEMPTS;
+  const timeoutMs = Number.isFinite(Number(config.timeoutMs)) && Number(config.timeoutMs) > 0
+    ? Number(config.timeoutMs) : FETCH_TIMEOUT_MS;
+  const retryBaseDelayMs = Number.isFinite(Number(config.retryBaseDelayMs)) && Number(config.retryBaseDelayMs) >= 0
+    ? Number(config.retryBaseDelayMs) : FETCH_RETRY_BASE_DELAY_MS;
+  const retryMaxDelayMs = Number.isFinite(Number(config.retryMaxDelayMs)) && Number(config.retryMaxDelayMs) >= retryBaseDelayMs
+    ? Number(config.retryMaxDelayMs) : FETCH_RETRY_MAX_DELAY_MS;
+  const label = config.label || url;
   let lastError;
-  for (let i = 0; i < attempts; i += 1) {
+  let lastAttempt = 0;
+  for (let i = 0; i < maxAttempts; i += 1) {
+    const controller = new AbortController();
+    let timeoutId;
+    let timedOut = false;
+    const startedAt = Date.now();
     try {
+      timeoutId = setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, timeoutMs);
       const response = await fetch(url, {
         headers: {
           'user-agent': 'Mozilla/5.0 Codex Taiwan equity research screen',
           accept: 'application/json,text/plain,*/*'
-        }
+        },
+        signal: controller.signal
       });
-      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        const httpError = new Error(String(response.status) + ' ' + response.statusText);
+        httpError.status = response.status;
+        throw httpError;
+      }
       return await response.text();
     } catch (error) {
-      lastError = error;
-      await sleep(350 * (i + 1));
+      const normalizedError = timedOut
+        ? Object.assign(new Error('timeout after ' + timeoutMs + 'ms'), { name: 'TimeoutError', cause: error })
+        : error;
+      lastError = normalizedError;
+      lastAttempt = i + 1;
+      const retryable = isRetryableFetchError(normalizedError);
+      if (config.logAttempts === true || !retryable || i === maxAttempts - 1) {
+        console.warn('[fetch] ' + label + ' attempt ' + (i + 1) + '/' + maxAttempts +
+          ' failed after ' + (Date.now() - startedAt) + 'ms; retryable=' + retryable +
+          '; ' + formatFetchError(normalizedError));
+      }
+      if (!retryable || i === maxAttempts - 1) break;
+      const delay = Math.min(retryMaxDelayMs, retryBaseDelayMs * (2 ** i));
+      await sleep(delay);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
-  throw new Error(`Fetch failed: ${url}: ${lastError?.message || lastError}`);
+  const failure = new Error('Fetch failed [' + label + '] after ' + lastAttempt + '/' + maxAttempts +
+    ': ' + url + ': ' + formatFetchError(lastError));
+  failure.source = label;
+  failure.url = url;
+  failure.attempts = lastAttempt;
+  failure.cause = lastError;
+  throw failure;
 }
 
-async function fetchJson(url, attempts = 3) {
-  return JSON.parse(await fetchText(url, attempts));
+async function fetchJson(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
+  const config = options || {};
+  const label = config.label || url;
+  try {
+    return JSON.parse(await fetchText(url, attempts, config));
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      const parseError = new Error('JSON parse failed [' + label + ']: ' + error.message);
+      parseError.source = label;
+      parseError.url = url;
+      parseError.cause = error;
+      throw parseError;
+    }
+    throw error;
+  }
+}
+
+function requiredFetchOptions(label) {
+  return {
+    label,
+    timeoutMs: REQUIRED_SOURCE_TIMEOUT_MS,
+    retryBaseDelayMs: REQUIRED_SOURCE_RETRY_DELAY_MS,
+    retryMaxDelayMs: 10000,
+    logAttempts: true
+  };
+}
+
+function fetchRequiredJson(url, label) {
+  return fetchJson(url, REQUIRED_SOURCE_ATTEMPTS, requiredFetchOptions(label));
+}
+
+function fetchRequiredText(url, label) {
+  return fetchText(url, REQUIRED_SOURCE_ATTEMPTS, requiredFetchOptions(label));
+}
+
+async function runRequiredTasks(tasks, concurrency = REQUIRED_SOURCE_CONCURRENCY) {
+  const results = new Array(tasks.length);
+  let cursor = 0;
+  async function run() {
+    while (true) {
+      const index = cursor;
+      cursor += 1;
+      if (index >= tasks.length) return;
+      results[index] = await tasks[index]();
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, tasks.length) }, run));
+  return results;
+}
+
+function fetchRequiredJsonBatch(urls, label) {
+  return runRequiredTasks(
+    urls.map((url, index) => () => fetchRequiredJson(url, label + ' ' + (index + 1) + '/' + urls.length)),
+    REQUIRED_BATCH_CONCURRENCY
+  );
+}
+
+function startRequiredTask(task, label) {
+  return Promise.resolve().then(task).then(
+    value => ({ label, value }),
+    error => {
+      console.error('[required-task] ' + label + ' failed: ' + formatFetchError(error));
+      return { label, error };
+    }
+  );
+}
+
+function unwrapRequiredTask(result) {
+  if (!result?.error) return result.value;
+  const failure = new Error('Required source failed [' + result.label + ']: ' + formatFetchError(result.error));
+  failure.source = result.label;
+  failure.cause = result.error;
+  throw failure;
 }
 
 async function mapLimit(items, limit, worker) {
@@ -2064,23 +2212,39 @@ let appStarted=false;function startApp(){if(!scrollersInitialized){syncTop30Scro
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   console.log('1/7 讀取ETF資料與上市／上櫃官方市場資料...');
-  const dataTextPromise = fetchText(SOURCES.etf);
+  const dataTextPromise = startRequiredTask(
+    () => fetchRequiredText(SOURCES.etf, 'ETF data.js'),
+    'ETF data.js'
+  );
   const [institution, events, twseValuationRows, twseRevenueRows, twseEpsRows,
-    twseMarginRows, twseDailyRows, twseSecuritiesRows, balancePayloads, incomePayloads, tdccRows] = await Promise.all([
-      fetchJson(SOURCES.institution), fetchJson(SOURCES.events), fetchJson(SOURCES.twseValuation),
-      fetchJson(SOURCES.twseRevenue), fetchJson(SOURCES.twseEps), fetchJson(SOURCES.twseMargin),
-      fetchJson(SOURCES.twseDaily), fetchJson(SOURCES.twseSecurities), Promise.all(BALANCE_ENDPOINTS.TWSE.map(url => fetchJson(url))),
-      Promise.all(INCOME_ENDPOINTS.TWSE.map(url => fetchJson(url))), fetchJson(SOURCES.tdccHoldingLevels)
-    ]);
+    twseMarginRows, twseDailyRows, twseSecuritiesRows, balancePayloads, incomePayloads, tdccRows] = await runRequiredTasks([
+      () => fetchRequiredJson(SOURCES.institution, 'ETF institutional snapshot'),
+      () => fetchRequiredJson(SOURCES.events, 'ETF event source'),
+      () => fetchRequiredJson(SOURCES.twseValuation, 'TWSE valuation'),
+      () => fetchRequiredJson(SOURCES.twseRevenue, 'TWSE revenue'),
+      () => fetchRequiredJson(SOURCES.twseEps, 'TWSE EPS'),
+      () => fetchRequiredJson(SOURCES.twseMargin, 'TWSE operating margin'),
+      () => fetchRequiredJson(SOURCES.twseDaily, 'TWSE daily close quotes'),
+      () => fetchRequiredJson(SOURCES.twseSecurities, 'TWSE security master'),
+      () => fetchRequiredJsonBatch(BALANCE_ENDPOINTS.TWSE, 'TWSE balance'),
+      () => fetchRequiredJsonBatch(INCOME_ENDPOINTS.TWSE, 'TWSE income'),
+      () => fetchRequiredJson(SOURCES.tdccHoldingLevels, 'TDCC holding levels')
+    ], REQUIRED_SOURCE_CONCURRENCY);
   const [tpexValuationRows, tpexRevenueRows, tpexEpsRows, tpexMarginRows,
     tpexDailyRows, tpexForeignHoldingRows, tpexInstitutionalRows, tpexCreditRows,
-    tpexSecuritiesRows, tpexBalancePayloads, tpexIncomePayloads] = await Promise.all([
-      fetchJson(SOURCES.tpexValuation), fetchJson(SOURCES.tpexRevenue), fetchJson(SOURCES.tpexEps),
-      fetchJson(SOURCES.tpexMargin), fetchJson(SOURCES.tpexDaily), fetchJson(SOURCES.tpexForeignHolding),
-      fetchJson(SOURCES.tpexInstitutional), fetchJson(SOURCES.tpexMarginTrading), fetchJson(SOURCES.tpexSecurities),
-      Promise.all(BALANCE_ENDPOINTS.TPEX.map(url => fetchJson(url))),
-      Promise.all(INCOME_ENDPOINTS.TPEX.map(url => fetchJson(url)))
-    ]);
+    tpexSecuritiesRows, tpexBalancePayloads, tpexIncomePayloads] = await runRequiredTasks([
+      () => fetchRequiredJson(SOURCES.tpexValuation, 'TPEX valuation'),
+      () => fetchRequiredJson(SOURCES.tpexRevenue, 'TPEX revenue'),
+      () => fetchRequiredJson(SOURCES.tpexEps, 'TPEX EPS'),
+      () => fetchRequiredJson(SOURCES.tpexMargin, 'TPEX operating margin'),
+      () => fetchRequiredJson(SOURCES.tpexDaily, 'TPEX daily close quotes'),
+      () => fetchRequiredJson(SOURCES.tpexForeignHolding, 'TPEX foreign holding'),
+      () => fetchRequiredJson(SOURCES.tpexInstitutional, 'TPEX institutional trading'),
+      () => fetchRequiredJson(SOURCES.tpexMarginTrading, 'TPEX margin balance'),
+      () => fetchRequiredJson(SOURCES.tpexSecurities, 'TPEX security master'),
+      () => fetchRequiredJsonBatch(BALANCE_ENDPOINTS.TPEX, 'TPEX balance'),
+      () => fetchRequiredJsonBatch(INCOME_ENDPOINTS.TPEX, 'TPEX income')
+    ], REQUIRED_SOURCE_CONCURRENCY);
 
   let eventsLayerData = { events: [], aiEnabled: false, fetchedAt: null, sourceScope: null, sourceStatus: null };
   try {
@@ -2108,7 +2272,7 @@ async function main() {
 
   const context = { window: {} };
   vm.createContext(context);
-  vm.runInContext(await dataTextPromise, context);
+  vm.runInContext(unwrapRequiredTask(await dataTextPromise), context);
   const data = context.window.DATA;
   if (!data?.meta || !data?.stocks || !data?.etfs) throw new Error('ETF data.js 結構不符預期');
   const allStockEntries = Object.entries(data.stocks);
@@ -2161,22 +2325,35 @@ async function main() {
     yyyymmddToIso(data.meta.latest),
     yyyymmddToIso(data.meta.price_date)
   );
-  const foreignHoldingPromise = fetchTwseForeignHoldingHistory(asOfIso);
-  const institutionalHistoryPromise = fetchTwseInstitutionalHistory(asOfIso, institution);
-  const creditHistoryPromise = fetchTwseCreditHistory(asOfIso);
-  const macroOverlayPromise = fetchMacroOverlay(twseDailyRows);
+  const foreignHoldingPromise = startRequiredTask(
+    () => fetchTwseForeignHoldingHistory(asOfIso),
+    'TWSE MI_QFIIS foreign-holding history'
+  );
+  const institutionalHistoryPromise = startRequiredTask(
+    () => fetchTwseInstitutionalHistory(asOfIso, institution),
+    'TWSE T86 institutional history'
+  );
+  const creditHistoryPromise = startRequiredTask(
+    () => fetchTwseCreditHistory(asOfIso),
+    'TWSE credit history'
+  );
+  const macroOverlayPromise = startRequiredTask(
+    () => fetchMacroOverlay(twseDailyRows),
+    'macro overlay sources'
+  );
   const details = await mapLimit(stockEntries, 16, async ([code], index) => {
     if ((index + 1) % 75 === 0) console.log(`  已完成 ${index + 1}/${stockEntries.length}`);
     return fetchJson(`${XIAOYU}/data/stock/${code}.json`);
   });
+  const historyResults = await Promise.all([
+    foreignHoldingPromise, institutionalHistoryPromise, creditHistoryPromise, macroOverlayPromise
+  ]);
+  let [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay] = historyResults.map(unwrapRequiredTask);
   console.log('  讀取Yahoo Finance完整日K高低收，供標準KD計算...');
   const ohlcSeries = await mapLimit(stockEntries, 12, async ([code], index) => {
     if ((index + 1) % 100 === 0) console.log(`  KD日K已完成 ${index + 1}/${stockEntries.length}`);
     return fetchYahooOhlc(code, marketByCode.get(code));
   });
-  let [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay] = await Promise.all([
-    foreignHoldingPromise, institutionalHistoryPromise, creditHistoryPromise, macroOverlayPromise
-  ]);
   institutionalHistory = mergeTpexInstitutionalSnapshot(institutionalHistory, tpexInstitutionalRows);
   console.log(`  外資持股已取得 ${foreignHoldingHistory.dates.length} 個交易日，最新 ${foreignHoldingHistory.dates[0]}`);
 
@@ -2614,8 +2791,36 @@ function renderExistingReport() {
   console.log(`已沿用 ${report.meta.etfDate} 的完整資料，只重新產生介面與首頁。`);
 }
 
+function serializeErrorForLog(error) {
+  const cause = error?.cause;
+  return {
+    stage: 'report-generation',
+    name: error?.name || 'Error',
+    message: error?.message || String(error),
+    code: error?.code || null,
+    source: error?.source || null,
+    url: error?.url || null,
+    attempts: Number.isFinite(error?.attempts) ? error.attempts : null,
+    cause: cause ? {
+      name: cause.name || 'Error',
+      code: cause.code || null,
+      message: cause.message || String(cause)
+    } : null
+  };
+}
+
 const run = process.argv.includes('--render-existing') ? renderExistingReport : main;
-Promise.resolve(run()).catch(error => {
-  console.error(error.stack || error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  Promise.resolve(run()).catch(error => {
+    console.log('GENERATOR_ERROR ' + JSON.stringify(serializeErrorForLog(error)));
+    console.error(error.stack || error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {
+  fetchText,
+  fetchJson,
+  formatFetchError,
+  isRetryableFetchError
+};

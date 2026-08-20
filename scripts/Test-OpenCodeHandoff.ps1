@@ -80,6 +80,7 @@ $requiredFiles = @(
     'scripts/Update-ProfessionalScreen.ps1',
     'scripts/Capture-HorizonBacktestSnapshot.js',
     'scripts/Backtest-HorizonStrategy.js',
+    'scripts/Test-ProfessionalScreenFetchResilience.js',
     'STRATEGY_VALIDATION.md',
     'professional-screen-report/latest.json',
     'professional-screen-report/events/latest-events.json',
@@ -253,9 +254,10 @@ $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
 if ($nodeMajor -lt 18) { throw "Node.js 18 or newer is required. Found: $nodeVersion" }
 
-foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js')) {
+foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js')) {
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
+Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenFetchResilience.js')) | Out-Null
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
 foreach ($requiredForeignHistoryToken in @(
@@ -267,6 +269,21 @@ foreach ($requiredForeignHistoryToken in @(
 )) {
     if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
         throw "Foreign-holding history safeguard is missing: $requiredForeignHistoryToken"
+    }
+}
+foreach ($requiredFetchResilienceToken in @(
+    'const FETCH_DEFAULT_ATTEMPTS = 4',
+    'const FETCH_TIMEOUT_MS = 30000',
+    'AbortController',
+    'async function runRequiredTasks(',
+    'function startRequiredTask(',
+    'function unwrapRequiredTask(',
+    'const REQUIRED_SOURCE_CONCURRENCY = 3',
+    'TPEX daily close quotes',
+    'GENERATOR_ERROR '
+)) {
+    if (-not $generatorContent.Contains($requiredFetchResilienceToken)) {
+        throw "Fetch resilience safeguard is missing: $requiredFetchResilienceToken"
     }
 }
 
