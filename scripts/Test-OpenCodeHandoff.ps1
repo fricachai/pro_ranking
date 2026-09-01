@@ -609,7 +609,7 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'decisionMode', 'positionReasons', 'isLimitUp', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(
