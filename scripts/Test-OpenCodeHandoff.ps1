@@ -81,6 +81,7 @@ $requiredFiles = @(
     'scripts/Capture-HorizonBacktestSnapshot.js',
     'scripts/Backtest-HorizonStrategy.js',
     'scripts/Test-ProfessionalScreenFetchResilience.js',
+    'scripts/Test-PositionDecisionRules.js',
     'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1',
     'STRATEGY_VALIDATION.md',
     'professional-screen-report/latest.json',
@@ -154,6 +155,14 @@ foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains($strategyValidationMarker)) {
         throw "Strategy validation rule is missing from the OpenCode handoff surface: $relativePath"
+    }
+}
+
+$positionActionPriorityMarker = 'POSITION_ACTION_PRIORITY_V2'
+foreach ($relativePath in @('AGENTS.md', 'README.md', 'OPENCODE_HANDOFF.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($positionActionPriorityMarker)) {
+        throw "Position action priority rule is missing from the handoff surface: $relativePath"
     }
 }
 
@@ -256,10 +265,11 @@ $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
 if ($nodeMajor -lt 18) { throw "Node.js 18 or newer is required. Found: $nodeVersion" }
 
-foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js')) {
+foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js', 'scripts/Test-PositionDecisionRules.js')) {
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenFetchResilience.js')) | Out-Null
+Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-PositionDecisionRules.js')) | Out-Null
 Invoke-Checked -Name 'powershell.exe' -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1')) | Out-Null
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
@@ -287,6 +297,17 @@ foreach ($requiredFetchResilienceToken in @(
 )) {
     if (-not $generatorContent.Contains($requiredFetchResilienceToken)) {
         throw "Fetch resilience safeguard is missing: $requiredFetchResilienceToken"
+    }
+}
+foreach ($requiredPositionDecisionToken in @(
+    'const strongPriceConfirmation',
+    'decisionMode = ''strong''',
+    'positionReasons',
+    'record.live?.isLimitUp',
+    'technicalBreak && (etfBreak || foreignBreak || trustBreak)'
+)) {
+    if (-not $generatorContent.Contains($requiredPositionDecisionToken)) {
+        throw "Position decision safeguard is missing: $requiredPositionDecisionToken"
     }
 }
 foreach ($requiredT86Token in @(
@@ -588,7 +609,7 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'decisionMode', 'positionReasons', 'isLimitUp', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         $forbiddenLiveTerms = @(

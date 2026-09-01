@@ -1479,33 +1479,54 @@ function positionDecision(record) {
       : record.bucket === 'C' ? '暫不承接' : '不建立部位';
   const recoveryPrice = t ? Math.max(t.ema20, t.ema60) : null;
   const defensePrice = t?.ema60 ?? null;
-  const ownershipBreaks = [etfBreak, foreignBreak, trustBreak].filter(Boolean).length;
+  const priceAboveTrend = Boolean(t && Number.isFinite(price) && price >= t.ema20 && price >= t.ema60 && t.ma20Slope5 > 0);
+  const strongPriceConfirmation = Boolean(
+    priceAboveTrend &&
+    !record.officialMaterialRisk &&
+    (record.live?.isLimitUp === true || (Number.isFinite(record.live?.changePct) && record.live.changePct >= 7) || (Number.isFinite(t?.return5) && t.return5 >= 10))
+  );
+  const flowCaution = [etfBreak ? 'ETF' : null, foreignBreak ? '外資' : null, trustBreak ? '投信' : null].filter(Boolean);
+  const positionReasons = strongPriceConfirmation
+    ? [record.live?.isLimitUp ? '今日漲停／趨勢站穩' : '價格強勢站上20／60日EMA', flowCaution.length ? `${flowCaution.join('／')}偏弱，先觀察` : '法人未同步轉弱']
+    : sellSignals.slice(0, 3);
 
   const quoteIsClose = String(record.live?.time || '') >= '13:30:00';
+  let decisionMode = 'standard';
   let holdingAction = '正常持有';
   let holdingState = 'hold';
   let todayAction = '今天不下單';
   let nextCheck = '每個交易日收盤後，檢查趨勢與法人籌碼';
   let holdingPlan = '已有部位不因排名變動直接賣出；持續檢查基本面、法人籌碼與趨勢。';
   if (eventBreak || fundamentalBreak) {
+    decisionMode = 'risk';
     holdingAction = '優先降低風險';
     holdingState = 'exit';
     todayAction = '依風險與流動性分批降低部位';
     nextCheck = '風險解除且基本面與趨勢重新確認後';
     holdingPlan = `已有部位應優先降低曝險；目前觸發「${sellSignals[0]}」。待事件解除或基本面重新確認後再評估。`;
-  } else if ((technicalBreak && (etfBreak || foreignBreak || trustBreak)) || ownershipBreaks >= 2) {
+  } else if (strongPriceConfirmation && record.bucket !== 'D') {
+    decisionMode = 'strong';
+    holdingAction = '正常持有';
+    holdingState = 'hold';
+    todayAction = record.live?.isLimitUp ? '漲停先續抱；不追價' : '強勢續抱；不追高';
+    nextCheck = quoteIsClose ? '下一交易日收盤，確認是否守住20日EMA' : '今日收盤確認是否守住20日EMA';
+    holdingPlan = `價格仍在20／60日EMA之上${record.live?.isLimitUp ? '且今日漲停' : '且短線強勢'}；${flowCaution.length ? `${flowCaution.join('／')}偏弱先觀察，不因分歧減碼` : '法人未同步轉弱'}。若收盤跌破20日EMA約 ${fmt(t?.ema20, 2)} 且法人續弱，再轉為保護持有。`;
+  } else if (technicalBreak && (etfBreak || foreignBreak || trustBreak)) {
+    decisionMode = 'trim';
     holdingAction = '降低部位';
     holdingState = 'trim';
     todayAction = '停止加碼；反彈未站回恢復區時分批減碼';
     nextCheck = '每個交易日收盤後，確認是否站回恢復區';
     holdingPlan = `已有部位先停止加碼。反彈若仍未站回 ${fmt(recoveryPrice, 2)}，分批降低部位；只有站回且ETF／外資賣壓收斂後才重新評估。`;
   } else if (sellSignals.length > 0 || record.bucket === 'C' || record.bucket === 'D') {
+    decisionMode = 'protect';
     holdingAction = '保護持有';
     holdingState = 'protect';
     todayAction = '今天不新增部位；未完成確認前不機械式賣出';
     nextCheck = quoteIsClose ? '下一交易日收盤，確認是否收復防守區' : '今天收盤後；若跌破，再看下一交易日是否收復';
     holdingPlan = `已有部位暫停加碼；若收盤跌破60日EMA約 ${fmt(defensePrice, 2)}，且下一交易日仍未收復，先減碼三分之一；若ETF或外資繼續轉弱，再分批降低部位。`;
   } else if (record.bucket === 'A') {
+    decisionMode = 'add';
     holdingAction = '符合加碼條件';
     holdingState = 'add';
     todayAction = '只在回測承接區且法人未轉弱時分2–3批';
@@ -1517,12 +1538,14 @@ function positionDecision(record) {
 
   return {
     entryAction,
+    decisionMode,
     holdingAction,
     holdingState,
     todayAction,
     nextCheck,
     holdingPlan,
     holdingSignals: sellSignals,
+    positionReasons: positionReasons.length ? positionReasons : ['未觸發明確減碼訊號'],
     defensePrice: round(defensePrice, 2),
     recoveryPrice: round(recoveryPrice, 2),
     defenseZone: triggerPriceZone(defensePrice),
@@ -1724,12 +1747,14 @@ function recordForOutput(record, rank) {
     action: record.action,
     bucket: record.bucket,
     entryAction: record.entryAction,
+    decisionMode: record.decisionMode,
     holdingAction: record.holdingAction,
     holdingState: record.holdingState,
     todayAction: record.todayAction,
     nextCheck: record.nextCheck,
     holdingPlan: record.holdingPlan,
     holdingSignals: record.holdingSignals,
+    positionReasons: record.positionReasons,
     defensePrice: record.defensePrice,
     recoveryPrice: record.recoveryPrice,
     defenseZone: record.defenseZone,
@@ -1745,6 +1770,10 @@ function recordForOutput(record, rank) {
     liveDate: record.live?.date || null,
     liveTime: record.live?.time || null,
     livePrice: round(record.live?.price, 2),
+    liveReference: round(record.live?.reference, 2),
+    liveChangePct: round(record.live?.changePct, 2),
+    liveLimitUpPrice: round(record.live?.limitUpPrice, 2),
+    isLimitUp: Boolean(record.live?.isLimitUp),
     analysisPrice: round(record.live?.analysisPrice, 2),
     components: record.components,
     fundamentals: {
@@ -1849,7 +1878,7 @@ function csvEscape(value) {
 function buildCsv(rows) {
   const columns = [
     ['排名', 'rank'], ['代號', 'code'], ['名稱', 'name'], ['市場', 'market'], ['產業', 'industry'],
-    ['新部位建議', 'entryAction'], ['既有部位狀態', 'holdingAction'], ['今天動作', 'todayAction'], ['下一次確認', 'nextCheck'], ['既有部位說明', 'holdingPlan'],
+    ['新部位建議', 'entryAction'], ['既有部位狀態', 'holdingAction'], ['持有判斷模式', 'decisionMode'], ['今天動作', 'todayAction'], ['下一次確認', 'nextCheck'], ['既有部位說明', 'holdingPlan'], ['主要原因', 'positionReasons'],
     ['短期時機分數', 'horizonScores.short.score'], ['中期研究分數', 'horizonScores.medium.score'], ['長期初篩分數', 'horizonScores.long.score'],
     ['長期方法覆蓋率%', 'horizonScores.long.methodCoverage'], ['資料健康度', 'dataHealth.score'], ['資料健康狀態', 'dataHealth.status'],
     ['收盤價', 'close'], ['即時價', 'livePrice'],
@@ -2145,7 +2174,8 @@ function syncPositionChecks(){document.querySelectorAll('[data-position-toggle]'
 function positionDecisionMeta(p,r){
   const price=currentPrice(r);const cost=Number(p.entryPrice);const ema20=Number(r.technical&&r.technical.ema20);const ema60=Number(r.technical&&r.technical.ema60);const recovery=Number(r.recoveryPrice);const intraday=reportMeta.quotePhase!=='close';
   let key='hold';let label='正常持有';let when='目前狀態';let todayAction=r.todayAction||'今天不下單';let nextCheck=r.nextCheck||'每個交易日收盤後';let trigger=ema60;let zone=r.defenseZone;let triggerLabel='防守觀察區';let instruction='維持部位；只有收盤跌破觀察區且法人同步轉弱，才啟動減碼確認。';let change='收盤跌破觀察區且法人轉弱 → 轉為保護持有';
-  if(r.holdingState==='exit'){key='exit';label='優先降低風險';when='條件已觸發';todayAction=r.todayAction||'依風險分批降低部位';nextCheck=r.nextCheck||'風險解除且趨勢重建後';trigger=price;zone=null;triggerLabel='目前執行參考';instruction='重大風險或基本面破壞已優先覆蓋其他分數。';change='風險解除、基本面與趨勢重建 → 才重新研究'}
+  if(r.decisionMode==='strong'){when='強勢確認';trigger=Number.isFinite(ema20)?ema20:ema60;zone=r.recoveryZone||r.defenseZone;triggerLabel='轉弱觀察區';instruction='價格強勢；法人分歧先觀察，不直接減碼。';change='收盤跌破20日EMA且法人續弱 → 轉為保護持有'}
+  else if(r.holdingState==='exit'){key='exit';label='優先降低風險';when='條件已觸發';todayAction=r.todayAction||'依風險分批降低部位';nextCheck=r.nextCheck||'風險解除且趨勢重建後';trigger=price;zone=null;triggerLabel='目前執行參考';instruction='重大風險或基本面破壞已優先覆蓋其他分數。';change='風險解除、基本面與趨勢重建 → 才重新研究'}
   else if(r.holdingState==='trim'){key='trim';label='降低部位';when='反彈未站回時';todayAction=r.todayAction||'停止加碼；反彈分批減碼';nextCheck=r.nextCheck||'每個交易日收盤後';trigger=Number.isFinite(recovery)?recovery:ema60;zone=r.recoveryZone||r.defenseZone;triggerLabel='恢復觀察區';instruction='價格反彈但仍未站回恢復區時，分批降低部位。';change='收盤站回恢復區且法人賣壓收斂 → 改為正常持有'}
   else if(r.holdingState==='add'){key='add';label='符合加碼條件';when='只有回測時';todayAction=r.todayAction||'回測承接區時分2–3批';nextCheck=r.nextCheck||'回測時與每個交易日收盤後';trigger=Number.isFinite(ema20)?ema20:ema60;zone=r.addZone||r.defenseZone;triggerLabel='回測承接區';instruction='只在回測區且ETF、外資與投信未轉弱時，才考慮下一批。';change='任一主要法人轉弱或跌破趨勢 → 取消加碼'}
   else if((r.holdingState==='protect'||r.holdingState==='hold')&&Number.isFinite(ema60)&&price<ema60){key='check';label='保護持有';when=intraday?'盤中待收盤':'收盤已跌破';todayAction=intraday?'今天不新增／不減碼':'不追價、不預掛機械式賣單';nextCheck=intraday?'今天收盤後；若仍跌破，再看下一交易日收盤':'下一交易日收盤是否收復防守區';trigger=ema60;zone=r.defenseZone;triggerLabel='防守確認區';instruction=intraday?'盤中跌破尚未定案，先等今天收盤。':'本次收盤已跌破，等待下一交易日收盤確認。';change='下一交易日收盤仍未收復且法人續弱 → 先減碼1/3'}
@@ -2157,7 +2187,7 @@ function positionDecisionMeta(p,r){
   return {key,label,when,todayAction,nextCheck,trigger,triggerLabel,instruction,change,zoneText,gapText:gapText+costText}
 }
 function operationPriceHtml(p,r){const view=positionDecisionMeta(p,r);return '<div class="position-trigger-box"><div><small>'+e(view.triggerLabel)+'</small><b>'+e(view.zoneText)+'</b></div><span>'+e(view.gapText)+'</span></div>'}
-function decisionReasonChips(r){const raw=[...(r.holdingSignals||[]),...(r.rejectionReasons||[])];if(!raw.length)raw.push(r.holdingAction||'目前未觸發明確減碼訊號');return [...new Set(raw.map(value=>String(value).trim()).filter(Boolean))].slice(0,3)}
+function decisionReasonChips(r){const raw=Array.isArray(r.positionReasons)&&r.positionReasons.length?r.positionReasons:[...(r.holdingSignals||[]),...(r.rejectionReasons||[])];if(!raw.length)raw.push(r.holdingAction||'目前未觸發明確減碼訊號');return [...new Set(raw.map(value=>String(value).trim()).filter(Boolean))].slice(0,3)}
 function renderPositionSummary(items){
   const groups={trim:[],check:[],hold:[],add:[]};
   items.forEach(item=>{if(!item.r)return;const key=item.view.key==='trim'||item.view.key==='exit'?'trim':item.view.key;groups[key].push(item.r.code)});
@@ -2615,11 +2645,20 @@ async function main() {
     const livePrice = currentQuotePrice(quote);
     if (quote && Number.isFinite(livePrice)) {
       const date = yyyymmddToIso(quote.d);
+      const reference = number(quote.y);
+      const limitUpPrice = number(quote.u);
+      const changePct = Number.isFinite(reference) && reference > 0 ? pctChange(livePrice, reference) : null;
+      const isLimitUp = Number.isFinite(limitUpPrice)
+        ? livePrice >= limitUpPrice - 0.01
+        : Number.isFinite(changePct) && changePct >= 9.5;
       record.live = {
         date,
         time: quote.t || null,
         price: livePrice,
-        reference: number(quote.y),
+        reference,
+        changePct,
+        limitUpPrice,
+        isLimitUp,
         analysisPrice: livePrice + (record.events.todayCashDividend || 0),
         exDividendAdjustment: record.events.todayCashDividend || 0
       };
@@ -2891,6 +2930,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  positionDecision,
   fetchText,
   fetchJson,
   formatFetchError,

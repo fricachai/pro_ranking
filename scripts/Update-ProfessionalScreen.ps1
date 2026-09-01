@@ -371,7 +371,7 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle', 'id="quotePhaseBanner"', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'horizonScores', 'dataHealth', 'todayAction', 'nextCheck', 'zoneText')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle', 'id="quotePhaseBanner"', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'horizonScores', 'dataHealth', 'decisionMode', 'positionReasons', 'isLimitUp', 'todayAction', 'nextCheck', 'zoneText')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
@@ -454,7 +454,9 @@ try {
     $missingDecisionRows = @($rankingRows | Where-Object {
         -not $_.entryAction -or -not $_.holdingAction -or -not $_.todayAction -or -not $_.nextCheck -or
         $validBuckets -notcontains [string]$_.bucket -or
-        $validHoldingStates -notcontains [string]$_.holdingState
+        $validHoldingStates -notcontains [string]$_.holdingState -or
+        -not (@($_.PSObject.Properties.Name) -contains 'decisionMode') -or
+        -not $_.decisionMode -or -not $_.positionReasons -or @($_.positionReasons).Count -lt 1
     })
     if ($missingDecisionRows.Count -gt 0) {
         throw "Position decision fields are missing or invalid for $($missingDecisionRows.Count) stocks."

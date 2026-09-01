@@ -200,6 +200,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1 -Req
 ### 持股決策總覽與純 UI 維護
 
 - 決策卡的閱讀順序固定為「目前狀態 → 今天動作 → 下一次確認 → 執行觀察區 → 改變條件 → 原因」。盤中跌破只顯示「保護持有／盤中待收盤」，不得直接當成確認減碼。
+- `POSITION_ACTION_PRIORITY_V2`：每檔既有部位依「重大事件／基本面硬風險 → 價格技術結構 → 法人籌碼」判斷。法人中兩項偏弱但價格仍在20／60日EMA之上，不得直接變成「降低部位」；漲停或強勢確認且無硬風險時，顯示「正常持有／續抱、不追價」，籌碼分歧只作觀察。只有價格結構破壞且法人同步轉弱，或硬風險成立，才觸發降低部位／優先降低風險；新部位門檻維持獨立。
 - 觀察價位使用符合台股跳動單位的區間呈現；底層仍以原始EMA執行判斷。區間是決策支援，不是保證成交、自動停損或精準預測。
 - 摘要的四類動作與每張卡必須共用 `positionDecisionMeta`。驗證時確認摘要數量、個股代號與卡片分類一致，並測試成本保存、完整依據展開及「我尚未持有」錨點。
 - 純 UI／文案修改可在不抓新資料的前提下執行 `node .\full-professional-stock-screen.js --render-existing`；既有JSON必須已是 `HORIZON_SCORE_V2`。此模式會同步重產日期版 HTML、`latest.html` 與 `index.html`，但不得被回報為資料已更新。
