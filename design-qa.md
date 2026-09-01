@@ -140,3 +140,15 @@ Final result: passed
 - Visual evidence: `.playwright-cli/element-2026-08-10T01-18-31-925Z.png` (1050 x 900) and `.playwright-cli/element-2026-08-10T01-18-25-836Z.png` (390 x 844).
 
 Final result: passed
+
+## 2026-09-01 強勢價格與持股動作即時判斷 QA
+
+- Source comparison: the attached 2454 screenshot showed a limit-up price while the card incorrectly presented `降低部位`; the corrected source rule is `POSITION_ACTION_PRIORITY_V2`, implemented in `full-professional-stock-screen.js` and applied to every ranking row with that row's own data.
+- Decision display: the refreshed 2454 row now shows `正常持有`, `漲停先續抱；不追價`, `強勢確認`, and two concise reasons: `今日漲停／趨勢站穩` plus `ETF／投信偏弱，先觀察`.
+- Desktop viewport: 1050 x 900 CSS px; the tracked card displayed the action first, followed by next confirmation, observation zone, change condition, reasons, and holding plan without a sparse reasons panel.
+- Mobile viewport: 390 x 844 CSS px; the card collapsed to one column and remained readable. `document.documentElement.scrollWidth` was 375, so page-level horizontal overflow was false.
+- Interaction and privacy: QA used a temporary browser-only tracking row with no real cost; the temporary `proRankingPositionsV1` state was removed after capture. No credentials or private position data were committed.
+- Browser console errors and warnings: 0.
+- Visual evidence: `output/playwright/20260901-2454-card-1050x900.png` and `output/playwright/20260901-2454-card-390x844.png`.
+
+Final result: passed
