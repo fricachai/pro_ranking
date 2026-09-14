@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026/09/14 21:08:22",
-    "eventCheckedAt": "2026/09/14 21:07:37",
+    "generatedAt": "2026/09/14 21:26:22",
+    "eventCheckedAt": "2026/09/14 21:25:21",
     "yahooNewsStatus": "complete",
     "yahooNewsCoverageRate": 100,
     "etfDate": "2026-09-14",
@@ -378,8 +378,8 @@
     "caveat": "中期分數只用於研究排序；短期分數是時機，長期分數是資料尚不完整的初篩。未取得完整一致預估、自由現金流、ROIC、資本配置紀律、目標價與個人風險承受度，不是個人化投資建議。"
   },
   "eventsMeta": {
-    "fetchedAt": "2026-09-14T13:07:37.936Z",
-    "totalCount": 536,
+    "fetchedAt": "2026-09-14T13:25:21.537Z",
+    "totalCount": 532,
     "aiEnabled": false,
     "sourceScope": {
       "xiaoyuEventTypes": [
@@ -404,7 +404,7 @@
         "failedStocks": 0,
         "rateLimitedStocks": 0,
         "budgetExhaustedStocks": 0,
-        "itemCount": 530,
+        "itemCount": 529,
         "coverageRate": 100,
         "preferredCoverageRate": 80
       }
@@ -413,7 +413,7 @@
       "buyback": 52,
       "disposal": 1,
       "material_info": 3,
-      "news_pending": 480
+      "news_pending": 476
     }
   },
   "topThree": [
@@ -36917,9 +36917,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Nvidia Invests $3.5 Billion in MediaTek to Expand Beyond GPUs",
-          "publishTime": "Tue, 01 Sep 2026 21:31:04 +0000",
-          "sourceUrl": "https://decrypt.co/377128/nvidia-invests-3-5-billion-mediatek",
+          "title": "Here Is How to Play Nvidia Stock After Its Blockbuster AI Deal",
+          "publishTime": "Fri, 04 Sep 2026 12:52:27 +0000",
+          "sourceUrl": "https://www.barchart.com/story/news/4443959/here-is-how-to-play-nvidia-stock-after-its-blockbuster-ai-deal",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -36930,9 +36930,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Here Is How to Play Nvidia Stock After Its Blockbuster AI Deal",
-          "publishTime": "Fri, 04 Sep 2026 12:52:27 +0000",
-          "sourceUrl": "https://www.barchart.com/story/news/4443959/here-is-how-to-play-nvidia-stock-after-its-blockbuster-ai-deal",
+          "title": "Broadcom Delivered Bullish AI Commentary on Fiscal 2027, 2028 Revenue Outlook, Demand Visibility, UBS Says",
+          "publishTime": "Thu, 03 Sep 2026 19:15:06 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/broadcom-delivered-bullish-ai-commentary-191506275.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -37274,34 +37274,7 @@
         "disposal": null,
         "buyback": null
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "FIRST NATIONAL FINANCIAL CORPORATION NAMES HASSAN PIRNIA AS CHIEF EXECUTIVE OFFICER",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/real-estate/articles/first-national-financial-corporation-names-130000718.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Transaction in Own Shares",
-          "publishTime": "Mon, 14 Sep 2026 12:48:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/transaction-own-shares-124800499.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "5/10日延續加碼",
       "signalRobust": false,
       "rejectionReasons": [
@@ -48271,7 +48244,7 @@
           "eventType": "news_pending",
           "title": "MSI XpertStation WS300 Based on NVIDIA DGX Station Now Available",
           "publishTime": "Thu, 27 Aug 2026 16:30:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/msi-xpertstation-ws300-based-nvidia-163000133.html",
+          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/msi-xpertstation-ws300-based-nvidia-163000390.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -48686,7 +48659,7 @@
           "eventType": "news_pending",
           "title": "Abaxx Exchange Completes First Physical Delivery Under Gold Singapore Futures Contract",
           "publishTime": "Tue, 24 Feb 2026 12:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/abaxx-exchange-completes-first-physical-120000501.html",
+          "sourceUrl": "https://finance.yahoo.com/news/abaxx-exchange-completes-first-physical-120000223.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -51465,9 +51438,9 @@
       "eventsLayer": [
         {
           "eventType": "news_pending",
-          "title": "Market Chatter: Aon Commences Seven-Part US Dollar Bond Sale to Fund USI Takeover",
-          "publishTime": "Mon, 14 Sep 2026 12:40:24 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/market-chatter-aon-commences-seven-124024801.html",
+          "title": "Transforming US Power Markets: LPS Futures Launches ERCOT Auctions on Trayport",
+          "publishTime": "Mon, 14 Sep 2026 13:15:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/energy/articles/transforming-us-power-markets-lps-131500952.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -51478,9 +51451,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Michael Dell's DFO Management nears $7.7B Baldwin Insurance deal",
-          "publishTime": "Mon, 14 Sep 2026 12:35:04 +0000",
-          "sourceUrl": "https://qz.com/michael-dell-dfo-management-baldwin-insurance-take-private-091426",
+          "title": "Temporal Raises $550 Million in Series E Round: NYSE Content Update",
+          "publishTime": "Mon, 14 Sep 2026 13:14:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/temporal-raises-550-million-series-131400086.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -51491,9 +51464,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Life Sciences Virtual Investor Forum Agenda Announced",
-          "publishTime": "Mon, 14 Sep 2026 12:35:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/healthcare/articles/life-sciences-virtual-investor-forum-123500542.html",
+          "title": "How to Maximize Your Retirement Portfolio with These Top-Ranked Dividend Stocks",
+          "publishTime": "Mon, 14 Sep 2026 13:10:02 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/maximize-retirement-portfolio-top-ranked-131002956.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -51504,9 +51477,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "ERS 2026: Objective nighttime cough data linked to subsequent asthma symptom severity, Albus Health reports",
-          "publishTime": "Mon, 14 Sep 2026 12:34:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/healthcare/articles/ers-2026-objective-nighttime-cough-123400238.html",
+          "title": "Improve Your Retirement Income with These 3 Top-Ranked Dividend Stocks",
+          "publishTime": "Mon, 14 Sep 2026 13:10:02 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/improve-retirement-income-3-top-131002300.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -51517,9 +51490,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Blackrock Silver Receives Conditional Approval to List on The TSX and Establishes ATM Program as Longer Term Financial Alternatives",
-          "publishTime": "Mon, 14 Sep 2026 12:31:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/blackrock-silver-receives-conditional-approval-123100232.html",
+          "title": "Germany seeks guarantees from Italy's UniCredit over Commerzbank takeover",
+          "publishTime": "Mon, 14 Sep 2026 13:08:31 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/germany-seeks-guarantees-italys-unicredit-130831515.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -55206,6 +55179,19 @@
         },
         {
           "eventType": "news_pending",
+          "title": "TWSE Returns to COMPUTEX: The World's Fifth‑Largest Capital Market Powering a Full‑Stack AI Ecosystem",
+          "publishTime": "Wed, 27 May 2026 02:00:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/twse-returns-computex-worlds-fifth-020000452.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "Global Market Highlights 3 Stocks Estimated Below Intrinsic Value",
           "publishTime": "Fri, 15 May 2026 09:38:03 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/global-market-highlights-3-stocks-093803131.html",
@@ -55980,6 +55966,32 @@
       "eventsLayer": [
         {
           "eventType": "news_pending",
+          "title": "GSME Joined TSMC OIP Value Chain Alliance in North America",
+          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/articles/gsme-joined-tsmc-oip-value-130000612.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
+          "title": "Alchip Technologies Showcases Advanced ASIC Design and Packaging at AI Infra Summit 2026",
+          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/alchip-technologies-showcases-advanced-asic-130000284.html",
+          "source": "yahoo_news",
+          "confirmed": false,
+          "dateKind": "published",
+          "sourceStartDate": null,
+          "sourceEndDate": null,
+          "aiSummary": null,
+          "importance": null
+        },
+        {
+          "eventType": "news_pending",
           "title": "Buy These 5 Top-Ranked Wide Moat Stocks to Strengthen Your Portfolio",
           "publishTime": "Mon, 14 Sep 2026 12:45:00 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/buy-5-top-ranked-wide-124500520.html",
@@ -56009,32 +56021,6 @@
           "title": "The Zacks Analyst Blog Highlights Amkor Technology, Ultra Clean, FormFactor, Taiwan Semiconducto and NVIDIA",
           "publishTime": "Mon, 14 Sep 2026 10:06:00 +0000",
           "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/zacks-analyst-blog-highlights-amkor-100600528.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Semiconductor Precision Parts Market Outlook 2025-2030: Advanced Chip Manufacturing and Next-Generation Technologies Create New Growth Opportunities",
-          "publishTime": "Mon, 14 Sep 2026 09:36:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/articles/semiconductor-precision-parts-market-outlook-093600938.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Amazon and 2 Other AI Stocks to Buy With $5,000",
-          "publishTime": "Mon, 14 Sep 2026 00:46:01 +0000",
-          "sourceUrl": "https://www.fool.com/investing/2026/09/13/amazon-and-2-other-ai-stocks-to-buy-with-usd5-000/",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -65505,9 +65491,9 @@
       "eventsLayer": [
         {
           "eventType": "news_pending",
-          "title": "GSME Joined TSMC OIP Value Chain Alliance in North America",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/articles/gsme-joined-tsmc-oip-value-130000578.html",
+          "title": "Stratasys Additive Manufacturing Solutions to Roll Out Across 20+ GM Manufacturing Facilities",
+          "publishTime": "Mon, 14 Sep 2026 13:17:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/articles/stratasys-additive-manufacturing-solutions-roll-131700508.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -65518,9 +65504,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Alchip Technologies Showcases Advanced ASIC Design and Packaging at AI Infra Summit 2026",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/alchip-technologies-showcases-advanced-asic-130000284.html",
+          "title": "SafeSpace Global Announces First K-12 School Installation of Its AI-Powered Physical Safety Platform",
+          "publishTime": "Mon, 14 Sep 2026 13:15:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/safespace-global-announces-first-k-131500177.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -65531,9 +65517,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Verizon Leads 6G Momentum with Nine New Forum Members and Successful Real-World ISAC and AI-Native Trials",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/verizon-leads-6g-momentum-nine-130000627.html",
+          "title": "Workiva to Host 2026 Analyst &amp; Investor Day",
+          "publishTime": "Mon, 14 Sep 2026 13:15:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/workiva-host-2026-analyst-investor-131500682.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -65544,9 +65530,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "MKS Inc. Releases 2026 Environmental, Social, Governance Report",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/articles/mks-inc-releases-2026-environmental-130000691.html",
+          "title": "Can Seagate Extend the Growth Momentum in Its Edge IoT Business?",
+          "publishTime": "Mon, 14 Sep 2026 13:13:00 +0000",
+          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/seagate-extend-growth-momentum-edge-131300564.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -65557,9 +65543,9 @@
         },
         {
           "eventType": "news_pending",
-          "title": "Cellebrite CTO Chris Wade to Lead Cellebrite Labs, Sharpening Focus on Mobile Research",
-          "publishTime": "Mon, 14 Sep 2026 13:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/technology/ai/articles/cellebrite-cto-chris-wade-lead-130000870.html",
+          "title": "Wall Street Strategist Tom Lee Says Ethereum Is Going to $6,000 By December. Here's Why He's Wrong.",
+          "publishTime": "Mon, 14 Sep 2026 13:11:00 +0000",
+          "sourceUrl": "https://www.fool.com/investing/2026/09/14/wall-street-strategist-tom-lee-says-ethereum-is-go/",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
@@ -66597,21 +66583,7 @@
         "disposal": null,
         "buyback": null
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "Cleanaway Waste Management Limited's (ASX:CWY) institutional shareholders had a great week as one-year returns increased after a 4.3% gain last week",
-          "publishTime": "Sun, 05 Oct 2025 00:54:52 +0000",
-          "sourceUrl": "https://finance.yahoo.com/news/cleanaway-waste-management-limiteds-asx-005452655.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "5/10日延續加碼",
       "signalRobust": false,
       "rejectionReasons": [
@@ -70479,21 +70451,7 @@
         "disposal": null,
         "buyback": null
       },
-      "eventsLayer": [
-        {
-          "eventType": "news_pending",
-          "title": "Apple vs. Microsoft: This Is the Magnificent Seven Stock I’d Buy Today",
-          "publishTime": "Mon, 14 Sep 2026 13:00:12 +0000",
-          "sourceUrl": "https://247wallst.com/investing/2026/09/14/apple-vs-microsoft-this-is-the-magnificent-seven-stock-id-buy-today/",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        }
-      ],
+      "eventsLayer": [],
       "flowState": "5/10日延續加碼",
       "signalRobust": false,
       "rejectionReasons": [
@@ -104141,19 +104099,6 @@
           "title": "Alchip Leverages AWS to Enable Cloud-Based Silicon Execution for AI and Data Center Platform",
           "publishTime": "Tue, 02 Jun 2026 13:00:00 +0000",
           "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/alchip-leverages-aws-enable-cloud-130000357.html",
-          "source": "yahoo_news",
-          "confirmed": false,
-          "dateKind": "published",
-          "sourceStartDate": null,
-          "sourceEndDate": null,
-          "aiSummary": null,
-          "importance": null
-        },
-        {
-          "eventType": "news_pending",
-          "title": "Alchip Technologies Reports Improved First Quarter Financial Results",
-          "publishTime": "Wed, 27 May 2026 10:00:00 +0000",
-          "sourceUrl": "https://finance.yahoo.com/markets/stocks/articles/alchip-technologies-reports-improved-first-100000785.html",
           "source": "yahoo_news",
           "confirmed": false,
           "dateKind": "published",
