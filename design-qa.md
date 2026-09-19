@@ -85,6 +85,20 @@ passed
 
 Final result: passed
 
+## 2026-09-19 國際資料與股票決策關聯 UI QA
+
+- Source and implementation: `international-ui.js`; generated through `node .\full-professional-stock-screen.js --render-existing`. No generated HTML was edited directly and no report data, score, rank, or action rule was changed.
+- Visible decision map: the international context now explains three uses at a glance: `進場節奏`, `產業／資金確認`, and `事件風險檢查`.
+- Card semantics: the primary and expanded context cards show `對決策的作用`; CFTC positions and policy/energy/sanctions announcements explicitly retain their non-signal limitations.
+- Desktop viewport: 1050 x 900 CSS px; screenshot `output/international-context-1050x900.png`; `scrollWidth = clientWidth = 1050`.
+- Mobile viewport: 390 x 844 CSS px; screenshot `output/international-context-390x844.png`; `scrollWidth = clientWidth = 390`; the decision map collapsed to one column.
+- Interaction: all three international details sections were expanded successfully; section guides and card-use explanations were present.
+- Browser console errors and warnings: 0 at both tested viewports.
+- Privacy boundary: no credentials, localStorage positions, costs, or private user data were used or committed.
+- Publication status: local UI render completed; GitHub Pages publication was not requested or performed.
+
+Final result: passed
+
 ## 2026-08-10 持股決策卡滑鼠拖曳排序 QA
 
 - Change: the left stock-title block now supports left-button press and vertical drag. The existing `上移`／`下移` buttons remain available.

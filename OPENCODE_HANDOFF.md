@@ -246,3 +246,35 @@ OpenCode 必須依結果回報：
 - 券商一致預估、目標價、完整自由現金流與使用者個人持倉成本仍未取得。
 - 網路來源若停機或改欄位，管線會停止等待修復；OpenCode 不得自行降低門檻或編造替代資料。
 - 持倉追蹤位於瀏覽器 `localStorage`；換電腦或瀏覽器前須由使用者自行匯出 JSON，且不得提交到公開儲存庫。
+
+## 2026-09-19 跨 Agent 接手：國際資料與股票決策關聯 UI
+
+### 使用者目標
+
+國際市場區塊目前只有數值與折線圖，使用者看不出與股票策略分析及買賣決策的關聯。介面必須讓投資人一眼理解每組資料的用途、可支持的判斷與不可過度解讀的限制。
+
+### 權威設計邊界
+
+- 國際資料是獨立的環境濾網，不是個股買賣訊號。
+- 不得改變 `HORIZON_SCORE_V2`、排名、`entryAction`、`holdingAction`、`todayAction`、`nextCheck` 或任何硬性門檻。
+- 三組用途固定為：進場節奏、產業／資金確認、事件風險檢查。
+- 所有指標需同時顯示「對決策的作用」；期貨部位、公告與匯率等資料仍需揭露限制，不能單獨翻譯成買進或賣出。
+
+### 目前工作狀態
+
+- 已修改：`international-ui.js`。
+- 已加入：國際區塊總說明、三步決策地圖、主要卡片的「對決策的作用」、半導體／能源／法人部位用途說明、事件公告的風險檢查說明。
+- 已同步規則：`AGENTS.md` 已加入 `INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1`。
+- 已完成：純 UI 重產、Node 語法檢查、`INTERNATIONAL_CONTEXT_TESTS=PASS`、1050×900／390×844 瀏覽器 QA、`design-qa.md` 紀錄；兩種尺寸均無頁面級水平溢出，console errors/warnings 為 0。
+- 尚未完成：是否發布 Pages；目前只完成本機 UI 產出，未執行公開發布。
+
+### 下一個 Agent 直接接手
+
+1. 先確認 `git status --short --branch`，不得清除或覆寫非本次任務變更。
+2. 執行 `node --check .\international-ui.js` 與 `node --check .\full-professional-stock-screen.js`。
+3. 以既有 `HORIZON_SCORE_V2` 報告執行 `node .\full-professional-stock-screen.js --render-existing`；不得直接手改生成 HTML，也不得重新抓資料冒充每日更新。
+4. 若需重驗，啟動本機 HTTP server，以至少 1050×900 與 390×844 檢查三步決策地圖、卡片用途文字、折疊區說明、頁面級水平溢出與 console warnings。
+5. `design-qa.md` 已記錄本次來源／實作、尺寸、互動、console、水平溢出與 `Final result: passed`。
+6. 若使用者要求公開發布，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；不要呼叫被禁止的 `Update-ProfessionalScreen.ps1 -Publish`。
+
+<!-- INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1 -->
