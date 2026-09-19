@@ -266,7 +266,7 @@ OpenCode 必須依結果回報：
 - 已加入：國際區塊總說明、三步決策地圖、主要卡片的「對決策的作用」、半導體／能源／法人部位用途說明、事件公告的風險檢查說明。
 - 已同步規則：`AGENTS.md` 已加入 `INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1`。
 - 已完成：純 UI 重產、Node 語法檢查、`INTERNATIONAL_CONTEXT_TESTS=PASS`、1050×900／390×844 瀏覽器 QA、`design-qa.md` 紀錄；兩種尺寸均無頁面級水平溢出，console errors/warnings 為 0。
-- 尚未完成：是否發布 Pages；目前只完成本機 UI 產出，未執行公開發布。
+- 已發布：提交 `ebcce3562fc84eb98ebfb27e774c308f164fdf09` 已推送 `origin/main`；Pages workflow run `35434394717` 成功，線上 byte match 通過，正式網址為 `https://fricachai.github.io/pro_ranking/`。
 
 ### 下一個 Agent 直接接手
 
@@ -275,6 +275,6 @@ OpenCode 必須依結果回報：
 3. 以既有 `HORIZON_SCORE_V2` 報告執行 `node .\full-professional-stock-screen.js --render-existing`；不得直接手改生成 HTML，也不得重新抓資料冒充每日更新。
 4. 若需重驗，啟動本機 HTTP server，以至少 1050×900 與 390×844 檢查三步決策地圖、卡片用途文字、折疊區說明、頁面級水平溢出與 console warnings。
 5. `design-qa.md` 已記錄本次來源／實作、尺寸、互動、console、水平溢出與 `Final result: passed`。
-6. 若使用者要求公開發布，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；不要呼叫被禁止的 `Update-ProfessionalScreen.ps1 -Publish`。
+6. 若後續再次修改本區塊，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；不要呼叫被禁止的 `Update-ProfessionalScreen.ps1 -Publish`。
 
 <!-- INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1 -->

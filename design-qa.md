@@ -95,7 +95,7 @@ Final result: passed
 - Interaction: all three international details sections were expanded successfully; section guides and card-use explanations were present.
 - Browser console errors and warnings: 0 at both tested viewports.
 - Privacy boundary: no credentials, localStorage positions, costs, or private user data were used or committed.
-- Publication status: local UI render completed; GitHub Pages publication was not requested or performed.
+- Publication status: published through the Pages workflow; online content markers and normalized byte match were verified at `https://fricachai.github.io/pro_ranking/`.
 
 Final result: passed
 
