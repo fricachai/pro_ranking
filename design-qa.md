@@ -220,3 +220,11 @@ Final result: passed
 - Validation: Node 語法、國際資料契約與個股決策規則均通過；純 UI 重產完成。
 
 Final result: passed
+
+## 2026-09-19 個股 entryPlan 數值化 QA
+
+- `entryPlanText` 未來更新會直接寫出目前價格、20日EMA觀察區、ETF／主動ETF／外資持股 5 日數值與偏強／偏弱結論。
+- `6770` 現行快速卡已驗證「74.00 高於 70.10–70.90，現在不追價」，並顯示 ETF 與外資持股實際增加數值。
+- 沒有改變 HORIZON_SCORE_V2、排名、門檻或個股動作計算。
+
+Final result: passed

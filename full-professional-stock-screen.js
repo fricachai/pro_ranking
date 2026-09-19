@@ -1679,8 +1679,15 @@ function possibleUnderestimateText(record) {
 function entryPlanText(record) {
   const t = record.technical;
   if (!t) return '缺少足夠價格資料，暫不規劃布局。';
+  const price = record.live?.analysisPrice ?? t.close;
+  const zoneLow = t.ema20 * 0.98, zoneHigh = t.ema20 * 1.02;
+  const etf5 = record.etf?.totalChanges?.[5], activeEtf5 = record.etf?.activeChanges?.[5], foreign5 = record.foreignHolding?.trendReliable ? record.foreignHolding.d5Lots : null;
+  const flowText = (value, label) => !Number.isFinite(value) ? `${label}資料不足` : value > 0 ? `${label}增加 ${fmt(value, 0)} 張（偏強）` : value < 0 ? `${label}減少 ${fmt(Math.abs(value), 0)} 張（偏弱）` : `${label}沒有變化（中性）`;
+  const flowConclusion = Number.isFinite(etf5) && Number.isFinite(foreign5) && etf5 > 0 && foreign5 > 0 ? 'ETF與外資都增加，籌碼偏強。' : Number.isFinite(etf5) && Number.isFinite(foreign5) && etf5 < 0 && foreign5 < 0 ? 'ETF與外資都減少，籌碼偏弱，先不要加碼。' : 'ETF與外資方向不一致，先維持、不追價。';
+  const flowSummary = `${flowText(etf5, 'ETF總持有')}；${flowText(activeEtf5, '主動ETF')}；${flowText(foreign5, '外資持股')}。${flowConclusion}`;
   if (record.bucket === 'A') {
-    return `採2至3批而非一次買足；20日EMA約 ${fmt(t.ema20, 2)}，較合理的觀察承接區約 ${fmt(t.ema20 * 0.98, 2)} 至 ${fmt(t.ema20 * 1.02, 2)}。只有ETF與外資持股未轉弱時才考慮下一批。`;
+    const priceAction = Number.isFinite(price) && price > zoneHigh ? `目前價格 ${fmt(price, 2)} 高於區間，現在不追價，等回到 ${fmt(zoneLow, 2)}–${fmt(zoneHigh, 2)} 再分批買` : Number.isFinite(price) && price < zoneLow ? `目前價格低於區間，先觀察是否站回 ${fmt(zoneLow, 2)}–${fmt(zoneHigh, 2)}` : `目前價格在 ${fmt(zoneLow, 2)}–${fmt(zoneHigh, 2)} 區間，可分2至3批買`;
+    return `${priceAction}；20日EMA約 ${fmt(t.ema20, 2)}。${flowSummary}`;
   }
   const firstRisk = record.rejectionReasons[0] || '尚未形成足夠多因子共識';
   let confirmation = `價格守住20日EMA約 ${fmt(t.ema20, 2)}，且ETF與外資持股5/10日維持非負`;
@@ -1689,7 +1696,7 @@ function entryPlanText(record) {
   if (/除權息/.test(firstRisk)) confirmation = `除權息後完成價格重置，再確認調整後價格守住20日EMA約 ${fmt(t.ema20, 2)}`;
   if (/外資持股/.test(firstRisk)) confirmation = '外資持股5日不再下降，且外資5日買賣超轉為非負';
   if (/投信/.test(firstRisk)) confirmation = '投信5日不再持續賣超，且10日累積買賣超回到非負';
-  return `目前先不追價。等待「${firstRisk}」解除；具體確認方式是${confirmation}，再評估是否分批。`;
+  return `現在不買：${firstRisk}。具體要看到${confirmation}，再評估是否分批。${flowSummary}`;
 }
 
 function riskActionText(record) {
