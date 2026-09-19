@@ -85,6 +85,15 @@ passed
 
 Final result: passed
 
+## 2026-09-19 國際簡易判讀句型 QA
+
+- Refinement: the visible judgment key explains the four outcomes, and every primary/expanded card uses the consistent `目前建議：...` sentence form.
+- USD/TWD neutral state now explicitly says: `目前建議：先不因匯率買進或賣出，回看外資與個股價格`.
+- Expanded SOX, oil, and Asia FX cards were also normalized to the same plain-language sentence form.
+- No score, rank, stock action, or hard gate was changed.
+
+Final result: passed
+
 ## 2026-09-19 國際指標一般使用者簡易判讀 QA
 
 - Change: every international indicator card now shows a visible `簡單判讀` statement before the technical rationale. The statements use four plain-language outcomes: find qualifying stocks, wait/no new position, raise caution, or do not trade from this indicator alone.
