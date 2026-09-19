@@ -129,6 +129,15 @@ function main() {
     ranking: report.ranking.map(compactRow).filter(row => row.code && Number.isFinite(row.close) && row.close > 0)
   };
   if (!snapshot.ranking.length) throw new Error('No valid close prices were available for the snapshot.');
+  // Availability time is separate from the Taiwan close date. Never backdate
+  // a US close, CFTC release, or a later query into an earlier trading signal.
+  if (report.internationalContext) {
+    snapshot.internationalResearch = {
+      availableAt: report.internationalContext.checkedAt,
+      eligibleForExistingBacktest: false,
+      context: report.internationalContext
+    };
+  }
 
   fs.mkdirSync(options.outputDir, { recursive: true });
   const dateSlug = priceDate.replace(/-/g, '');

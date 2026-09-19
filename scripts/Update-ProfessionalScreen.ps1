@@ -99,6 +99,11 @@ function Get-ReportFingerprint {
     if ($value.eventsMeta) {
         $value.eventsMeta.PSObject.Properties.Remove('fetchedAt')
     }
+    if ($value.PSObject.Properties['internationalContext']) {
+        $value.internationalContext.PSObject.Properties.Remove('checkedAt')
+        foreach ($source in $value.internationalContext.sources) { $source.PSObject.Properties.Remove('checkedAt') }
+    }
+    if ($value.PSObject.Properties['macroOverlay']) { $value.macroOverlay.PSObject.Properties.Remove('checkedAt') }
     $normalized = $value | ConvertTo-Json -Depth 100 -Compress
     $bytes = [Text.Encoding]::UTF8.GetBytes($normalized)
     $sha256 = [Security.Cryptography.SHA256]::Create()
@@ -155,7 +160,7 @@ function Get-LiveReportState {
     $localBytes = [IO.File]::ReadAllBytes($IndexHtml)
     $localHash = Get-Sha256Hex -Bytes $localBytes
     $liveHash = Get-Sha256Hex -Bytes $liveBytes
-    $required = @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
+    $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     return [pscustomobject]@{
         StatusCode = [int]$response.StatusCode
@@ -391,6 +396,10 @@ try {
     }
 
     $report = Get-Content $LatestJson -Raw -Encoding utf8 | ConvertFrom-Json
+    $contextExitCode = Invoke-NodeLogged -Arguments @((Join-Path $RepoRoot 'scripts/Test-InternationalContext.js'), '--report', $LatestJson) -LogPath $logPath
+    if ($contextExitCode -ne 0) { throw 'International context validation failed.' }
+    $contextCheckedAt = [DateTimeOffset]::Parse([string]$report.internationalContext.checkedAt)
+    if ($contextCheckedAt.UtcDateTime -lt $refreshStartedUtc.AddMinutes(-2)) { throw 'International context was not checked in this update.' }
     $meta = $report.meta
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
@@ -547,7 +556,7 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 

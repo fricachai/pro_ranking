@@ -265,11 +265,12 @@ $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
 if ($nodeMajor -lt 18) { throw "Node.js 18 or newer is required. Found: $nodeVersion" }
 
-foreach ($relativePath in @('fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js', 'scripts/Test-PositionDecisionRules.js')) {
+foreach ($relativePath in @('international-context.js', 'international-ui.js', 'scripts/Test-InternationalContext.js', 'fetch-events.js', 'full-professional-stock-screen.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js', 'scripts/Test-PositionDecisionRules.js')) {
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenFetchResilience.js')) | Out-Null
 Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-PositionDecisionRules.js')) | Out-Null
+Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-InternationalContext.js')) | Out-Null
 Invoke-Checked -Name 'powershell.exe' -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1')) | Out-Null
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
@@ -458,6 +459,9 @@ try {
     }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json
+    if ($report.PSObject.Properties['internationalContext']) {
+        Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-InternationalContext.js'), '--report', (Join-Path $RepoRoot 'professional-screen-report/latest.json')) | Out-Null
+    }
     $events = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/events/latest-events.json') -Raw -Encoding utf8 | ConvertFrom-Json
     if (-not $report.meta.etfDate -or -not $report.meta.marketDate -or -not $report.eventsMeta) {
         throw 'latest.json is missing report dates or events metadata.'
@@ -611,6 +615,11 @@ try {
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
         foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
+        }
+        if ($report.PSObject.Properties['internationalContext']) {
+            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate')) {
+                if (-not $response.Content.Contains($marker)) { throw "Live page is missing international marker: $marker" }
+            }
         }
         $forbiddenLiveTerms = @(
             (-join @([char]0x5F85, [char]0x67E5, [char]0x6838, [char]0x5019, [char]0x9078)),
