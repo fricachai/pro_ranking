@@ -329,6 +329,6 @@ OpenCode 必須依結果回報：
 - 已以 `--render-existing` 重產頁面；沒有重新抓資料，也沒有改動 `HORIZON_SCORE_V2`。
 - `INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、兩個 Node 語法檢查通過。
 - 1050×900 與 390×844 實際瀏覽器檢查：方向結論、6770 個股卡、三組摘要可讀，console errors/warnings 為 0，無水平溢出。
-- 尚未 commit、推送與重新部署本次修正版；完成前不得宣稱公開網站已更新。
+- 已完成 commit `2f2898b`、推送 `origin/main` 與 Pages workflow `35442315388`；線上 HTTP 200、方向結論、三組摘要、1050／390 寬度與 console 0 均已驗證，公開網址為 `https://fricachai.github.io/pro_ranking/`。
 
 <!-- INTERNATIONAL_DIRECT_ACTION_GUIDE_V2 -->
