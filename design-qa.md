@@ -85,6 +85,18 @@ passed
 
 Final result: passed
 
+## 2026-09-19 國際區塊新手快速判讀與三組摘要 QA
+
+- Change: `international-ui.js` 新增一個「給不熟投資的人」方向框，分別說明尚未持有與已經持有時的下一步；另新增「市場氣氛／半導體與能源／外資與利率」三組快速摘要卡，以及折線圖的讀法與限制。
+- Readability: 現在頁面先給「先觀望／可找個股／先保守／資料不足」等短句，再顯示數值、資料日期與限制；不把外資期貨淨空單當成現貨賣股，也明確揭露目前沒有同口徑全球能源法人持倉資料。
+- Source and implementation: 只沿用現有 `HORIZON_SCORE_V2` 報告與 `node .\full-professional-stock-screen.js --render-existing` 重產介面；沒有重新抓資料，也沒有改變評分、排名、個股動作或硬性門檻。
+- Desktop viewport: 1050 x 900 CSS px；快速摘要三欄排列，`scrollWidth = clientWidth = 1050`。
+- Mobile viewport: 390 x 844 CSS px；快速摘要收為單欄、方向框兩個動作區收為單欄，`scrollWidth = clientWidth = 390`。
+- Interaction and errors: 三個國際資料折疊區可正常展開，來源表格共 12 筆；瀏覽器 console errors/warnings：0。
+- Boundary: 國際資料仍只是環境濾網；缺少同口徑全球能源法人持倉、場外外匯完整部位與即時逐筆資料，不能由單一圖表直接決定買賣。
+
+Final result: passed
+
 ## 2026-09-19 國際簡易判讀句型 QA
 
 - Refinement: the visible judgment key explains the four outcomes, and every primary/expanded card uses the consistent `目前建議：...` sentence form.

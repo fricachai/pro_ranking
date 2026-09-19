@@ -280,3 +280,31 @@ OpenCode 必須依結果回報：
 6. 若後續再次修改本區塊，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；不要呼叫被禁止的 `Update-ProfessionalScreen.ps1 -Publish`。
 
 <!-- INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1 -->
+
+## 2026-09-19 新手版國際市場快速判讀 UI
+
+### 使用者目標
+
+使用者要求國際市場區塊版面與圖面更簡單、容易吸引一般人閱讀，並能快速回答「現在適不適合新增部位」與「已持有時先看什麼」。
+
+### 本次已完成
+
+- `international-ui.js` 新增「給不熟投資的人」方向框，依 `summary.regime` 顯示「可找個股／先觀望／先保守／資料不足」，並分開呈現尚未持有與已經持有的行動提示。
+- 新增三組快速摘要：市場氣氛、半導體與能源、外資與利率；每組都同時顯示數值、資料日期、簡短判讀與限制。
+- 明確揭露「沒有同口徑全球能源法人持倉」與「淨空單不等於現貨賣股」，避免把目前可取得的廣泛期貨資料誤解成產業法人真實持倉。
+- 新增折線圖讀法提示，說明上升／下降只表示近期變化，不能單獨決定買賣。
+- 以 `node .\full-professional-stock-screen.js --render-existing` 同步重產 `index.html`、日期版 HTML 與 `latest.html`；沒有重新抓資料，沒有修改 `HORIZON_SCORE_V2`、排名、個股動作或硬性門檻。
+- `design-qa.md` 已記錄 1050×900、390×844、折疊區、來源表格、水平溢出與 console QA，結果為 passed。
+
+### 保留與排除
+
+- 保留現有官方來源、資料日期、證據級別、時效與限制；國際區塊仍是獨立環境濾網。
+- 不把 CFTC 金融期貨部位說成半導體／能源法人現貨部位；若未來納入同口徑產業部位，必須先完成官方資料契約、時效與回測驗證。
+- 不保存帳號、密碼、token、cookie、個人持股成本或其他受保護資料。
+
+### 下一步與未驗證項目
+
+- 待完成限定檔案 commit、推送 `origin/main`、Pages workflow 與線上內容驗證。
+- 待線上驗證新標記、三組快速摘要、1050／390 寬度與 console 0；完成前不得宣稱網站已發布本次 UI。
+
+<!-- INTERNATIONAL_CONTEXT_BEGINNER_GUIDE_V1 -->
