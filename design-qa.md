@@ -212,3 +212,11 @@ Final result: passed
 - Boundary: 這是環境方向與個股既有決策欄位的白話呈現；沒有改變 `HORIZON_SCORE_V2`、排名、評分、硬性門檻或個股決策計算。
 
 Final result: passed
+
+## 2026-09-19 長期初篩直接結論 QA
+
+- Change: `crossHorizonReading` 改為直接回答「長期結論：可列入長期研究／不列入長期優先／目前不買／依個股卡維持或減碼」，保留三時間尺度分數與原本決策規則。
+- Boundary: 長期初篩仍不是完整價值評分，也沒有改分數、排名、買賣欄位或硬性門檻。
+- Validation: Node 語法、國際資料契約與個股決策規則均通過；純 UI 重產完成。
+
+Final result: passed

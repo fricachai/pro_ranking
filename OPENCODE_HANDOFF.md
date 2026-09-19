@@ -332,3 +332,8 @@ OpenCode 必須依結果回報：
 - 已完成 commit `2f2898b`、推送 `origin/main` 與 Pages workflow `35442315388`；線上 HTTP 200、方向結論、三組摘要、1050／390 寬度與 console 0 均已驗證，公開網址為 `https://fricachai.github.io/pro_ranking/`。
 
 <!-- INTERNATIONAL_DIRECT_ACTION_GUIDE_V2 -->
+
+### 長期解讀補強
+
+- `full-professional-stock-screen.js` 的長期初篩解讀已改成直接句子：可列入長期研究、不列入長期優先、目前不買，或依個股卡維持／減碼；仍不改正式分數與動作計算。
+- 本次待以最新工作區 commit 完成推送與 Pages 驗證。
