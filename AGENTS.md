@@ -164,6 +164,6 @@ Pages workflow 使用 Jekyll 建置時，可能將 Windows CRLF HTML 正規化�
 ## 跨 Agent UI 交接規則
 
 1. 國際市場脈動區是獨立的環境濾網，不是個股買賣訊號；任何 UI 說明不得暗示國際指標單獨改變 `HORIZON_SCORE_V2`、排名、`entryAction`、`holdingAction`、`todayAction` 或硬性門檻。
-2. 國際資料介面必須讓使用者看出三組用途：進場節奏、產業／資金確認、事件風險檢查；每個指標應說明「對決策的作用」及其限制。
+2. 國際資料介面必須讓使用者看出三組用途：進場節奏、產業／資金確認、事件風險檢查；每個指標應同時提供一般使用者看得懂的「簡單判讀」（偏向可找個股、先觀望、提高警戒或不可單獨買賣）及其限制。
 3. 跨 Agent 接手的目前任務狀態、已修改檔案、尚待驗證項目與下一步，必須同步記錄於 `OPENCODE_HANDOFF.md`；不得只保留在聊天逐字稿。
 4. 本規則標記為 `INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1`。純 UI 修改完成前，必須重產報告並完成 Node 語法、資料契約、桌機／手機版面與 console 檢查；不得直接手改生成 HTML。

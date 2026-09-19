@@ -85,6 +85,18 @@ passed
 
 Final result: passed
 
+## 2026-09-19 國際指標一般使用者簡易判讀 QA
+
+- Change: every international indicator card now shows a visible `簡單判讀` statement before the technical rationale. The statements use four plain-language outcomes: find qualifying stocks, wait/no new position, raise caution, or do not trade from this indicator alone.
+- Example checked: USD/TWD explicitly distinguishes a stronger depreciation pressure from a neutral reading and says existing holdings are not sold from this indicator alone.
+- Event guidance: Fed, energy, and sanctions entries now state not to buy or sell from the headline alone; read the source and check exposure first.
+- Desktop viewport: 1050 x 900 CSS px; `scrollWidth = clientWidth = 1050`.
+- Mobile viewport: 390 x 844 CSS px; `scrollWidth = clientWidth = 390`; decision map remained one column and judgment blocks stayed within card width.
+- Browser console errors and warnings: 0 at both tested viewports.
+- Boundary: these are environment-level suggestions only; no score, rank, entry action, holding action, today action, next check, or hard gate was changed.
+
+Final result: passed
+
 ## 2026-09-19 國際資料與股票決策關聯 UI QA
 
 - Source and implementation: `international-ui.js`; generated through `node .\full-professional-stock-screen.js --render-existing`. No generated HTML was edited directly and no report data, score, rank, or action rule was changed.
