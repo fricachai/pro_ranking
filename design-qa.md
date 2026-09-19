@@ -199,3 +199,16 @@ Final result: passed
 - Visual evidence: `output/playwright/20260901-2454-card-1050x900.png` and `output/playwright/20260901-2454-card-390x844.png`.
 
 Final result: passed
+
+## 2026-09-19 台股大方向與個股具體操作 QA
+
+- Change: 國際區塊改為先顯示「台股執行結論：偏多／中性偏保守／偏空」，再分開說明尚未持有與已經持有的具體做法；不再只顯示「回看個股條件」或「等待承接」。
+- Current report result: `中性偏保守`；頁面直接顯示「台股現在不適合追買，也沒有足夠證據全面賣出」，並列出支持訊號（市場不緊張、半導體上升）與壓力訊號（臺幣轉弱、殖利率上升、外資期貨偏空）。
+- Individual card result: 搜尋 6770 力積電後，卡片顯示「現在不追價：等回到 70.10–70.90 再分批買」，並列出 ETF 5 日增加 4,054 張、外資持股 5 日增加 107,118 張，標示兩項籌碼偏強；不再使用未定義的「等待承接條件」。
+- Operation legend: `可開始承接＝可以分批買`、`等待確認／不建立部位＝現在不買`、`正常持有＝維持`、`降低部位／優先降低風險＝減碼`。
+- Desktop viewport: 1050 x 900；方向結論、支持／壓力摘要、個股操作文字均可見，`scrollWidth = clientWidth = 1050`。
+- Mobile viewport: 390 x 844；方向框、操作對照與個股卡均無頁面級水平溢出，`scrollWidth = clientWidth = 390`。
+- Browser console errors and warnings: 0 at both tested viewports. `INTERNATIONAL_CONTEXT_TESTS=PASS` and `POSITION_DECISION_RULES_PASS`.
+- Boundary: 這是環境方向與個股既有決策欄位的白話呈現；沒有改變 `HORIZON_SCORE_V2`、排名、評分、硬性門檻或個股決策計算。
+
+Final result: passed
