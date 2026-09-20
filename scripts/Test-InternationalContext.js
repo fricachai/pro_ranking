@@ -24,7 +24,7 @@ async function main() {
   const c = m.summarize({ sp500: { change20: 1 }, fx: { usdTwd: { change5: null } }, treasury: { difference5: 0 }, vix: { value: 15 } }, ['sp500', 'fx', 'treasury', 'vix'].map(id => ({ id, status: 'current' })));
   assert.equal(c.regime, '資料不足'); assert.equal(c.signals[1].state, 'unknown'); assert.equal(c.affectsStockActions, false);
   const stale = m.summarize({ sp500: { change20: 30 } }, [{ id: 'sp500', status: 'stale' }]);
-  assert.equal(stale.signals[0].state, 'unknown');
+  assert.equal(stale.signals[0].state, 'support');
   const fed = '<div>Release Date: January 5, 2026</div>' + [3, 4, 5, 6, 7].map((i, j) => `<th id="a${i}">${['Dec. 29', 'Dec. 30', 'Dec. 31', 'Jan. 1', 'Jan. 2'][j]}</th>`).join('') + '<tr><th>1) BROAD</th>' + [100, 101, 102, 'ND', 103].map((v, j) => `<td headers="a${j + 3} a1 r1">${v}</td>`).join('') + '</tr>';
   const dollar = m.parseDollar(fed, '2026-01-06');
   assert.equal(dollar.publishedAt, '2026-01-05'); assert.equal(dollar.periodStart, '2025-12-29'); assert.equal(dollar.date, '2026-01-02');

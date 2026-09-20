@@ -112,6 +112,15 @@ function parseYahoo(payload, asOf) {
   return seriesMetric(r.timestamp.map((t, i) => ({ date: formatter.format(new Date(t * 1000)), value: num(q.close[i]) })), asOf,
     { unit: r.meta.instrumentType === 'FUTURE' ? '美元／桶' : '點', quoteKind: '日行情，最近一筆可能尚未收盤', exchangeTimezone: zone });
 }
+async function fetchYahooFx(asOf, fetchImpl) {
+  const symbols = { usdTwd: 'TWD%3DX', usdJpy: 'JPY%3DX', usdCny: 'CNY%3DX' };
+  const entries = await Promise.all(Object.entries(symbols).map(async ([key, symbol]) => {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=3mo&interval=1d`;
+    const body = await request(url, fetchImpl);
+    return [key, parseYahoo(JSON.parse(body), asOf)];
+  }));
+  return Object.fromEntries(entries);
+}
 function parseCot(rows, asOf) {
   if (!Array.isArray(rows)) throw new Error('CFTC schema changed');
   return ['S&P 500 Consolidated', 'UST 10Y NOTE', 'EURO FX'].map(market => {
@@ -148,17 +157,18 @@ function freshness(observed, asOf, maxDays) {
 }
 async function request(url, fetchImpl = fetch) {
   let last;
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const r = await fetchImpl(url, { signal: AbortSignal.timeout(12000), headers: { 'User-Agent': 'pro-ranking-research/1.0', Accept: '*/*' } });
-      if (!r.ok) { const e = new Error(`HTTP ${r.status}`); e.retryable = r.status === 429 || r.status >= 500; throw e; }
+      const r = await fetchImpl(url, { signal: AbortSignal.timeout(12000), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; pro-ranking-research/1.0)', Accept: 'application/json,text/plain,*/*' } });
+      if (!r.ok) { const e = new Error(`HTTP ${r.status}`); e.retryable = r.status === 403 || r.status === 429 || r.status >= 500; throw e; }
       return await r.text();
     } catch (e) { last = e; if (e.retryable === false || attempt === 1) break; await new Promise(resolve => setTimeout(resolve, 350)); }
   }
   throw last;
 }
 function summarize(data, sources) {
-  const current = id => sources.find(x => x.id === id)?.status === 'current';
+  const current = id => ['current', 'stale'].includes(sources.find(x => x.id === id)?.status);
+  const freshnessLimited = sources.some(x => x.id === 'fx' && x.status === 'stale');
   const signals = [
     { id: 'equity', label: '美股', value: current('sp500') ? data.sp500?.change20 : null, high: 0, low: 0, inverse: false },
     { id: 'fx', label: '臺幣壓力', value: current('fx') ? data.fx?.usdTwd?.change5 : null, high: 0.5, low: -0.5, inverse: true },
@@ -169,7 +179,7 @@ function summarize(data, sources) {
   const pressure = signals.filter(x => x.state === 'pressure').length;
   const support = signals.filter(x => x.state === 'support').length;
   const regime = available < 4 ? '資料不足' : pressure >= 2 ? '風險升溫' : support >= 3 ? '環境較穩' : '訊號分歧';
-  return { regime, available, total: 4, signals, action: available < 4 ? '先補齊資料，依個股條件確認' : pressure >= 2 ? '檢查曝險，勿因排名追價' : support >= 3 ? '留意達標個股，等待進場條件' : '等待共識，優先看個股價格結構',
+  return { regime, available, total: 4, signals, action: available < 4 ? '目前採保守節奏，先看個股價格與防守條件' : freshnessLimited ? '部分資料日期較舊，先不追價，依個股條件確認' : pressure >= 2 ? '檢查曝險，勿因排名追價' : support >= 3 ? '留意達標個股，等待進場條件' : '等待共識，優先看個股價格結構',
     method: '觀察規則，未完成策略回測：S&P 500 20筆變動；美元／臺幣5筆±0.5%；10年殖利率5筆±20基點；VIX低於20／高於25。四項均可用才給環境標籤；匯率、美元與期貨不重複加權。',
     affectsStockActions: false };
 }
@@ -178,6 +188,9 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
   if (!date(asOf)) throw new Error('Invalid context asOf date');
   const checkedAt = now.toISOString(), year = Number(asOf.slice(0, 4));
   const definitions = structuredClone(DEFINITIONS);
+  const txUrl = new URL(definitions.tx[1]);
+  txUrl.searchParams.set('date', asOf.replaceAll('-', ''));
+  definitions.tx[1] = txUrl.href;
   definitions.treasury[1] = `https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=${year}`;
   const cotUrl = new URL('https://publicreporting.cftc.gov/resource/gpe5-46if.json');
   cotUrl.searchParams.set('$where', "contract_market_name in ('S&P 500 Consolidated','UST 10Y NOTE','EURO FX')");
@@ -206,7 +219,24 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
         source.observedAt = id === 'fx' ? item.usdTwd.date : Array.isArray(item) ? (id === 'cot' ? item.map(x => x.date).sort()[0] : item[0]?.publishedAt?.slice(0, 10)) : item.date;
         source.status = freshness(source.observedAt, asOf, maxAgeDays);
         if (source.status === 'unavailable') throw new Error('No valid observation date');
-      } catch (e) { delete data[id]; source.status = 'unavailable'; source.error = String(e.message).slice(0, 180); }
+      } catch (e) {
+        if (id === 'fx') {
+          try {
+            data[id] = await fetchYahooFx(asOf, fetchImpl);
+            source.observedAt = data[id].usdTwd.date;
+            source.status = freshness(source.observedAt, asOf, source.maxAgeDays);
+            source.evidence = 'B';
+            source.label = 'Yahoo匯率替代參考（期交所端點未回傳）';
+            source.url = 'https://query1.finance.yahoo.com/v8/finance/chart/TWD%3DX?range=3mo&interval=1d';
+            source.fallbackUsed = true;
+            source.error = '期交所匯率端點未回傳，已改用 Yahoo 日行情替代參考。';
+          } catch (fallbackError) {
+            delete data[id]; source.status = 'unavailable'; source.error = String(fallbackError.message).slice(0, 180);
+          }
+        } else {
+          delete data[id]; source.status = 'unavailable'; source.error = String(e.message).slice(0, 180);
+        }
+      }
       sources.push(source);
     }
   }));

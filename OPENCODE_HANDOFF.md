@@ -266,6 +266,7 @@ OpenCode 必須依結果回報：
 - 已加入：國際區塊總說明、三步決策地圖、主要卡片的「對決策的作用」、半導體／能源／法人部位用途說明、事件公告的風險檢查說明。
 - 已追加：每張指標卡的「簡單判讀」，明確使用「可找符合條件個股／先觀望、不新增部位／提高警戒／不可單獨買賣」語意；美元／臺幣等指標不再只提供抽象的資金壓力說明。
 - 已追加：區塊上方的簡易判讀圖例，以及所有主卡／展開卡統一使用「目前建議：……」句型，讓中性狀態也明確說明「先不因該指標買進或賣出」。
+- 已修正：期交所匯率／臺指期端點偶發 HTTP 403 的資料補強；匯率保留官方來源並加入 Yahoo 日行情替代參考，臺指期加入日期參數、標準請求標頭與重試。stale 資料採保守判讀，前台不再以「資料不足」取代台股方向建議。<!-- INTERNATIONAL_CONTEXT_FALLBACK_V1 -->
 - 已同步規則：`AGENTS.md` 已加入 `INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1`。
 - 已完成：純 UI 重產、Node 語法檢查、`INTERNATIONAL_CONTEXT_TESTS=PASS`、1050×900／390×844 瀏覽器 QA、`design-qa.md` 紀錄；兩種尺寸均無頁面級水平溢出，console errors/warnings 為 0。
 - 已發布：提交 `ebcce3562fc84eb98ebfb27e774c308f164fdf09` 已推送 `origin/main`；Pages workflow run `35434394717` 成功，線上 byte match 通過，正式網址為 `https://fricachai.github.io/pro_ranking/`。
