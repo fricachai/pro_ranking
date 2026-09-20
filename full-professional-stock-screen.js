@@ -128,9 +128,14 @@ function formatFetchError(error) {
 }
 
 function isExpectedTwseCalendarGap(error) {
-  const status = Number(error?.status);
-  const text = formatFetchError(error);
-  return status === 307 || /307 Temporary Redirect|redirect count exceeded/i.test(text);
+  const seen = new Set();
+  const inspect = current => {
+    if (!current || seen.has(current)) return false;
+    seen.add(current);
+    if (Number(current.status) === 307 || /307 Temporary Redirect|redirect count exceeded/i.test(String(current.message || ''))) return true;
+    return inspect(current.cause);
+  };
+  return inspect(error);
 }
 
 function isRetryableFetchError(error) {
