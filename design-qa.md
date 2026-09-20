@@ -85,6 +85,17 @@ passed
 
 Final result: passed
 
+## 2026-09-20 國際資料最近營業日回溯 QA
+
+- 問題：週末報告中的美元／臺幣與外資臺指期卡片錯誤顯示沒有前期比較，且資料日期可能空白。
+- 修正：匯率使用官方歷史序列的最近可用營業日；外資臺指期改以期交所官方依日期查詢頁逐日回補，確保最新觀測與前一營業日形成比較。
+- 實際結果：匯率資料日 `2026-09-18`；外資臺指期資料日 `2026-09-18`、比較日 `2026-09-17`、變化 `+2,564口`。
+- 首頁與 `professional-screen-report/latest.html` 文字契約掃描：`尚無前期比較=0`、`日期未知=0`、`資料不足=0`、`無法判定=0`；兩個產出均包含 `31.808` 與 `2026-09-17 +2,564口`。
+- 回歸：`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`FETCH_RESILIENCE_TEST=pass`、`POWERSHELL_BOUNDARY_TEST=pass`。
+- 範圍：本次只更新國際資料快照、資料契約與介面；不改 `HORIZON_SCORE_V2`、排名、個股動作、11 日外資持股門檻或其他硬性資料規則。
+
+Final result: passed
+
 ## 2026-09-20 OpenCode 自主修正與判讀文字契約 QA
 
 - Change: OpenCode 全域與本專案 Build 改為可規劃、編輯、執行、測試、診斷、修正、提交、發布與線上驗證；`/update-report` 遇到失敗改進入根因修正閉環。敏感資料與破壞性操作安全邊界保留。

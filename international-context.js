@@ -4,7 +4,7 @@
 const VERSION = 'INTERNATIONAL_CONTEXT_V1';
 const DEFINITIONS = {
   fx: ['期交所外幣參考匯率', 'https://openapi.taifex.com.tw/v1/DailyForeignExchangeRates', 'A', '每日參考值', 4],
-  tx: ['期交所三大法人期貨', 'https://openapi.taifex.com.tw/v1/MarketDataOfMajorInstitutionalTradersDetailsOfFuturesContractsBytheDate', 'A', '每日盤後', 4],
+  tx: ['期交所三大法人期貨（依日期查詢）', 'https://www.taifex.com.tw/cht/3/futContractsDate', 'A', '每日盤後', 4],
   treasury: ['美國財政部殖利率', '', 'A', '美國營業日', 4],
   vix: ['Cboe VIX', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv', 'A', '美國收盤', 4],
   dollar: ['Fed 廣義美元指數', 'https://www.federalreserve.gov/releases/h10/current/', 'A', '每週公布前週日資料', 11],
@@ -44,9 +44,11 @@ function normalizeSeries(rows, asOf) {
   return [...unique.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 function seriesMetric(rows, asOf, extra = {}) {
-  const s = normalizeSeries(rows, asOf), last = s.at(-1);
+  const s = normalizeSeries(rows, asOf), last = s.at(-1), prior = s.at(-2);
   if (!last) throw new Error('No valid dated observations');
-  return { ...extra, date: last.date, value: last.value, change5: pct(last.value, s.at(-6)?.value),
+  return { ...extra, date: last.date, value: last.value, comparisonDate: prior?.date || null,
+    comparisonValue: prior?.value ?? null, changeFromPrevious: finite(prior?.value) ? last.value - prior.value : null,
+    change5: pct(last.value, s.at(-6)?.value),
     change20: pct(last.value, s.at(-21)?.value), difference5: finite(s.at(-6)?.value) ? last.value - s.at(-6).value : null,
     sampleCount: s.length, series: s.slice(-65) };
 }
@@ -55,19 +57,46 @@ function parseFx(rows, asOf) {
   return Object.fromEntries([['usdTwd', 'USD/NTD'], ['usdJpy', 'USD/JPY'], ['usdCny', 'USD/RMB']]
     .map(([key, field]) => [key, seriesMetric(rows.map(r => ({ date: date(r.Date), value: num(r[field]) })), asOf, { unit: field, quoteKind: '期交所參考匯率' })]));
 }
+function buildTxMetric(observations, asOf, previous = []) {
+  const validObservations = observations.filter(r => date(r.date) && r.date <= asOf && [r.long, r.short, r.net].every(finite)
+    && r.long >= 0 && r.short >= 0 && r.long - r.short === r.net);
+  if (validObservations.length !== observations.length) throw new Error('TAIFEX net position reconciliation failed');
+  const observation = validObservations.sort((a, b) => a.date.localeCompare(b.date)).at(-1);
+  if (!observation) throw new Error('Missing TX foreign/institutional observation');
+  const validPrevious = previous.filter(r => date(r.date) && r.date < observation.date && [r.long, r.short, r.net].every(finite) && r.long - r.short === r.net);
+  const history = [...new Map([...validPrevious, ...validObservations].map(r => [r.date, r])).values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-65);
+  const prior = history.at(-2);
+  return { ...observation, changeFromPrevious: prior ? observation.net - prior.net : null, comparisonDate: prior?.date || null, history,
+    unit: '口', contract: '臺股期貨 TX；全到期月份合計', limitation: '僅 TX，未合併小台／微台；換月與避險均可能影響，淨空單不等於撤出台股。' };
+}
 function parseTx(rows, asOf, previous = []) {
   if (!Array.isArray(rows)) throw new Error('TAIFEX schema changed');
-  const selected = rows.filter(r => r.ContractCode === '臺股期貨' && r.Item === '外資及陸資' && date(r.Date) <= asOf && date(r.Date))
-    .sort((a, b) => b.Date.localeCompare(a.Date))[0];
-  if (!selected) throw new Error('Missing TX foreign/institutional observation');
-  const long = num(selected['OpenInterest(Long)']), short = num(selected['OpenInterest(Short)']), net = num(selected['OpenInterest(Net)']);
-  if (![long, short, net].every(finite) || long < 0 || short < 0 || long - short !== net) throw new Error('TAIFEX net position reconciliation failed');
-  const observation = { date: date(selected.Date), long, short, net, netValueThousands: num(selected['ContractValueofOpenInterest(Net)(Thousands)']) };
-  const validPrevious = previous.filter(r => date(r.date) && r.date < observation.date && [r.long, r.short, r.net].every(finite) && r.long - r.short === r.net);
-  const history = [...new Map([...validPrevious, observation].map(r => [r.date, r])).values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-65);
-  const prior = history.at(-2);
-  return { ...observation, changeFromPrevious: prior ? net - prior.net : null, comparisonDate: prior?.date || null, history,
-    unit: '口', contract: '臺股期貨 TX；全到期月份合計', limitation: '僅 TX，未合併小台／微台；換月與避險均可能影響，淨空單不等於撤出台股。' };
+  const observations = rows.filter(r => r.ContractCode === '臺股期貨' && r.Item === '外資及陸資' && date(r.Date) && date(r.Date) <= asOf)
+    .sort((a, b) => a.Date.localeCompare(b.Date)).map(row => {
+      const long = num(row['OpenInterest(Long)']), short = num(row['OpenInterest(Short)']), net = num(row['OpenInterest(Net)']);
+      return { date: date(row.Date), long, short, net, netValueThousands: num(row['ContractValueofOpenInterest(Net)(Thousands)']) };
+    });
+  return buildTxMetric(observations, asOf, previous);
+}
+function htmlCellText(s) {
+  return text(s).replace(/\u00a0/g, ' ').trim();
+}
+function parseTxHtml(body, asOf, previous = []) {
+  if (!/<form[^>]+id=["']uForm["']/i.test(body)) throw new Error('TAIFEX historical page schema changed');
+  const pageDate = date(/(?:日期|queryDate)[^\d]*(\d{4}[\/-]\d{2}[\/-]\d{2})/i.exec(body)?.[1]?.replaceAll('/', '-'));
+  if (!pageDate || pageDate > asOf) throw new Error('TAIFEX historical page has no valid observation date');
+  const rows = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map(m => m[1])
+    .filter(row => /(?:>\s*外資\s*<|>\s*外資及陸資\s*<)/i.test(row));
+  const row = rows[0];
+  if (!row) throw new Error('TAIFEX historical page missing foreign row');
+  const cells = [...row.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m => htmlCellText(m[1]));
+  if (cells.length < 13) throw new Error('TAIFEX historical foreign row schema changed');
+  const parsed = {
+    Date: pageDate.replaceAll('-', ''), ContractCode: '臺股期貨', Item: '外資及陸資',
+    'OpenInterest(Long)': cells[7], 'OpenInterest(Short)': cells[9], 'OpenInterest(Net)': cells[11],
+    'ContractValueofOpenInterest(Net)(Thousands)': cells[12]
+  };
+  return parseTx([parsed], asOf, previous);
 }
 function parseTreasury(body, asOf) {
   const rows = [...body.matchAll(/<m:properties>([\s\S]*?)<\/m:properties>/g)].map(m => ({ date: date(xml(m[1], 'd:NEW_DATE')),
@@ -215,15 +244,12 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
   if (!date(asOf)) throw new Error('Invalid context asOf date');
   const checkedAt = now.toISOString(), year = Number(asOf.slice(0, 4));
   const definitions = structuredClone(DEFINITIONS);
-  const txUrl = new URL(definitions.tx[1]);
-  txUrl.searchParams.set('date', asOf.replaceAll('-', ''));
-  definitions.tx[1] = txUrl.href;
   definitions.treasury[1] = `https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=${year}`;
   const cotUrl = new URL('https://publicreporting.cftc.gov/resource/gpe5-46if.json');
   cotUrl.searchParams.set('$where', "contract_market_name in ('S&P 500 Consolidated','UST 10Y NOTE','EURO FX')");
   cotUrl.searchParams.set('$order', 'report_date_as_yyyy_mm_dd DESC'); cotUrl.searchParams.set('$limit', '12');
   definitions.cot[1] = cotUrl.href;
-  const parsers = { fx: s => parseFx(JSON.parse(s), asOf), tx: s => parseTx(JSON.parse(s), asOf, previous?.data?.tx?.history || []),
+  const parsers = { fx: s => parseFx(JSON.parse(s), asOf), tx: s => parseTxHtml(s, asOf, previous?.data?.tx?.history || []),
     treasury: s => parseTreasury(s, asOf), vix: s => parseVix(s, asOf), dollar: s => parseDollar(s, asOf),
     cot: s => parseCot(JSON.parse(s), asOf), sp500: s => parseYahoo(JSON.parse(s), asOf), sox: s => parseYahoo(JSON.parse(s), asOf),
     oil: s => parseYahoo(JSON.parse(s), asOf), fed: s => parseRss(s, asOf), energy: s => parseRss(s, asOf), sanctions: s => parseSanctions(s, asOf) };
@@ -235,23 +261,42 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
       const source = { id, label, url, evidence, cadence, maxAgeDays, checkedAt, status: 'unavailable', observedAt: null };
       try {
         const candidates = ['fx', 'tx'].includes(id) ? dateBackfillCandidates(asOf) : [null];
-        let lastError;
+        let lastError, parsedData, lastRequestedDate = null, txRows = [];
         for (const requestedDate of candidates) {
           try {
             const candidateUrl = new URL(url);
-            if (requestedDate) candidateUrl.searchParams.set('date', requestedDate.replaceAll('-', ''));
+            if (requestedDate) {
+              if (id === 'tx') {
+                candidateUrl.searchParams.set('queryDate', requestedDate.replaceAll('-', '/'));
+                candidateUrl.searchParams.set('commodityId', 'TXF');
+                candidateUrl.searchParams.set('queryType', '');
+                candidateUrl.searchParams.set('goDay', '');
+                candidateUrl.searchParams.set('doQuery', '1');
+              } else {
+                candidateUrl.searchParams.set('date', requestedDate.replaceAll('-', ''));
+              }
+            }
             const body = await request(candidateUrl.href, fetchImpl);
-            const parsed = parsers[id](body);
-            data[id] = parsed;
+            if (id === 'tx') {
+              const parsed = parsers[id](body);
+              txRows.push(parsed.history.at(-1));
+              parsedData = buildTxMetric(txRows, asOf, previous?.data?.tx?.history || []);
+              // TX returns one observation date per request. Keep walking back
+              // until the latest observation has an actual prior business-day
+              // comparison, even when the previous published snapshot is empty.
+              if (!parsedData.comparisonDate) continue;
+            } else {
+              parsedData = parsers[id](body);
+            }
+            lastRequestedDate = requestedDate || asOf;
             source.url = candidateUrl.href;
-            source.requestedDate = requestedDate || asOf;
-            source.dateBackfillDays = requestedDate ? Math.round((Date.parse(asOf) - Date.parse(requestedDate)) / 86400000) : 0;
             break;
           } catch (e) {
             lastError = e;
           }
         }
-        if (!data[id]) throw lastError || new Error('No valid observation after date backfill');
+        if (!parsedData) throw lastError || new Error('No valid observation after date backfill');
+        data[id] = parsedData;
         // At the beginning of a year, Treasury's current-year observations alone cannot support 5-day changes.
         if (id === 'treasury' && data[id].sampleCount < 6) {
           const priorUrl = url.replace(`=${year}`, `=${year - 1}`);
@@ -261,6 +306,10 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
         const item = data[id];
         source.observedAt = sourceObservedAt(id, item);
         source.status = freshness(source.observedAt, asOf, maxAgeDays);
+        source.requestedDate = asOf;
+        source.historyRequestedThrough = lastRequestedDate || asOf;
+        source.dateBackfillDays = source.observedAt ? Math.max(0, Math.round((Date.parse(asOf) - Date.parse(source.observedAt)) / 86400000)) : 0;
+        if (id === 'tx') source.comparisonDate = item.comparisonDate || null;
         if (source.status === 'unavailable') throw new Error('No valid observation date');
       } catch (e) {
         if (id === 'fx') {
@@ -323,4 +372,4 @@ function validateContext(c) {
   if (!c.summary || !Array.isArray(c.summary.signals) || c.summary.affectsStockActions !== false) throw new Error('Context summary contract missing');
   return true;
 }
-module.exports = { VERSION, DEFINITIONS, num, date, pct, freshness, seriesMetric, parseFx, parseTx, parseTreasury, parseVix, parseDollar, parseYahoo, parseCot, parseRss, parseSanctions, summarize, request, fetchInternationalContext, validateContext };
+module.exports = { VERSION, DEFINITIONS, num, date, pct, freshness, seriesMetric, parseFx, parseTx, parseTxHtml, parseTreasury, parseVix, parseDollar, parseYahoo, parseCot, parseRss, parseSanctions, summarize, request, fetchInternationalContext, validateContext };

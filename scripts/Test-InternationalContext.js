@@ -15,11 +15,22 @@ async function main() {
   const series = Array.from({ length: 6 }, (_, i) => ({ date: `2026-09-${String(i + 10).padStart(2, '0')}`, value: 100 + i * 2 }));
   const r = m.seriesMetric([...series].reverse(), '2026-09-19');
   assert.ok(Math.abs(r.change5 - 10) < 1e-9); assert.equal(r.change20, null);
+  assert.equal(r.comparisonDate, '2026-09-14'); assert.equal(r.comparisonValue, 108); assert.equal(r.changeFromPrevious, 2);
   assert.throws(() => m.seriesMetric([...series, { date: series[0].date, value: 0 }], '2026-09-19'), /Conflicting/);
   assert.throws(() => m.seriesMetric([{ date: '2026-09-18', value: null }], '2026-09-19'), /No valid/);
   const tx = [{ Date: '20260918', ContractCode: '臺股期貨', Item: '外資及陸資', 'OpenInterest(Long)': '100', 'OpenInterest(Short)': '180', 'OpenInterest(Net)': '-80' }];
   const x = m.parseTx(tx, '2026-09-19', [{ date: '2026-09-17', long: 90, short: 190, net: -100 }, { date: '2026-09-18', long: 5, short: 10, net: -5 }]);
   assert.equal(x.net, -80); assert.equal(x.changeFromPrevious, 20); assert.equal(x.comparisonDate, '2026-09-17'); assert.equal(x.history.length, 2);
+  const txHistory = m.parseTx([
+    { ...tx[0], Date: '20260917', 'OpenInterest(Long)': '90', 'OpenInterest(Short)': '190', 'OpenInterest(Net)': '-100' },
+    tx[0]
+  ], '2026-09-19');
+  assert.equal(txHistory.comparisonDate, '2026-09-17'); assert.equal(txHistory.changeFromPrevious, 20); assert.equal(txHistory.history.length, 2);
+  const txHtml = '<form id="uForm"></form><span>日期2026/09/18</span><table><tr><td>外資</td>'
+    + ['100', '1', '180', '2', '-80', '-3', '100', '4', '180', '5', '-80', '-6'].map(v => `<td>${v}</td>`).join('')
+    + '</tr></table>';
+  const txFromHtml = m.parseTxHtml(txHtml, '2026-09-19', [{ date: '2026-09-17', long: 90, short: 190, net: -100 }]);
+  assert.equal(txFromHtml.date, '2026-09-18'); assert.equal(txFromHtml.comparisonDate, '2026-09-17'); assert.equal(txFromHtml.netValueThousands, -6);
   assert.throws(() => m.parseTx([{ ...tx[0], 'OpenInterest(Net)': '-79' }], '2026-09-19'), /reconciliation/);
   const c = m.summarize({ sp500: { change20: 1 }, fx: { usdTwd: { change5: null } }, treasury: { difference5: 0 }, vix: { value: 15 } }, ['sp500', 'fx', 'treasury', 'vix'].map(id => ({ id, status: 'current' })));
   assert.equal(c.regime, '中性偏保守'); assert.equal(c.signals[1].state, 'unknown'); assert.equal(c.affectsStockActions, false);

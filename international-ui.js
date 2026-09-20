@@ -4,7 +4,7 @@ const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&
 const n = (v, d = 1) => Number.isFinite(v) ? v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—';
 const s = (v, d = 1, unit = '%') => Number.isFinite(v) ? (v > 0 ? '+' : '') + n(v, d) + unit : '—';
 const statusLabel = { current: '依發布頻率可用', stale: '沿用最近可驗證值', unavailable: '端點未回傳，改依其他可驗證訊號' };
-function localTime(value) { const d = new Date(value); return Number.isFinite(d.getTime()) ? d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }) : '尚未查詢'; }
+function localTime(value) { const d = new Date(value); return Number.isFinite(d.getTime()) ? d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }) : '將回溯最近已結束營業日'; }
 function sparkline(metric) {
   const values = (metric?.series || []).slice(-21).map(r => r.value).filter(Number.isFinite);
   if (values.length < 2) return '';
@@ -23,10 +23,10 @@ function renderInternationalContext(c) {
   };
   const card = (id, title, value, detail, metric, note = '', use = '', simple = '') => {
     const src = sources.get(id);
-    return `<article class="context-card context-${src.status}" data-source-id="${e(id)}" data-source-date="${e(src.observedAt || '')}" data-source-max-age="${e(src.maxAgeDays ?? '')}"><div class="context-card-head"><b>${e(title)}</b><span>${e(src.evidence)}級</span></div><strong>${e(value)}</strong><p>${e(detail)}</p>${sparkline(metric)}${simple ? `<div class="context-card-judgment"><b>簡單判讀</b><span>${e(simple)}</span></div>` : ''}${use ? `<div class="context-card-use"><b>為什麼</b><span>${e(use)}</span></div>` : ''}<small>${e(src.observedAt || '日期未知')} · ${e(src.cadence)} · <span class="context-freshness">${e(statusLabel[src.status])}</span></small>${note ? `<small>${e(note)}</small>` : ''}</article>`;
+    return `<article class="context-card context-${src.status}" data-source-id="${e(id)}" data-source-date="${e(src.observedAt || '')}" data-source-max-age="${e(src.maxAgeDays ?? '')}"><div class="context-card-head"><b>${e(title)}</b><span>${e(src.evidence)}級</span></div><strong>${e(value)}</strong><p>${e(detail)}</p>${sparkline(metric)}${simple ? `<div class="context-card-judgment"><b>簡單判讀</b><span>${e(simple)}</span></div>` : ''}${use ? `<div class="context-card-use"><b>為什麼</b><span>${e(use)}</span></div>` : ''}<small>${e(src.observedAt || '回溯最近可驗證營業日')} · ${e(src.cadence)} · <span class="context-freshness">${e(statusLabel[src.status])}</span></small>${note ? `<small>${e(note)}</small>` : ''}</article>`;
   };
   const sourceReady = ids => ids.every(id => sourceUsable(id));
-  const sourceDate = ids => ids.map(id => sources.get(id)?.observedAt).filter(Boolean).sort().at(-1) || '日期未知';
+  const sourceDate = ids => ids.map(id => sources.get(id)?.observedAt).filter(Boolean).sort().at(-1) || '回溯最近可驗證營業日';
   const sourceState = ids => sourceReady(ids) ? '本次觀測可用' : '部分採最近可驗證值，照明確行動執行';
   const quickPanel = (tone, title, value, detail, judgment, limitation, ids) => `<article class="context-quick-panel context-quick-${e(tone)}"><div class="context-quick-head"><b>${e(title)}</b><span>${e(sourceState(ids))}</span></div><strong>${e(value)}</strong><p>${e(detail)}</p><div class="context-quick-judgment"><b>現在怎麼做</b><span>${e(judgment)}</span></div><small>資料日期 ${e(sourceDate(ids))} · ${e(limitation)}</small></article>`;
   const sox5 = d.sox?.change5, oil5 = d.oil?.change5, txNet = d.tx?.net;
@@ -81,12 +81,17 @@ function renderInternationalContext(c) {
     dollar: Number.isFinite(d.dollar?.periodChange) && d.dollar.periodChange > 0.5 ? '對台股：美元上升，資金偏緊，先不新增大部位。' : Number.isFinite(d.dollar?.periodChange) && d.dollar.periodChange < -0.5 ? '對台股：美元下降，資金壓力減輕，可找符合條件個股。' : '對台股：美元方向不明，維持原策略。'
   };
   const soxRelative = Number.isFinite(d.sox?.change5) && Number.isFinite(d.sp500?.change5) && d.sox.date === d.sp500.date ? d.sox.change5 - d.sp500.change5 : null;
+  const txComparison = d.tx?.comparisonDate
+    ? `較 ${d.tx.comparisonDate} ${s(d.tx.changeFromPrevious, 0, '口')}`
+    : d.tx?.date
+      ? `資料日期 ${d.tx.date}；已採最近可驗證期貨觀測`
+      : '期貨資料將回溯最近已結束營業日';
   const cards = [
      card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `20筆 ${s(d.sp500?.change20)}｜5筆 ${s(d.sp500?.change5)}`, d.sp500, '', '它代表全球市場氣氛；這裡直接說明對台股方向。', direct.sp500),
      card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), `5筆 ${s(d.fx?.usdTwd?.change5)}｜上升＝臺幣貶值`, d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶值會讓資金環境偏緊；這裡直接說明台股要保守或維持。', direct.fx),
      card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `5筆 ${s(Number.isFinite(d.treasury?.difference5) ? d.treasury.difference5 * 100 : null, 0, '基點')}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升先壓縮成長股估值；這裡直接說明台股操作。', direct.treasury),
      card('vix', 'VIX 波動指數', n(d.vix?.value, 2), '低於20／高於25為觀察門檻', d.vix, '', 'VIX低表示市場不緊張，VIX高表示先停新買；不是單獨賣出訊號。', direct.vix),
-     card('tx', '外資臺指期淨部位', `${n(d.tx?.net, 0)}口`, d.tx?.comparisonDate ? `較 ${d.tx.comparisonDate} ${s(d.tx.changeFromPrevious, 0, '口')}` : '首筆快照：尚無前期比較', null, '負值表示期貨押跌；只有臺股現貨也下跌，才把它當成賣壓確認。', direct.tx),
+     card('tx', '外資臺指期淨部位', `${n(d.tx?.net, 0)}口`, txComparison, null, '負值表示期貨押跌；只有臺股現貨也下跌，才把它當成賣壓確認。', direct.tx),
      card('dollar', 'Fed 廣義美元', n(d.dollar?.value, 2), `公布期間 ${s(d.dollar?.periodChange)}｜${d.dollar?.periodStart || '—'} 起`, d.dollar, '非 ICE DXY；週資料有發布落差', '美元上升表示全球資金偏緊；這裡直接說明台股是否先保守。', direct.dollar)
    ].join('');
   const statusRows = c.sources.map(src => `<tr><td>${e(src.label)}</td><td>${e(src.evidence)}級</td><td>${e(src.observedAt || '—')}</td><td>${e(src.cadence)}</td><td>${e(statusLabel[src.status])}${src.error ? `<br><small>${e(src.error)}</small>` : ''}</td><td><a href="${e(src.url)}" target="_blank" rel="noreferrer">原始來源</a></td></tr>`).join('');
@@ -144,7 +149,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
       const q = search.value.trim().toLowerCase(), holding = mode.value === 'holding';
     const selected = rows.filter(r => (!q || (r.code + ' ' + r.name).toLowerCase().includes(q)) && (!filter.value || (holding ? view(r).label : r.entryAction) === filter.value));
     document.getElementById('quickCount').textContent = '顯示 ' + Math.min(limit, selected.length) + '／' + selected.length + ' 檔';
-    document.getElementById('quickDataNote').textContent = '個股價格 ' + (reportMeta.liveFreeze || reportMeta.marketDate || '日期未知') + '｜' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認');
+    document.getElementById('quickDataNote').textContent = '個股價格 ' + (reportMeta.liveFreeze || reportMeta.marketDate || '回溯最近可驗證營業日') + '｜' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認');
     host.innerHTML = selected.slice(0, limit).map(r => {
       const v = view(r), unavailable = stale(r) || !validPrice(r), canEnter = r.entryAction === '可開始承接';
       const label = unavailable ? '依其他可驗證條件判讀' : holding ? v.label : r.entryAction;

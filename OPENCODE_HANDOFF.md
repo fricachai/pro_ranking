@@ -417,3 +417,32 @@ OpenCode 必須依結果回報：
 - 本次沒有重新抓取市場資料；正式資料更新仍須維持 `MI_QFIIS` 至少 11 個有效交易日與其他硬性門檻。下一個 OpenCode 主工作階段必須重新載入全域設定與本專案規則；若更新失敗，直接依 `OPENCODE_AUTONOMOUS_REPAIR_V1` 修正，不要只回報失敗或另建第二份背景更新。
 
 <!-- OPENCODE_GLOBAL_BUILD_CAPABILITY_V1 -->
+
+## 2026-09-20 國際資料最近營業日回溯與前期比較修正
+
+### 使用者要求與根因
+
+- 使用者指出美元／臺幣、外資臺指期與亞洲匯率卡片顯示「尚無前期比較」或日期空白，要求所有需要比較的資料都必須抓取上一個已結束營業日，不得把週末／休市日誤判成沒有資料。
+- 根因是期交所外資期貨 JSON 端點接受日期參數但實際回傳同一筆最新資料；原程式重複查詢同一觀測日，無法建立前一營業日比較。匯率序列本身已有歷史資料，但來源日期回補欄位未明確保存。
+
+### 已完成
+
+- `international-context.js`：所有序列指標加入 `comparisonDate`、`comparisonValue`、`changeFromPrevious`；外資臺指期改用期交所官方「區分各期貨契約／依日期」查詢頁，以 `queryDate` 逐日回補，直到取得最新觀測與前一營業日，並保存 `observedAt`、`dateBackfillDays`、`historyRequestedThrough`。
+- `international-ui.js`：移除「尚無前期比較」與「日期未知」顯示；卡片直接顯示資料日期、比較日期與變化值，回溯狀態有明確動作語意。
+- `professional-screen-report/latest.json`、`full-professional-screen-20260918.json` 與對應 HTML／首頁已以本次官方國際資料快照重產；這是國際資料與介面補強，不冒充股票排名／基本面完整重抓。
+- `scripts/Test-InternationalContext.js`：新增序列前期比較、期貨多日歷史與官方 HTML 解析回歸測試。
+
+### 實際驗證結果
+
+- 匯率：最新可用日 `2026-09-18`，官方序列可計算前期與 5 筆變化。
+- 外資臺指期：最新可用日 `2026-09-18`，比較日 `2026-09-17`，淨部位 `-76,110` 口，較前一營業日 `+2,564` 口。
+- 首頁與 `professional-screen-report/latest.html` 掃描：`尚無前期比較=0`、`日期未知=0`、`資料不足=0`、`無法判定=0`。
+- `INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`FETCH_RESILIENCE_TEST=pass`、`POWERSHELL_BOUNDARY_TEST=pass`。
+
+### 保留邊界
+
+- 不改 `HORIZON_SCORE_V2`、排名、個股動作、MI_QFIIS 至少 11 個有效交易日門檻或其他硬性資料門檻。
+- 期貨資料仍是外資及陸資集合的 TX 未平倉部位，不能說成單一外資策略或現貨賣出訊號；畫面保留這項限制。
+- 本次尚待提交、推送、Pages 建置與線上 byte-match；在此之前不得宣稱已發布。
+
+<!-- INTERNATIONAL_COMPARISON_BACKFILL_V1 -->
