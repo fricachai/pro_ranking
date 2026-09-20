@@ -91,6 +91,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 2. T86 至少保留 5 個官方有效交易日，正式 20 日歷史優先使用官方資料；不足時仍須依現有來源契約與報告驗證器處理，不能降低官方資料門檻或冒充當日新資料。
 3. Node 的 stderr 只作為執行紀錄；PowerShell runner 必須以 Node exit code 判斷成功或失敗，不得因 console.warn／console.error 自動產生 NativeCommandError。所有 Node 輸出都要保留在 run log。
 4. scripts/Test-ProfessionalScreenPowerShellBoundary.ps1 必須在交接預檢中執行，驗證 stderr 能被記錄、成功 exit code 能成功、失敗 exit code 仍會 fail-closed。
+5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入；長時間抓取或報告產生期間，控制命令必須能顯示實際進度。
 
 ## 持股決策總覽與純 UI 發布規則
 

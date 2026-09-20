@@ -62,14 +62,17 @@ function Invoke-NodeLogged {
     $ErrorActionPreference = 'Continue'
     try {
         # Node stderr is retained in the run log; exit code controls the gate.
-        $output = @(& node @Arguments 2>&1)
+        # Stream each line so the single-shell controller can expose progress
+        # while long event and report-generation stages are still running.
+        $output = @(& node @Arguments 2>&1 | ForEach-Object {
+            $line = [string]$_
+            $line | Add-Content -LiteralPath $LogPath -Encoding utf8
+            $line
+        })
         $exitCode = $LASTEXITCODE
     }
     finally {
         $ErrorActionPreference = $previousPreference
-    }
-    foreach ($item in $output) {
-        ([string]$item) | Add-Content -LiteralPath $LogPath -Encoding utf8
     }
     return $exitCode
 }

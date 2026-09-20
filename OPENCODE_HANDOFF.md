@@ -344,3 +344,24 @@ OpenCode 必須依結果回報：
 - 同時列出 ETF 總持有、主動 ETF 與外資持股 5 日增加／減少張數及偏強／偏弱結果；未來每日更新不再產生「只有未轉弱才考慮下一批」這類沒有數值的句子。
 - 本次仍只改判讀文字，不改評分、排名、門檻或個股決策計算；純 UI 重產與資料契約驗證已通過。
 - 待完成最新 commit、推送與 Pages 驗證。
+
+## 2026-09-20 每日更新長時間執行與即時 log 修正
+
+### 已確認原因
+
+- 受控更新不是單純檢查；本次實際重新抓取 500 檔 Yahoo RSS、578 檔股票的法人／外資／信用／KD／財務／估值／行情與國際資料，完整流程約 14 分鐘。
+- 先前 `Invoke-NodeLogged` 使用 `@(& node ...)`，會等 Node 程序結束後才把輸出寫入 `RUN_LOG`。因此外層控制命令長時間只顯示事件階段，看起來像卡住；外層 Shell 120 秒等待上限也可能先結束等待，但背景更新仍繼續。
+
+### 已修正
+
+- `scripts/Update-ProfessionalScreen.ps1` 的 `Invoke-NodeLogged` 已改為逐行串流 Node stdout／stderr 到 `RUN_LOG`，並保留原本以 Node exit code 判斷成功／失敗的 fail-closed 行為。
+- `AGENTS.md` 已加入即時 log 串流規則，避免其他 Agent 恢復成整批緩存。
+- `scripts/Test-ProfessionalScreenPowerShellBoundary.ps1` 已實測 `POWERSHELL_BOUNDARY_TEST=pass`、成功 exit code 0、失敗 exit code 1。
+
+### 下一步
+
+1. 提交本次 runner／交接規則修正後，以唯一入口 `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1` 完整重跑。
+2. 控制命令必須只執行一次並等待 `STATUS=published` 或 `STATUS=failed`；不可另建 Status Shell。
+3. 回報時分開列出資料更新總時間、`RUN_LOG`、Pages byte match 與 Actions 稽核狀態。
+
+<!-- UPDATE_RUNTIME_STREAMING_V1 -->
