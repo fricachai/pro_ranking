@@ -233,8 +233,16 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 10' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1' -or $updateCommand -notmatch 'OPENCODE_PROGRESS_OUTPUT_V2') {
-    throw 'The update command must use the visible sequential Start/Status intraday-capable controlled workflow.'
+if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $updateCommand -notmatch 'FINAL_RESULT_READY=true' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1' -or $updateCommand -notmatch 'OPENCODE_PROGRESS_OUTPUT_V3') {
+    throw 'The update command must use the visible sequential Start/Status workflow with a verified terminal result packet.'
+}
+$statusScript = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Get-ProfessionalScreenUpdateStatus.ps1') -Raw -Encoding utf8
+if ($statusScript -notmatch 'FINAL_RESULT_READY=true' -or $statusScript -notmatch 'FINAL_STATUS' -or $statusScript -notmatch 'FINAL_RESULT_SOURCE=RUN_LOG_AND_STATE' -or $statusScript -notmatch 'Write-TerminalResult') {
+    throw 'The status script must emit a machine-readable terminal result packet.'
+}
+$statusCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report-status.md') -Raw -Encoding utf8
+if ($statusCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 60' -or $statusCommand -notmatch 'FINAL_RESULT_READY=true' -or $statusCommand -notmatch 'OPENCODE_PROGRESS_OUTPUT_V3') {
+    throw 'The status command must use 60-second polling and require the terminal result packet.'
 }
 $horizonUiCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/implement-horizon-ui.md') -Raw -Encoding utf8
 if ($horizonUiCommand -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $horizonUiCommand -notmatch 'OPENCODE_HORIZON_UI_HANDOFF_V1') {

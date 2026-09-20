@@ -27,15 +27,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHando
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
 ```
 
-3. 依序讀取進度，每次等待最多 10 秒；不得平行呼叫：
+3. 依序讀取進度，每次等待最多 60 秒；不得平行呼叫：
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60
 ```
 
-4. 若輸出 `STATUS=running`，立即顯示 `LOG_TAIL_BEGIN` 與 `LOG_TAIL_END` 之間的新階段，再重複第 3 步；若輸出 `STATUS=published` 或 `STATUS=failed`，停止讀取並回報終態。若啟動器回報已有背景程序，禁止再次執行 Start，只讀取該既有程序的 Status。
+4. 若輸出 `STATUS=running` 且 `FINAL_RESULT_READY=false`，立即顯示 `LOG_TAIL_BEGIN` 與 `LOG_TAIL_END` 之間的新階段，再重複第 3 步；若輸出 `STATUS=published` 或 `STATUS=failed`，必須先確認 `FINAL_RESULT_READY=true`，停止讀取並在同一主回覆逐項轉呈所有 `FINAL_*` 欄位。若沒有 `FINAL_RESULT_READY=true`，不得宣稱完成，只能回報 `OPEN_CODE_FINAL_REPORT_PENDING` 並繼續取得同一程序的終態。若啟動器回報已有背景程序，禁止再次執行 Start，只讀取該既有程序的 Status。
 
-Build 不得把整段更新包成一個長時間 Shell，也不得只顯示「思考中」。成功終態必須整理 `STATUS`、`CHECKED_AT`、`DATA_CHANGED`、資料日期、提交、Pages byte match、Actions 稽核狀態、公開網址與 `RUN_LOG`；失敗終態必須指出最後一個 log 階段與紀錄檔。<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->
+Build 不得把整段更新包成一個長時間 Shell，也不得只顯示「思考中」。`FINAL_RESULT_READY=true` 是「可以回報終態」的必要條件，不是可選欄位；沒有它，即使 state 顯示 `published`，也不得對使用者宣稱完整完成。成功終態必須整理所有 `FINAL_*` 欄位、資料日期、提交、Pages byte match、Actions 稽核狀態、公開網址與 `RUN_LOG`；失敗終態必須指出最後一個 log 階段與紀錄檔。<!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
 `STATUS=published` 代表本次已重新檢查盤中／收盤行情、新聞、重大訊息與其他來源，並把本次報告及事件檢查時間發布。`DATA_CHANGED=false` 只表示排除時間戳後沒有實質內容變化。Yahoo RSS 若受 429 限流可降級為 `partial` 或 `unavailable`，但官方重大訊息、收盤價及其他品質閘門仍須通過。成功時回報狀態、檢查時間、資料是否實質變更、提交、公開網址與 `RUN_LOG`；失敗時回報根因、已完成的修正／重試與下一個可驗證步驟，不得只丟回「失敗」。不要猜測結果或以舊資料發布。<!-- BUILD_BASH_DAILY_UPDATE_V1 --><!-- OPENCODE_AUTONOMOUS_REPAIR_V1 --><!-- INTRADAY_REFRESH_V1 --><!-- REFRESH_TIMESTAMP_V1 --><!-- OPTIONAL_YAHOO_NEWS_V1 -->
 

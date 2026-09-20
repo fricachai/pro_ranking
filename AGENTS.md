@@ -27,7 +27,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-Professiona
 
 此控制入口會依序完成預檢、資料抓取、報告產生、輸出驗證、限定檔案提交、推送，以及 GitHub Pages 線上驗證。不要直接手改產出的 HTML、JSON 或 CSV；若流程失敗，Build 可先修正來源、產生器、驗證器或流程，再由相同受控流程重試。
 
-OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採「預檢一次 → `Start` 一次 → 依序短輪詢 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10`」；每次狀態輸出都必須在主工作階段呈現。這些 Status 呼叫是同一個背景更新的唯讀觀察，不是第二份更新；不得平行輪詢、不得再次 Start，也不得另開競爭中的背景程序。<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->
+OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採「預檢一次 → `Start` 一次 → 依序每 60 秒讀取 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60`」；每次狀態輸出都必須在主工作階段呈現。終態必須包含 `FINAL_RESULT_READY=true`，否則即使 state 已是 published，也不得宣稱完整完成。這些 Status 呼叫是同一個背景更新的唯讀觀察，不是第二份更新；不得平行輪詢、不得再次 Start，也不得另開競爭中的背景程序。<!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
 ## OpenCode 執行規則
 
@@ -103,7 +103,7 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 2. T86 至少保留 5 個官方有效交易日，正式 20 日歷史優先使用官方資料；不足時仍須依現有來源契約與報告驗證器處理，不能降低官方資料門檻或冒充當日新資料。
 3. Node 的 stderr 只作為執行紀錄；PowerShell runner 必須以 Node exit code 判斷成功或失敗，不得因 console.warn／console.error 自動產生 NativeCommandError。所有 Node 輸出都要保留在 run log。
 4. scripts/Test-ProfessionalScreenPowerShellBoundary.ps1 必須在交接預檢中執行，驗證 stderr 能被記錄、成功 exit code 能成功、失敗 exit code 仍會 fail-closed。
-5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入。命令列控制器 `Invoke-ProfessionalScreenUpdateCommand.ps1` 可在單一 Shell 直接讀取狀態與 `RUN_LOG`；OpenCode Desktop 則必須使用 `Start-ProfessionalScreenUpdate.ps1` 啟動一次，再以不超過 10 秒的 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10` 依序讀取並顯示 `UPDATE_STAGE`／`UPDATE_PROGRESS`。兩種入口都必須在最後輸出 `STATUS=published/failed` 與可追溯摘要；長時間抓取或報告產生期間，OpenCode 不得只顯示思考中或待辦清單。<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->
+5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入。命令列控制器 `Invoke-ProfessionalScreenUpdateCommand.ps1` 可在單一 Shell 直接讀取狀態與 `RUN_LOG`；OpenCode Desktop 則必須使用 `Start-ProfessionalScreenUpdate.ps1` 啟動一次，再以 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60` 依序讀取並顯示 `UPDATE_STAGE`／`UPDATE_PROGRESS`。兩種入口都必須在最後輸出 `STATUS=published/failed`、`FINAL_RESULT_READY=true` 與可追溯摘要；若沒有終態封包，Build 必須標示 `OPEN_CODE_FINAL_REPORT_PENDING`，不得把後端 state 單獨當成使用者已收到的完成回報。長時間抓取或報告產生期間，OpenCode 不得只顯示思考中或待辦清單。<!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
 ## 持股決策總覽與純 UI 發布規則
 
