@@ -59,7 +59,7 @@ Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，並以單一 `Invoke-ProfessionalScreenUpdateCommand.ps1` Shell 項目完成預檢、背景更新、內部等待與終態輸出；不得由代理反覆建立 `Get-ProfessionalScreenUpdateStatus.ps1` Shell 項目。若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
+OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，並以單一 `Invoke-ProfessionalScreenUpdateCommand.ps1` Shell 項目完成預檢、背景更新、內部等待、逐行 `UPDATE_STAGE`／`UPDATE_PROGRESS` 與終態輸出；不得由代理反覆建立 `Get-ProfessionalScreenUpdateStatus.ps1` Shell 項目。Build 必須把同一 Shell 的進度與終態轉成可見回報，不得讓使用者只看到「思考中」或未完成待辦。<!-- OPENCODE_PROGRESS_OUTPUT_V1 --> 若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1

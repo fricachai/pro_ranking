@@ -387,10 +387,13 @@ foreach ($requiredRunnerToken in @("updaterStatus -ne 'published'", 'Add-Content
     }
 }
 $controllerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'scripts/Invoke-ProfessionalScreenUpdateCommand.ps1') -Raw -Encoding utf8
-foreach ($requiredControllerToken in @('CONTROLLED_UPDATE_WAITING=true', '-WaitSeconds 30', "currentStatus -eq 'failed'")) {
+foreach ($requiredControllerToken in @('CONTROLLED_UPDATE_WAITING=true', 'UPDATE_STAGE=preflight_passed', 'UPDATE_STAGE=background_started', 'UPDATE_PROGRESS=', 'still_running elapsed_seconds=', 'UPDATE_STAGE=terminal_', 'Write-NewProgressLines', 'worker stopped before terminal state')) {
     if (-not $controllerContent.Contains($requiredControllerToken)) {
         throw "Single-shell update controller safeguard is missing: $requiredControllerToken"
     }
+}
+if ($controllerContent -match 'Get-ProfessionalScreenUpdateStatus\.ps1') {
+    throw 'The single-shell update controller must stream its own state and log; it must not invoke the separate status command.'
 }
 
 Push-Location $RepoRoot
