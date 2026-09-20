@@ -2,7 +2,7 @@
 
 ## 結論
 
-可以交給 OpenCode Desktop 或 OpenCode CLI 執行，但 OpenCode 是流程操作者，不是資料來源。實際資料抓取、新聞彙整、評分、產檔、Git 提交、推送與 GitHub Pages 驗證，全部由本專案既有腳本完成。只要新電腦具備必要工具與個人登入權限，OpenCode 可用單一指令完成完整更新。
+可以交給 OpenCode Desktop 或 OpenCode CLI 執行。OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任：可理解需求、規劃、讀取、查詢、編輯、執行、測試、診斷、修正、提交、推送、發布與線上驗證；既有腳本是可驗證的執行工具，不是限制 OpenCode 只能做每日更新的邊界。只要新電腦具備必要工具與個人登入權限，OpenCode 可在同一工作階段完成從根因修正到發布驗證的完整閉環。
 
 ## Obsidian 已設為新工作階段自動必讀
 
@@ -21,13 +21,23 @@ OpenCode 原本只有 Obsidian MCP 工具，不會因此自動掃描或讀取 va
 這是本次對話完成後的固定接手方式：
 
 1. 在同一個 `pro_ranking` 專案根目錄開啟 OpenCode，回到主工作階段並建立新對話；不要在 `Subagent sessions cannot be prompted` 的子代理結果頁繼續輸入。
-2. 選擇 `Build` 主代理。`opencode.json` 已明確授權它在本專案內規劃、編輯、執行 Shell、查詢網路、測試、提交、推送與發布；外部資料夾仍逐次確認，強制破壞性操作仍受安全規則限制。
+2. 選擇 `Build` 主代理。`opencode.json` 與全域 OpenCode 設定已授權它在所有一般專案工作中規劃、編輯、執行 Shell、查詢網路、使用子代理、測試、提交、推送與發布；跨專案路徑也可處理。敏感資料與破壞性操作仍受安全規則限制，但不得因此限制正常的跨層級程式修正。
 3. 新對話會自動載入 `OPENCODE_HANDOFF.md`、`AGENTS.md` 與指定的 Obsidian SOP；若剛修改這些檔案，必須開新對話，不要依賴舊對話回溯更新。可用 `opencode debug config` 確認三份 `instructions` 都存在。
-4. 每日資料更新直接輸入 `/update-report`；已授權的評分介面功能輸入 `/implement-horizon-ui`；其他規劃、修正或新功能直接描述目標，Build 主代理必須先建立計畫，再在同一工作階段執行、測試、提交、推送與發布，不需要第二個「開始執行」指令。
-5. `Build` 的完整權限不等於跳過品質門檻：每日發布仍只能走 `Invoke-ProfessionalScreenUpdateCommand.ps1`，不可直接執行被拒絕的 `Update-ProfessionalScreen.ps1 -Publish`；資料契約、瀏覽器、GitHub Pages 與線上 byte match 仍必須完成。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
+4. 每日資料更新可輸入 `/update-report`；已授權的評分介面功能可輸入 `/implement-horizon-ui`；其他規劃、修正、補足來源、改善判讀或新功能直接描述目標。若更新流程失敗，Build 必須讀取狀態與紀錄、找根因、跨層級修正、測試並重試，不需要第二個「開始執行」指令。
+5. `Build` 的完整權限不等於跳過品質門檻：發布應使用 `Invoke-ProfessionalScreenUpdateCommand.ps1` 以保留預檢、資料契約、GitHub Pages 與線上 byte match；這是可驗證的發布流程，不是禁止 OpenCode 修正或發布的權限規則。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
 6. Codex 或其他工具每次完成 Obsidian 寫回後，必須執行 `Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有 `HANDOFF_READY=true` 才算可交接。若驗證失敗，先修正指示路徑、契約或權限，不得只把筆記寫入就宣稱已完成。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
 
-Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把 legacy `pages/builds/latest` 當成成敗單一來源。預檢要等待 active Actions run，更新器推送前要再等待佇列排空；workflow 設為 `cancel-in-progress: false` 與 15 分鐘 deploy timeout。失敗時僅允許對原 workflow 執行一次 failed-job rerun，不重抓資料、不製造空白 commit。HTTP 200 與線上 byte match 代表內容上線；Actions 結論是獨立稽核狀態。任何代理都不得說「跳過預檢」並直接執行 `Update-ProfessionalScreen.ps1 -Publish`；OpenCode 權限已否決此命令，只允許單一控制入口。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
+Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把 legacy `pages/builds/latest` 當成成敗單一來源。預檢要等待 active Actions run，更新器推送前要再等待佇列排空；workflow 設為 `cancel-in-progress: false` 與 15 分鐘 deploy timeout。失敗時僅允許對原 workflow 執行一次 failed-job rerun，不重抓資料、不製造空白 commit。HTTP 200 與線上 byte match 代表內容上線；Actions 結論是獨立稽核狀態。任何代理都不得跳過預檢或把舊資料冒充新發布；OpenCode 可以修正根因並使用單一控制入口完成驗證。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
+
+## OpenCode 全能力修正與失敗復原契約
+
+本節是本專案對全域 OpenCode Build 能力契約的具體落實，適用所有專案工作與所有對話：
+
+1. `/update-report` 是日常更新快捷入口，不是「只能更新、不能修正」的模式。若狀態檔或 RUN_LOG 顯示失敗，Build 必須先確認既有背景程序、讀取失敗關卡與相關程式，再在同一工作階段完成根因修正、測試與有界重試。
+2. 單一來源失敗不得把整體判讀改成模糊拒答。Build 必須依資料契約尋找官方替代端點、日期回補、重試、第二來源或最近一次已驗證快照，並以現有可追溯資料產生明確的市場方向、新資金做法與已持有做法。
+3. `MI_QFIIS` 至少 11 個有效交易日、真實高低收 KD、官方資料語意、治理排除與其他硬性門檻一律保留；補資料可以增加來源與韌性，不可以降低門檻或編造數值。
+4. Build 可修改資料抓取、產生器、判讀、UI、測試、交接文件與發布流程；模型、推理等級、每日命令或先前失敗的背景程序不得限制它完成上述工作。
+5. 驗收至少包含語法、資料契約、fallback／失敗路徑、公開畫面禁用模糊結論掃描、必要的瀏覽器與線上發布驗證。<!-- OPENCODE_AUTONOMOUS_REPAIR_V1 -->
 
 ## 最簡單的日常操作
 
@@ -85,7 +95,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 | 類別 | 檔案 | 用途 |
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
-| OpenCode 權限 | `opencode.json` | Build 主代理可完整規劃、編輯、測試、查網路、提交與發布；外部資料夾仍需確認 |
+| OpenCode 權限 | `opencode.json` 與全域 `C:\Users\user\.config\opencode\opencode.jsonc` | Build 主代理可完整規劃、編輯、測試、查網路、提交、推送、發布與處理一般外部專案路徑；敏感資料邊界仍優先 |
 | OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md`、`continue-codex-handoff.md` | 提供日常更新、狀態查詢、功能開發及 Codex 寫回後的接手指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
@@ -102,7 +112,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 
 `.git` 目錄包含版本歷史與遠端設定；若以 `git clone` 取得就會自動建立。登入憑證、API 金鑰、瀏覽器持倉與登入狀態不屬於交接檔案，禁止提交到 Git。
 
-`opencode.json` 明確使用 Windows `powershell.exe`，並依使用者授權讓 Build 主代理具備完整專案權限：可規劃、直接編輯、執行 Shell 與測試、查詢網路、提交、推送及發布。專案不鎖定模型，使用者可在 OpenCode 自行選擇 GPT‑5.6 Luna、Kimi K3 或其他可用高階模型。外部資料夾維持逐次確認；AGENTS.md 的不清除不明變更、不做未授權破壞性操作及發布前完整驗證仍然有效。日常 `/update-report` 雖由同一 Build 代理執行，但指令本身仍固定只跑受控更新器，不得藉機改碼。全域預設仍維持 deny，完整權限只在 Build 主代理覆寫。OpenCode 的匹配以最後規則為準。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
+`opencode.json` 明確使用 Windows `powershell.exe`，並依使用者授權讓 Build 主代理具備完整專案權限：可規劃、直接編輯、執行 Shell 與測試、查詢網路、提交、推送及發布。專案不鎖定模型，使用者可在 OpenCode 自行選擇 GPT‑5.6 Luna、Kimi K3 或其他可用高階模型。一般外部專案路徑可直接處理；敏感資料、未授權破壞性操作與發布前完整驗證仍依全域安全政策及 AGENTS.md。日常 `/update-report` 只是快捷入口，若更新失敗可以在同一 Build 工作階段修正程式與流程，不受「只跑更新器」限制。全域設定與 Build 覆寫均採 allow，OpenCode 的匹配以最後規則為準。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
 
 ## 新電腦一次性準備
 
@@ -278,7 +288,7 @@ OpenCode 必須依結果回報：
 3. 以既有 `HORIZON_SCORE_V2` 報告執行 `node .\full-professional-stock-screen.js --render-existing`；不得直接手改生成 HTML，也不得重新抓資料冒充每日更新。
 4. 若需重驗，啟動本機 HTTP server，以至少 1050×900 與 390×844 檢查三步決策地圖、卡片用途文字、折疊區說明、頁面級水平溢出與 console warnings。
 5. `design-qa.md` 已記錄本次來源／實作、尺寸、互動、console、水平溢出與 `Final result: passed`。
-6. 若後續再次修改本區塊，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；不要呼叫被禁止的 `Update-ProfessionalScreen.ps1 -Publish`。
+6. 若後續再次修改本區塊，依純 UI 發布契約完成限定檔案提交、Pages workflow、線上內容與 byte-match 驗證；Build 可依根因選擇底層腳本，正式發布優先使用受控控制入口。
 
 <!-- INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1 -->
 
@@ -374,3 +384,36 @@ OpenCode 必須依結果回報：
 - `RUN_LOG`：`professional-screen-report/logs/daily-refresh-20260920-094420.log`。
 
 <!-- UPDATE_RUNTIME_STREAMING_V1 -->
+
+## 2026-09-20 OpenCode 全域 Build 能力與失敗復原契約
+
+### 使用者已再次確認的目標
+
+- 所有 OpenCode 專案與所有對話，都要具備與 Codex 相同的完整工程能力：需求理解、規劃、讀取、網路查詢、跨檔案／跨層級編輯、Shell、測試、失敗診斷、根因修正、提交、推送、發布與線上驗證。
+- `/update-report` 只是日常更新入口，不是 OpenCode 的能力上限。
+- 單一來源失敗不得讓整體判讀變成模糊拒答；必須採用官方替代端點、日期回補、重試、第二來源或前次已驗證快照，並給出明確方向與操作。
+- 不得在公開畫面顯示「資料不足」、「資料待更新」、「無法判定」等沒有行動價值的句子。
+
+### 已完成的全域與專案修正
+
+- `C:\Users\user\.config\opencode\opencode.jsonc` 已將一般 Build 工具能力設為 allow：讀取／編輯、glob／grep／list、Shell、子代理、skill、LSP、webfetch／websearch、提問、外部專案路徑與 doom-loop；敏感檔案的檔案級 deny 與全域資料邊界政策保留。
+- `C:\Users\user\.config\opencode\AGENTS.md` 已加入 `OPENCODE_GLOBAL_BUILD_CAPABILITY_V1`，明定所有專案／對話的自主修正與失敗復原契約。
+- 本專案 `opencode.json` 已移除專案級預設 deny；Build 主代理的 Bash、編輯、網路、規劃、子代理、skill、外部路徑與發布均 allow，不再有 `Update-ProfessionalScreen.ps1 -Publish` 的 deny 規則。
+- `AGENTS.md`、本交接檔、`.opencode/commands/update-report.md`、`.opencode/commands/update-report-status.md` 與 `scripts/Test-OpenCodeHandoff.ps1` 已加入／驗證 `OPENCODE_AUTONOMOUS_REPAIR_V1`。
+- `scripts/Sync-OpenCodeObsidianHandoff.ps1` 已同步接受完整 Build 與外部專案路徑能力；OpenCode 設定檢查已通過。
+- `international-context.js`、`international-ui.js`、`full-professional-stock-screen.js` 已將單一來源缺失改為採可驗證訊號與明確操作，並清除首頁／最新報告的模糊拒答字眼。既有報告以 `--render-existing` 重產，不重新抓取資料、不改 `HORIZON_SCORE_V2`、排名、11 日門檻或個股硬性規則。
+
+### 實際驗證結果
+
+- `node --check international-context.js`、`international-ui.js`、`full-professional-stock-screen.js`：通過。
+- `node scripts/Test-InternationalContext.js --report professional-screen-report/latest.json`：`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`。
+- `scripts/Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty`：`HANDOFF_READY=true`，`FOREIGN_HOLDING_HISTORY_DAYS=11`、`NEWS_FEED_COVERAGE=100%`。
+- `scripts/Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`：`HANDOFF_READY=true`、`BUILD_PERMISSION=full-project-with-guardrails`、`RELOAD_REQUIRED=true`。
+- 首頁與 `professional-screen-report/latest.html` 掃描：`資料不足=0`、`資料待更新=0`、`無法判定=0`、`暫不提供=0`。
+
+### 尚未完成
+
+- 本次工作區修改尚未以新的正式提交推送，也尚未跑完整資料更新與 Pages 線上 byte-match；因此不能把目前本機重產結果宣稱為新的公開版本。
+- 下一個 OpenCode 主工作階段必須重新載入全域設定與本專案規則，再依使用者要求進行正式更新；若更新失敗，直接依 `OPENCODE_AUTONOMOUS_REPAIR_V1` 修正，不要只回報失敗或另建第二份背景更新。
+
+<!-- OPENCODE_GLOBAL_BUILD_CAPABILITY_V1 -->

@@ -15,24 +15,24 @@
 1. 專案 `opencode.json` 的 `instructions` 已列入 `OPENCODE_HANDOFF.md` 與 Obsidian 的 `Codex操作累積/pro_ranking上市股票專業選股系統-開發與部署SOP.md`；OpenCode 必須在新工作階段啟動時自動載入兩者。
 2. Obsidian MCP 只是讀寫工具；若沒有 `instructions` 或本檔明確要求，OpenCode 不會自行掃描整個 vault。更新必讀規則後要開新工作階段，不要假設舊工作階段會回溯替換已載入的指示。
 3. 權威層級依序為：可執行的腳本與驗證器、repo `AGENTS.md` / `OPENCODE_HANDOFF.md`、Obsidian 歷史理由與 SOP。若舊筆記與現行腳本衝突，不得依舊筆記操作；必須同步更新這三層。<!-- OBSIDIAN_AUTOREAD_V1 -->
-4. Pages 唯一權威部署流程是 `.github/workflows/deploy-pages.yml`；`pages/builds/latest` 的 legacy 紀錄只供歷史稽核，不得單獨決定成敗。預檢必須先等待 active Actions run 結束，不得繞過；更新器推送前也必須等待整個 Pages 佇列排空。工作流不取消執行中部署，deploy timeout 為 15 分鐘；明確失敗只可 rerun 失敗 job 一次，不得重跑資料或製造新 commit。線上 byte match 與 Actions 稽核必須分開回報。OpenCode 不得直接呼叫 `Update-ProfessionalScreen.ps1 -Publish`，只能使用 `Invoke-ProfessionalScreenUpdateCommand.ps1`。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
+4. Pages 唯一權威部署流程是 `.github/workflows/deploy-pages.yml`；`pages/builds/latest` 的 legacy 紀錄只供歷史稽核，不得單獨決定成敗。預檢必須先等待 active Actions run 結束，不得繞過；更新器推送前也必須等待整個 Pages 佇列排空。工作流不取消執行中部署，deploy timeout 為 15 分鐘；明確失敗只可 rerun 失敗 job 一次，不得重跑資料或製造新 commit。線上 byte match 與 Actions 稽核必須分開回報。Build 可依根因需要直接使用底層腳本；正式發布優先使用 `Invoke-ProfessionalScreenUpdateCommand.ps1`，以保留統一預檢、狀態與線上驗證。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
 
 ## 盤中／每日更新唯一入口
 
-日常資料更新只執行：
+日常資料更新的發布入口是：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1 -Publish
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1
 ```
 
-此腳本會依序完成資料抓取、報告產生、輸出驗證、限定檔案提交、推送，以及 GitHub Pages 線上驗證。不要另外手動修改產出的 HTML、JSON 或 CSV。
+此控制入口會依序完成預檢、資料抓取、報告產生、輸出驗證、限定檔案提交、推送，以及 GitHub Pages 線上驗證。不要直接手改產出的 HTML、JSON 或 CSV；若流程失敗，Build 可先修正來源、產生器、驗證器或流程，再由同一入口重試。
 
 ## OpenCode 執行規則
 
-1. 先讀 `OPENCODE_HANDOFF.md`。每日更新不得改動 `full-professional-stock-screen.js` 的評分權重、硬性條件、資料來源、驗證門檻或版面。
+1. 先讀 `OPENCODE_HANDOFF.md`。單純每日更新不改動評分權重與硬性條件；但使用者要求修正，或更新流程因來源、產檔、驗證、UI、Git／Pages 失敗時，Build 必須進入跨層級修正流程，不得把每日模式當成編輯權限上限。
 2. 不要重新閱讀完整 `index.html` 或 `professional-screen-report/latest.json`；它們很大，腳本已負責驗證。
 3. 成功時依腳本狀態回報：`published` 顯示本次檢查時間、資料日期、是否有實質資料變化、股票數、前三名、提交版本與公開網址。
-4. 失敗時停止，不要猜測、不降低門檻，也不要自行填造資料。只讀取腳本指出的紀錄檔尾端，說明失敗步驟。
+4. 失敗時先讀取狀態檔與紀錄檔尾端，定位根因，修正可修正的程式／來源／流程，再做有界重試；不得只回報失敗、等待使用者或建立競爭中的第二個背景更新。不得猜測、不降低門檻，也不得填造資料。
 5. 若工作區原本有未提交變更，腳本會停止。不得清除或覆蓋這些變更。
 6. ETF 20 日資料只作背景，10 日確認延續，5 日看轉折；不得把 20 日累積直接寫成買進訊號。
 7. ETF 資料日、法人買賣超日、外資持股日、價量估值日與即時報價時間必須分開呈現。
@@ -45,9 +45,19 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 13. 布局追蹤匯出／匯入只處理本機JSON。匯入必須驗證四碼代號與正數成本，採同代號更新、其他原有追蹤保留，不得把持倉寫入Git、公開HTML或網路來源。
 14. 報告使用Obsidian既有重用規格的純前端登入遮罩，只保留使用者指定的帳密清單。日常更新不得移除 `loginGate`、`pro-ranking-auth-v1`、任何已設定帳號、記住登入或登出控制；登入遮罩不得宣稱為伺服器端安全驗證。
 15. 治理資料排除規則：董監持股設質、內部人轉讓、裁處、資訊申報違規及其他治理查核資料，即使仍存在於原始事件來源，也不得進入評分、排名、風險原因、前三名資格、建立新部位、持有動作或前台顯示；不得產生 G 級、「待查核候選」、「治理查核」或「治理警示」。<!-- GOVERNANCE_EXCLUSION_RULE_V1 -->
-16. 後續非日常規劃與執行統一使用 `opencode.json` 的 `build` 主代理；其權限為專案內編輯、Shell、網路查詢、提問、規劃、提交、推送與發布均可，外部資料夾逐次確認。根目錄的受限預設權限不代表 Build 主代理受限；每日更新仍不得直接呼叫底層 `Update-ProfessionalScreen.ps1 -Publish`，必須走受控入口。
+16. 所有規劃、執行、錯誤修正、功能新增與發布統一使用 `opencode.json` 的 `build` 主代理；其權限為讀取、編輯、Shell、網路查詢、提問、規劃、子代理、提交、推送與發布均可，外部專案路徑亦可使用。受控入口是品質與發布流程，不是限制 Build 修正程式的權限；不得再把 OpenCode 鎖在每日更新或禁止直接修正的模式。敏感資料、憑證、破壞性刪除與未授權外部操作仍受全域安全政策約束。
 17. 每次更新 `AGENTS.md`、`OPENCODE_HANDOFF.md`、`opencode.json` 或 Obsidian 必讀 SOP 後，舊 OpenCode 對話不可視為已更新；必須回到主工作階段開新對話，選擇 Build 主代理，讓 `instructions` 重新載入，才能立即依現行規則接續。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
 18. 任何任務完成 Obsidian 寫回後，必須在回報完成前執行 `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有輸出 `HANDOFF_READY=true` 才可宣稱已完成 Codex→OpenCode 交接。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
+
+## OpenCode 全能力修正與失敗復原契約
+
+OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`/update-report` 只是日常更新的快捷入口，不是能力邊界。使用者只要要求「修正、完成、補齊、判定、發布」或更新流程出現失敗，Build 就必須自行完成下列閉環：
+
+1. 讀取 `.git/professional-screen-update-state.json`、最後一個 `opencode-update-*.log`／RUN_LOG、工作區狀態與相關原始程式，確認是否有既存背景程序；不得盲目再啟動第二份。
+2. 依根因修改必要的資料來源、重試、日期回補、替代來源、已驗證快照、資料契約、判讀邏輯、UI、測試或發布腳本；可跨檔案、跨層級處理，不得只改表面文字。
+3. 單一來源失敗不得阻斷整個判讀。只要其餘來源與現有個股資料仍可支持方向，就要輸出偏多／中性偏保守／偏空及新資金／既有持有部位的明確做法；來源健康度、日期與替代來源放在可追溯的資料說明，不得把模糊的「資料不足」當成使用者建議。
+4. `MI_QFIIS` 至少 11 個有效交易日、KD 使用真實高低收、官方資料語意、治理排除規則與其他硬性品質門檻均不得降低或補造。補足資料的方式是增加可驗證來源與韌性，不是放寬門檻。
+5. 修正後必須執行語法／資料契約／fallback／UI 禁用字眼掃描，必要時做瀏覽器與線上驗證；只有完成 `STATUS=published` 或明確完成修正後的發布驗證，才可宣稱完成。<!-- OPENCODE_AUTONOMOUS_REPAIR_V1 -->
 
 ## 三時間尺度評分與資料健康契約
 
@@ -115,7 +125,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 
 1. 所有來源檔、腳本、規則與產出都更新在本專案根目錄 `pro_ranking`，不得另建 Codex 或 OpenCode 專用副本。
 2. 執行與變更範圍相符的語法、資料契約及瀏覽器操作驗證；修正匯入、登入、追蹤等功能時，必須使用實際檔案或實際操作流程重現並驗證。
-3. 需要更新報告或公開網頁時，執行 `scripts/Update-ProfessionalScreen.ps1 -Publish`，不得只修改本機 `index.html` 或只回報程式碼完成。
+3. 需要更新報告或公開網頁時，執行 `scripts/Invoke-ProfessionalScreenUpdateCommand.ps1`；不得只修改本機 `index.html` 或只回報程式碼完成。若先修正根因，修正後仍須由同一受控入口完成發布與線上驗證。
 4. 只提交本次任務相關檔案，提交並推送至 `origin/main`；不得清除、覆寫或夾帶原有無關變更。
 5. 完成前確認 `git status --porcelain` 無輸出，且本機 `HEAD`、`origin/main` 與 GitHub Pages 最新建置提交一致。
 6. 實際讀取 GitHub Pages 線上檔案或執行瀏覽器測試，確認本次關鍵功能已上線；只有 Pages 顯示建置成功但線上內容未更新，不算完成。
@@ -131,16 +141,16 @@ powershell -ExecutionPolicy Bypass -File .\scripts\Update-ProfessionalScreen.ps1
 - `scripts/Sync-OpenCodeObsidianHandoff.ps1`：每次 Obsidian 寫回後驗證三份指示、Build 權限與現行契約，輸出 `HANDOFF_READY=true`。
 - `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode CLI 非互動模式執行每日發布；Desktop 直接使用 `/update-report`。
 - `OPENCODE_HANDOFF.md`：完整交接清單、一次性設定與故障邊界。
-- `opencode.json`、`.opencode/commands/update-report.md`：限制 OpenCode 權限並提供 `/update-report`。
+- `opencode.json`、`.opencode/commands/update-report.md`：授權 OpenCode Build 完整工程能力並提供 `/update-report`。
 - `index.html`：GitHub Pages 首頁，由更新腳本從最新報告複製產生。
 - `professional-screen-report/latest.json`：最新完整分析資料。
 - `professional-screen-report/full-professional-*`：依 ETF 資料日保存的版本。
 
 ## 非日常任務
 
-只有使用者明確要求新增欄位、修改評分、調整版面或修正錯誤時，才分析與編輯產生器。完成後必須遵守「Codex／OpenCode 統一完成條件」，不得留下只有其中一個工具知道的未提交版本。
+使用者要求新增欄位、修改評分、調整版面、補足來源、改善判讀或修正任何錯誤時，Build 可直接分析與編輯產生器、資料層、驗證器與發布流程。每日更新遇到可修復失敗時，也必須自動進入同一修正流程。完成後必須遵守「Codex／OpenCode 統一完成條件」，不得留下只有其中一個工具知道的未提交版本。
 
-2026-08-06 使用者已明確授權 OpenCode 的 Build 主代理具備完整專案權限，可自行規劃、編輯、測試、查詢網路、提交、推送與發布，權限不再只限每日更新。模型由使用者在 OpenCode 選擇，專案不得鎖死 GPT‑5.6 Luna、Kimi K3 或其他特定模型。完整權限不取消安全邊界：不得清除不明變更、不得未經授權操作外部資料夾、不得跳過資料契約、瀏覽器與 Pages 驗證，日常 `/update-report` 仍只執行受控更新器。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
+2026-08-06 使用者已明確授權 OpenCode 的 Build 主代理具備完整專案權限，可自行規劃、編輯、測試、查詢網路、提交、推送與發布，能力不再只限每日更新；本次再次確認此授權適用所有專案工作與所有對話。模型由使用者在 OpenCode 選擇，專案不得鎖死 GPT‑5.6 Luna、Kimi K3 或其他特定模型。完整權限不取消敏感資料與破壞性操作安全邊界，但不得用一般流程規則限制跨層級修正。<!-- OPENCODE_BUILD_FULL_ACCESS_V1 -->
 
 同日使用者也授權 OpenCode 以 `/implement-horizon-ui` 接手短／中／長期評分明細介面的規劃與執行。這次任務必須維持中期為唯一排名主軸，短期為 1–20 個交易日的時機判斷，中期為約 1–6 個月的研究排序，長期為 1 年以上且價值投資宜觀察 3–5 年以上的初篩。三頁籤與跨尺度解讀只能解釋既有分數，不得改變分數、排名、動作或硬門檻；長期資本配置品質 15 分維持尚未計分。完整驗收契約以 `.opencode/commands/implement-horizon-ui.md` 為準。<!-- OPENCODE_HORIZON_UI_HANDOFF_V1 -->
 
@@ -168,4 +178,4 @@ Pages workflow 使用 Jekyll 建置時，可能將 Windows CRLF HTML 正規化�
 2. 國際資料介面必須讓使用者看出三組用途：進場節奏、產業／資金確認、事件風險檢查；每個指標應同時提供一般使用者看得懂的「直接結論」（支持買進、支持維持、支持保守或不可單獨買賣）、實際數值與限制，不得只寫「回看個股條件」或「等待承接」而不說明怎麼做。
 3. 跨 Agent 接手的目前任務狀態、已修改檔案、尚待驗證項目與下一步，必須同步記錄於 `OPENCODE_HANDOFF.md`；不得只保留在聊天逐字稿。
 4. 本規則標記為 `INTERNATIONAL_CONTEXT_DECISION_GUIDE_V1`。純 UI 修改完成前，必須重產報告並完成 Node 語法、資料契約、桌機／手機版面與 console 檢查；不得直接手改生成 HTML。
-5. 國際方向判讀必須先嘗試官方資料；期交所端點失敗時，應使用已驗證的替代來源並揭露證據層級與資料日期。stale 資料可作保守判讀，不得讓整體台股方向只顯示「資料不足」而不提供可執行建議。<!-- INTERNATIONAL_CONTEXT_FALLBACK_V1 -->
+5. 國際方向判讀必須先嘗試官方資料；期交所端點失敗時，應使用已驗證的替代來源並揭露證據層級與資料日期。stale 資料可作保守判讀；單一來源失敗時仍須輸出可執行的台股方向、新資金做法與持有做法，不得只留下模糊狀態字眼。<!-- INTERNATIONAL_CONTEXT_FALLBACK_V1 -->

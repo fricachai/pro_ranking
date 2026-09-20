@@ -85,6 +85,17 @@ passed
 
 Final result: passed
 
+## 2026-09-20 OpenCode 自主修正與判讀文字契約 QA
+
+- Change: OpenCode 全域與本專案 Build 改為可規劃、編輯、執行、測試、診斷、修正、提交、發布與線上驗證；`/update-report` 遇到失敗改進入根因修正閉環。敏感資料與破壞性操作安全邊界保留。
+- Decision contract: 國際單一來源未回傳時，不再阻斷整體判讀；改用其餘可驗證訊號、日期回補／替代資料／前次已驗證快照與個股條件，輸出中性偏保守及明確的新資金／持有做法。
+- Generated output: 以既有 `HORIZON_SCORE_V2` 報告重產首頁與日期版 HTML，沒有重新抓取資料，沒有改排名、分數、11 個有效交易日門檻或個股硬性規則。
+- Automated UI text scan: `資料不足=0`、`資料待更新=0`、`無法判定=0`、`暫不提供=0`；首頁與 `latest.html` 均通過。
+- Contract tests: `INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`FETCH_RESILIENCE_TEST=pass`、`POWERSHELL_BOUNDARY_TEST=pass`、`HANDOFF_READY=true`。
+- Full 1050×900／390×844 authenticated browser capture and new Pages byte-match are pending the final publish cycle; this entry does not claim the new version is live.
+
+Final result: pending publish verification
+
 ## 2026-09-19 國際區塊新手快速判讀與三組摘要 QA
 
 - Change: `international-ui.js` 新增一個「給不熟投資的人」方向框，分別說明尚未持有與已經持有時的下一步；另新增「市場氣氛／半導體與能源／外資與利率」三組快速摘要卡，以及折線圖的讀法與限制。

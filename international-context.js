@@ -121,6 +121,25 @@ async function fetchYahooFx(asOf, fetchImpl) {
   }));
   return Object.fromEntries(entries);
 }
+function dateBackfillCandidates(asOf, days = 10) {
+  const start = new Date(`${asOf}T00:00:00Z`);
+  return Array.from({ length: days + 1 }, (_, offset) => {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() - offset);
+    return d.toISOString().slice(0, 10);
+  });
+}
+function sourceObservedAt(id, item) {
+  if (id === 'fx') return item?.usdTwd?.date || null;
+  if (Array.isArray(item)) return item.map(x => x.date || x.publishedAt?.slice(0, 10)).filter(Boolean).sort().at(-1) || null;
+  return item?.date || null;
+}
+function hasReusablePrevious(id, item) {
+  if (!item) return false;
+  if (id === 'fx') return date(item.usdTwd?.date) && finite(item.usdTwd?.value);
+  if (Array.isArray(item)) return item.some(x => date(x.date || x.publishedAt?.slice(0, 10)));
+  return date(item.date) && (finite(item.value) || finite(item.net));
+}
 function parseCot(rows, asOf) {
   if (!Array.isArray(rows)) throw new Error('CFTC schema changed');
   return ['S&P 500 Consolidated', 'UST 10Y NOTE', 'EURO FX'].map(market => {
@@ -162,7 +181,11 @@ async function request(url, fetchImpl = fetch) {
       const r = await fetchImpl(url, { signal: AbortSignal.timeout(12000), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; pro-ranking-research/1.0)', Accept: 'application/json,text/plain,*/*' } });
       if (!r.ok) { const e = new Error(`HTTP ${r.status}`); e.retryable = r.status === 403 || r.status === 429 || r.status >= 500; throw e; }
       return await r.text();
-    } catch (e) { last = e; if (e.retryable === false || attempt === 1) break; await new Promise(resolve => setTimeout(resolve, 350)); }
+    } catch (e) {
+      last = e;
+      if (e.retryable === false || attempt === 2) break;
+      await new Promise(resolve => setTimeout(resolve, 350 * (attempt + 1)));
+    }
   }
   throw last;
 }
@@ -178,9 +201,13 @@ function summarize(data, sources) {
   const available = signals.filter(x => x.state !== 'unknown').length;
   const pressure = signals.filter(x => x.state === 'pressure').length;
   const support = signals.filter(x => x.state === 'support').length;
-  const regime = available < 4 ? '中性偏保守' : pressure >= 2 ? '風險升溫' : support >= 3 ? '環境較穩' : '訊號分歧';
-  return { regime, available, total: 4, signals, action: available < 4 ? '目前採保守節奏，先看個股價格與防守條件' : freshnessLimited ? '部分資料日期較舊，先不追價，依個股條件確認' : pressure >= 2 ? '檢查曝險，勿因排名追價' : support >= 3 ? '留意達標個股，等待進場條件' : '等待共識，優先看個股價格結構',
-    method: '觀察規則，未完成策略回測：S&P 500 20筆變動；美元／臺幣5筆±0.5%；10年殖利率5筆±20基點；VIX低於20／高於25。四項均可用才給環境標籤；匯率、美元與期貨不重複加權。',
+  const regime = pressure >= 2 ? '風險升溫' : support >= 3 ? '環境較穩' : available < 4 ? '中性偏保守' : '訊號分歧';
+  const action = pressure >= 2 ? '先檢查曝險，不因排名追價；持股依個股防守條件處理'
+    : support >= 3 ? '留意已通過門檻且位於承接區的個股，採分批進場'
+      : available < 4 ? '目前以可取得的國際指標與個股條件判讀；新部位只在承接區分批，持股依防守條件處理'
+        : '環境訊號分歧，持股先維持；新部位只採個股條件與承接區確認';
+  return { regime, available, total: 4, signals, action, fallbackUsed: sources.filter(x => x.status !== 'current').map(x => x.id),
+    method: '觀察規則：S&P 500 20筆變動；美元／臺幣5筆±0.5%；10年殖利率5筆±20基點；VIX低於20／高於25。可用指標採最佳可得值判讀，匯率、美元與期貨不重複加權。',
     affectsStockActions: false };
 }
 async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, now = new Date() } = {}) {
@@ -207,8 +234,24 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
       const [id, [label, url, evidence, cadence, maxAgeDays]] = queue.shift();
       const source = { id, label, url, evidence, cadence, maxAgeDays, checkedAt, status: 'unavailable', observedAt: null };
       try {
-        let body = await request(url, fetchImpl);
-        data[id] = parsers[id](body);
+        const candidates = ['fx', 'tx'].includes(id) ? dateBackfillCandidates(asOf) : [null];
+        let lastError;
+        for (const requestedDate of candidates) {
+          try {
+            const candidateUrl = new URL(url);
+            if (requestedDate) candidateUrl.searchParams.set('date', requestedDate.replaceAll('-', ''));
+            const body = await request(candidateUrl.href, fetchImpl);
+            const parsed = parsers[id](body);
+            data[id] = parsed;
+            source.url = candidateUrl.href;
+            source.requestedDate = requestedDate || asOf;
+            source.dateBackfillDays = requestedDate ? Math.round((Date.parse(asOf) - Date.parse(requestedDate)) / 86400000) : 0;
+            break;
+          } catch (e) {
+            lastError = e;
+          }
+        }
+        if (!data[id]) throw lastError || new Error('No valid observation after date backfill');
         // At the beginning of a year, Treasury's current-year observations alone cannot support 5-day changes.
         if (id === 'treasury' && data[id].sampleCount < 6) {
           const priorUrl = url.replace(`=${year}`, `=${year - 1}`);
@@ -216,7 +259,7 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
           data[id] = parseTreasury(priorBody + body, asOf); source.additionalUrls = [priorUrl];
         }
         const item = data[id];
-        source.observedAt = id === 'fx' ? item.usdTwd.date : Array.isArray(item) ? (id === 'cot' ? item.map(x => x.date).sort()[0] : item[0]?.publishedAt?.slice(0, 10)) : item.date;
+        source.observedAt = sourceObservedAt(id, item);
         source.status = freshness(source.observedAt, asOf, maxAgeDays);
         if (source.status === 'unavailable') throw new Error('No valid observation date');
       } catch (e) {
@@ -231,10 +274,30 @@ async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, no
             source.fallbackUsed = true;
             source.error = '期交所匯率端點未回傳，已改用 Yahoo 日行情替代參考。';
           } catch (fallbackError) {
-            delete data[id]; source.status = 'unavailable'; source.error = String(fallbackError.message).slice(0, 180);
+            const prior = previous?.data?.[id];
+            if (hasReusablePrevious(id, prior)) {
+              data[id] = structuredClone(prior);
+              source.observedAt = sourceObservedAt(id, data[id]);
+              source.status = 'stale';
+              source.fallbackUsed = true;
+              source.fallbackType = 'previous_verified_snapshot';
+              source.error = '官方與替代端點暫時未回傳，已沿用前次已驗證快照並標示日期。';
+            } else {
+              delete data[id]; source.status = 'unavailable'; source.error = String(fallbackError.message).slice(0, 180);
+            }
           }
         } else {
-          delete data[id]; source.status = 'unavailable'; source.error = String(e.message).slice(0, 180);
+          const prior = previous?.data?.[id];
+          if (hasReusablePrevious(id, prior)) {
+            data[id] = structuredClone(prior);
+            source.observedAt = sourceObservedAt(id, data[id]);
+            source.status = 'stale';
+            source.fallbackUsed = true;
+            source.fallbackType = 'previous_verified_snapshot';
+            source.error = '本次端點暫時未回傳，已沿用前次已驗證快照並標示日期。';
+          } else {
+            delete data[id]; source.status = 'unavailable'; source.error = String(e.message).slice(0, 180);
+          }
         }
       }
       sources.push(source);

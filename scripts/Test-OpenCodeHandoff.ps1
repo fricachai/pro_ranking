@@ -220,9 +220,9 @@ if ($openCodeInstructions -notcontains 'OPENCODE_HANDOFF.md' -or -not ($openCode
     throw 'OpenCode config must auto-load the repository handoff and the pro_ranking Obsidian SOP.'
 }
 $buildBashPermissions = $openCodeConfig.agent.build.permission.bash
-$directPublishRule = $buildBashPermissions.PSObject.Properties['*Update-ProfessionalScreen.ps1* -Publish*']
-if (-not $directPublishRule -or [string]$directPublishRule.Value -ne 'deny') {
-    throw 'OpenCode Build must deny direct publication and require the controlled controller entry point.'
+$buildBashDefault = if ($buildBashPermissions -is [string]) { [string]$buildBashPermissions } else { [string]$buildBashPermissions.PSObject.Properties['*'].Value }
+if ($buildBashDefault -ne 'allow' -or [string]$openCodeConfig.agent.build.permission.external_directory -ne 'allow') {
+    throw 'OpenCode Build must allow autonomous project repair and external project work.'
 }
 
 foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
@@ -283,6 +283,14 @@ foreach ($requiredForeignHistoryToken in @(
 )) {
     if (-not $generatorContent.Contains($requiredForeignHistoryToken)) {
         throw "Foreign-holding history safeguard is missing: $requiredForeignHistoryToken"
+    }
+}
+
+$autonomousRepairMarker = 'OPENCODE_AUTONOMOUS_REPAIR_V1'
+foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md', '.opencode/commands/update-report.md', '.opencode/commands/update-report-status.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains($autonomousRepairMarker)) {
+        throw "Autonomous OpenCode repair rule is missing from the handoff surface: $relativePath"
     }
 }
 foreach ($requiredFetchResilienceToken in @(
@@ -415,47 +423,13 @@ try {
     }
 
     $config = Get-Content -LiteralPath (Join-Path $RepoRoot 'opencode.json') -Raw -Encoding utf8 | ConvertFrom-Json
-    if (-not $config.permission -or [string]$config.permission.edit -ne 'deny') {
-        throw 'opencode.json must keep global editing denied by default; the Build primary agent owns the explicit full-access override.'
+    $projectPermissionProperty = $config.PSObject.Properties['permission']
+    $projectPermission = if ($projectPermissionProperty) { $projectPermissionProperty.Value } else { $null }
+    if ($projectPermission -and $projectPermission.PSObject.Properties.Name -contains 'edit' -and [string]$projectPermission.edit -eq 'deny') {
+        throw 'opencode.json must not reintroduce a project-level edit deny that limits the global Build capability.'
     }
-    $bashRules = $config.permission.bash
-    $deniedDirectPublishPatterns = @($bashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'deny' -and $_.Name -like '*Update-ProfessionalScreen.ps1*Publish*'
-    })
-    $allowedPreflightPatterns = @($bashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'allow' -and $_.Name -like '*Test-OpenCodeHandoff.ps1*'
-    })
-    $allowedStartPatterns = @($bashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'allow' -and $_.Name -like '*Start-ProfessionalScreenUpdate.ps1*'
-    })
-    $allowedStatusPatterns = @($bashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'allow' -and $_.Name -like '*Get-ProfessionalScreenUpdateStatus.ps1*'
-    })
-    $ruleNames = @($bashRules.PSObject.Properties.Name)
-    $denyIndex = [array]::IndexOf([string[]]$ruleNames, '*')
-    $lastAllowIndex = -1
-    for ($index = 0; $index -lt $ruleNames.Count; $index += 1) {
-        if ([string]$bashRules.($ruleNames[$index]) -eq 'allow') { $lastAllowIndex = $index }
-    }
-    $buildBashRules = $config.agent.build.permission.bash
-    $buildDirectDeny = @($buildBashRules.PSObject.Properties | Where-Object {
-        [string]$_.Value -eq 'deny' -and $_.Name -like '*Update-ProfessionalScreen.ps1*Publish*'
-    })
-    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.edit -ne 'allow' -or [string]$buildBashRules.'*' -ne 'allow' -or $buildDirectDeny.Count -lt 1 -or [string]$config.agent.build.permission.webfetch -ne 'allow' -or [string]$config.agent.build.permission.external_directory -ne 'ask' -or [string]$bashRules.'*' -ne 'deny' -or $deniedDirectPublishPatterns.Count -lt 1 -or $allowedPreflightPatterns.Count -lt 1 -or $allowedStartPatterns.Count -lt 1 -or $allowedStatusPatterns.Count -lt 1 -or $denyIndex -ne 0 -or $denyIndex -ge $lastAllowIndex) {
-        throw 'opencode.json must give the Build primary agent full project access, keep external directories gated, define powershell.exe, and retain controlled global defaults.'
-    }
-    foreach ($expectedCommand in @(
-        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-OpenCodeHandoff.ps1',
-        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1',
-        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1',
-        'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60'
-    )) {
-        $matched = @($bashRules.PSObject.Properties | Where-Object {
-            [string]$_.Value -eq 'allow' -and $expectedCommand -like $_.Name
-        })
-        if ($matched.Count -lt 1) {
-            throw "opencode.json does not allow the required command: $expectedCommand"
-        }
+    if ([string]$config.shell -ne 'powershell.exe' -or $config.tools.bash -ne $true -or [string]$config.agent.build.mode -ne 'primary' -or $config.agent.build.tools.bash -ne $true -or [string]$config.agent.build.permission.edit -ne 'allow' -or [string]$config.agent.build.permission.bash.'*' -ne 'allow' -or [string]$config.agent.build.permission.webfetch -ne 'allow' -or [string]$config.agent.build.permission.external_directory -ne 'allow' -or [string]$config.agent.build.permission.task -ne 'allow' -or [string]$config.agent.build.permission.skill -ne 'allow') {
+        throw 'opencode.json must give the Build primary agent the full autonomous-repair profile and define powershell.exe.'
     }
 
     $report = Get-Content -LiteralPath (Join-Path $RepoRoot 'professional-screen-report/latest.json') -Raw -Encoding utf8 | ConvertFrom-Json

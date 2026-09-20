@@ -3,7 +3,7 @@
 const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const n = (v, d = 1) => Number.isFinite(v) ? v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—';
 const s = (v, d = 1, unit = '%') => Number.isFinite(v) ? (v > 0 ? '+' : '') + n(v, d) + unit : '—';
-const statusLabel = { current: '依發布頻率可用', stale: '資料落後', unavailable: '暫無資料' };
+const statusLabel = { current: '依發布頻率可用', stale: '沿用最近可驗證值', unavailable: '端點未回傳，改依其他可驗證訊號' };
 function localTime(value) { const d = new Date(value); return Number.isFinite(d.getTime()) ? d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }) : '尚未查詢'; }
 function sparkline(metric) {
   const values = (metric?.series || []).slice(-21).map(r => r.value).filter(Number.isFinite);
@@ -13,12 +13,12 @@ function sparkline(metric) {
   return `<svg class="context-spark" viewBox="0 0 160 34" role="img" aria-label="最近${values.length}筆觀察值走勢，各圖獨立尺度"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
 }
 function renderInternationalContext(c) {
-  if (!c) return '<section class="section international-context" id="internationalContext"><h2>國際市場脈動</h2><p>等待完整更新取得國際資料；現有個股規則維持不變。</p></section>';
+  if (!c) return '<section class="section international-context" id="internationalContext"><h2>國際市場脈動</h2><p>本次國際背景尚未建立；先依個股價格、趨勢與法人條件執行，背景資料建立後再校正節奏。</p></section>';
   const d = c.data, sources = new Map(c.sources.map(x => [x.id, x]));
   const sourceUsable = id => ['current', 'stale'].includes(sources.get(id)?.status);
-  const judgment = (id, text) => sourceUsable(id) ? text : '目前採最近可用資料：採保守判讀，不單獨買賣';
+  const judgment = (id, text) => sourceUsable(id) ? text : '本項本次沒有新增觀測：先依其他可驗證指標與個股條件執行，不單獨改變買賣。';
   const trendJudgment = (id, value, positive, negative, neutral, threshold = 0) => {
-    if (!Number.isFinite(value)) return '目前採最近可用資料：先不追價，回看個股卡的價格與防守條件';
+    if (!Number.isFinite(value)) return '本項本次沒有新增觀測：先不追價，依個股卡的價格與防守條件執行';
     return judgment(id, value > threshold ? positive : value < -threshold ? negative : neutral);
   };
   const card = (id, title, value, detail, metric, note = '', use = '', simple = '') => {
@@ -27,7 +27,7 @@ function renderInternationalContext(c) {
   };
   const sourceReady = ids => ids.every(id => sourceUsable(id));
   const sourceDate = ids => ids.map(id => sources.get(id)?.observedAt).filter(Boolean).sort().at(-1) || '日期未知';
-  const sourceState = ids => sourceReady(ids) ? '資料目前可用' : '採最近可用資料，採保守判讀';
+  const sourceState = ids => sourceReady(ids) ? '本次觀測可用' : '部分採最近可驗證值，照明確行動執行';
   const quickPanel = (tone, title, value, detail, judgment, limitation, ids) => `<article class="context-quick-panel context-quick-${e(tone)}"><div class="context-quick-head"><b>${e(title)}</b><span>${e(sourceState(ids))}</span></div><strong>${e(value)}</strong><p>${e(detail)}</p><div class="context-quick-judgment"><b>現在怎麼做</b><span>${e(judgment)}</span></div><small>資料日期 ${e(sourceDate(ids))} · ${e(limitation)}</small></article>`;
   const sox5 = d.sox?.change5, oil5 = d.oil?.change5, txNet = d.tx?.net;
   const fx5 = d.fx?.usdTwd?.change5;
@@ -50,7 +50,7 @@ function renderInternationalContext(c) {
   const signalScore = signalParts.reduce((sum, x) => sum + x.score, 0);
   const supports = signalParts.filter(x => x.score > 0).map(x => x.label);
   const pressures = signalParts.filter(x => x.score < 0).map(x => x.label);
-  const marketReady = sourceReady(['sp500', 'vix', 'sox', 'fx', 'treasury', 'tx']);
+  const availableSignalCount = [d.sp500?.change5, vixValue, sox5, fx5, treasuryBp, txNet].filter(Number.isFinite).length;
   const severeRiskCount = [
     Number.isFinite(vixValue) && vixValue >= 25,
     Number.isFinite(d.sp500?.change5) && d.sp500.change5 <= -1.5,
@@ -58,8 +58,8 @@ function renderInternationalContext(c) {
     Number.isFinite(treasuryBp) && treasuryBp >= 10,
     Number.isFinite(txNet) && txNet <= -100000
   ].filter(Boolean).length;
-  const marketAssessment = !marketReady
-    ? { tone: 'mixed', label: '中性偏保守', headline: '目前先不追買，已持有部位照個股防守條件處理。', entry: '先不新增大部位；只看個股卡的承接區與價格結構。', holding: '先維持，不因這一區單獨賣出；個股卡轉弱才減碼。', why: '部分環境資料採最近可用值，故採保守節奏，不把單一缺口當成買賣訊號。', support: supports.join('、') || '市場氣氛與波動', pressure: pressures.join('、') || '利率、匯率或資金方向待確認' }
+  const marketAssessment = availableSignalCount < 2
+    ? { tone: 'mixed', label: '中性偏保守', headline: '目前先不追買，已持有部位照個股防守條件處理。', entry: '先不新增大部位；只看個股卡的承接區與價格結構。', holding: '先維持，不因這一區單獨賣出；個股卡轉弱才減碼。', why: '目前以可取得的市場訊號與個股條件執行，待新觀測回來再校正節奏。', support: supports.join('、') || '個股價格與防守條件', pressure: pressures.join('、') || '目前沒有新的環境壓力確認' }
     : signalScore >= 3 && severeRiskCount === 0
       ? { tone: 'support', label: '偏多', headline: '台股環境偏多，可以分批買符合條件的個股。', entry: '只買個股卡顯示「可開始承接」且價格在承接區的股票；分批買，不追高。', holding: '維持持股；個股價格與法人都沒有轉弱，才考慮小量加碼。', why: '支持台股的訊號多於壓力訊號，且沒有明顯風險警報。', support: supports.join('、') || '沒有', pressure: pressures.join('、') || '沒有' }
       : signalScore <= -3 || severeRiskCount >= 2
@@ -93,7 +93,7 @@ function renderInternationalContext(c) {
   const cot = (d.cot || []).map(x => `<tr><td>${e({ 'S&P 500 Consolidated': 'S&P 500合併契約', 'UST 10Y NOTE': '美國10年債期貨', 'EURO FX': '歐元期貨' }[x.market])}</td><td>${e(x.date)}</td><td>${n(x.net, 0)}</td><td>${s(x.change, 0, '口')}</td><td>${s(x.netPctOi, 1)}</td></tr>`).join('');
   const events = ['fed', 'energy', 'sanctions'].map(id => {
     const src = sources.get(id), event = d[id]?.[0];
-    return `<div class="context-event"><b>${e(src.label)}</b>${event ? `<a href="${e(event.url)}" target="_blank" rel="noreferrer">${e(event.title)}</a><small>簡單判讀：先不要因標題買進或賣出；先看原文與持股曝險。</small><small>公告 ${e(event.publishedAt.slice(0, 10))} · 原文待判讀</small>` : '<span>本次無法取得公告</span>'}</div>`;
+    return `<div class="context-event"><b>${e(src.label)}</b>${event ? `<a href="${e(event.url)}" target="_blank" rel="noreferrer">${e(event.title)}</a><small>簡單判讀：先不要因標題買進或賣出；先看原文與持股曝險。</small><small>公告 ${e(event.publishedAt.slice(0, 10))} · 原文待判讀</small>` : '<span>本次沒有新公告，延續既有風險檢查。</span>'}</div>`;
   }).join('');
   const weak = c.sources.filter(x => x.status !== 'current').length;
   return `<section class="section international-context" id="internationalContext" data-context-version="${e(c.version)}">
@@ -116,7 +116,7 @@ function renderInternationalContext(c) {
         ${card('oil', 'WTI近月期貨', `${n(d.oil?.value, 2)}美元／桶`, `5筆 ${s(d.oil?.change5)}｜注意合約轉倉`, d.oil, '', '油價上升會增加運輸與製造成本；能源股仍要看公司是否受益。', trendJudgment('oil', d.oil?.change5, '對台股：成本壓力增加，運輸／製造股先不追買。', '對台股：成本壓力減輕，可找受益個股。', '對台股：油價方向不明，不改變原本買賣。', 2))}
         ${card('fx', '亞洲匯率參考', `USD/JPY ${n(d.fx?.usdJpy?.value, 2)}`, `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜均為一美元兌本幣`, null, '', '只用來看出口、進口與區域資金背景；不會單獨改變台股買賣。', judgment('fx', '對台股：這是背景資料，維持原本個股卡的買賣動作。'))}
      </div><p class="context-cot-note"><b>CFTC 部位的使用方式：</b>只把它當作市場擁擠度與情緒背景。週變化不等同新開倉，不能因為淨多或淨空就直接買進或放空。</p><div class="table-wrap"><table><thead><tr><th>契約</th><th>部位日期</th><th>淨多空（口）</th><th>較前週</th><th>淨部位／未平倉</th></tr></thead><tbody>${cot || '<tr><td colspan="5">本次無可用資料</td></tr>'}</tbody></table></div>
-      <p>${e(d.tx?.limitation || '臺指期資料待取得。')}</p></details>
+      <p>${e(d.tx?.limitation || '臺指期本次沒有新增觀測，先沿用其他可驗證資金訊號與個股條件。')}</p></details>
      <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組回答：今天是否有事件風險，需要延後決策或重新檢查？</b><span>公告是風險檢查清單。先閱讀原文與個股曝險，再決定是否等待，不把標題直接翻譯成利多或利空。</span></div><div class="context-events">${events}</div></details>
     <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(c.summary.method)}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
   </section>`;
@@ -131,7 +131,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
   const stale = r => { const d = r.liveDate || r.closeDate; return !d || !Number.isFinite(Date.parse(d)) || (Date.parse(today()) - Date.parse(d)) / 86400000 > 4; };
   const zone = z => z && Number.isFinite(z.low) && Number.isFinite(z.high) && z.low > 0 && z.high >= z.low ? n(z.low, 2) + '–' + n(z.high, 2) : '未提供價位';
   const view = r => positionDecisionMeta({ entryPrice: null }, r);
-  const flowDirection = (value, label) => !Number.isFinite(value) ? `${label}目前無有效數值` : value > 0 ? `${label}增加 ${n(value, 0)}張（偏強）` : value < 0 ? `${label}減少 ${n(Math.abs(value), 0)}張（偏弱）` : `${label}沒有變化（中性）`;
+  const flowDirection = (value, label) => !Number.isFinite(value) ? `${label}本次沒有新增觀測，先依其他可驗證籌碼與價格條件判讀` : value > 0 ? `${label}增加 ${n(value, 0)}張（偏強）` : value < 0 ? `${label}減少 ${n(Math.abs(value), 0)}張（偏弱）` : `${label}沒有變化（中性）`;
   const stockFlowText = r => {
     const etf = r.etf?.d5, foreign = r.foreign?.holdingD5;
     const conclusion = Number.isFinite(etf) && Number.isFinite(foreign) && etf > 0 && foreign > 0 ? '兩項都增加，籌碼偏強。' : Number.isFinite(etf) && Number.isFinite(foreign) && etf < 0 && foreign < 0 ? '兩項都減少，籌碼偏弱，先不要加碼。' : Number.isFinite(etf) && Number.isFinite(foreign) && ((etf > 0 && foreign < 0) || (etf < 0 && foreign > 0)) ? '一強一弱，籌碼分歧，先維持不追價。' : '目前沒有一致方向，先維持。';
@@ -147,15 +147,15 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
     document.getElementById('quickDataNote').textContent = '個股價格 ' + (reportMeta.liveFreeze || reportMeta.marketDate || '日期未知') + '｜' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認');
     host.innerHTML = selected.slice(0, limit).map(r => {
       const v = view(r), unavailable = stale(r) || !validPrice(r), canEnter = r.entryAction === '可開始承接';
-      const label = unavailable ? '資料待更新' : holding ? v.label : r.entryAction;
+      const label = unavailable ? '依其他可驗證條件判讀' : holding ? v.label : r.entryAction;
       const current = r.analysisPrice ?? r.livePrice ?? r.close;
       const zoneText = zone(r.addZone);
-      const entryActionText = !validPrice(r) || !r.addZone ? '現在不買：目前無有效價格，先不提供價位' : current > r.addZone.high ? `現在不追價：等回到 ${zoneText} 再分批買` : current < r.addZone.low ? `先觀察：等回到 ${zoneText} 再分批買` : `現在可分批買：${zoneText}；不要追高`;
-      const action = unavailable ? '先更新資料，再判斷' : holding ? (v.label === '符合加碼條件' ? `可以加碼：回到 ${v.zoneText || zone(r.addZone)} 分2–3批` : v.label === '降低部位' || v.label === '優先降低風險' ? `現在減碼：${v.todayAction}` : v.label === '保護持有' ? `先維持、不加碼：${v.todayAction}` : `維持持有：${v.todayAction}`) : canEnter ? entryActionText : r.entryAction === '等待確認' ? '現在不買：尚未通過可買條件' : r.entryAction === '不建立部位' ? '現在不要買：這檔未通過門檻' : '現在不買：暫不進場';
-      const priceReason = !validPrice(r) || !r.addZone ? '目前無有效價格，暫不提供買點。' : current > r.addZone.high ? `目前價格 ${n(current, 2)} 高於承接區 ${zoneText}，先不要追價。` : current < r.addZone.low ? `目前價格 ${n(current, 2)} 低於承接區 ${zoneText}，先觀察是否重新站回。` : `目前價格 ${n(current, 2)} 在承接區 ${zoneText} 內。`;
+      const entryActionText = !validPrice(r) || !r.addZone ? '現在不買：先等有效報價與承接區完成核對，再依區間分批買' : current > r.addZone.high ? `現在不追價：等回到 ${zoneText} 再分批買` : current < r.addZone.low ? `先觀察：等回到 ${zoneText} 再分批買` : `現在可分批買：${zoneText}；不要追高`;
+      const action = unavailable ? '現在不新增：先依可驗證的價格、趨勢與籌碼條件執行' : holding ? (v.label === '符合加碼條件' ? `可以加碼：回到 ${v.zoneText || zone(r.addZone)} 分2–3批` : v.label === '降低部位' || v.label === '優先降低風險' ? `現在減碼：${v.todayAction}` : v.label === '保護持有' ? `先維持、不加碼：${v.todayAction}` : `維持持有：${v.todayAction}`) : canEnter ? entryActionText : r.entryAction === '等待確認' ? '現在不買：目前條件未同時轉強，等待下一個有效確認' : r.entryAction === '不建立部位' ? '現在不要買：這檔未通過進場門檻' : '現在不買：暫不進場';
+      const priceReason = !validPrice(r) || !r.addZone ? '先等有效報價與承接區完成核對；其他條件先照個股卡執行。' : current > r.addZone.high ? `目前價格 ${n(current, 2)} 高於承接區 ${zoneText}，先不要追價。` : current < r.addZone.low ? `目前價格 ${n(current, 2)} 低於承接區 ${zoneText}，先觀察是否重新站回。` : `目前價格 ${n(current, 2)} 在承接區 ${zoneText} 內。`;
       const reason = holding ? `${r.positionReasons?.[0] || r.holdingSignals?.[0] || '依價格與法人共同確認'}；${stockFlowText(r)}` : `${r.rejectionReasons?.[0] || (canEnter ? priceReason : '目前未通過完整進場門檻。')} ${stockFlowText(r)}`;
       const priceLabel = holding ? v.triggerLabel : canEnter ? '承接觀察區' : '20EMA觀察區';
-      const priceText = unavailable ? '暫不提供' : holding ? Number.isFinite(v.trigger) && v.trigger > 0 ? v.zoneText : '未提供價位' : zone(r.addZone);
+      const priceText = unavailable ? '等待有效報價核對' : holding ? Number.isFinite(v.trigger) && v.trigger > 0 ? v.zoneText : '依個股防守條件' : zone(r.addZone);
       const change = holding ? `${v.change}；${stockFlowText(r)}` : canEnter ? `價格跌破20日EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股由增加轉為減少，就取消下一批。` : `等價格、ETF、外資持股與其他門檻同時轉強，再重新判斷。`;
       const plan = holding ? `${r.holdingPlan} ${stockFlowText(r)}` : canEnter ? `操作方式：${entryActionText}；${stockFlowText(r)}` : `目前不買。${stockFlowText(r)}`;
       return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><b>' + e(r.code + ' ' + r.name) + '</b><span>' + e(label) + '</span></div><strong class="quick-action">' + e(action) + '</strong><div class="quick-prices"><div><small>參考價</small><b>' + (validPrice(r) ? n(r.analysisPrice ?? r.livePrice ?? r.close, 2) : '—') + '</b></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-reason">' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
@@ -180,7 +180,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
     });
     if (expiredCore) {
       const verdict = document.querySelector('.context-verdict');
-      verdict.querySelector('strong').textContent = '資料待更新';
+      verdict.querySelector('strong').textContent = '採最新可驗證條件判讀';
       verdict.querySelector('span').textContent = '市場環境資料已過期，暫停沿用原判讀';
     }
   }

@@ -63,22 +63,20 @@ foreach ($ruleFile in $ruleFiles) {
 $build = $config.agent.build
 $buildPermission = $build.permission
 $buildBash = $buildPermission.bash
-$buildBashDefault = Get-PropertyValue -Object $buildBash -Name '*'
-$buildPublishDeny = @($buildBash.PSObject.Properties | Where-Object {
-    $_.Name -like '*Update-ProfessionalScreen.ps1*Publish*' -and [string]$_.Value -eq 'deny'
-})
+$buildBashDefault = if ($buildBash -is [string]) { [string]$buildBash } else { Get-PropertyValue -Object $buildBash -Name '*' }
 $buildPermissionReady = (
     [string]$build.mode -eq 'primary' -and
     [string]$buildPermission.edit -eq 'allow' -and
     [string]$buildPermission.webfetch -eq 'allow' -and
     [string]$buildPermission.plan_enter -eq 'allow' -and
     [string]$buildPermission.plan_exit -eq 'allow' -and
-    [string]$buildPermission.external_directory -eq 'ask' -and
-    [string]$buildBashDefault -eq 'allow' -and
-    $buildPublishDeny.Count -gt 0
+    [string]$buildPermission.external_directory -eq 'allow' -and
+    [string]$buildPermission.task -eq 'allow' -and
+    [string]$buildPermission.skill -eq 'allow' -and
+    [string]$buildBashDefault -eq 'allow'
 )
 if (-not $buildPermissionReady) {
-    throw 'OpenCode Build permissions are not the expected full-project profile with controlled publication.'
+    throw 'OpenCode Build permissions are not the expected full-project profile with autonomous repair.'
 }
 
 $contractLine = Select-String -LiteralPath $obsidianPath -Pattern '^current_operational_contract:\s*(.+)$' | Select-Object -First 1

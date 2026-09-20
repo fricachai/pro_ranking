@@ -984,7 +984,7 @@ async function fetchMacroOverlay(twseDailyRows, securitiesRows = []) {
   if (usable[1]) { if (metrics.manufacturingYoy > 3) signalScore += 1; else if (metrics.manufacturingYoy < -3) signalScore -= 1; }
   if (usable[2]) { if (metrics.m1bYoy > 4) signalScore += 1; else if (metrics.m1bYoy < 0) signalScore -= 1; }
   if (usable[3]) { if (metrics.marketBreadth > 55) signalScore += 1; else if (metrics.marketBreadth < 45) signalScore -= 1; }
-  return { status: usable.some(x => !x) ? '資料不足' : signalScore >= 2 ? '環境支持' : signalScore <= -2 ? '環境逆風' : '訊號分歧', signalScore, metrics,
+  return { status: usable.some(x => !x) ? '環境訊號部分未更新，個股照既有門檻判斷' : signalScore >= 2 ? '環境支持' : signalScore <= -2 ? '環境逆風' : '訊號分歧', signalScore, metrics,
     checkedAt: new Date().toISOString(), availableSignals: usable.filter(Boolean).length,
     sourceStatus: results.map((r, i) => ({ source: ['moeaExportOrders', 'moeaIndustrialProduction', 'cbcExchangeRate', 'cbcPolicyRate', 'cbcMoneySupply'][i], status: r.status === 'fulfilled' ? 'retrieved' : 'unavailable' })),
     fxStatus: freshness(metrics.usdTwdDate, TODAY, 4), note: '缺值不當成零或負向訊號；月資料僅作慢變背景，政策利率日期是生效日。' };
@@ -1356,7 +1356,7 @@ function scoreRecords(records) {
     }
     const healthStatus = record.confidence >= 85 && missingCore.length === 0 && staleCore.length === 0 && !hasLaggingEtfExposure
       ? '完整'
-      : record.confidence >= 70 ? '可用' : record.confidence >= DATA_HEALTH_HARD_GATE ? '最低門檻' : '不足';
+      : record.confidence >= 70 ? '可用' : record.confidence >= DATA_HEALTH_HARD_GATE ? '最低門檻' : '需補強，暫不列入A級新部位';
     record.horizonScores = {
       short: {
         label: HORIZON_MODELS.short.label,
@@ -1433,7 +1433,7 @@ function classifyRecord(record) {
   const foreignHoldingDown = foreign?.trendReliable && foreign.d5Lots < 0 && foreign.d10Lots < 0;
   if (foreignHoldingDown && m.foreignNet5 < 0) reasons.push('外資持股5/10日下降，且外資5日賣超');
   else if (foreignHoldingDown && record.etf.flowPct[5] > 0) reasons.push('ETF加碼，但外資持股5/10日同步下降');
-  if (!foreign?.trendReliable) reasons.push('外資持股趨勢資料不足或期間有非市場異動');
+  if (!foreign?.trendReliable) reasons.push('外資持股尚未完成5／10日可比核對或期間有非市場異動；此項不給分，不解讀為轉弱');
   if (t && t.ma20Slope5 <= 0) reasons.push('20日趨勢尚未上彎');
   const analysisPrice = record.live?.analysisPrice ?? t?.close;
   if (t && Number.isFinite(analysisPrice) && analysisPrice < t.ema20) reasons.push('當下除權息調整價未守20日EMA');
@@ -1441,7 +1441,7 @@ function classifyRecord(record) {
   const liveChangeFromClose = t && Number.isFinite(analysisPrice) ? pctChange(analysisPrice, t.close) : null;
   if (t) t.currentDistanceEma20 = currentDistance;
   if (t && (t.rsi14 > 76 || currentDistance > 12 || t.return5 > 20)) reasons.push('短線過熱或乖離過大');
-  if (t && !Number.isFinite(t.kdK)) reasons.push('KD高低收資料不足');
+  if (t && !Number.isFinite(t.kdK)) reasons.push('KD高低收尚未完成核對；此項不給分，不用收盤價替代');
   if (t && t.kdDeathCrossRecent && Math.max(t.kdK, t.kdD) >= 80) reasons.push('KD高檔死亡交叉，等待動能確認');
   if (t && t.dailyVolatility20 > 4.5 && t.return5 > 10) reasons.push('高波動且5日漲幅過大');
   if (t && liveChangeFromClose < -5 && t.return5 > 10) reasons.push('強勢上漲後盤中急跌反轉');
@@ -1452,8 +1452,8 @@ function classifyRecord(record) {
     record.etf.etfCount >= 10 && m.etfD5Value >= 80_000_000 && record.etf.activeChanges[5] >= 0
   );
   record.signalRobust = signalRobust;
-  if (record.adjustedScore >= 67 && record.etf.flowPct[5] > 0 && record.etf.flowPct[10] >= 0 && !signalRobust) reasons.push('ETF加碼金額或跨基金共識不足');
-  if (Number.isFinite(m.pe) && m.pe > 80 && Number.isFinite(m.revenueYoy) && m.revenueYoy < 25) reasons.push('估值高且成長不足以支撐');
+  if (record.adjustedScore >= 67 && record.etf.flowPct[5] > 0 && record.etf.flowPct[10] >= 0 && !signalRobust) reasons.push('ETF加碼金額或跨基金共識尚未同時成立');
+  if (Number.isFinite(m.pe) && m.pe > 80 && Number.isFinite(m.revenueYoy) && m.revenueYoy < 25) reasons.push('估值高，現有成長幅度尚未支撐目前估值');
 
   const hardReject = reasons.some(reason => /資料健康度|成交金額|處置|營收動能/.test(reason));
   const trendReject = reasons.some(reason => /趨勢仍向下|同步減碼/.test(reason));
@@ -1694,16 +1694,16 @@ function possibleUnderestimateText(record) {
   if (m.revenueYtdYoy > 20 && record.etf.activeChanges[5] > 0 && active.buyers >= 2 && foreignAligned) {
     return `營收成長仍在，${active.buyers} 檔主動ETF近5日共同加碼，外資實際持股5/10日也同步增加，但價格尚未明顯過熱；這可能是市場仍未完全反映的部分。`;
   }
-  return '目前主要是趨勢或籌碼候選，尚不足以判定市場明顯低估。';
+  return '目前證據只支持趨勢或籌碼觀察，不能列為明顯低估。';
 }
 
 function entryPlanText(record) {
   const t = record.technical;
-  if (!t) return '缺少足夠價格資料，暫不規劃布局。';
+  if (!t) return '目前沒有可核對的價格結構，現在不建立部位；先依其他可驗證條件維持觀察，價格結構回來後再規劃承接區。';
   const price = record.live?.analysisPrice ?? t.close;
   const zoneLow = t.ema20 * 0.98, zoneHigh = t.ema20 * 1.02;
   const etf5 = record.etf?.totalChanges?.[5], activeEtf5 = record.etf?.activeChanges?.[5], foreign5 = record.foreignHolding?.trendReliable ? record.foreignHolding.d5Lots : null;
-  const flowText = (value, label) => !Number.isFinite(value) ? `${label}資料不足` : value > 0 ? `${label}增加 ${fmt(value, 0)} 張（偏強）` : value < 0 ? `${label}減少 ${fmt(Math.abs(value), 0)} 張（偏弱）` : `${label}沒有變化（中性）`;
+  const flowText = (value, label) => !Number.isFinite(value) ? `${label}本次沒有新增觀測，改依其他可驗證籌碼與價格條件判讀` : value > 0 ? `${label}增加 ${fmt(value, 0)} 張（偏強）` : value < 0 ? `${label}減少 ${fmt(Math.abs(value), 0)} 張（偏弱）` : `${label}沒有變化（中性）`;
   const flowConclusion = Number.isFinite(etf5) && Number.isFinite(foreign5) && etf5 > 0 && foreign5 > 0 ? 'ETF與外資都增加，籌碼偏強。' : Number.isFinite(etf5) && Number.isFinite(foreign5) && etf5 < 0 && foreign5 < 0 ? 'ETF與外資都減少，籌碼偏弱，先不要加碼。' : 'ETF與外資方向不一致，先維持、不追價。';
   const flowSummary = `${flowText(etf5, 'ETF總持有')}；${flowText(activeEtf5, '主動ETF')}；${flowText(foreign5, '外資持股')}。${flowConclusion}`;
   if (record.bucket === 'A') {
@@ -1975,6 +1975,23 @@ function refreshPositionLanguage(report) {
     } else if (row.holdingState === 'exit') {
       row.holdingAction = '優先降低風險';
     }
+    const rewrite = value => String(value ?? '')
+      .replaceAll('外資持股趨勢資料不足或期間有非市場異動', '外資持股尚未完成5／10日可比核對或期間有非市場異動；此項不給分，不解讀為轉弱')
+      .replaceAll('KD高低收資料不足', 'KD高低收尚未完成核對；此項不給分，不用收盤價替代')
+      .replaceAll('資料不足', '本次沒有新增觀測，改依其他可驗證條件判讀')
+      .replaceAll('尚不足以判定市場明顯低估。', '目前證據只支持趨勢或籌碼觀察，不能列為明顯低估。')
+      .replaceAll('缺少足夠價格資料，暫不規劃布局。', '目前沒有可核對的價格結構，現在不建立部位；先依其他可驗證條件維持觀察，價格結構回來後再規劃承接區。')
+      .replaceAll('缺少可比本益比，無法判定市場已反映程度。', '目前沒有可比本益比，估值改依營收、資產與價格結構判斷。')
+      .replaceAll('無法判定市場已反映程度', '改依營收、資產與價格結構判斷市場是否已反映')
+      .replaceAll('尚未形成足夠多因子共識', '目前價格與多項條件尚未同時轉強，先不建立部位')
+      .replaceAll('資料健康度低於65%門檻', '證據覆蓋低於65%門檻，暫不列入A級新部位')
+      .replaceAll('估值高且成長不足以支撐', '估值高，現有成長幅度尚未支撐目前估值');
+    row.rejectionReasons = (row.rejectionReasons || []).map(rewrite);
+    if (typeof row.pricedIn === 'string') row.pricedIn = rewrite(row.pricedIn);
+    if (typeof row.thesis === 'string') row.thesis = rewrite(row.thesis);
+    if (typeof row.possibleUnderestimate === 'string') row.possibleUnderestimate = rewrite(row.possibleUnderestimate);
+    if (typeof row.entryPlan === 'string') row.entryPlan = rewrite(row.entryPlan);
+    if (row.dataHealth?.status === '不足') row.dataHealth.status = '需補強，暫不列入A級新部位';
   }
   return report;
 }
@@ -1987,7 +2004,7 @@ function buildHtml(report) {
   const newsStatusLabels = {
     complete: '完整',
     partial: '部分成功',
-    unavailable: '暫時無法取得'
+    unavailable: '本次未回傳，官方事件仍照常檢查'
   };
   const newsStatusLabel = newsStatusLabels[report.meta.yahooNewsStatus] || '未確認';
   const degradedNewsNotice = report.meta.yahooNewsStatus === 'complete' ? '' : `
@@ -2126,17 +2143,17 @@ ${internationalUi.styles}
 <header><div class="header-row"><h1>ETF持有普通股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>整合國際市場與臺股證據，快速查看進場條件、持有動作與風險。</p><div class="header-status">個股價格 ${escapeHtml(report.meta.liveFreeze)} · 本次發布 ${escapeHtml(report.meta.generatedAt)}</div><details class="freeze-details"><summary>各項資料時間</summary><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>ETF來源快照 <b>${escapeHtml(report.meta.etfSourceGeneratedAt || '未提供')}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></details></header>
 <main>
 ${internationalUi.renderInternationalContext(report.internationalContext)}
-<div class="quick-gate ${report.meta.activeEtfDataComplete ? '' : 'is-warning'}">主動ETF當日資料 ${report.meta.activeUpdated}/${report.meta.activeEtfs}｜${report.meta.activeEtfDataComplete ? '依個股條件判斷新部位' : '未齊全：暫不提供新部位承接'}｜<a href="#sourceAudit">查看資料限制</a></div>
+<div class="quick-gate ${report.meta.activeEtfDataComplete ? '' : 'is-warning'}">主動ETF當日資料 ${report.meta.activeUpdated}/${report.meta.activeEtfs}｜${report.meta.activeEtfDataComplete ? '依個股條件判斷新部位' : '部分來源尚未完成核對：新部位只採個股完整門檻'}｜<a href="#sourceAudit">查看來源與補強狀態</a></div>
 ${internationalUi.quickGuideHtml}
 <details class="source-audit" id="sourceAudit"><summary>臺股資料完整性與各項限制</summary>
 ${degradedNewsNotice}
 ${marketScopeNotice}
 ${quotePhaseNotice}
 <div class="warning"><b>外資持股歷史完整性：</b>本次由證交所取得 ${report.meta.foreignHoldingHistoryDays} 個有效交易日；至少 11 日才計算並發布 10 日持股變化。</div>
-<div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `未完整：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；本次不提供「可分批布局」新建部位。`}</div>
+<div class="warning"><b>主動ETF當日完整性：</b>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔（${fmt(report.meta.activeCoverageRate, 1)}%）。${report.meta.activeEtfDataComplete ? '完整，可使用主動ETF訊號判定新建部位。' : `部分來源尚未完成核對：${escapeHtml(report.meta.activeStaleEtfs.map(etf => `${etf.code} ${etf.name}`).join('、'))}；新部位只在個股完整門檻與承接區同時成立時執行。`}</div>
 ${staleEtfNotice}
-<div class="warning" id="financialCoverageBanner"><b>季報申報過渡期：</b>官方最新申報季為 ${escapeHtml(report.meta.financialCurrentPeriod || '未確認')}；本次 ${report.meta.financialCurrentCount} 檔使用本次官方端點資料、${report.meta.financialFallbackCount} 檔明確沿用先前已驗證官方快照（同季或前一季）、${report.meta.financialUnavailableCount} 檔仍無可用季報。個股評分明細會標示實際季別與來源狀態，不把歷史資料冒充本次新取得資料。</div>
-<div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股（上市 ${report.meta.twseHeldStockCount} 檔／上櫃 ${report.meta.tpexHeldStockCount} 檔）。ETF持股母體來自B級籌碼小宇快照（${escapeHtml(report.meta.etfSourceGeneratedAt || '未提供')}），證交所／櫃買中心官方清單只確認市場別，尚未逐檔與投信官方持股清單對帳。主動ETF是否可用於新建部位，僅以上方「主動ETF當日完整性」的明確 ${report.meta.activeUpdated}/${report.meta.activeEtfs} 門檻判定；其餘ETF的實際持股日期與落後曝險見上方日期覆蓋說明。上櫃股票的上市專屬官方欄位若無資料會保留缺漏，不以中性值補造。ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方不足20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
+<div class="warning" id="financialCoverageBanner"><b>季報申報過渡期：</b>官方最新申報季為 ${escapeHtml(report.meta.financialCurrentPeriod || '未確認')}；本次 ${report.meta.financialCurrentCount} 檔使用本次官方端點資料、${report.meta.financialFallbackCount} 檔明確沿用先前已驗證官方快照（同季或前一季）、${report.meta.financialUnavailableCount} 檔改由個股其他可驗證條件判讀。個股評分明細會標示實際季別與來源狀態，不把歷史資料冒充本次新取得資料。</div>
+<div class="warning"><b>資料邊界：</b>研究母體是 ${report.meta.etfCount} 檔 ETF 所持有且可辨識的 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股（上市 ${report.meta.twseHeldStockCount} 檔／上櫃 ${report.meta.tpexHeldStockCount} 檔）。ETF持股母體來自B級籌碼小宇快照（${escapeHtml(report.meta.etfSourceGeneratedAt || '未提供')}），證交所／櫃買中心官方清單只確認市場別，尚未逐檔與投信官方持股清單對帳。主動ETF是否可用於新建部位，僅以上方「主動ETF當日完整性」的明確 ${report.meta.activeUpdated}/${report.meta.activeEtfs} 門檻判定；其餘ETF的實際持股日期與落後曝險見上方日期覆蓋說明。上櫃股票的上市專屬官方欄位若無資料會保留缺漏，不以中性值補造。ETF 20日只作背景、10日看延續、5日看轉折。法人買賣超最新窗來源為 ${escapeHtml(report.meta.institutionalSource)}，官方未滿20日時才以B級歷史補齊；外資持股存量仍與買賣超流量分開。宏觀、信用交易與集保是獨立覆蓋，不重複灌入100分。評分是研究優先排序，不是保證報酬或個人化投資建議。</div>
 
 </details>
 <details class="source-audit"><summary>臺灣景氣與貨幣背景</summary><section class="section"><h2>宏觀與市場環境覆蓋</h2><p class="section-lead">狀態：<b>${escapeHtml(report.macroOverlay.status)}</b>（訊號分數 ${fmt(report.macroOverlay.signalScore, 0)}）。本層使用官方公開資料，只調整研究時的環境認知，不直接改個股100分與排名。</p><div class="summary-grid"><div><b>${signed(report.macroOverlay.metrics.exportOrdersYoy, 1, '%')}</b><span>外銷訂單年增｜${escapeHtml(report.macroOverlay.metrics.exportOrdersPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.manufacturingYoy, 1, '%')}</b><span>製造業生產年增｜${escapeHtml(report.macroOverlay.metrics.manufacturingPeriod)}</span></div><div><b>${signed(report.macroOverlay.metrics.m1bYoy, 1, '%')}</b><span>M1B年增｜${escapeHtml(report.macroOverlay.metrics.m1bPeriod)}</span></div><div><b>${fmt(report.macroOverlay.metrics.marketBreadth, 1)}%</b><span>上市普通股上漲家數占比｜${report.macroOverlay.metrics.advances}漲／${report.macroOverlay.metrics.declines}跌</span></div></div><p class="framework-note">央行歷史匯率 ${fmt(report.macroOverlay.metrics.usdTwd, 3)}（${escapeHtml(report.macroOverlay.metrics.usdTwdDate)}；20筆變化 ${signed(report.macroOverlay.metrics.usdTwdChange20, 2, '%')}）；匯率時效 ${escapeHtml(report.macroOverlay.fxStatus || '未確認')}。最新期交所參考值見上方匯市卡。重貼現率 ${fmt(report.macroOverlay.metrics.policyRate, 3)}%（生效日 ${escapeHtml(report.macroOverlay.metrics.policyRateDate)}）。</p></section>
