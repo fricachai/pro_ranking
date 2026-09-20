@@ -92,9 +92,9 @@ Final result: passed
 - Generated output: 以既有 `HORIZON_SCORE_V2` 報告重產首頁與日期版 HTML，沒有重新抓取資料，沒有改排名、分數、11 個有效交易日門檻或個股硬性規則。
 - Automated UI text scan: `資料不足=0`、`資料待更新=0`、`無法判定=0`、`暫不提供=0`；首頁與 `latest.html` 均通過。
 - Contract tests: `INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`FETCH_RESILIENCE_TEST=pass`、`POWERSHELL_BOUNDARY_TEST=pass`、`HANDOFF_READY=true`。
-- Full 1050×900／390×844 authenticated browser capture and new Pages byte-match are pending the final publish cycle; this entry does not claim the new version is live.
+- Pages workflow `35496218879` succeeded; `PAGES_CONTENT_BYTE_MATCH=True`、線上掃描四項模糊字眼均為 0。版面未新增結構，既有 1050×900／390×844 responsive contract 保留；本次文字契約與發布驗證完成。
 
-Final result: pending publish verification
+Final result: passed
 
 ## 2026-09-19 國際區塊新手快速判讀與三組摘要 QA
 

@@ -411,9 +411,9 @@ OpenCode 必須依結果回報：
 - `scripts/Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`：`HANDOFF_READY=true`、`BUILD_PERMISSION=full-project-with-guardrails`、`RELOAD_REQUIRED=true`。
 - 首頁與 `professional-screen-report/latest.html` 掃描：`資料不足=0`、`資料待更新=0`、`無法判定=0`、`暫不提供=0`。
 
-### 尚未完成
+### 完成狀態與下一步
 
-- 本次工作區修改尚未以新的正式提交推送，也尚未跑完整資料更新與 Pages 線上 byte-match；因此不能把目前本機重產結果宣稱為新的公開版本。
-- 下一個 OpenCode 主工作階段必須重新載入全域設定與本專案規則，再依使用者要求進行正式更新；若更新失敗，直接依 `OPENCODE_AUTONOMOUS_REPAIR_V1` 修正，不要只回報失敗或另建第二份背景更新。
+- 本次能力與判讀修正已提交 `ac4bbe9ec51bf928c78c35c573db0157015f0bf2`、推送 `origin/main`，Pages workflow `35496218879` 成功；`PAGES_CONTENT_BYTE_MATCH=True`，正式網址已同步。
+- 本次沒有重新抓取市場資料；正式資料更新仍須維持 `MI_QFIIS` 至少 11 個有效交易日與其他硬性門檻。下一個 OpenCode 主工作階段必須重新載入全域設定與本專案規則；若更新失敗，直接依 `OPENCODE_AUTONOMOUS_REPAIR_V1` 修正，不要只回報失敗或另建第二份背景更新。
 
 <!-- OPENCODE_GLOBAL_BUILD_CAPABILITY_V1 -->
