@@ -127,6 +127,12 @@ function formatFetchError(error) {
   return parts.join(' ') || clean(error);
 }
 
+function isExpectedTwseCalendarGap(error) {
+  const status = Number(error?.status);
+  const text = formatFetchError(error);
+  return status === 307 || /307 Temporary Redirect|redirect count exceeded/i.test(text);
+}
+
 function isRetryableFetchError(error) {
   const status = Number(error?.status);
   if (!Number.isFinite(status)) return true;
@@ -569,7 +575,12 @@ async function fetchTwseForeignHoldingHistory(asOfIso) {
         completedRequestDates.add(iso);
         snapshotsByDate.set(date, { date, rows: new Map(rows.map(row => [row.code, row])) });
       } catch (error) {
-        diagnostics.errors.push(`${iso}: ${error.message || error}`);
+        if (isExpectedTwseCalendarGap(error)) {
+          completedRequestDates.add(iso);
+          diagnostics.empty += 1;
+        } else {
+          diagnostics.errors.push(`${iso}: ${error.message || error}`);
+        }
       }
       return null;
     });
@@ -682,7 +693,12 @@ async function fetchTwseInstitutionalHistory(asOfIso, fallbackData = null) {
         completedRequestDates.add(iso);
         snapshotsByDate.set(date, { date, rows });
       } catch (error) {
-        diagnostics.errors.push(iso + ': ' + formatFetchError(error));
+        if (isExpectedTwseCalendarGap(error)) {
+          completedRequestDates.add(iso);
+          diagnostics.empty += 1;
+        } else {
+          diagnostics.errors.push(iso + ': ' + formatFetchError(error));
+        }
       }
       return null;
     });
