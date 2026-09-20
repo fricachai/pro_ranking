@@ -443,6 +443,6 @@ OpenCode 必須依結果回報：
 
 - 不改 `HORIZON_SCORE_V2`、排名、個股動作、MI_QFIIS 至少 11 個有效交易日門檻或其他硬性資料門檻。
 - 期貨資料仍是外資及陸資集合的 TX 未平倉部位，不能說成單一外資策略或現貨賣出訊號；畫面保留這項限制。
-- 本次尚待提交、推送、Pages 建置與線上 byte-match；在此之前不得宣稱已發布。
+- 本次已提交 `4acd399a1a856d95e060fb8ab2b95ad2be76db38`、推送 `origin/main`；Pages workflow `35497230883` 成功，`PAGES_CONTENT_BYTE_MATCH=True`，線上已確認資料日期、比較日期與變化值，公開網址為 `https://fricachai.github.io/pro_ranking/`。
 
 <!-- INTERNATIONAL_COMPARISON_BACKFILL_V1 -->
