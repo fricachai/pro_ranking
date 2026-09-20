@@ -364,4 +364,12 @@ OpenCode 必須依結果回報：
 2. 控制命令必須只執行一次並等待 `STATUS=published` 或 `STATUS=failed`；不可另建 Status Shell。
 3. 回報時分開列出資料更新總時間、`RUN_LOG`、Pages byte match 與 Actions 稽核狀態。
 
+### 2026-09-20 實際復驗結果
+
+- 修正後以唯一受控入口完成完整更新，`STATUS=published`、`EXIT_CODE=0`。
+- 即時 `RUN_LOG` 已在執行中顯示事件完成、報告產生完成、發布與 Pages 等待階段；不再等 Node 結束後才一次寫入。
+- 本次發布報告提交 `c7a5be7502ef4b87352b947331e03ff78d9a58b3`，稽核標籤 `published/20260920-094908`。
+- 外資持股有效交易日 11 日、Yahoo 新聞 complete、coverage 100%、股票數 578；Pages byte match 與 Actions 稽核均通過。
+- `RUN_LOG`：`professional-screen-report/logs/daily-refresh-20260920-094420.log`。
+
 <!-- UPDATE_RUNTIME_STREAMING_V1 -->
