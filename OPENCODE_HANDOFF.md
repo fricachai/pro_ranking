@@ -59,7 +59,7 @@ Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把
 powershell -ExecutionPolicy Bypass -File .\scripts\Invoke-OpenCodeDailyUpdate.ps1
 ```
 
-OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，並以單一 `Invoke-ProfessionalScreenUpdateCommand.ps1` Shell 項目完成預檢、背景更新、內部等待、逐行 `UPDATE_STAGE`／`UPDATE_PROGRESS` 與終態輸出；不得由代理反覆建立 `Get-ProfessionalScreenUpdateStatus.ps1` Shell 項目。Build 必須把同一 Shell 的進度與終態轉成可見回報，不得讓使用者只看到「思考中」或未完成待辦。<!-- OPENCODE_PROGRESS_OUTPUT_V1 --> 若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 只在使用者關閉原對話後需要查詢既有工作的備援：
+OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令檔會在執行前明確切換至 **Build 主代理**，依序完成一次預檢、一次 `Start-ProfessionalScreenUpdate.ps1`，再以 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10` 逐次讀取同一個 state／RUN_LOG；每次 Shell 返回後，Build 必須立即把進度轉成可見回報。Status 呼叫必須循序、不可平行，也不得再次 Start；這不是第二份更新程序。命令列或非互動 fallback 才使用單一 `Invoke-ProfessionalScreenUpdateCommand.ps1` 控制器。不得讓使用者只看到「思考中」或未完成待辦。<!-- OPENCODE_PROGRESS_OUTPUT_V2 --> 若畫面底部出現 `Subagent sessions cannot be prompted`，該頁是子代理結果頁，必須先按 **Back to main session**；不可在子代理頁面輸入任何命令。`/update-report-status` 可在原對話關閉後查詢既有工作的同一套 Status 入口：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
@@ -371,8 +371,8 @@ OpenCode 必須依結果回報：
 
 ### 下一步
 
-1. 提交本次 runner／交接規則修正後，以唯一入口 `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1` 完整重跑。
-2. 控制命令必須只執行一次並等待 `STATUS=published` 或 `STATUS=failed`；不可另建 Status Shell。
+1. 提交本次 runner／交接規則修正後，命令列以 `Invoke-ProfessionalScreenUpdateCommand.ps1` 完整重跑；OpenCode Desktop 以 `Start` 一次、`Get-Status -WaitSeconds 10` 依序回報。
+2. 每次更新只能有一個背景 runner；Status Shell 只能是對既有 runner 的循序唯讀觀察，不得平行或另建第二份更新。
 3. 回報時分開列出資料更新總時間、`RUN_LOG`、Pages byte match 與 Actions 稽核狀態。
 
 ### 2026-09-20 實際復驗結果
@@ -446,3 +446,25 @@ OpenCode 必須依結果回報：
 - 本次已提交 `4acd399a1a856d95e060fb8ab2b95ad2be76db38`、推送 `origin/main`；Pages workflow `35497230883` 成功，`PAGES_CONTENT_BYTE_MATCH=True`，線上已確認資料日期、比較日期與變化值，公開網址為 `https://fricachai.github.io/pro_ranking/`。
 
 <!-- INTERNATIONAL_COMPARISON_BACKFILL_V1 -->
+
+## 2026-09-20 OpenCode 可見進度模式改為 Start／Status 分段回報（目前有效版本）
+
+### 修正目的與根因
+
+- 單一長時間 Shell 即使底層 `RUN_LOG` 持續寫入，OpenCode Desktop 仍可能把整個工具回應緩衝到完成後才顯示，因此使用者只看到「思考中」。這是 OpenCode UI／Shell 回應渲染邊界，不是資料更新器沒有工作。
+- 本專案不再把「只能一個 Shell、不能拆 Start／Status」當成 OpenCode Desktop 的前提。分段不是第二份更新，而是同一個 state／RUN_LOG 的可觀察介面。
+
+### 目前有效操作契約
+
+1. 先執行一次 `Test-OpenCodeHandoff.ps1` 預檢。
+2. 再執行一次 `Start-ProfessionalScreenUpdate.ps1`；若回報已存在背景程序，禁止再次啟動，改為觀察既有 runner。
+3. 依序執行 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10`，每次返回後立即呈現 `UPDATE_STAGE`、`UPDATE_PROGRESS`、最後 log 階段與 `RUN_LOG`。
+4. 直到 `STATUS=published` 或 `STATUS=failed` 才停止；不得平行 Status、不得把長時間更新包回單一 Shell，也不得在沒有終態證據時宣稱完成。
+5. `Invoke-ProfessionalScreenUpdateCommand.ps1` 保留作為命令列／非互動 fallback；兩種入口共用相同資料來源、硬性門檻、發布與線上驗證。
+
+### 驗證與限制
+
+- `OPENCODE_PROGRESS_OUTPUT_V2` 已同步寫入本專案 `AGENTS.md`、`OPENCODE_HANDOFF.md`、`.opencode/commands/update-report.md`、Status 命令與全域 OpenCode `AGENTS.md`。
+- 本次只修改可見進度契約、交接文件與靜態驗證器，不執行或取消任何每日資料更新，不發布舊資料；下一個 OpenCode 主工作階段必須重新載入規則。
+
+<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->

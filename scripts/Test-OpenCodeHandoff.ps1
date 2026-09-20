@@ -233,13 +233,9 @@ foreach ($relativePath in @('.opencode/commands/update-report.md', '.opencode/co
 }
 
 $updateCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/update-report.md') -Raw -Encoding utf8
-if ($updateCommand -notmatch 'Invoke-ProfessionalScreenUpdateCommand\.ps1' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1') {
-    throw 'The update command must use the single-shell intraday-capable controlled workflow.'
+if ($updateCommand -notmatch 'Start-ProfessionalScreenUpdate\.ps1' -or $updateCommand -notmatch 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds 10' -or $updateCommand -notmatch 'DATA_CHANGED=false' -or $updateCommand -notmatch 'INTRADAY_REFRESH_V1' -or $updateCommand -notmatch 'OPENCODE_PROGRESS_OUTPUT_V2') {
+    throw 'The update command must use the visible sequential Start/Status intraday-capable controlled workflow.'
 }
-if ($updateCommand -match 'Get-ProfessionalScreenUpdateStatus\.ps1 -WaitSeconds') {
-    throw 'The update command must not create repeated status Shell calls.'
-}
-
 $horizonUiCommand = Get-Content -LiteralPath (Join-Path $RepoRoot '.opencode/commands/implement-horizon-ui.md') -Raw -Encoding utf8
 if ($horizonUiCommand -notmatch '(?mi)^agent\s*:\s*build\s*$' -or $horizonUiCommand -notmatch 'OPENCODE_HORIZON_UI_HANDOFF_V1') {
     throw 'The horizon UI command must select the full-access Build primary agent and retain its task marker.'

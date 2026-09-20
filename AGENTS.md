@@ -15,17 +15,19 @@
 1. 專案 `opencode.json` 的 `instructions` 已列入 `OPENCODE_HANDOFF.md` 與 Obsidian 的 `Codex操作累積/pro_ranking上市股票專業選股系統-開發與部署SOP.md`；OpenCode 必須在新工作階段啟動時自動載入兩者。
 2. Obsidian MCP 只是讀寫工具；若沒有 `instructions` 或本檔明確要求，OpenCode 不會自行掃描整個 vault。更新必讀規則後要開新工作階段，不要假設舊工作階段會回溯替換已載入的指示。
 3. 權威層級依序為：可執行的腳本與驗證器、repo `AGENTS.md` / `OPENCODE_HANDOFF.md`、Obsidian 歷史理由與 SOP。若舊筆記與現行腳本衝突，不得依舊筆記操作；必須同步更新這三層。<!-- OBSIDIAN_AUTOREAD_V1 -->
-4. Pages 唯一權威部署流程是 `.github/workflows/deploy-pages.yml`；`pages/builds/latest` 的 legacy 紀錄只供歷史稽核，不得單獨決定成敗。預檢必須先等待 active Actions run 結束，不得繞過；更新器推送前也必須等待整個 Pages 佇列排空。工作流不取消執行中部署，deploy timeout 為 15 分鐘；明確失敗只可 rerun 失敗 job 一次，不得重跑資料或製造新 commit。線上 byte match 與 Actions 稽核必須分開回報。Build 可依根因需要直接使用底層腳本；正式發布優先使用 `Invoke-ProfessionalScreenUpdateCommand.ps1`，以保留統一預檢、狀態與線上驗證。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
+4. Pages 唯一權威部署流程是 `.github/workflows/deploy-pages.yml`；`pages/builds/latest` 的 legacy 紀錄只供歷史稽核，不得單獨決定成敗。預檢必須先等待 active Actions run 結束，不得繞過；更新器推送前也必須等待整個 Pages 佇列排空。工作流不取消執行中部署，deploy timeout 為 15 分鐘；明確失敗只可 rerun 失敗 job 一次，不得重跑資料或製造新 commit。線上 byte match 與 Actions 稽核必須分開回報。Build 可依根因需要直接使用底層腳本；命令列可用 `Invoke-ProfessionalScreenUpdateCommand.ps1` 保留單一控制入口，OpenCode Desktop 則使用下方分段 `Start`／`Get-Status` 可見進度流程；兩者共用相同預檢、資料品質閘門與線上驗證。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
 
-## 盤中／每日更新唯一入口
+## 盤中／每日更新入口與 OpenCode 可見進度
 
-日常資料更新的發布入口是：
+日常資料更新的核心發布流程是：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-ProfessionalScreenUpdateCommand.ps1
 ```
 
-此控制入口會依序完成預檢、資料抓取、報告產生、輸出驗證、限定檔案提交、推送，以及 GitHub Pages 線上驗證。不要直接手改產出的 HTML、JSON 或 CSV；若流程失敗，Build 可先修正來源、產生器、驗證器或流程，再由同一入口重試。
+此控制入口會依序完成預檢、資料抓取、報告產生、輸出驗證、限定檔案提交、推送，以及 GitHub Pages 線上驗證。不要直接手改產出的 HTML、JSON 或 CSV；若流程失敗，Build 可先修正來源、產生器、驗證器或流程，再由相同受控流程重試。
+
+OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採「預檢一次 → `Start` 一次 → 依序短輪詢 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10`」；每次狀態輸出都必須在主工作階段呈現。這些 Status 呼叫是同一個背景更新的唯讀觀察，不是第二份更新；不得平行輪詢、不得再次 Start，也不得另開競爭中的背景程序。<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->
 
 ## OpenCode 執行規則
 
@@ -101,7 +103,7 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 2. T86 至少保留 5 個官方有效交易日，正式 20 日歷史優先使用官方資料；不足時仍須依現有來源契約與報告驗證器處理，不能降低官方資料門檻或冒充當日新資料。
 3. Node 的 stderr 只作為執行紀錄；PowerShell runner 必須以 Node exit code 判斷成功或失敗，不得因 console.warn／console.error 自動產生 NativeCommandError。所有 Node 輸出都要保留在 run log。
 4. scripts/Test-ProfessionalScreenPowerShellBoundary.ps1 必須在交接預檢中執行，驗證 stderr 能被記錄、成功 exit code 能成功、失敗 exit code 仍會 fail-closed。
-5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入；`Invoke-ProfessionalScreenUpdateCommand.ps1` 必須在同一 Shell 直接讀取狀態與 `RUN_LOG`，逐行輸出 `UPDATE_STAGE`／`UPDATE_PROGRESS`，並在最後輸出 `STATUS=published/failed` 與可追溯摘要。長時間抓取或報告產生期間，OpenCode 不得只顯示思考中或待辦清單。<!-- OPENCODE_PROGRESS_OUTPUT_V1 -->
+5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入。命令列控制器 `Invoke-ProfessionalScreenUpdateCommand.ps1` 可在單一 Shell 直接讀取狀態與 `RUN_LOG`；OpenCode Desktop 則必須使用 `Start-ProfessionalScreenUpdate.ps1` 啟動一次，再以不超過 10 秒的 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10` 依序讀取並顯示 `UPDATE_STAGE`／`UPDATE_PROGRESS`。兩種入口都必須在最後輸出 `STATUS=published/failed` 與可追溯摘要；長時間抓取或報告產生期間，OpenCode 不得只顯示思考中或待辦清單。<!-- OPENCODE_PROGRESS_OUTPUT_V2 -->
 
 ## 持股決策總覽與純 UI 發布規則
 
@@ -125,7 +127,7 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 
 1. 所有來源檔、腳本、規則與產出都更新在本專案根目錄 `pro_ranking`，不得另建 Codex 或 OpenCode 專用副本。
 2. 執行與變更範圍相符的語法、資料契約及瀏覽器操作驗證；修正匯入、登入、追蹤等功能時，必須使用實際檔案或實際操作流程重現並驗證。
-3. 需要更新報告或公開網頁時，執行 `scripts/Invoke-ProfessionalScreenUpdateCommand.ps1`；不得只修改本機 `index.html` 或只回報程式碼完成。若先修正根因，修正後仍須由同一受控入口完成發布與線上驗證。
+3. 需要更新報告或公開網頁時，命令列執行 `scripts/Invoke-ProfessionalScreenUpdateCommand.ps1`，OpenCode Desktop 依 `/update-report` 執行 `Start`／`Get-Status` 分段流程；不得只修改本機 `index.html` 或只回報程式碼完成。若先修正根因，修正後仍須由相同受控流程完成發布與線上驗證。
 4. 只提交本次任務相關檔案，提交並推送至 `origin/main`；不得清除、覆寫或夾帶原有無關變更。
 5. 完成前確認 `git status --porcelain` 無輸出，且本機 `HEAD`、`origin/main` 與 GitHub Pages 最新建置提交一致。
 6. 實際讀取 GitHub Pages 線上檔案或執行瀏覽器測試，確認本次關鍵功能已上線；只有 Pages 顯示建置成功但線上內容未更新，不算完成。
