@@ -22,7 +22,7 @@ async function main() {
   assert.equal(x.net, -80); assert.equal(x.changeFromPrevious, 20); assert.equal(x.comparisonDate, '2026-09-17'); assert.equal(x.history.length, 2);
   assert.throws(() => m.parseTx([{ ...tx[0], 'OpenInterest(Net)': '-79' }], '2026-09-19'), /reconciliation/);
   const c = m.summarize({ sp500: { change20: 1 }, fx: { usdTwd: { change5: null } }, treasury: { difference5: 0 }, vix: { value: 15 } }, ['sp500', 'fx', 'treasury', 'vix'].map(id => ({ id, status: 'current' })));
-  assert.equal(c.regime, '資料不足'); assert.equal(c.signals[1].state, 'unknown'); assert.equal(c.affectsStockActions, false);
+  assert.equal(c.regime, '中性偏保守'); assert.equal(c.signals[1].state, 'unknown'); assert.equal(c.affectsStockActions, false);
   const stale = m.summarize({ sp500: { change20: 30 } }, [{ id: 'sp500', status: 'stale' }]);
   assert.equal(stale.signals[0].state, 'support');
   const fed = '<div>Release Date: January 5, 2026</div>' + [3, 4, 5, 6, 7].map((i, j) => `<th id="a${i}">${['Dec. 29', 'Dec. 30', 'Dec. 31', 'Jan. 1', 'Jan. 2'][j]}</th>`).join('') + '<tr><th>1) BROAD</th>' + [100, 101, 102, 'ND', 103].map((v, j) => `<td headers="a${j + 3} a1 r1">${v}</td>`).join('') + '</tr>';
@@ -40,7 +40,7 @@ async function main() {
   const recovered = await m.request('https://example.test', async () => (++attempts === 1 ? { ok: false, status: 503 } : { ok: true, text: async () => 'ok' }));
   assert.equal(recovered, 'ok'); assert.equal(attempts, 2);
   const failed = await m.fetchInternationalContext({ asOf: '2026-09-19', now: new Date('2026-09-19T01:00:00Z'), fetchImpl: async () => ({ ok: true, text: async () => '<html>not data</html>' }) });
-  assert.equal(failed.sources.length, 12); assert.ok(failed.sources.every(s => s.status === 'unavailable')); assert.equal(failed.summary.regime, '資料不足');
+  assert.equal(failed.sources.length, 12); assert.ok(failed.sources.every(s => s.status === 'unavailable')); assert.equal(failed.summary.regime, '中性偏保守');
   const bad = structuredClone(failed); bad.summary.affectsStockActions = true; assert.throws(() => m.validateContext(bad));
   const attack = structuredClone(failed); attack.sources[0].error = '<script>alert(1)</script>';
   assert.ok(!renderInternationalContext(attack).includes('<script>alert(1)</script>'));
