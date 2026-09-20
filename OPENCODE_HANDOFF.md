@@ -24,7 +24,7 @@ OpenCode 原本只有 Obsidian MCP 工具，不會因此自動掃描或讀取 va
 2. 選擇 `Build` 主代理。`opencode.json` 與全域 OpenCode 設定已授權它在所有一般專案工作中規劃、編輯、執行 Shell、查詢網路、使用子代理、測試、提交、推送與發布；跨專案路徑也可處理。敏感資料與破壞性操作仍受安全規則限制，但不得因此限制正常的跨層級程式修正。
 3. 新對話會自動載入 `OPENCODE_HANDOFF.md`、`AGENTS.md` 與指定的 Obsidian SOP；若剛修改這些檔案，必須開新對話，不要依賴舊對話回溯更新。可用 `opencode debug config` 確認三份 `instructions` 都存在。
 4. 每日資料更新可輸入 `/update-report`；已授權的評分介面功能可輸入 `/implement-horizon-ui`；其他規劃、修正、補足來源、改善判讀或新功能直接描述目標。若更新流程失敗，Build 必須讀取狀態與紀錄、找根因、跨層級修正、測試並重試，不需要第二個「開始執行」指令。
-5. `Build` 的完整權限不等於跳過品質門檻：發布應使用 `Invoke-ProfessionalScreenUpdateCommand.ps1` 以保留預檢、資料契約、GitHub Pages 與線上 byte match；這是可驗證的發布流程，不是禁止 OpenCode 修正或發布的權限規則。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
+5. `Build` 的完整權限不等於跳過品質門檻：命令列／非互動發布使用 `Invoke-ProfessionalScreenUpdateCommand.ps1`；OpenCode Desktop `/update-report` 使用 `Start` 一次加循序 `Get-Status`，兩者都必須保留預檢、資料契約、GitHub Pages 與線上 byte match。這是可驗證的發布流程，不是禁止 OpenCode 修正或發布的權限規則。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
 6. Codex 或其他工具每次完成 Obsidian 寫回後，必須執行 `Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有 `HANDOFF_READY=true` 才算可交接。若驗證失敗，先修正指示路徑、契約或權限，不得只把筆記寫入就宣稱已完成。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
 
 Pages 部署現統一由 `.github/workflows/deploy-pages.yml` 處理，不再把 legacy `pages/builds/latest` 當成成敗單一來源。預檢要等待 active Actions run，更新器推送前要再等待佇列排空；workflow 設為 `cancel-in-progress: false` 與 15 分鐘 deploy timeout。失敗時僅允許對原 workflow 執行一次 failed-job rerun，不重抓資料、不製造空白 commit。HTTP 200 與線上 byte match 代表內容上線；Actions 結論是獨立稽核狀態。任何代理都不得跳過預檢或把舊資料冒充新發布；OpenCode 可以修正根因並使用單一控制入口完成驗證。<!-- PAGES_DEPLOYMENT_LOOP_GUARD_V1 --><!-- PAGES_WORKFLOW_V1 --><!-- PREFLIGHT_BYPASS_GUARD_V1 -->
@@ -63,7 +63,7 @@ OpenCode Desktop 日常只需在主工作階段執行 `/update-report`。命令�
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-ProfessionalScreenUpdate.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 10
 ```
 
 ## 目前已授權 OpenCode 接手的功能任務
