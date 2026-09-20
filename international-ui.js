@@ -3,6 +3,7 @@
 const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const n = (v, d = 1) => Number.isFinite(v) ? v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—';
 const s = (v, d = 1, unit = '%') => Number.isFinite(v) ? (v > 0 ? '+' : '') + n(v, d) + unit : '—';
+const delta = (v, d = 3, unit = '') => Number.isFinite(v) ? (v > 0 ? '+' : '') + n(v, d) + unit : '—';
 const statusLabel = { current: '依發布頻率可用', stale: '沿用最近可驗證值', unavailable: '端點未回傳，改依其他可驗證訊號' };
 function localTime(value) { const d = new Date(value); return Number.isFinite(d.getTime()) ? d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }) : '將回溯最近已結束營業日'; }
 function sparkline(metric) {
@@ -86,9 +87,15 @@ function renderInternationalContext(c) {
     : d.tx?.date
       ? `資料日期 ${d.tx.date}；已採最近可驗證期貨觀測`
       : '期貨資料將回溯最近已結束營業日';
+  const fxComparison = d.fx?.usdTwd?.comparisonDate
+    ? `較 ${d.fx.usdTwd.comparisonDate} ${delta(d.fx.usdTwd.changeFromPrevious, 3)}｜5筆 ${s(d.fx.usdTwd.change5)}`
+    : `5筆 ${s(d.fx?.usdTwd?.change5)}｜上升＝臺幣貶值`;
+  const asiaFxComparison = d.fx?.usdJpy?.comparisonDate
+    ? `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜較 ${d.fx.usdJpy.comparisonDate} USD/JPY ${delta(d.fx.usdJpy.changeFromPrevious, 3)}`
+    : `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜均為一美元兌本幣`;
   const cards = [
      card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `20筆 ${s(d.sp500?.change20)}｜5筆 ${s(d.sp500?.change5)}`, d.sp500, '', '它代表全球市場氣氛；這裡直接說明對台股方向。', direct.sp500),
-     card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), `5筆 ${s(d.fx?.usdTwd?.change5)}｜上升＝臺幣貶值`, d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶值會讓資金環境偏緊；這裡直接說明台股要保守或維持。', direct.fx),
+     card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), fxComparison + '｜上升＝臺幣貶值', d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶值會讓資金環境偏緊；這裡直接說明台股要保守或維持。', direct.fx),
      card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `5筆 ${s(Number.isFinite(d.treasury?.difference5) ? d.treasury.difference5 * 100 : null, 0, '基點')}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升先壓縮成長股估值；這裡直接說明台股操作。', direct.treasury),
      card('vix', 'VIX 波動指數', n(d.vix?.value, 2), '低於20／高於25為觀察門檻', d.vix, '', 'VIX低表示市場不緊張，VIX高表示先停新買；不是單獨賣出訊號。', direct.vix),
      card('tx', '外資臺指期淨部位', `${n(d.tx?.net, 0)}口`, txComparison, null, '負值表示期貨押跌；只有臺股現貨也下跌，才把它當成賣壓確認。', direct.tx),
@@ -119,7 +126,7 @@ function renderInternationalContext(c) {
      <details class="context-details"><summary>半導體、能源與國際法人部位</summary><div class="context-section-guide"><b>這一組回答：電子、能源與資金現在偏強還是偏弱？</b><span>先看這裡的直接結論，再回到個股卡執行買進、維持或減碼；它不會改寫個股評分。</span></div><div class="context-grid context-grid-extra">
         ${card('sox', '費城半導體', n(d.sox?.value, 0), `5筆 ${s(d.sox?.change5)}｜相對S&P ${s(soxRelative, 1, '百分點')}`, d.sox, '', '電子股的產業氣氛；上升才支持找電子股，下跌就先停新買。', trendJudgment('sox', soxRelative, '對台股：電子方向偏多，可找符合條件電子股。', '對台股：電子方向偏空，先不要買電子股。', '對台股：電子方向不明，電子股維持、不追買。', 0.5))}
         ${card('oil', 'WTI近月期貨', `${n(d.oil?.value, 2)}美元／桶`, `5筆 ${s(d.oil?.change5)}｜注意合約轉倉`, d.oil, '', '油價上升會增加運輸與製造成本；能源股仍要看公司是否受益。', trendJudgment('oil', d.oil?.change5, '對台股：成本壓力增加，運輸／製造股先不追買。', '對台股：成本壓力減輕，可找受益個股。', '對台股：油價方向不明，不改變原本買賣。', 2))}
-        ${card('fx', '亞洲匯率參考', `USD/JPY ${n(d.fx?.usdJpy?.value, 2)}`, `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜均為一美元兌本幣`, null, '', '只用來看出口、進口與區域資金背景；不會單獨改變台股買賣。', judgment('fx', '對台股：這是背景資料，維持原本個股卡的買賣動作。'))}
+        ${card('fx', '亞洲匯率參考', `USD/JPY ${n(d.fx?.usdJpy?.value, 2)}`, asiaFxComparison, null, '', '只用來看出口、進口與區域資金背景；不會單獨改變台股買賣。', judgment('fx', '對台股：這是背景資料，維持原本個股卡的買賣動作。'))}
      </div><p class="context-cot-note"><b>CFTC 部位的使用方式：</b>只把它當作市場擁擠度與情緒背景。週變化不等同新開倉，不能因為淨多或淨空就直接買進或放空。</p><div class="table-wrap"><table><thead><tr><th>契約</th><th>部位日期</th><th>淨多空（口）</th><th>較前週</th><th>淨部位／未平倉</th></tr></thead><tbody>${cot || '<tr><td colspan="5">本次無可用資料</td></tr>'}</tbody></table></div>
       <p>${e(d.tx?.limitation || '臺指期本次沒有新增觀測，先沿用其他可驗證資金訊號與個股條件。')}</p></details>
      <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組回答：今天是否有事件風險，需要延後決策或重新檢查？</b><span>公告是風險檢查清單。先閱讀原文與個股曝險，再決定是否等待，不把標題直接翻譯成利多或利空。</span></div><div class="context-events">${events}</div></details>
