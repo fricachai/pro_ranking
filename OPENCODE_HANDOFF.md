@@ -96,7 +96,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Get-ProfessionalSc
 |---|---|---|
 | OpenCode 規則 | `AGENTS.md` | 資料邊界、評分保護、完成條件與禁止事項 |
 | OpenCode 權限 | `opencode.json` 與全域 `C:\Users\user\.config\opencode\opencode.jsonc` | Build 主代理可完整規劃、編輯、測試、查網路、提交、推送、發布與處理一般外部專案路徑；敏感資料邊界仍優先 |
-| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md`、`continue-codex-handoff.md` | 提供日常更新、狀態查詢、功能開發及 Codex 寫回後的接手指令 |
+| OpenCode 指令 | `.opencode/commands/update-report.md`、`update-report-status.md`、`implement-horizon-ui.md`、`continue-codex-handoff.md`、`writeback-obsidian.md` | 提供日常更新、狀態查詢、功能開發、Obsidian 回寫及 Codex 寫回後的接手指令 |
 | 交接說明 | `OPENCODE_HANDOFF.md` | 安裝、執行、驗證、來源與故障處理 |
 | CLI單鍵入口 | `scripts/Invoke-OpenCodeDailyUpdate.ps1` | 先做交接預檢，再以CLI非互動呼叫 OpenCode；Desktop 不需要此檔來啟動 |
 | 交接預檢 | `scripts/Test-OpenCodeHandoff.ps1` | 檢查工具、登入、遠端、分支、檔案、資料契約與線上頁面 |

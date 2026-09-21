@@ -50,6 +50,7 @@ OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採�
 16. 所有規劃、執行、錯誤修正、功能新增與發布統一使用 `opencode.json` 的 `build` 主代理；其權限為讀取、編輯、Shell、網路查詢、提問、規劃、子代理、提交、推送與發布均可，外部專案路徑亦可使用。受控入口是品質與發布流程，不是限制 Build 修正程式的權限；不得再把 OpenCode 鎖在每日更新或禁止直接修正的模式。敏感資料、憑證、破壞性刪除與未授權外部操作仍受全域安全政策約束。
 17. 每次更新 `AGENTS.md`、`OPENCODE_HANDOFF.md`、`opencode.json` 或 Obsidian 必讀 SOP 後，舊 OpenCode 對話不可視為已更新；必須回到主工作階段開新對話，選擇 Build 主代理，讓 `instructions` 重新載入，才能立即依現行規則接續。<!-- OPENCODE_IMMEDIATE_CONTINUATION_V1 -->
 18. 任何任務完成 Obsidian 寫回後，必須在回報完成前執行 `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig`；只有輸出 `HANDOFF_READY=true` 才可宣稱已完成 Codex→OpenCode 交接。<!-- CODEX_OBSIDIAN_WRITEBACK_HANDOFF_V1 -->
+19. 使用者明確要求「任何對話後 to obsidian」、「寫回 Obsidian」或 `/writeback-obsidian` 時，必須依全域 `OPENCODE_OBSIDIAN_WRITEBACK_V1` 執行完整檢索、最終結果萃取、最小寫入、frontmatter 更新、讀回、重複／矛盾反查與終態回報；本專案可直接使用 `.opencode/commands/writeback-obsidian.md`。不得只更新 `OPENCODE_HANDOFF.md` 就宣稱已寫回 Obsidian。<!-- OPENCODE_OBSIDIAN_WRITEBACK_V1 -->
 
 ## OpenCode 全能力修正與失敗復原契約
 
