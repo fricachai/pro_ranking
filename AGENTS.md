@@ -61,6 +61,12 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 4. `MI_QFIIS` 至少 11 個有效交易日、KD 使用真實高低收、官方資料語意、治理排除規則與其他硬性品質門檻均不得降低或補造。補足資料的方式是增加可驗證來源與韌性，不是放寬門檻。
 5. 修正後必須執行語法／資料契約／fallback／UI 禁用字眼掃描，必要時做瀏覽器與線上驗證；只有完成 `STATUS=published` 或明確完成修正後的發布驗證，才可宣稱完成。<!-- OPENCODE_AUTONOMOUS_REPAIR_V1 -->
 
+## 即時報價與報價階段契約
+
+1. TWSE 即時行情（`mis.twse.com.tw`）屬輔助來源：盤前、休市或來源暫時無資料時，允許 `meta.quotePhase=no_live_quote`、`meta.liveDate=null`、`meta.priceLabel=收盤價`；價格與技術訊號以官方收盤／行情資料為準，banner 必須揭露「本次無可驗證即時報價」及官方價格日期。
+2. `quotePhase` 固定三態：`close`（最新報價 ≥13:30，收盤確認）、`intraday`（盤中有即時報價）、`no_live_quote`（本次無任何可驗證即時報價）。`liveDate` 在 `no_live_quote` 時必須為 null，其餘兩態必須非 null；不允許其他組合。
+3. 不得偽造即時報價日期或把官方收盤價冒充即時報價；缺即時報價不得阻斷官方收盤、事件、法人與其他來源的發布，也不影響 `MI_QFIIS` 11 日等硬性門檻與資料健康度揭露。<!-- NO_LIVE_QUOTE_PHASE_V1 -->
+
 ## 三時間尺度評分與資料健康契約
 
 1. 評分模型版本固定輸出 `HORIZON_SCORE_V2`，每檔股票必須有 `horizonScores.short`、`horizonScores.medium`、`horizonScores.long` 與獨立的 `dataHealth`。

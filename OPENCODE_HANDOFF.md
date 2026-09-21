@@ -257,6 +257,26 @@ OpenCode 必須依結果回報：
 - 網路來源若停機或改欄位，管線會停止等待修復；OpenCode 不得自行降低門檻或編造替代資料。
 - 持倉追蹤位於瀏覽器 `localStorage`；換電腦或瀏覽器前須由使用者自行匯出 JSON，且不得提交到公開儲存庫。
 
+## 2026-09-21 盤前無即時報價發布契約
+
+### 根因
+
+2026-09-21 週一盤前（07:53）受控更新在報告產生後、發布前失敗：`latest.json is missing meta.liveDate`。實際原因是 TWSE 即時行情（`mis.twse.com.tw`）在該時點完全沒有回傳任何報價，產生器依既有 fallback 輸出 `meta.liveDate=null`、`liveFreeze=無可驗證即時報價`，但 `Update-ProfessionalScreen.ps1` 的 meta 必填清單把 `liveDate` 當作非 null 必填欄位，將輔助來源暫時無資料升級成整份報告阻斷。
+
+### 已修正（NO_LIVE_QUOTE_PHASE_V1）
+
+1. `full-professional-stock-screen.js`：`quotePhase` 新增第三態 `no_live_quote`（完全無即時報價時）；`priceLabel` 在 `close`／`no_live_quote` 均輸出「收盤價」；報價 banner 三態化，「本次無可驗證即時報價」橫幅揭露價格以官方收盤資料（`priceDate`）為準。`nextCheck`、回測快照（`quotePhase !== close` 一律跳過）行為不變。
+2. `scripts/Update-ProfessionalScreen.ps1`：`liveDate` 自非 null 必填清單移除，改為契約檢查：`quotePhase` 必須是 `close`／`intraday`／`no_live_quote`；`no_live_quote` 時 `liveDate` 必須為 null，其餘兩態必須非 null；「盤後 ≥13:35 必須是 close」檢查保留。
+3. `AGENTS.md` 新增「即時報價與報價階段契約」章節；本交接檔同步紀錄。
+
+### 固定邊界
+
+- 缺即時報價不得阻斷官方收盤、事件、法人與其他來源的發布；價格與技術訊號以官方收盤資料為準，畫面必須揭露「無可驗證即時報價」與官方價格日期。
+- 不得偽造即時報價日期，不得把官方收盤價冒充即時報價；`MI_QFIIS` 至少 11 個有效交易日、T86 至少 5 日、主動 ETF 完整性與其他硬性門檻一律不變。
+- 回測快照仍只接受 `quotePhase=close` 且 `liveDate=priceDate`；`no_live_quote` 報告不進入回測封存。
+
+<!-- NO_LIVE_QUOTE_PHASE_V1 -->
+
 ## 2026-09-19 跨 Agent 接手：國際資料與股票決策關聯 UI
 
 ### 使用者目標

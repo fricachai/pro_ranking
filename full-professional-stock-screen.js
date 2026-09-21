@@ -2011,7 +2011,9 @@ function buildHtml(report) {
 <div class="warning"><b>新聞來源狀態：</b>Yahoo Finance RSS 本次${newsStatusLabel}（成功率 ${fmt(report.meta.yahooNewsCoverageRate, 1)}%）。官方重大訊息與結構化事件已重新檢查，報告照常更新；Yahoo 新聞僅屬待確認資訊，不直接計分。</div>`;
   const quotePhaseNotice = report.meta.quotePhase === 'close'
     ? `<div class="quote-phase-banner is-close" id="quotePhaseBanner"><b>收盤資料已確認</b><span>本次價格與技術訊號使用 ${escapeHtml(report.meta.liveFreeze)} 的收盤狀態；持倉門檻仍須依下一交易日收盤確認，不以單一價位機械式下單。</span></div>`
-    : `<div class="quote-phase-banner is-intraday" id="quotePhaseBanner"><b>盤中訊號，尚未定案</b><span>本次價格凍結於 ${escapeHtml(report.meta.liveFreeze)}；盤中跌破或站回只先列觀察，請等待今日收盤後再確認持倉動作。</span></div>`;
+    : report.meta.quotePhase === 'no_live_quote'
+      ? `<div class="quote-phase-banner is-intraday" id="quotePhaseBanner"><b>本次無可驗證即時報價</b><span>抓取時點未取得即時行情，價格與技術訊號以官方收盤資料（${escapeHtml(report.meta.priceDate || '資料日期未提供')}）為準；盤中變動無法確認，請等待今日收盤後再確認持倉動作。</span></div>`
+      : `<div class="quote-phase-banner is-intraday" id="quotePhaseBanner"><b>盤中訊號，尚未定案</b><span>本次價格凍結於 ${escapeHtml(report.meta.liveFreeze)}；盤中跌破或站回只先列觀察，請等待今日收盤後再確認持倉動作。</span></div>`;
   const staleEtfs = Array.isArray(report.meta.staleEtfs) ? report.meta.staleEtfs : [];
   const staleEtfDateSummary = [...new Set(staleEtfs.map(etf => yyyymmddToIso(etf.date) || etf.date || '日期未提供'))].join('、');
   const staleEtfList = staleEtfs.map(etf => `${etf.code} ${etf.name}（${yyyymmddToIso(etf.date) || etf.date || '日期未提供'}）`).join('、');
@@ -2750,7 +2752,7 @@ async function main() {
   const liveTimes = records.map(record => record.live?.time).filter(Boolean).sort();
   const liveDates = records.map(record => record.live?.date).filter(Boolean).sort();
   const latestLiveTime = liveTimes.at(-1) || null;
-  const quotePhase = latestLiveTime && latestLiveTime >= '13:30:00' ? 'close' : 'intraday';
+  const quotePhase = !latestLiveTime ? 'no_live_quote' : (latestLiveTime >= '13:30:00' ? 'close' : 'intraday');
   const yahooNewsStatus = eventsLayerData.sourceStatus?.yahooNews?.status || 'unavailable';
   const yahooNewsCoverageRate = number(eventsLayerData.sourceStatus?.yahooNews?.coverageRate) || 0;
   const marketDates = [twseDailyRows[0]?.Date, tpexDailyRows[0]?.Date].map(rocDateToIso).filter(Boolean).sort();
@@ -2785,7 +2787,7 @@ async function main() {
       liveDate: liveDates.at(-1) || null,
       liveFreeze: liveTimes.length ? `${liveDates.at(-1) || TODAY} ${latestLiveTime}` : '無可驗證即時報價',
       quotePhase,
-      priceLabel: quotePhase === 'close' ? '收盤價' : '即時價',
+      priceLabel: quotePhase === 'intraday' ? '即時價' : '收盤價',
       scoringModelVersion: 'HORIZON_SCORE_V2',
       etfCount: data.etfs.length,
       stockCount: stockEntries.length,

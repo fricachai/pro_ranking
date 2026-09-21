@@ -407,10 +407,22 @@ try {
     if (-not $meta -or -not $meta.etfDate -or -not $meta.generatedAt) {
         throw 'latest.json is missing meta.etfDate or meta.generatedAt.'
     }
-    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'liveDate', 'quotePhase', 'priceLabel', 'scoringModelVersion', 'financialCurrentPeriod', 'financialCurrentCount', 'financialFallbackCount', 'financialUnavailableCount')) {
+    foreach ($requiredMetaField in @('eventCheckedAt', 'yahooNewsStatus', 'yahooNewsCoverageRate', 'institutionalDate', 'foreignHoldingDate', 'foreignHoldingHistoryDays', 'creditDate', 'tdccDate', 'listedUniverseCount', 'coverageRate', 'activeUpdated', 'activeCoverageRate', 'activeEtfDataComplete', 'activeStaleEtfs', 'quotePhase', 'priceLabel', 'scoringModelVersion', 'financialCurrentPeriod', 'financialCurrentCount', 'financialFallbackCount', 'financialUnavailableCount')) {
         if ($requiredMetaField -notin $meta.PSObject.Properties.Name -or $null -eq $meta.$requiredMetaField) {
             throw "latest.json is missing meta.$requiredMetaField."
         }
+    }
+    if (-not $meta.PSObject.Properties.Name.Contains('liveDate')) {
+        throw 'latest.json is missing meta.liveDate.'
+    }
+    if ([string]$meta.quotePhase -notin @('close', 'intraday', 'no_live_quote')) {
+        throw "Unexpected quotePhase: $($meta.quotePhase)"
+    }
+    if ($null -eq $meta.liveDate -and [string]$meta.quotePhase -ne 'no_live_quote') {
+        throw "null liveDate is only allowed with quotePhase=no_live_quote: $($meta.quotePhase)"
+    }
+    if ([string]$meta.quotePhase -eq 'no_live_quote' -and $null -ne $meta.liveDate) {
+        throw "quotePhase=no_live_quote must have null liveDate: $($meta.liveDate)"
     }
     if ([string]$meta.institutionalSource -notlike 'TWSE T86 direct*') {
         throw "Institutional data is not sourced directly from TWSE T86: $($meta.institutionalSource)"
