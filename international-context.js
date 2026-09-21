@@ -46,9 +46,24 @@ function contentSentences(content) {
   return (String(content || '').match(/[^.!?。！？]+[.!?。！？]+/g) || [String(content || '')])
     .map(x => x.trim()).filter(x => x.length >= 24);
 }
+function focusArticleContent(content) {
+  const anchors = [
+    /The Federal Open Market Committee/i,
+    /The Committee decided/i,
+    /The price of distillate fuel oil/i,
+    /Crack spreads are/i,
+    /The national emergency declared/i,
+    /Following the expiration/i,
+    /Separately, OFAC/i,
+    /Specially Designated Nationals List Updates/i
+  ];
+  const positions = anchors.map(anchor => anchor.exec(content)?.index).filter(Number.isInteger);
+  return positions.length ? content.slice(Math.min(...positions)) : content;
+}
 function contentEvidence(content, patterns, limit = 2) {
-  const matches = contentSentences(content).filter(sentence => patterns.some(pattern => pattern.test(sentence)));
-  return shorten([...new Set(matches)].slice(0, limit).join(' '), 520) || shorten(content, 360);
+  const focused = focusArticleContent(content);
+  const matches = contentSentences(focused).filter(sentence => patterns.some(pattern => pattern.test(sentence)));
+  return shorten([...new Set(matches)].slice(0, limit).join(' '), 520) || shorten(focused, 360);
 }
 function hasContent(content, patterns) {
   return patterns.some(pattern => pattern.test(content));
