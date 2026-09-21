@@ -44,6 +44,16 @@ async function main() {
   const vix = m.parseVix('DATE,OPEN,HIGH,LOW,CLOSE\n09/18/2026,14,16,13,15\n09/19/2026,15,16,14,ND', '2026-09-19');
   assert.equal(vix.date, '2026-09-18'); assert.equal(vix.value, 15);
   assert.throws(() => m.parseVix('<html>outage</html>', '2026-09-19'), /header/);
+  const fedBody = '<nav>Federal Reserve navigation</nav><main><p>The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent.</p><p>Inflation remains elevated. Uncertainty remains elevated owing to geopolitical developments.</p></main>';
+  const fedEvent = { title: 'Federal Reserve issues FOMC statement', url: 'https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm', publishedAt: '2026-09-16T18:00:00.000Z' };
+  const fedGuide = m.interpretOfficialEvent('fed', fedEvent, fedBody);
+  assert.equal(fedGuide.status, 'fetched'); assert.match(fedGuide.simpleJudgment, /升息/); assert.match(fedGuide.direction, /高估值/); assert.match(fedGuide.evidence, /raise the target range/i);
+  const energyEvent = { title: 'What goes into diesel prices?', url: 'https://www.eia.gov/todayinenergy/detail.php?id=68164', publishedAt: '2026-09-18T14:00:00.000Z' };
+  const energyBody = '<main><p>Tight global supplies of distillate fuel and elevated crude oil prices have driven prices higher.</p><p>Inventories were 13% below the five-year seasonal average.</p></main>';
+  const enrichedEnergy = await m.enrichOfficialEvents('energy', [energyEvent], async () => ({ ok: true, text: async () => energyBody }), '2026-09-21T00:00:00.000Z');
+  assert.equal(enrichedEnergy[0].contentStatus, 'fetched'); assert.match(enrichedEnergy[0].contentAnalysis.simpleJudgment, /供應偏緊/); assert.match(enrichedEnergy[0].contentAnalysis.exposure, /運輸/);
+  const unavailableEvent = await m.enrichOfficialEvents('sanctions', [energyEvent], async () => ({ ok: false, status: 503 }), '2026-09-21T00:00:00.000Z');
+  assert.equal(unavailableEvent[0].contentStatus, 'unavailable'); assert.match(unavailableEvent[0].contentAnalysis.action, /直接曝險/);
   let attempts = 0;
   await assert.rejects(m.request('https://example.test', async () => { attempts++; return { ok: false, status: 404 }; }), /404/);
   assert.equal(attempts, 1);
@@ -55,6 +65,11 @@ async function main() {
   const bad = structuredClone(failed); bad.summary.affectsStockActions = true; assert.throws(() => m.validateContext(bad));
   const attack = structuredClone(failed); attack.sources[0].error = '<script>alert(1)</script>';
   assert.ok(!renderInternationalContext(attack).includes('<script>alert(1)</script>'));
+  const eventContext = structuredClone(failed);
+  eventContext.sources.find(source => source.id === 'fed').status = 'current';
+  eventContext.data.fed = [{ ...fedEvent, contentStatus: 'fetched', contentAnalysis: fedGuide }];
+  const eventHtml = renderInternationalContext(eventContext);
+  assert.match(eventHtml, /升息/); assert.match(eventHtml, /高估值/); assert.ok(!eventHtml.includes('先不要因標題買進或賣出'));
   const index = process.argv.indexOf('--report');
   if (index >= 0) {
     const report = JSON.parse(fs.readFileSync(process.argv[index + 1], 'utf8'));

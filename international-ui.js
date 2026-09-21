@@ -13,6 +13,12 @@ function sparkline(metric) {
   const points = values.map((v, i) => `${(i / (values.length - 1) * 160).toFixed(1)},${(30 - (v - min) / spread * 26).toFixed(1)}`).join(' ');
   return `<svg class="context-spark" viewBox="0 0 160 34" role="img" aria-label="最近${values.length}筆觀察值走勢，各圖獨立尺度"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
 }
+function eventGuidance(event) {
+  const guide = event?.contentAnalysis;
+  if (!guide) return `<div class="context-event-guide context-event-unavailable"><b>內文判讀</b><span>本次尚未取得可解析的官方內文，系統不以標題猜方向；請開啟原文，核對它是否涉及利率、成本或制裁名單，再對照個股曝險。</span></div>`;
+  const status = event.contentStatus === 'fetched' ? '已讀取官方原文並擷取關鍵句' : `原文擷取失敗：${event.contentError || guide.error || '請開啟原文核對'}`;
+  return `<div class="context-event-guide ${event.contentStatus === 'fetched' ? '' : 'context-event-unavailable'}"><b>簡單判讀</b><span>${e(guide.simpleJudgment)}</span><b>原文重點</b><span>${e(guide.evidence)}</span><b>對台股怎麼用</b><span>${e(guide.direction)}</span><b>要查的持股曝險</b><span>${e(guide.exposure)}</span><b>現在怎麼做</b><span>${e(guide.action)}</span><small>${e(status)}；${e(guide.limitation)}</small></div>`;
+}
 function renderInternationalContext(c) {
   if (!c) return '<section class="section international-context" id="internationalContext"><h2>國際市場脈動</h2><p>本次國際背景尚未建立；先依個股價格、趨勢與法人條件執行，背景資料建立後再校正節奏。</p></section>';
   const d = c.data, sources = new Map(c.sources.map(x => [x.id, x]));
@@ -105,7 +111,7 @@ function renderInternationalContext(c) {
   const cot = (d.cot || []).map(x => `<tr><td>${e({ 'S&P 500 Consolidated': 'S&P 500合併契約', 'UST 10Y NOTE': '美國10年債期貨', 'EURO FX': '歐元期貨' }[x.market])}</td><td>${e(x.date)}</td><td>${n(x.net, 0)}</td><td>${s(x.change, 0, '口')}</td><td>${s(x.netPctOi, 1)}</td></tr>`).join('');
   const events = ['fed', 'energy', 'sanctions'].map(id => {
     const src = sources.get(id), event = d[id]?.[0];
-    return `<div class="context-event"><b>${e(src.label)}</b>${event ? `<a href="${e(event.url)}" target="_blank" rel="noreferrer">${e(event.title)}</a><small>簡單判讀：先不要因標題買進或賣出；先看原文與持股曝險。</small><small>公告 ${e(event.publishedAt.slice(0, 10))} · 原文待判讀</small>` : '<span>本次沒有新公告，延續既有風險檢查。</span>'}</div>`;
+    return `<div class="context-event"><b>${e(src.label)}</b>${event ? `<a href="${e(event.url)}" target="_blank" rel="noreferrer">${e(event.title)}</a>${eventGuidance(event)}<small>公告 ${e(String(event.publishedAt || '').slice(0, 10))} · 來源：官方原文</small>` : '<span>本次沒有新公告，延續既有風險檢查。</span>'}</div>`;
   }).join('');
   const weak = c.sources.filter(x => x.status !== 'current').length;
   return `<section class="section international-context" id="internationalContext" data-context-version="${e(c.version)}">
@@ -129,7 +135,7 @@ function renderInternationalContext(c) {
         ${card('fx', '亞洲匯率參考', `USD/JPY ${n(d.fx?.usdJpy?.value, 2)}`, asiaFxComparison, null, '', '只用來看出口、進口與區域資金背景；不會單獨改變台股買賣。', judgment('fx', '對台股：這是背景資料，維持原本個股卡的買賣動作。'))}
      </div><p class="context-cot-note"><b>CFTC 部位的使用方式：</b>只把它當作市場擁擠度與情緒背景。週變化不等同新開倉，不能因為淨多或淨空就直接買進或放空。</p><div class="table-wrap"><table><thead><tr><th>契約</th><th>部位日期</th><th>淨多空（口）</th><th>較前週</th><th>淨部位／未平倉</th></tr></thead><tbody>${cot || '<tr><td colspan="5">本次無可用資料</td></tr>'}</tbody></table></div>
       <p>${e(d.tx?.limitation || '臺指期本次沒有新增觀測，先沿用其他可驗證資金訊號與個股條件。')}</p></details>
-     <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組回答：今天是否有事件風險，需要延後決策或重新檢查？</b><span>公告是風險檢查清單。先閱讀原文與個股曝險，再決定是否等待，不把標題直接翻譯成利多或利空。</span></div><div class="context-events">${events}</div></details>
+      <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組先回答：公告內容會透過哪條路徑影響台股？</b><span>系統先讀取官方原文，整理政策動作、成本變化或制裁範圍，再列出要核對的持股曝險與現在的處理方式。</span></div><div class="context-events">${events}</div></details>
     <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(c.summary.method)}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
   </section>`;
 }
@@ -213,6 +219,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
   });
 }
 const styles = `
+  .context-event-guide{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 9px;border-left:3px solid #397866;background:#f3f8f4;padding:10px 12px;margin:3px 0 1px}.context-event-guide b{font-size:12px;color:#174f3a}.context-event-guide span{font-size:13px;line-height:1.55;color:#244b3c}.context-event-guide small{grid-column:1/-1;font-size:11px;line-height:1.5;color:#59665f}.context-event-unavailable{border-left-color:#aa7625;background:#fff8e8}.context-event-unavailable b{color:#704d12}
  header h1{font-size:clamp(24px,3vw,36px)}header .header-row{gap:12px}header>p{max-width:850px}details>summary{cursor:pointer}details.source-audit{margin:18px 0;padding:14px;background:#fff;border:1px solid var(--line)}
  .context-card-use{display:flex;flex-direction:column;gap:3px;border-left:3px solid #397866;background:#f4f8f5;padding:7px 9px;margin:2px 0 3px}.context-card-use b{font-size:11px;color:#174f3a}.context-card-use span{font-size:12px;line-height:1.55;color:#244b3c}.context-section-guide{display:flex;flex-direction:column;gap:4px;background:#f8faf8;border-left:3px solid #aa7625;padding:10px 12px;margin:10px 0 14px}.context-section-guide b{font-size:14px}.context-section-guide span,.context-cot-note{font-size:13px;line-height:1.65}
  .context-card-judgment{display:flex;flex-direction:column;gap:3px;border-left:3px solid #aa7625;background:#fff8e8;padding:8px 9px;margin:2px 0 0}.context-card-judgment b{font-size:12px;color:#704d12}.context-card-judgment span{font-size:13px;line-height:1.55;color:#3f321c;font-weight:600}

@@ -111,6 +111,13 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 4. scripts/Test-ProfessionalScreenPowerShellBoundary.ps1 必須在交接預檢中執行，驗證 stderr 能被記錄、成功 exit code 能成功、失敗 exit code 仍會 fail-closed。
 5. `Invoke-NodeLogged` 必須逐行串流 Node stdout／stderr 到 `RUN_LOG`，不得等整個 Node 程序結束後才寫入。命令列控制器 `Invoke-ProfessionalScreenUpdateCommand.ps1` 可在單一 Shell 直接讀取狀態與 `RUN_LOG`；OpenCode Desktop 則必須使用 `Start-ProfessionalScreenUpdate.ps1` 啟動一次，再以 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60` 依序讀取並顯示 `UPDATE_STAGE`／`UPDATE_PROGRESS`。兩種入口都必須在最後輸出 `STATUS=published/failed`、`FINAL_RESULT_READY=true` 與可追溯摘要；若沒有終態封包，Build 必須標示 `OPEN_CODE_FINAL_REPORT_PENDING`，不得把後端 state 單獨當成使用者已收到的完成回報。長時間抓取或報告產生期間，OpenCode 不得只顯示思考中或待辦清單。<!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
+## 國際公告內文導讀契約
+
+1. Fed、EIA 與 OFAC 公告不得只保存標題後輸出固定免責句；抓取公告後必須再讀取官方原文，產生 `EVENT_CONTENT_GUIDE_V1` 的內文證據、簡單判讀、對臺股傳導、持股曝險與現在怎麼做。
+2. 簡單判讀必須依原文的政策動作、供需／成本變化、制裁名單或許可範圍產生；不能把標題直接翻譯成全面利多或利空，也不能用沒有方向的「先看原文」取代導讀。
+3. 原文擷取失敗時，必須明確揭露失敗與下一個核對動作，不得假裝已讀取內容；官方事件內容失敗不得阻斷其他國際資料與臺股報告發布。
+4. 國際公告導讀是環境與曝險檢查，不得改寫 `HORIZON_SCORE_V2`、排名、個股 `entryAction`／`holdingAction`／`todayAction` 或硬性門檻。<!-- EVENT_CONTENT_GUIDE_V1 -->
+
 ## 持股決策總覽與純 UI 發布規則
 
 1. 「持股決策總覽」必須先回答目前動作，再回答執行時間、部位比例、觸發價、改變條件與原因。排名與新部位分類不得取代既有部位動作。
