@@ -98,6 +98,20 @@ passed
 
 Final result: passed
 
+## 2026-09-21 全頁視覺狀態與互動回饋稽核 QA
+
+- Evidence: 依使用者提供的國際方向／快速卡、三時間尺度評分視窗、資料完整性展開區與持股摘要畫面逐區對照；另在本機登入後預覽實際展開資料稽核、開啟評分視窗、切換評分頁籤並檢查持股摘要。
+- Scope: 國際方向卡、快速操作卡、來源稽核警示、持股摘要、持股決策卡、三時間尺度評分視窗、評分頁籤、資料日期標籤、表格列與篩選控制項。
+- Visual hierarchy: 來源稽核依資料邊界、收盤確認、外資歷史、主動 ETF、日期落後、季報過渡期與資料邊界分色；評分摘要改為四個具上色頂線的資訊卡；持股摘要保留四種動作色彩與最高優先提示；評分視窗的日期、健康度、今天動作與頁籤分層顯示。
+- Hover and focus: 卡片、稽核警示、摘要數字、評分小卡、持股防守區、原因標籤與快速操作標籤加入輕量位移／陰影／邊框回饋；連結、按鈕、選單、輸入框、`summary`、評分頁籤與持股追蹤控制項加入一致的鍵盤焦點環。實際以鍵盤 Tab 在評分頁籤確認焦點可見，焦點能落在下一個頁籤且內容維持可讀。
+- Interaction: 「臺股資料完整性與各項限制」可展開，七類資料限制各自保留；評分視窗可開啟、滾動、切換短期頁籤並返回主頁；持股摘要可由閱讀導引跳轉；既有搜尋、篩選、表格排序與持股追蹤控制仍保留。
+- Accessibility boundary: 只有可操作元件使用焦點狀態；純文字說明卡不強行加入 tabindex。新增 `prefers-reduced-motion: reduce`，降低動態效果對使用者的干擾。
+- Source and implementation: 只修改 `full-professional-stock-screen.js`、`international-ui.js`，再以 `node .\\full-professional-stock-screen.js --render-existing` 重產首頁與報告頁；沒有直接編輯生成 HTML，也沒有改動評分、排名、個股動作、硬性門檻或資料內容。
+- Current data boundary: 本次仍沿用 2026-09-21 已確認資料；578 檔股票、主動 ETF 19／22、外資持股歷史 11 個有效交易日；沒有重新抓取資料，也沒有把使用者瀏覽器的私有持股成本寫入檔案。
+- Validation: `node --check`（兩個來源檔）、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`HANDOFF_READY=true`；`git diff --check` 無內容錯誤，僅保留 Windows 換行提示。正式網址發布前仍需執行 commit／Pages workflow／線上 byte match。
+
+Final result: passed (local preview; publication pending)
+
 ## 2026-09-21 官方公告內文導讀 QA
 
 - Source and implementation: Fed FOMC, EIA diesel and OFAC official pages were fetched as the source evidence; `international-context.js` now extracts official article text and produces `EVENT_CONTENT_GUIDE_V1`; `international-ui.js` renders the evidence, Taiwan-stock transmission, exposure checks and current action. Generated through the controlled update, not by editing HTML directly.

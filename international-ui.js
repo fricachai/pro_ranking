@@ -290,10 +290,16 @@ const styles = `
   .quick-card{border-top:4px solid #c9a85b}
   .quick-card-head b{font-size:15px}
   .quick-action{display:block;padding:9px 11px;border-radius:8px;background:var(--green-soft);border:1px solid #cfe3d6;color:#0f4a33;font-size:14px}
-  .context-quick-panel{border-radius:var(--radius);box-shadow:var(--shadow)}
-  .context-quick-judgment{border-left:0;border-radius:8px;background:linear-gradient(90deg,#fdf6e6,#fffaf0)}
-  .context-easy-direction{border-radius:var(--radius-lg);background:linear-gradient(180deg,#f4faf6,#eef7f1);box-shadow:var(--shadow)}
-  .context-map>div{border-left:0;border-radius:10px;box-shadow:var(--shadow);border:1px solid #dbe4dd}
+   .context-quick-panel{border-radius:var(--radius);box-shadow:var(--shadow)}
+   .context-quick-judgment{border-left:0;border-radius:8px;background:linear-gradient(90deg,#fdf6e6,#fffaf0)}
+   .context-easy-direction{border-radius:var(--radius-lg);background:linear-gradient(180deg,#f4faf6,#eef7f1);box-shadow:var(--shadow)}
+   .context-easy-direction,.context-quick-panel,.context-easy-actions>div,.context-signal-balance span{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-color .18s ease}
+   .context-easy-direction:hover{border-color:#8eaf9d;box-shadow:var(--shadow-hover)}
+   .context-quick-panel:hover,.context-easy-actions>div:hover,.context-signal-balance span:hover{transform:translateY(-3px);border-color:#8eaf9d;box-shadow:var(--shadow-hover)}
+   .context-quick-panel:hover{background:linear-gradient(180deg,#fff 0%,#f8fcf9 100%)}
+   .context-heading a:focus-visible,.context-event a:focus-visible,.context-details summary:focus-visible,.context-refresh button:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+   .context-purpose,.context-judgment-key,.context-section-guide,.context-map>div{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}.context-purpose:hover,.context-judgment-key:hover,.context-section-guide:hover,.context-map>div:hover{transform:translateY(-2px);border-color:#8eaf9d;box-shadow:var(--shadow-hover)}
+   .context-map>div{border-left:0;border-radius:10px;box-shadow:var(--shadow);border:1px solid #dbe4dd}
   .context-details table{border-radius:10px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
   .context-details thead th,.source-audit thead th,.position-table thead th{background:#14382a;color:#fff;border-bottom:0;font-size:12.5px;letter-spacing:.4px}
   .context-details tbody tr:nth-child(even),.source-audit tbody tr:nth-child(even),.position-table tbody tr:nth-child(even){background:#f2f7f3}

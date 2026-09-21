@@ -572,3 +572,30 @@ OpenCode 必須依結果回報：
 - 未驗證項目：本輪沒有新抓取市場資料；3 檔主動 ETF 的 2026-09-18 落後快照仍須等下一次資料更新時重新核對。1050×900／390×844 的完整精確截圖回歸沿用既有 QA 紀錄；本輪另完成窄版瀏覽器 smoke check。
 
 <!-- CODEX_DECISION_RAIL_UI_V1 -->
+
+## 2026-09-21 全頁視覺狀態與互動回饋稽核（Codex，待發布）
+
+### 已確認資料與實際檢查結果
+
+- 已重新檢查使用者指出的四類畫面：國際方向／快速操作卡、三時間尺度評分視窗、臺股資料完整性展開區、持股決策摘要。
+- 本機登入後實際確認：閱讀導引可跳轉；資料稽核可展開；評分視窗可開啟、滾動與切換頁籤；持股摘要會顯示目前各動作數量與最高優先提示；鍵盤 Tab 在評分頁籤可看到焦點環。
+- 本次重產仍沿用 2026-09-21 資料：578 檔股票、主動 ETF 19／22、外資持股歷史 11 個有效交易日；沒有重新抓取資料。
+
+### 正在採用的方法
+
+- 只修改來源產生器 `full-professional-stock-screen.js` 與 `international-ui.js`，以 `--render-existing` 重產生成頁面。
+- 依元件用途分配視覺層級：資料狀態使用分色左框與背景、分數使用不同頂線、持股使用動作色、頁籤使用 selected／focus 狀態；hover 只用於提供回饋，不改變資料或判讀。
+- 實際可操作元件統一提供鍵盤 focus-visible；非互動文字卡不加 tabindex；支援 `prefers-reduced-motion`。
+
+### 保留／排除原則
+
+- 保留 `HORIZON_SCORE_V2`、排名、中短長期分數、個股動作、硬性門檻與 MI_QFIIS 至少 11 個有效交易日門檻。
+- 排除使用者瀏覽器 localStorage 的持股成本、登入資訊、私人排序狀態與任何受保護值；不寫入程式、報告或交接檔。
+- 保留 3 檔主動 ETF 最新快照落後、ETF 日期覆蓋限制與資料邊界，畫面明確揭露，不用推測值補齊。
+
+### 驗證與下一步
+
+- 已通過 `node --check`、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`HANDOFF_READY=true` 與 `git diff --check`。
+- 目前狀態：`HANDOFF_PENDING`（來源檔與生成頁面尚未提交、推送與線上驗證）。下一步是檢查 diff 只含本輪 UI 與生成結果，提交並推送，等待 Pages workflow 成功，再驗證線上 HTTP 200、必要標記與本機／線上內容一致。
+
+<!-- CODEX_FULL_UI_STATE_AUDIT_V1 -->
