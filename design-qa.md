@@ -1,5 +1,17 @@
 # 持股決策總覽 Design QA
 
+## 2026-09-21 Codex 閱讀導引與操作層級 QA
+
+- Change: 在登入後主內容最上方新增四步「本頁閱讀導引」：先看市場環境、再看新部位、已有持股、資料狀態；每一格都連到對應區塊，直接顯示目前可執行結論，不要求使用者自行解讀分數。
+- Change: 快速搜尋／篩選區改為視窗內固定閱讀位置，個股快速卡增加一致的陰影、懸浮與焦點狀態；未修改 `HORIZON_SCORE_V2`、排名、個股動作或任何硬性資料門檻。
+- Current source boundary: 本次沿用 2026-09-21 受控報告，股票 578 檔、主動 ETF 19/22 檔已核對；`00991A`、`00993A`、`00984A` 的最新持股快照仍為 2026-09-18，畫面保留落後日期與完整性限制，不補造數值。
+- Local browser smoke check: 登入 gate 成功；四步導引均可見；輸入 `6770` 後顯示 `1／1 檔`；展開「改變條件與完整依據」後可見承接區、取消下一批條件與下一次確認；窄版畫面無明顯水平溢出。
+- Responsive contract: 本輪新增樣式以 `max-width:900px` 與 `max-width:560px` 明確切換兩欄／單欄；1050×900 與 390×844 的既有完整瀏覽器回歸紀錄仍保留，未改動原本的評分明細、公告導讀、拖曳排序與表格同步捲軸行為。
+- Validation: `node --check`、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 均通過；生成 HTML 僅由 `--render-existing` 重產，沒有直接手改。
+- Privacy boundary: 未把登入資訊、瀏覽器 localStorage、持股成本或私人排序狀態寫入程式、報告或提交。
+
+Final result: passed with existing exact-viewport regression coverage; current narrow-browser smoke check passed.
+
 ## Visual truth and evidence
 
 - Source visual truth: `professional-screen-report/qa/source-holding-decision-wireframe.png`

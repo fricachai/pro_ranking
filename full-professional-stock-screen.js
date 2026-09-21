@@ -2020,6 +2020,16 @@ function buildHtml(report) {
   const staleEtfNotice = staleEtfs.length
     ? `<div class="warning"><b>ETF持股日期覆蓋：</b>${report.meta.etfUpdated}/${report.meta.etfCount} 檔標示為本次日期；${staleEtfs.length} 檔仍為 ${escapeHtml(staleEtfDateSummary)}。為避免漏掉其臺股持有，本報告保留於研究母體；受影響個股會依「ETF資料落後曝險」降低資料健康度，ETF流向不可解讀為全體ETF同日完整訊號。<details><summary>查看 ${staleEtfs.length} 檔日期落後ETF</summary><p>${escapeHtml(staleEtfList)}</p></details></div>`
     : '';
+  const entryReadyCount = report.ranking.filter(row => row.entryAction === '可開始承接').length;
+  const holdingRiskCount = report.ranking.filter(row => ['降低部位', '優先降低風險'].includes(row.holdingAction)).length;
+  const regime = report.internationalContext?.summary?.regime || '採個股條件判讀';
+  const regimeAction = report.internationalContext?.summary?.action || '新部位先依個股條件與承接區確認';
+  const decisionRail = `<nav class="decision-rail" aria-label="本頁閱讀導引">
+  <a class="decision-rail-item is-primary" href="#internationalContext"><span class="decision-rail-step">01</span><span><small>先看市場環境</small><strong>${escapeHtml(regime)}</strong><em>${escapeHtml(regimeAction)}</em></span></a>
+  <a class="decision-rail-item ${entryReadyCount ? 'is-positive' : 'is-caution'}" href="#quickGuide"><span class="decision-rail-step">02</span><span><small>再看新部位</small><strong>${entryReadyCount ? `${entryReadyCount} 檔可開始承接` : '目前 0 檔可開始承接'}</strong><em>${entryReadyCount ? '只挑價格在承接區的標的' : '目前先不新增，等待條件同時成立'}</em></span></a>
+  <a class="decision-rail-item" href="#positionSection"><span class="decision-rail-step">03</span><span><small>已有持股</small><strong>依個股卡維持或減碼</strong><em>${holdingRiskCount} 檔目前列為降低風險訊號</em></span></a>
+  <a class="decision-rail-item is-data" href="#sourceAudit"><span class="decision-rail-step">04</span><span><small>資料狀態</small><strong>${report.meta.activeUpdated}/${report.meta.activeEtfs} 檔主動ETF已核對</strong><em>${report.meta.activeEtfDataComplete ? '資料完整，可照個股條件執行' : '新部位只採資料完整的個股門檻'}</em></span></a>
+</nav>`;
   const scoreLink = row => `<a class="score-link" href="#score-${escapeHtml(row.code)}" data-score-code="${escapeHtml(row.code)}" title="查看 ${escapeHtml(row.name)} 的三時間尺度評分、判斷資料與來源">${fmt(row.score, 0)}</a>`;
   const scoreValueLink = (row, tab, value) => `<a class="score-link" href="#score-${escapeHtml(row.code)}" data-score-code="${escapeHtml(row.code)}" data-score-tab="${tab}" title="開啟${tab === 'short' ? '短期' : tab === 'long' ? '長期' : '中期'}評分明細">${fmt(value, 0)}</a>`;
   const sortButton = (label, key) => `<button class="table-sort-button" type="button" data-table-sort="${key}" aria-label="${escapeHtml(label)}排序">${escapeHtml(label)} <span class="sort-indicator" aria-hidden="true">↕</span></button>`;
@@ -2122,6 +2132,20 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
   .position-decision-pane .position-reasons-pane{padding-top:14px;border-top:1px solid var(--line)}
   .position-action-pane small,.position-action-pane strong,.position-trigger-pane>strong{overflow-wrap:anywhere}
 }
+.decision-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 28px;padding:12px;border:1px solid #d4e0d8;border-radius:var(--radius-lg);background:linear-gradient(135deg,#eaf4ed 0%,#f8fbf8 68%,#f8f1df 100%);box-shadow:var(--shadow)}
+.decision-rail-item{display:grid;grid-template-columns:30px minmax(0,1fr);gap:9px;align-items:start;min-width:0;padding:12px 11px;border:1px solid rgba(20,96,63,.13);border-radius:10px;background:rgba(255,255,255,.84);color:var(--ink);text-decoration:none;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.decision-rail-item:hover,.decision-rail-item:focus-visible{transform:translateY(-2px);border-color:var(--green);box-shadow:0 8px 18px rgba(18,37,29,.12);outline:none}
+.decision-rail-step{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--green-deep);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px}
+.decision-rail-item.is-caution .decision-rail-step{background:#a8731d}.decision-rail-item.is-positive .decision-rail-step{background:#207b52}.decision-rail-item.is-data .decision-rail-step{background:#316b8a}
+.decision-rail-item small{display:block;color:#5d6a63;font-size:11px;font-weight:700;line-height:1.35}.decision-rail-item strong{display:block;margin-top:3px;color:#153e2e;font-size:14px;line-height:1.35}.decision-rail-item em{display:block;margin-top:4px;color:#53655b;font-size:12px;font-style:normal;line-height:1.45}
+.decision-rail-item.is-caution{border-color:#e4c98f;background:#fffaf0}.decision-rail-item.is-caution strong{color:#7a5516}.decision-rail-item.is-data{border-color:#c8dbe4}
+.quick-gate{border-radius:10px;box-shadow:0 3px 10px rgba(18,37,29,.06)}
+.quick-controls{position:sticky;top:0;z-index:8;margin:18px 0 8px;padding:10px 0;background:linear-gradient(180deg,var(--paper) 70%,rgba(243,247,244,.82));backdrop-filter:blur(7px)}
+.quick-controls input,.quick-controls select{border-radius:9px;min-height:42px}.quick-controls input{box-shadow:inset 0 1px 2px rgba(18,37,29,.04)}
+.quick-card{box-shadow:0 5px 18px rgba(18,37,29,.07)}.quick-card:hover{transform:translateY(-3px)}
+.quick-count-badge{font-weight:800;color:var(--green-deep)}
+@media(max-width:900px){.decision-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.decision-rail{grid-template-columns:1fr;gap:8px;margin-bottom:22px;padding:8px}.decision-rail-item{padding:10px}.quick-controls{top:0;padding:8px 0;background:linear-gradient(180deg,var(--paper) 78%,rgba(243,247,244,.9))}}
 ${internationalUi.styles}
 </style>
 </head>
@@ -2144,6 +2168,7 @@ ${internationalUi.styles}
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
 <header><div class="header-row"><h1>ETF持有普通股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>整合國際市場與臺股證據，快速查看進場條件、持有動作與風險。</p><div class="header-status">個股價格 ${escapeHtml(report.meta.liveFreeze)} · 本次發布 ${escapeHtml(report.meta.generatedAt)}</div><details class="freeze-details"><summary>各項資料時間</summary><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>ETF來源快照 <b>${escapeHtml(report.meta.etfSourceGeneratedAt || '未提供')}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></details></header>
 <main>
+${decisionRail}
 ${internationalUi.renderInternationalContext(report.internationalContext)}
 <div class="quick-gate ${report.meta.activeEtfDataComplete ? '' : 'is-warning'}">主動ETF當日資料 ${report.meta.activeUpdated}/${report.meta.activeEtfs}｜${report.meta.activeEtfDataComplete ? '依個股條件判斷新部位' : '部分來源尚未完成核對：新部位只採個股完整門檻'}｜<a href="#sourceAudit">查看來源與補強狀態</a></div>
 ${internationalUi.quickGuideHtml}

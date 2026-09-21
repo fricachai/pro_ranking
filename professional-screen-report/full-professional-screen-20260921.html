@@ -78,6 +78,20 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
   .position-decision-pane .position-reasons-pane{padding-top:14px;border-top:1px solid var(--line)}
   .position-action-pane small,.position-action-pane strong,.position-trigger-pane>strong{overflow-wrap:anywhere}
 }
+.decision-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 28px;padding:12px;border:1px solid #d4e0d8;border-radius:var(--radius-lg);background:linear-gradient(135deg,#eaf4ed 0%,#f8fbf8 68%,#f8f1df 100%);box-shadow:var(--shadow)}
+.decision-rail-item{display:grid;grid-template-columns:30px minmax(0,1fr);gap:9px;align-items:start;min-width:0;padding:12px 11px;border:1px solid rgba(20,96,63,.13);border-radius:10px;background:rgba(255,255,255,.84);color:var(--ink);text-decoration:none;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.decision-rail-item:hover,.decision-rail-item:focus-visible{transform:translateY(-2px);border-color:var(--green);box-shadow:0 8px 18px rgba(18,37,29,.12);outline:none}
+.decision-rail-step{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--green-deep);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px}
+.decision-rail-item.is-caution .decision-rail-step{background:#a8731d}.decision-rail-item.is-positive .decision-rail-step{background:#207b52}.decision-rail-item.is-data .decision-rail-step{background:#316b8a}
+.decision-rail-item small{display:block;color:#5d6a63;font-size:11px;font-weight:700;line-height:1.35}.decision-rail-item strong{display:block;margin-top:3px;color:#153e2e;font-size:14px;line-height:1.35}.decision-rail-item em{display:block;margin-top:4px;color:#53655b;font-size:12px;font-style:normal;line-height:1.45}
+.decision-rail-item.is-caution{border-color:#e4c98f;background:#fffaf0}.decision-rail-item.is-caution strong{color:#7a5516}.decision-rail-item.is-data{border-color:#c8dbe4}
+.quick-gate{border-radius:10px;box-shadow:0 3px 10px rgba(18,37,29,.06)}
+.quick-controls{position:sticky;top:0;z-index:8;margin:18px 0 8px;padding:10px 0;background:linear-gradient(180deg,var(--paper) 70%,rgba(243,247,244,.82));backdrop-filter:blur(7px)}
+.quick-controls input,.quick-controls select{border-radius:9px;min-height:42px}.quick-controls input{box-shadow:inset 0 1px 2px rgba(18,37,29,.04)}
+.quick-card{box-shadow:0 5px 18px rgba(18,37,29,.07)}.quick-card:hover{transform:translateY(-3px)}
+.quick-count-badge{font-weight:800;color:var(--green-deep)}
+@media(max-width:900px){.decision-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.decision-rail{grid-template-columns:1fr;gap:8px;margin-bottom:22px;padding:8px}.decision-rail-item{padding:10px}.quick-controls{top:0;padding:8px 0;background:linear-gradient(180deg,var(--paper) 78%,rgba(243,247,244,.9))}}
 
   .context-event-guide{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 9px;border-left:3px solid #397866;background:#f3f8f4;padding:10px 12px;margin:3px 0 1px}.context-event-guide b{font-size:12px;color:#174f3a}.context-event-guide span{font-size:13px;line-height:1.55;color:#244b3c}.context-event-guide small{grid-column:1/-1;font-size:11px;line-height:1.5;color:#59665f}.context-event-unavailable{border-left-color:#aa7625;background:#fff8e8}.context-event-unavailable b{color:#704d12}
  header h1{font-size:clamp(24px,3vw,36px)}header .header-row{gap:12px}header>p{max-width:850px}details>summary{cursor:pointer}details.source-audit{margin:18px 0;padding:14px;background:#fff;border:1px solid var(--line)}
@@ -141,6 +155,12 @@ body.auth-locked{overflow:hidden}.app-shell--hidden{visibility:hidden;height:100
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
 <header><div class="header-row"><h1>ETF持有普通股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>整合國際市場與臺股證據，快速查看進場條件、持有動作與風險。</p><div class="header-status">個股價格 2026-09-21 13:30:00 · 本次發布 2026/09/21 18:40:31</div><details class="freeze-details"><summary>各項資料時間</summary><div class="freeze"><span>報告產生 <b>2026/09/21 18:40:31</b></span><span>事件檢查 <b>2026/09/21 18:39:47</b></span><span>Yahoo新聞 <b>完整 100.0%</b></span><span>ETF資料 <b>2026-09-21</b></span><span>ETF來源快照 <b>2026-09-21 18:22</b></span><span>法人買賣超 <b>2026-09-21</b></span><span>外資持股 <b>2026-09-18</b></span><span>信用交易 <b>2026-09-18</b></span><span>集保分級 <b>2026-09-18</b></span><span>價量／估值 <b>2026-09-21</b></span><span>收盤價凍結 <b>2026-09-21 13:30:00</b></span></div></details></header>
 <main>
+<nav class="decision-rail" aria-label="本頁閱讀導引">
+  <a class="decision-rail-item is-primary" href="#internationalContext"><span class="decision-rail-step">01</span><span><small>先看市場環境</small><strong>訊號分歧</strong><em>環境訊號分歧，持股先維持；新部位只採個股條件與承接區確認</em></span></a>
+  <a class="decision-rail-item is-caution" href="#quickGuide"><span class="decision-rail-step">02</span><span><small>再看新部位</small><strong>目前 0 檔可開始承接</strong><em>目前先不新增，等待條件同時成立</em></span></a>
+  <a class="decision-rail-item" href="#positionSection"><span class="decision-rail-step">03</span><span><small>已有持股</small><strong>依個股卡維持或減碼</strong><em>149 檔目前列為降低風險訊號</em></span></a>
+  <a class="decision-rail-item is-data" href="#sourceAudit"><span class="decision-rail-step">04</span><span><small>資料狀態</small><strong>19/22 檔主動ETF已核對</strong><em>新部位只採資料完整的個股門檻</em></span></a>
+</nav>
 <section class="section international-context" id="internationalContext" data-context-version="INTERNATIONAL_CONTEXT_V1">
       <div class="context-heading"><div><h2>國際市場脈動</h2><p>先看環境結論，再照個股卡的動作執行。</p></div><a href="#quickGuide">直接查個股 ↓</a></div>
       <div class="context-purpose"><strong>先給台股大方向，再查個股</strong><span>下方先回答「偏多、偏空，還是中性偏保守」，再依個股卡的明確動作買進、維持或減碼。</span></div>

@@ -537,3 +537,38 @@ OpenCode 必須依結果回報：
 6. 判讀文字請沿用「明確結論＋明確對象＋明確動作」契約（見 Obsidian SOP 的 `JUDGMENT_CONCRETENESS_V1` 段落）；新設計不得讓說明回到模糊句式。
 
 <!-- JUDGMENT_CONCRETENESS_V1 -->
+
+## 2026-09-21 Codex 閱讀導引與操作層級升級（已完成，待發布）
+
+### 已完成
+
+- `full-professional-stock-screen.js` 新增四步閱讀導引列：先看市場環境、再看新部位、已有持股、資料狀態；每個項目都直接連到對應區塊，並顯示目前報告的具體結論。
+- 快速搜尋／篩選區加入固定閱讀位置與更清楚的卡片層級、懸浮與焦點效果；沒有修改 `HORIZON_SCORE_V2`、排名、個股動作、`MI_QFIIS` 11 日門檻或其他資料硬門檻。
+- 以 `node .\full-professional-stock-screen.js --render-existing` 重產 `index.html` 與 2026-09-21 報告頁；沒有直接手改生成 HTML。
+
+### 已確認資料與方法
+
+- 沿用最近一次受控資料更新：股票 578 檔、ETF／市場資料日期 2026-09-21、外資持股日期 2026-09-18、外資持股歷史 11 日、Yahoo 新聞覆蓋 100%。
+- 主動 ETF 為 19/22 檔已核對；`00991A`、`00993A`、`00984A` 的最新持股快照仍為 2026-09-18。這些落後資料保留原樣並顯示限制，不以推測值補齊。
+- 現行報告的環境判讀為「訊號分歧」；目前沒有個股符合「可開始承接」，因此閱讀導引明確顯示「目前 0 檔可開始承接」，避免使用者誤以為應立即新增部位。
+
+### 驗證
+
+- `node --check full-professional-stock-screen.js`：通過。
+- `node --check international-ui.js`：通過。
+- `INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`：通過。
+- `Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty`：`HANDOFF_READY=true`。
+- 本機瀏覽器登入後已確認四步導引、`6770` 搜尋結果 `1／1 檔`、快速卡具體承接區與展開依據；本輪新增 CSS 依 900px／560px 切換響應式版面。既有 1050×900、390×844、評分明細、公告導讀、拖曳排序與表格同步捲軸回歸紀錄保留於 `design-qa.md`。
+
+### 保留／排除原則
+
+- 保留所有既有排名、分數、硬性門檻、資料健康度與個股動作計算；本輪只處理閱讀順序、視覺層級與操作可見性。
+- 排除登入資訊、localStorage 持股成本、私人排序狀態與任何受保護值；不寫入原始碼、報告或交接檔。
+- 資料不完整時繼續明確揭露日期與影響範圍，不用「資料正常」或模糊句式掩蓋缺口。
+
+### 下一步與未驗證項目
+
+- 下一步：依純 UI 發布契約提交本次限定檔案、推送 `origin/main`、等待 `deploy-pages.yml`，再確認正式網址的 HTTP 200、四步導引標記與內容同步。
+- 未驗證項目：本輪尚未發布前，正式網址仍是前一版；發布後需再次做線上內容與頁面標記核對。不得把本地生成結果當成正式站已同步。
+
+<!-- CODEX_DECISION_RAIL_UI_V1 -->
