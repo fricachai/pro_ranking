@@ -73,19 +73,46 @@ function renderInternationalContext(c) {
         ? { tone: 'caution', label: '偏空', headline: '台股環境偏空，現在先停止新增買進。', entry: '現在不要買，等環境回到中性以上，再找個股。', holding: '個股卡出現「降低部位／優先降低風險」就減碼；尚未跌破防守條件，不要恐慌賣。', why: '壓力訊號明顯多於支持訊號，或已出現兩項以上高風險警報。', support: supports.join('、') || '沒有', pressure: pressures.join('、') || '沒有' }
         : { tone: 'mixed', label: '中性偏保守', headline: '台股現在不適合追買，也沒有足夠證據全面賣出。', entry: '先不新增大部位；只挑個股卡顯示「可開始承接」且價格在承接區的股票。', holding: '先維持；只有個股卡出現「降低部位／優先降低風險」才賣或減碼。', why: '支持與壓力訊號互相抵銷，現在用個股條件決定，不猜大盤。', support: supports.join('、') || '沒有', pressure: pressures.join('、') || '沒有' };
   const easyDirection = marketAssessment;
-  const marketDetail = `S&P 500 5筆 ${s(d.sp500?.change5)}｜VIX ${n(d.vix?.value, 2)}（低於20通常較不緊張）`;
-  const industryDetail = `費城半導體 5筆 ${s(sox5)}｜WTI油價 5筆 ${s(oil5)}；一個看電子氣氛，一個看成本壓力`;
-  const flowDetail = `外資臺指期 ${n(txNet, 0)}口｜美國10年債 ${n(d.treasury?.value, 2)}%；期貨空單可能是避險`;
-  const marketJudgment = marketAssessment.headline;
-  const industryJudgment = Number.isFinite(sox5) && sox5 > 0.5 ? '電子方向偏多，可找符合條件的電子股；能源方向中性，先看油價是否讓成本變高。' : Number.isFinite(sox5) && sox5 < -0.5 ? '電子方向偏空，先不要買電子股；能源股仍要看個股成本與價格。' : '電子與能源沒有清楚方向，兩邊都先不追買。';
-  const flowJudgment = Number.isFinite(txNet) && txNet <= -50000 ? '資金方向偏保守：先不追買；只有臺股也下跌、且個股卡同時轉弱，才減碼。' : '資金沒有明確壓力：持股先維持，新買仍要等個股卡通過。';
+  const sp5 = d.sp500?.change5, sp20 = d.sp500?.change20;
+  const oilValue = d.oil?.value;
+  const txChange = d.tx?.changeFromPrevious;
+  const t5bp = Number.isFinite(d.treasury?.difference5) ? Math.round(d.treasury.difference5 * 100) : null;
+  const t20bp = Number.isFinite(d.treasury?.value) && Number.isFinite(d.treasury?.series?.at(-21)?.value) ? Math.round((d.treasury.value - d.treasury.series.at(-21).value) * 100) : null;
+  const jpy5 = d.fx?.usdJpy?.change5, cny5 = d.fx?.usdCny?.change5;
+  const dollarPeriod = d.dollar?.periodChange;
+  const marketDetail = `S&P 500 ${n(d.sp500?.value, 0)}（5筆 ${s(sp5)}、20筆 ${s(sp20)}）｜VIX ${n(d.vix?.value, 2)}（低於20＝不緊張）`;
+  const industryDetail = `費半 ${n(d.sox?.value, 0)}（5筆 ${s(sox5)}）｜WTI ${n(oilValue, 2)} 美元（5筆 ${s(oil5)}）`;
+  const flowDetail = `外資臺指期淨空單 ${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)} 口（${d.tx?.date || '—'}${Number.isFinite(txChange) ? `，較前日 ${txChange >= 0 ? '收斂' : '擴大'} ${n(Math.abs(txChange), 0)} 口` : ''}）｜10年債 ${n(d.treasury?.value, 2)}%（5日 ${Number.isFinite(t5bp) ? (t5bp >= 0 ? '+' : '') + t5bp : '—'}bp）`;
+  const marketJudgment = `環境中性：美股 5 筆 ${s(sp5)}、VIX ${n(d.vix?.value, 2)} 低檔。新買只挑個股卡「可開始承接」且價格在承接區；持股維持、不追高。`;
+  const industryJudgment = Number.isFinite(sox5) && sox5 > 0.5
+    ? `電子偏多：費半近5日 ${s(sox5)}，可找個股卡「可開始承接」的電子股分批。能源成本壓力減輕：WTI 跌到 ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}），但 EIA 原文指出全球柴油供應仍緊、煉油價差高，運輸／航空／物流成本仍偏高——這類持股維持、不加碼，等個股卡轉「可開始承接」。`
+    : Number.isFinite(sox5) && sox5 < -0.5
+      ? `電子偏空：費半近5日 ${s(sox5)}，電子股先不買，等個股卡重新顯示「可開始承接」。能源：WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}），成本壓力${Number.isFinite(oil5) && oil5 < -2 ? '減輕，但' : ''}運輸／製造持股仍以個股卡為準。`
+      : `電子與能源都沒有明確方向（費半 5筆 ${s(sox5)}、WTI 5筆 ${s(oil5)}）：兩邊都先不追買，只依個股卡「可開始承接」與承接區執行。`;
+  const flowJudgment = Number.isFinite(txNet) && txNet <= -50000
+    ? `外資期貨偏空（淨空單 ${n(Math.abs(txNet), 0)} 口）：新買先不追價。賣壓確認＝持股「收盤跌破 20 日 EMA」且「ETF／外資持股由增加轉為減少」兩項同時成立才減碼；只有期貨空單不構成賣出。殖利率 ${n(d.treasury?.value, 2)}%${Number.isFinite(t5bp) && t5bp > 0 ? `（5日 +${t5bp}bp）` : ''}：高本益比成長股先不追買。`
+    : `外資期貨沒有明顯賣壓（淨部位 ${n(txNet, 0)} 口）：持股先維持，新買仍要等個股卡「可開始承接」且價格在承接區。`;
   const direct = {
-    sp500: trendJudgment('sp500', d.sp500?.change5, '對台股：外部氣氛偏多，可找符合條件個股。', '對台股：外部氣氛偏空，新買先停。', '對台股：外部氣氛中性，維持、不追買。', 0.5),
-    fx: Number.isFinite(fx5) && fx5 > 0.5 ? '對台股：臺幣轉弱，資金偏保守，先不追買。' : Number.isFinite(fx5) && fx5 < -0.5 ? '對台股：臺幣轉強，壓力減輕，可維持原策略。' : '對台股：匯率沒有明確壓力，維持原策略。',
-    treasury: Number.isFinite(treasuryBp) && treasuryBp >= 5 ? '對台股：殖利率上升，成長股先不追買。' : Number.isFinite(treasuryBp) && treasuryBp <= -5 ? '對台股：殖利率下降，估值壓力減輕，可維持原策略。' : '對台股：殖利率變化不大，維持原策略。',
-    vix: Number.isFinite(vixValue) && vixValue >= 25 ? '對台股：市場明顯緊張，停止新買。' : Number.isFinite(vixValue) && vixValue < 20 ? '對台股：市場不緊張，支持維持或找符合條件個股。' : '對台股：市場緊張程度普通，維持、不追買。',
-    tx: Number.isFinite(txNet) && txNet <= -50000 ? '對台股：期貨偏空，先不追買；現貨也下跌時才算賣壓確認。' : Number.isFinite(txNet) && txNet >= 50000 ? '對台股：期貨偏多，支持維持；仍要個股條件通過。' : '對台股：期貨方向不明，維持原策略。',
-    dollar: Number.isFinite(d.dollar?.periodChange) && d.dollar.periodChange > 0.5 ? '對台股：美元上升，資金偏緊，先不新增大部位。' : Number.isFinite(d.dollar?.periodChange) && d.dollar.periodChange < -0.5 ? '對台股：美元下降，資金壓力減輕，可找符合條件個股。' : '對台股：美元方向不明，維持原策略。'
+    sp500: Number.isFinite(sp5)
+      ? `S&P 500 ${n(d.sp500?.value, 0)}（近5日 ${s(sp5)}、近20日 ${s(sp20)}）：外部氣氛${sp5 > 0.5 ? '偏多' : sp5 < -0.5 ? '偏空' : '中性'}；${sp5 > 0.5 ? '可找個股卡「可開始承接」的股票分批。' : sp5 < -0.5 ? '新買先停，等個股卡與美股同步回穩。' : '不因美股追價，照個股卡與承接區執行。'}`
+      : '美股本次沒有新觀測：照個股卡與承接區執行，不單獨改變買賣。',
+    fx: Number.isFinite(fx5) && fx5 > 0.5
+      ? `美元／臺幣 ${n(d.fx?.usdTwd?.value, 3)}（近5日 ${s(fx5)}，臺幣偏貶）：外資匯入動能轉弱，新買先不追價；持股維持，等個股卡轉強。`
+      : Number.isFinite(fx5) && fx5 < -0.5
+        ? `美元／臺幣 ${n(d.fx?.usdTwd?.value, 3)}（近5日 ${s(fx5)}，臺幣偏升）：資金壓力減輕，可找個股卡「可開始承接」的股票分批。`
+        : `美元／臺幣 ${n(d.fx?.usdTwd?.value, 3)}（近5日 ${s(fx5)}）：匯率幾乎持平，不影響進出節奏，照個股卡執行。`,
+    treasury: Number.isFinite(t5bp)
+      ? `10年債 ${n(d.treasury?.value, 2)}%（近5日 ${t5bp >= 0 ? '+' : ''}${t5bp}bp${Number.isFinite(t20bp) ? `、近20日 ${t20bp >= 0 ? '+' : ''}${t20bp}bp` : ''}）：利率${t5bp >= 5 ? '持續走高' : t5bp <= -5 ? '回落' : '變動不大'}，${t5bp >= 5 ? '高本益比（PE 高於同業）的成長股先不追買；已持有者等收盤跌破 20 日 EMA 再處理。' : t5bp <= -5 ? '估值壓力減輕，可找個股卡「可開始承接」的股票分批。' : '不影響進出節奏，照個股卡執行。'}`
+      : '殖利率本次沒有新觀測：照個股卡與承接區執行。',
+    vix: Number.isFinite(vixValue)
+      ? `VIX ${n(vixValue, 2)}（${vixValue >= 25 ? '高於25，市場明顯緊張' : vixValue < 20 ? '低於20，市場不緊張' : '介於20–25，緊張度普通'}${Number.isFinite(d.vix?.change5) ? `，近5日 ${s(d.vix.change5)}` : ''}）：${vixValue >= 25 ? '停止新買，持股只依個股卡防守條件處理。' : vixValue < 20 ? '恐慌賣壓少，支持維持持股與在承接區分批；VIX 低不等於可以追高。' : '新買先等個股卡「可開始承接」，不追價。'}`
+      : 'VIX 本次沒有新觀測：照個股卡執行。',
+    tx: Number.isFinite(txNet)
+      ? `外資臺指期淨${txNet >= 0 ? '多' : '空'}單 ${n(Math.abs(txNet), 0)} 口（${d.tx?.date || '—'}${Number.isFinite(txChange) ? `，較前日${txChange >= 0 ? '收斂' : '擴大'} ${n(Math.abs(txChange), 0)} 口` : ''}）：${txNet <= -50000 ? '外資仍押跌大盤，新買先不追價。賣壓確認＝個股收盤跌破 20 日 EMA（個股卡標示）且 ETF／外資持股同步轉弱，兩項同時成立才減碼；只有期貨空單不賣股。' : txNet >= 50000 ? '外資期貨偏多，支持維持持股；新買仍要個股卡通過。' : '期貨部位沒有明確方向，照個股卡執行。'}`
+      : '期貨本次沒有新觀測：照個股卡執行。',
+    dollar: Number.isFinite(dollarPeriod)
+      ? `Fed 廣義美元指數 ${n(d.dollar?.value, 2)}（公布日 ${d.dollar?.publishedAt || '—'}，本期 ${s(dollarPeriod)}）：美元${dollarPeriod > 0.5 ? '走升，全球資金偏緊，新部位先保守' : dollarPeriod < -0.5 ? '走弱，資金壓力減輕，可找符合條件個股' : '變化不大，不影響台股節奏'}；因是週頻率資料，台股動作以每日美元／臺幣 ${n(d.fx?.usdTwd?.value, 3)} 與個股卡為準。`
+      : '美元指數本次沒有新觀測：以每日美元／臺幣與個股卡為準。'
   };
   const soxRelative = Number.isFinite(d.sox?.change5) && Number.isFinite(d.sp500?.change5) && d.sox.date === d.sp500.date ? d.sox.change5 - d.sp500.change5 : null;
   const txComparison = d.tx?.comparisonDate
@@ -99,13 +126,14 @@ function renderInternationalContext(c) {
   const asiaFxComparison = d.fx?.usdJpy?.comparisonDate
     ? `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜較 ${d.fx.usdJpy.comparisonDate} USD/JPY ${delta(d.fx.usdJpy.changeFromPrevious, 3)}`
     : `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜均為一美元兌本幣`;
+  const jpy = d.fx?.usdJpy?.value, cny = d.fx?.usdCny?.value;
   const cards = [
-     card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `20筆 ${s(d.sp500?.change20)}｜5筆 ${s(d.sp500?.change5)}`, d.sp500, '', '它代表全球市場氣氛；這裡直接說明對台股方向。', direct.sp500),
-     card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), fxComparison + '｜上升＝臺幣貶值', d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶值會讓資金環境偏緊；這裡直接說明台股要保守或維持。', direct.fx),
-     card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `5筆 ${s(Number.isFinite(d.treasury?.difference5) ? d.treasury.difference5 * 100 : null, 0, '基點')}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升先壓縮成長股估值；這裡直接說明台股操作。', direct.treasury),
-     card('vix', 'VIX 波動指數', n(d.vix?.value, 2), '低於20／高於25為觀察門檻', d.vix, '', 'VIX低表示市場不緊張，VIX高表示先停新買；不是單獨賣出訊號。', direct.vix),
-     card('tx', '外資臺指期淨部位', `${n(d.tx?.net, 0)}口`, txComparison, null, '負值表示期貨押跌；只有臺股現貨也下跌，才把它當成賣壓確認。', direct.tx),
-     card('dollar', 'Fed 廣義美元', n(d.dollar?.value, 2), `公布期間 ${s(d.dollar?.periodChange)}｜${d.dollar?.periodStart || '—'} 起`, d.dollar, '非 ICE DXY；週資料有發布落差', '美元上升表示全球資金偏緊；這裡直接說明台股是否先保守。', direct.dollar)
+     card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `20筆 ${s(sp20)}｜5筆 ${s(sp5)}`, d.sp500, '', 'S&P 變強＝外部氣氛支持，變弱＝先保守；上方已直接給台股結論。', direct.sp500),
+     card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), fxComparison + '｜上升＝臺幣貶值', d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶＝外資匯入轉弱；臺幣升＝資金壓力減輕。上方已直接給結論。', direct.fx),
+     card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `5筆 ${Number.isFinite(t5bp) ? (t5bp >= 0 ? '+' : '') + t5bp + 'bp' : '—'}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升＝高本益比成長股估值承壓；上方已直接給結論。', direct.treasury),
+     card('vix', 'VIX 波動指數', n(d.vix?.value, 2), '低於20＝不緊張／高於25＝緊張', d.vix, '', 'VIX 低＝恐慌賣壓少，高＝先停新買；上方已直接給結論。', direct.vix),
+     card('tx', '外資臺指期淨部位', `${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)}口${txNet < 0 ? '（淨空）' : ''}`, txComparison, null, '負值＝外資在期貨押跌大盤。賣壓確認看個股：收盤跌破 20 日 EMA 且 ETF／外資持股同步轉弱，兩項同時成立才減碼；只有期貨空單不賣股。', '期貨偏空只讓新買更謹慎，不直接構成賣出。', direct.tx),
+     card('dollar', 'Fed 廣義美元', n(d.dollar?.value, 2), `公布期間 ${s(dollarPeriod)}｜${d.dollar?.periodStart || '—'} 起`, d.dollar, '非 ICE DXY；週資料有發布落差', '美元走升＝全球資金偏緊；上方已直接給結論與資料日期。', direct.dollar)
    ].join('');
   const statusRows = c.sources.map(src => `<tr><td>${e(src.label)}</td><td>${e(src.evidence)}級</td><td>${e(src.observedAt || '—')}</td><td>${e(src.cadence)}</td><td>${e(statusLabel[src.status])}${src.error ? `<br><small>${e(src.error)}</small>` : ''}</td><td><a href="${e(src.url)}" target="_blank" rel="noreferrer">原始來源</a></td></tr>`).join('');
   const cot = (d.cot || []).map(x => `<tr><td>${e({ 'S&P 500 Consolidated': 'S&P 500合併契約', 'UST 10Y NOTE': '美國10年債期貨', 'EURO FX': '歐元期貨' }[x.market])}</td><td>${e(x.date)}</td><td>${n(x.net, 0)}</td><td>${s(x.change, 0, '口')}</td><td>${s(x.netPctOi, 1)}</td></tr>`).join('');
@@ -115,31 +143,31 @@ function renderInternationalContext(c) {
   }).join('');
   const weak = c.sources.filter(x => x.status !== 'current').length;
   return `<section class="section international-context" id="internationalContext" data-context-version="${e(c.version)}">
-     <div class="context-heading"><div><h2>國際市場脈動</h2><p>先看環境，再看個股觸發條件。</p></div><a href="#quickGuide">直接查個股 ↓</a></div>
+      <div class="context-heading"><div><h2>國際市場脈動</h2><p>先看環境結論，再照個股卡的動作執行。</p></div><a href="#quickGuide">直接查個股 ↓</a></div>
       <div class="context-purpose"><strong>先給台股大方向，再查個股</strong><span>下方先回答「偏多、偏空，還是中性偏保守」，再依個股卡的明確動作買進、維持或減碼。</span></div>
       <div class="context-judgment-key"><b>操作對照：</b><span>「偏多」＝可分批買符合條件個股；「中性偏保守」＝持股先維持、不追買；「偏空」＝停止新買，持股照防守條件減碼。</span></div>
       <div class="context-easy-direction context-easy-${e(easyDirection.tone)}"><div class="context-easy-title"><span>台股大方向</span><strong>${e(easyDirection.label)}</strong></div><p class="context-easy-why"><b>${e(easyDirection.headline)}</b><br>${e(easyDirection.why)}</p><div class="context-easy-actions"><div><b>尚未持有：怎麼做</b><span>${e(easyDirection.entry)}</span></div><div><b>已經持有：怎麼做</b><span>${e(easyDirection.holding)}</span></div></div><div class="context-signal-balance"><span><b>支持台股：</b>${e(easyDirection.support)}</span><span><b>壓力台股：</b>${e(easyDirection.pressure)}</span></div><small>這是國際環境的總結方向；個股實際買賣仍照個股卡的「可開始承接／降低部位／優先降低風險」執行。</small></div>
       <div class="context-quick-panels" aria-label="國際市場三個先看方向">
-        ${quickPanel(easyDirection.tone, '1｜市場氣氛', `S&P ${s(d.sp500?.change5)}｜VIX ${n(d.vix?.value, 2)}`, marketDetail, marketJudgment, '美股與VIX只看氣氛', ['sp500', 'vix'])}
-        ${quickPanel(Number.isFinite(sox5) && sox5 > 0.5 ? 'support' : 'mixed', '2｜半導體與能源', `半導體 ${s(sox5)}｜油價 ${s(oil5)}`, industryDetail, industryJudgment, '沒有同口徑全球能源法人持倉', ['sox', 'oil'])}
-        ${quickPanel('mixed', '3｜外資與利率', `期貨 ${n(txNet, 0)}口｜10年債 ${n(d.treasury?.value, 2)}%`, flowDetail, flowJudgment, '淨空單不等於現貨賣股', ['tx', 'treasury'])}
+        ${quickPanel(easyDirection.tone, '1｜市場氣氛', `S&P ${s(sp5)}｜VIX ${n(d.vix?.value, 2)}`, marketDetail, marketJudgment, '美股與VIX只決定進場節奏', ['sp500', 'vix'])}
+        ${quickPanel(Number.isFinite(sox5) && sox5 > 0.5 ? 'support' : 'mixed', '2｜半導體與能源', `半導體 ${s(sox5)}｜油價 ${s(oil5)}`, industryDetail, industryJudgment, '能源成本以 EIA 原文與油價判斷', ['sox', 'oil'])}
+        ${quickPanel('mixed', '3｜外資與利率', `期貨淨空 ${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)} 口｜10年債 ${n(d.treasury?.value, 2)}%`, flowDetail, flowJudgment, '賣壓確認＝價格跌破＋籌碼轉弱', ['tx', 'treasury'])}
       </div>
-      <p class="context-chart-note"><b>圖怎麼看：</b>線往上只是最近資料變強，線往下只是最近資料變弱；它不是預測，也不能單獨決定買或賣。</p>
-      <div class="context-map" aria-label="國際資料與股票決策的關聯"><div><b>1｜進場節奏</b><span>美股、VIX、利率、匯率</span><small>決定要積極、等待，或避免追價</small></div><div><b>2｜產業與資金確認</b><span>半導體、能源、期貨部位</span><small>確認個股是否有產業順風與法人配合</small></div><div><b>3｜事件風險檢查</b><span>Fed、能源、制裁公告</span><small>決定是否延後決策並重新檢查曝險</small></div></div>
+      <p class="context-chart-note"><b>這張圖怎麼用：</b>數字已在卡片上；圖只幫你確認方向（線往上＝近5日轉強、往下＝轉弱）。實際買賣只看個股卡：價格在承接區且顯示「可開始承接」才分批；顯示「等待確認」就不買。</p>
+      <div class="context-map" aria-label="國際資料與股票決策的關聯"><div><b>1｜進場節奏</b><span>S&amp;P ${s(sp5)}、VIX ${n(d.vix?.value, 2)}</span><small>結論：${e(marketAssessment.label)}，新買等承接區、不追高</small></div><div><b>2｜產業與資金</b><span>費半 ${s(sox5)}、外資期貨淨空 ${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)} 口</span><small>結論：${Number.isFinite(sox5) && sox5 > 0.5 ? '電子可找符合條件個股' : '電子先不追'}；大盤保護從嚴</small></div><div><b>3｜事件風險</b><span>Fed 升息、柴油成本高、制裁局部調整</span><small>結論：有曝險先查；其餘照個股卡執行</small></div></div>
      <div class="context-verdict"><strong>台股執行結論：${e(marketAssessment.label)}</strong><span>${e(marketAssessment.headline)}</span><small>依美股、VIX、半導體、匯率、殖利率與外資期貨綜合；不改個股評分與個股動作規則</small></div>
     <div class="context-grid">${cards}</div>
     <div class="context-refresh"><span>國際資料查詢：${e(localTime(c.checkedAt))}（臺北）${weak ? ` · ${weak}項落後／缺漏` : ''}</span><button id="checkPublishedUpdate" type="button">查看最新發布</button><span id="publishedUpdateStatus" role="status" aria-live="polite"></span></div>
      <details class="context-details"><summary>半導體、能源與國際法人部位</summary><div class="context-section-guide"><b>這一組回答：電子、能源與資金現在偏強還是偏弱？</b><span>先看這裡的直接結論，再回到個股卡執行買進、維持或減碼；它不會改寫個股評分。</span></div><div class="context-grid context-grid-extra">
-        ${card('sox', '費城半導體', n(d.sox?.value, 0), `5筆 ${s(d.sox?.change5)}｜相對S&P ${s(soxRelative, 1, '百分點')}`, d.sox, '', '電子股的產業氣氛；上升才支持找電子股，下跌就先停新買。', trendJudgment('sox', soxRelative, '對台股：電子方向偏多，可找符合條件電子股。', '對台股：電子方向偏空，先不要買電子股。', '對台股：電子方向不明，電子股維持、不追買。', 0.5))}
-        ${card('oil', 'WTI近月期貨', `${n(d.oil?.value, 2)}美元／桶`, `5筆 ${s(d.oil?.change5)}｜注意合約轉倉`, d.oil, '', '油價上升會增加運輸與製造成本；能源股仍要看公司是否受益。', trendJudgment('oil', d.oil?.change5, '對台股：成本壓力增加，運輸／製造股先不追買。', '對台股：成本壓力減輕，可找受益個股。', '對台股：油價方向不明，不改變原本買賣。', 2))}
-        ${card('fx', '亞洲匯率參考', `USD/JPY ${n(d.fx?.usdJpy?.value, 2)}`, asiaFxComparison, null, '', '只用來看出口、進口與區域資金背景；不會單獨改變台股買賣。', judgment('fx', '對台股：這是背景資料，維持原本個股卡的買賣動作。'))}
+        ${card('sox', '費城半導體', n(d.sox?.value, 0), `5筆 ${s(sox5)}｜相對S&P ${s(soxRelative, 1, '百分點')}`, d.sox, '', '費半變強＝電子股有產業順風；變弱＝電子股先停新買。', `費半 ${n(d.sox?.value, 0)}（近5日 ${s(sox5)}${soxRelative ? `、相對S&P ${s(soxRelative, 1, '百分點')}` : ''}）：${sox5 > 0.5 ? '電子偏多，可找個股卡「可開始承接」的電子股分批。' : sox5 < -0.5 ? '電子偏空，電子股先不買。' : '電子沒有明確方向，電子股先不追。'}`)}
+        ${card('oil', 'WTI近月期貨', `${n(oilValue, 2)}美元／桶`, `5筆 ${s(oil5)}｜注意合約轉倉`, d.oil, '', '油價上升＝運輸／製造成本壓力；下跌＝成本減輕；能源股仍要看個股卡。', `WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}）：${Number.isFinite(oil5) && oil5 <= -2 ? '成本壓力明顯減輕；但 EIA 原文指出柴油供應仍緊、煉油價差高，運輸／航空／物流持股維持、不加碼，能源股要個股卡通過才買。' : Number.isFinite(oil5) && oil5 >= 2 ? '成本壓力增加，運輸／製造股先不追買。' : '油價變化不大，照個股卡執行。'}`)}
+        ${card('fx', '亞洲匯率參考', `USD/JPY ${n(jpy, 2)}`, asiaFxComparison, null, '', `日圓貶＝日系出口競價壓力；人民幣貶＝中國需求偏弱。這只是背景，不改個股動作。`, `USD/JPY ${n(jpy, 2)}（近5日 ${s(jpy5)}）、USD/CNY ${n(cny, 4)}（近5日 ${s(cny5)}）：${Number.isFinite(jpy5) && jpy5 > 1 ? '日圓近5日明顯貶值，日系廠商出口競爭壓力增加，電子零組件／汽車供應鏈留意競價；' : ''}${Number.isFinite(cny5) && cny5 < -0.5 ? '人民幣偏強，中國需求沒有惡化訊號；' : ''}匯率只是背景，不改變你的動作——個股卡「可開始承接」就分批、「降低部位」就減碼。`)}
      </div><p class="context-cot-note"><b>CFTC 部位的使用方式：</b>只把它當作市場擁擠度與情緒背景。週變化不等同新開倉，不能因為淨多或淨空就直接買進或放空。</p><div class="table-wrap"><table><thead><tr><th>契約</th><th>部位日期</th><th>淨多空（口）</th><th>較前週</th><th>淨部位／未平倉</th></tr></thead><tbody>${cot || '<tr><td colspan="5">本次無可用資料</td></tr>'}</tbody></table></div>
       <p>${e(d.tx?.limitation || '臺指期本次沒有新增觀測，先沿用其他可驗證資金訊號與個股條件。')}</p></details>
       <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組先回答：公告內容會透過哪條路徑影響台股？</b><span>系統先讀取官方原文，整理政策動作、成本變化或制裁範圍，再列出要核對的持股曝險與現在的處理方式。</span></div><div class="context-events">${events}</div></details>
     <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(c.summary.method)}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
   </section>`;
 }
-const quickGuideHtml = `<section class="section" id="quickGuide"><div class="context-heading"><div><h2>個股快速操作</h2><p>先選「未持有／已持有」，每張卡直接告訴你現在買、維持或減碼。</p></div><a href="#positionSection">我的追蹤 ↓</a></div><p class="quick-action-key"><b>操作讀法：</b>「可開始承接」＝可以分批買；「等待確認／不建立部位」＝現在不買；「正常持有」＝維持；「降低部位／優先降低風險」＝減碼。</p><div class="quick-controls"><input id="quickSearch" type="search" placeholder="輸入股票代號或名稱" aria-label="快速搜尋股票"><select id="quickMode" aria-label="目前持有狀態"><option value="entry">尚未持有</option><option value="holding">已經持有</option></select><select id="quickAction" aria-label="快速操作篩選"><option value="">全部動作</option></select><span id="quickCount" role="status" aria-live="polite"></span></div><p class="quick-data-note" id="quickDataNote"></p><div class="quick-grid" id="quickRows"></div><button type="button" id="quickMore">再顯示12檔</button><p class="quick-footnote">觀察區是限價參考區，不是保證成交或自動委託；缺少有效價格時不提供價位指引。</p></section>`;
+const quickGuideHtml = `<section class="section" id="quickGuide"><div class="context-heading"><div><h2>個股快速操作</h2><p>先選「未持有／已持有」，每張卡直接告訴你現在買、維持或減碼，以及差在哪裡。</p></div><a href="#positionSection">我的追蹤 ↓</a></div><p class="quick-action-key"><b>操作讀法：</b>「可開始承接」＝價格在承接區，可以分批買；「等待確認」＝現在不買（卡上會寫明是價格沒回承接區還是 ETF 沒轉增）；「不建立部位」＝未通過進場門檻；「正常持有」＝維持；「降低部位／優先降低風險」＝減碼。</p><div class="quick-controls"><input id="quickSearch" type="search" placeholder="輸入股票代號或名稱" aria-label="快速搜尋股票"><select id="quickMode" aria-label="目前持有狀態"><option value="entry">尚未持有</option><option value="holding">已經持有</option></select><select id="quickAction" aria-label="快速操作篩選"><option value="">全部動作</option></select><span id="quickCount" role="status" aria-live="polite"></span></div><p class="quick-data-note" id="quickDataNote"></p><div class="quick-grid" id="quickRows"></div><button type="button" id="quickMore">再顯示12檔</button><p class="quick-footnote">承接區是「分批買進」的參考價格區間，不是保證成交或自動委託；價格高於區間就等回到區間，跌破區間就等站回。</p></section>`;
 function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showScoreDetail) {
   const search = document.getElementById('quickSearch'), mode = document.getElementById('quickMode'), filter = document.getElementById('quickAction');
   const host = document.getElementById('quickRows'), more = document.getElementById('quickMore');
@@ -148,6 +176,17 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
   const validPrice = r => Number.isFinite(r.analysisPrice ?? r.livePrice ?? r.close) && (r.analysisPrice ?? r.livePrice ?? r.close) > 0;
   const stale = r => { const d = r.liveDate || r.closeDate; return !d || !Number.isFinite(Date.parse(d)) || (Date.parse(today()) - Date.parse(d)) / 86400000 > 4; };
   const zone = z => z && Number.isFinite(z.low) && Number.isFinite(z.high) && z.low > 0 && z.high >= z.low ? n(z.low, 2) + '–' + n(z.high, 2) : '未提供價位';
+  const entryBlockers = r => {
+    const current = r.analysisPrice ?? r.livePrice ?? r.close;
+    const zoneText = zone(r.addZone);
+    const parts = [];
+    if (validPrice(r) && r.addZone && current > r.addZone.high) parts.push(`價格 ${n(current, 2)} 高於承接區 ${zoneText}（高 ${n(current - r.addZone.high, 2)}）`);
+    if (validPrice(r) && r.addZone && current < r.addZone.low) parts.push(`價格 ${n(current, 2)} 低於承接區 ${zoneText}，先等站回`);
+    if (Number.isFinite(r.etf?.d5) && r.etf.d5 < 0) parts.push(`ETF 近5日減少 ${n(Math.abs(r.etf.d5), 0)} 張`);
+    if (Number.isFinite(r.etf?.d5) && r.etf.d5 === 0) parts.push('ETF 近5日持平（尚未轉增）');
+    if (r.rejectionReasons?.length) parts.push(r.rejectionReasons[0]);
+    return parts.length ? parts.join('；') : '進場條件尚未同時成立';
+  };
   const view = r => positionDecisionMeta({ entryPrice: null }, r);
   const flowDirection = (value, label) => !Number.isFinite(value) ? `${label}本次沒有新增觀測，先依其他可驗證籌碼與價格條件判讀` : value > 0 ? `${label}增加 ${n(value, 0)}張（偏強）` : value < 0 ? `${label}減少 ${n(Math.abs(value), 0)}張（偏弱）` : `${label}沒有變化（中性）`;
   const stockFlowText = r => {
@@ -162,20 +201,27 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
       const q = search.value.trim().toLowerCase(), holding = mode.value === 'holding';
     const selected = rows.filter(r => (!q || (r.code + ' ' + r.name).toLowerCase().includes(q)) && (!filter.value || (holding ? view(r).label : r.entryAction) === filter.value));
     document.getElementById('quickCount').textContent = '顯示 ' + Math.min(limit, selected.length) + '／' + selected.length + ' 檔';
-    document.getElementById('quickDataNote').textContent = '個股價格 ' + (reportMeta.liveFreeze || reportMeta.marketDate || '回溯最近可驗證營業日') + '｜' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認');
+    document.getElementById('quickDataNote').textContent = '價格基準：' + (reportMeta.liveFreeze || reportMeta.marketDate || '回溯最近可驗證營業日') + '（' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認') + '）。承接區＝可以分批買的價格區間：價格高於區間就等它回到區間，低於區間就等站回。';
     host.innerHTML = selected.slice(0, limit).map(r => {
       const v = view(r), unavailable = stale(r) || !validPrice(r), canEnter = r.entryAction === '可開始承接';
-      const label = unavailable ? '依其他可驗證條件判讀' : holding ? v.label : r.entryAction;
+      const label = unavailable ? '資料待更新' : holding ? v.label : r.entryAction;
       const current = r.analysisPrice ?? r.livePrice ?? r.close;
       const zoneText = zone(r.addZone);
-      const entryActionText = !validPrice(r) || !r.addZone ? '現在不買：先等有效報價與承接區完成核對，再依區間分批買' : current > r.addZone.high ? `現在不追價：等回到 ${zoneText} 再分批買` : current < r.addZone.low ? `先觀察：等回到 ${zoneText} 再分批買` : `現在可分批買：${zoneText}；不要追高`;
-      const action = unavailable ? '現在不新增：先依可驗證的價格、趨勢與籌碼條件執行' : holding ? (v.label === '符合加碼條件' ? `可以加碼：回到 ${v.zoneText || zone(r.addZone)} 分2–3批` : v.label === '降低部位' || v.label === '優先降低風險' ? `現在減碼：${v.todayAction}` : v.label === '保護持有' ? `先維持、不加碼：${v.todayAction}` : `維持持有：${v.todayAction}`) : canEnter ? entryActionText : r.entryAction === '等待確認' ? '現在不買：目前條件未同時轉強，等待下一個有效確認' : r.entryAction === '不建立部位' ? '現在不要買：這檔未通過進場門檻' : '現在不買：暫不進場';
-      const priceReason = !validPrice(r) || !r.addZone ? '先等有效報價與承接區完成核對；其他條件先照個股卡執行。' : current > r.addZone.high ? `目前價格 ${n(current, 2)} 高於承接區 ${zoneText}，先不要追價。` : current < r.addZone.low ? `目前價格 ${n(current, 2)} 低於承接區 ${zoneText}，先觀察是否重新站回。` : `目前價格 ${n(current, 2)} 在承接區 ${zoneText} 內。`;
-      const reason = holding ? `${r.positionReasons?.[0] || r.holdingSignals?.[0] || '依價格與法人共同確認'}；${stockFlowText(r)}` : `${r.rejectionReasons?.[0] || (canEnter ? priceReason : '目前未通過完整進場門檻。')} ${stockFlowText(r)}`;
+      const entryActionText = !validPrice(r) || !r.addZone ? '現在不買：先等有效報價與承接區完成核對，再依區間分批買' : current > r.addZone.high ? `現在不追價：價格 ${n(current, 2)} 高於承接區 ${zoneText}（高 ${n(current - r.addZone.high, 2)}），等回到區間再分批買` : current < r.addZone.low ? `先觀察：價格 ${n(current, 2)} 低於承接區 ${zoneText}，等重新站回區間再分批買` : `現在可分批買：價格 ${n(current, 2)} 在承接區 ${zoneText} 內；不要追高`;
+      const action = unavailable ? '現在不新增：等有效報價與條件核對完成再判斷' : holding ? (v.label === '符合加碼條件' ? `可以加碼：回到 ${v.zoneText || zone(r.addZone)} 分2–3批` : v.label === '降低部位' || v.label === '優先降低風險' ? `現在減碼：${v.todayAction}` : v.label === '保護持有' ? `先維持、不加碼：${v.todayAction}` : `維持持有：${v.todayAction}`) : canEnter ? entryActionText : `現在不買：${entryBlockers(r)}`;
+      const priceReason = !validPrice(r) || !r.addZone ? '先等有效報價與承接區完成核對；其他條件先照個股卡執行。' : current > r.addZone.high ? `目前價格 ${n(current, 2)} 高於承接區 ${zoneText}（高 ${n(current - r.addZone.high, 2)}），先不要追價。` : current < r.addZone.low ? `目前價格 ${n(current, 2)} 低於承接區 ${zoneText}，先觀察是否重新站回。` : `目前價格 ${n(current, 2)} 在承接區 ${zoneText} 內。`;
+      const reason = holding ? `${r.positionReasons?.[0] || r.holdingSignals?.[0] || '依價格與法人共同確認'}；${stockFlowText(r)}` : `${canEnter ? priceReason : entryBlockers(r)} ${stockFlowText(r)}`;
       const priceLabel = holding ? v.triggerLabel : canEnter ? '承接觀察區' : '20EMA觀察區';
       const priceText = unavailable ? '等待有效報價核對' : holding ? Number.isFinite(v.trigger) && v.trigger > 0 ? v.zoneText : '依個股防守條件' : zone(r.addZone);
-      const change = holding ? `${v.change}；${stockFlowText(r)}` : canEnter ? `價格跌破20日EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股由增加轉為減少，就取消下一批。` : `等價格、ETF、外資持股與其他門檻同時轉強，再重新判斷。`;
-      const plan = holding ? `${r.holdingPlan} ${stockFlowText(r)}` : canEnter ? `操作方式：${entryActionText}；${stockFlowText(r)}` : `目前不買。${stockFlowText(r)}`;
+      const change = holding ? `${v.change}；${stockFlowText(r)}` : canEnter ? `取消下一批的條件：價格跌破 20 日 EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股由增加轉為減少。` : (() => {
+        const gates = [];
+        if (validPrice(r) && r.addZone && current > r.addZone.high) gates.push(`價格回到 ${zoneText} 內`);
+        if (Number.isFinite(r.etf?.d5) && r.etf.d5 <= 0) gates.push('ETF 近5日轉為增加');
+        if (r.rejectionReasons?.some(x => String(x).includes('主動ETF'))) gates.push('主動ETF當日持股完整');
+        gates.push('外資持股維持增加');
+        return `開始分批的條件：${gates.join('、')}；若價格跌破 20 日 EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股轉弱，就取消下一批。`;
+      })();
+      const plan = holding ? `${r.holdingPlan} ${stockFlowText(r)}` : canEnter ? `操作方式：${entryActionText}；${stockFlowText(r)}` : `目前不買。${entryBlockers(r)}；${stockFlowText(r)}`;
       return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><b>' + e(r.code + ' ' + r.name) + '</b><span>' + e(label) + '</span></div><strong class="quick-action">' + e(action) + '</strong><div class="quick-prices"><div><small>參考價</small><b>' + (validPrice(r) ? n(r.analysisPrice ?? r.livePrice ?? r.close, 2) : '—') + '</b></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-reason">' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
     }).join('') || '<p>查無符合條件的股票。</p>';
     more.hidden = selected.length <= limit;
@@ -231,5 +277,33 @@ const styles = `
 .context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.context-card{min-width:0;border:1px solid #d7dfda;border-radius:10px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:6px}.context-card-head{display:flex;justify-content:space-between;gap:8px;font-size:14px}.context-card-head span{font-size:12px;color:#556b61}.context-card>strong{font-size:27px;font-variant-numeric:tabular-nums;line-height:1.2}.context-card p{font-size:13px;margin:0;min-height:20px}.context-card small{font-size:11px;color:#59665f;line-height:1.6}.context-stale{border-color:#bb8432;background:#fffaf0}.context-unavailable{border-style:dashed;background:#f4f5f4}.context-spark{width:100%;height:34px;color:#397866;margin:4px 0}.context-refresh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:14px 0;font-size:12px}.context-refresh button,.quick-controls select,.quick-controls input,#quickMore,.quick-card button{border:1px solid #bacac1;background:white;padding:9px 12px;border-radius:7px;color:#153e2e;min-height:40px}.context-details{border-top:1px solid var(--line);padding:12px 0}.context-details summary{font-weight:650}.context-details p,.context-details li{font-size:13px;line-height:1.7}.context-details table{min-width:660px;width:100%}.context-details td,.context-details th{padding:10px;text-align:left;white-space:normal}.context-events{display:grid;gap:14px}.context-event{display:flex;flex-direction:column;gap:5px;line-height:1.6}.context-event a{overflow-wrap:anywhere;font-size:14px}.context-event small{color:#59665f}.quick-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0 8px}.quick-controls input{flex:1;min-width:170px}.quick-controls span{font-size:13px}.quick-data-note,.quick-footnote{color:#5d6c64;font-size:12px}.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:14px 0}.quick-card{min-width:0;border:1px solid #cad7cf;border-radius:10px;padding:16px;background:white}.quick-card-head{display:flex;gap:6px;flex-wrap:wrap;justify-content:space-between;font-size:15px}.quick-card-head span{font-size:12px;background:#eef3ef;border-radius:4px;padding:3px 5px}.quick-action{display:block;font-size:20px;line-height:1.5;margin:12px 0;color:#153e2e}.quick-prices{display:grid;grid-template-columns:.7fr 1.3fr;gap:8px;border-top:1px solid #e4eae6;border-bottom:1px solid #e4eae6;padding:10px 0}.quick-prices small{display:block;font-size:11px;color:#59665f}.quick-prices b{font-size:16px;font-variant-numeric:tabular-nums}.quick-reason{font-size:13px;line-height:1.6}.quick-card details{font-size:12px}.quick-card details p{line-height:1.7}#quickGuide{scroll-margin-top:14px}.freeze-details{margin-top:10px}.freeze-details summary{font-size:12px}.header-status{font-size:13px;margin-top:12px}.quick-gate{padding:10px 14px;background:#eff5f1;border:1px solid #c4d6ca;font-size:13px;margin:14px 0}.quick-gate.is-warning{background:#fff4dc;border-color:#d5b372}
  .context-signal-balance{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:10px;font-size:12px;line-height:1.5;color:#304c40}.context-signal-balance span{background:#fff;border:1px solid #d7e1da;border-radius:6px;padding:6px 8px}.context-signal-balance b{color:#174f3a}.quick-action-key{font-size:13px;line-height:1.6;background:#f8faf8;border-left:3px solid #397866;padding:8px 10px;margin:8px 0}.quick-action-key b{color:#174f3a}.quick-action{line-height:1.45}
 @media(max-width:900px){.context-grid,.quick-grid,.context-quick-panels{grid-template-columns:repeat(2,minmax(0,1fr))}.context-heading{align-items:flex-start}.context-verdict small{margin-left:0;width:100%}}@media(max-width:540px){.context-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.context-card{padding:11px}.context-card>strong{font-size:22px}.context-card-head{font-size:12px}.context-card p{font-size:12px}.context-card small{font-size:10px}.context-grid-extra,.quick-grid,.context-quick-panels{grid-template-columns:1fr}.context-easy-actions{grid-template-columns:1fr}.quick-controls input{width:100%;flex-basis:100%}.quick-controls select{min-width:0;flex:1}.context-heading a{font-size:12px}.context-heading p{font-size:13px}.quick-card{padding:15px}.context-verdict strong{font-size:20px}.context-verdict span{font-size:14px}.context-easy-title strong{font-size:21px}}
+  /* ===== 設計升級層：卡片、表格、按鈕與版面質感 ===== */
+  .section h2{font-size:24px;letter-spacing:.5px;display:flex;align-items:center;gap:10px}.section h2::before{content:'';width:5px;height:22px;border-radius:3px;background:linear-gradient(180deg,#c9a85b,#14603f);display:inline-block;flex:0 0 auto}
+  .pick,.context-card,.quick-card,.position-card{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+  .pick{box-shadow:var(--shadow);border-radius:var(--radius);border-color:#d3dcd6}
+  .pick:hover,.context-card:hover,.quick-card:hover,.position-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+  .context-card,.quick-card{border-radius:var(--radius);box-shadow:var(--shadow);border-color:#d5ded8;position:relative;overflow:hidden}
+  .context-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#14603f,#c9a85b);opacity:.85}
+  .context-card>strong{letter-spacing:.3px}
+  .context-card-judgment{border-left:0;border-radius:8px;background:linear-gradient(90deg,#fdf6e6,#fffaf0)}
+  .context-card-use{border-left:0;border-radius:8px}
+  .quick-card{border-top:4px solid #c9a85b}
+  .quick-card-head b{font-size:15px}
+  .quick-action{display:block;padding:9px 11px;border-radius:8px;background:var(--green-soft);border:1px solid #cfe3d6;color:#0f4a33;font-size:14px}
+  .context-quick-panel{border-radius:var(--radius);box-shadow:var(--shadow)}
+  .context-quick-judgment{border-left:0;border-radius:8px;background:linear-gradient(90deg,#fdf6e6,#fffaf0)}
+  .context-easy-direction{border-radius:var(--radius-lg);background:linear-gradient(180deg,#f4faf6,#eef7f1);box-shadow:var(--shadow)}
+  .context-map>div{border-left:0;border-radius:10px;box-shadow:var(--shadow);border:1px solid #dbe4dd}
+  .context-details table{border-radius:10px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+  .context-details thead th,.source-audit thead th,.position-table thead th{background:#14382a;color:#fff;border-bottom:0;font-size:12.5px;letter-spacing:.4px}
+  .context-details tbody tr:nth-child(even),.source-audit tbody tr:nth-child(even),.position-table tbody tr:nth-child(even){background:#f2f7f3}
+  .context-details tbody tr:hover,.source-audit tbody tr:hover,.position-table tbody tr:hover{background:#e8f2ea}
+  .context-refresh button,.quick-controls select,.quick-controls input,#quickMore,.quick-card button{transition:border-color .15s ease,box-shadow .15s ease,background .15s ease}
+  .context-refresh button:hover,.quick-controls select:hover,.quick-controls input:hover,#quickMore:hover,.quick-card button:hover{border-color:var(--green);box-shadow:0 2px 8px rgba(20,96,63,.14)}
+  .context-refresh button:focus-visible,.quick-controls select:focus-visible,.quick-controls input:focus-visible,#quickMore:focus-visible,.quick-card button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+  .warning{border-radius:10px;box-shadow:0 3px 10px rgba(150,103,15,.08)}
+  .position-board-body{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+  .position-summary-card{border-radius:var(--radius);box-shadow:var(--shadow)}
+  .quick-data-note{padding:9px 12px;border-radius:8px;background:#eef5f0;border:1px solid #d8e4db}
 `;
 module.exports = { renderInternationalContext, quickGuideHtml, installQuickGuide, styles };

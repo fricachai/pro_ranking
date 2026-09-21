@@ -96,6 +96,18 @@ Final result: passed
 
 Final result: passed
 
+## 2026-09-21 判讀具體化與介面設計升級 QA
+
+- Source and implementation: `international-ui.js`（國際判讀與個股卡文字、設計樣式層）、`full-professional-stock-screen.js`（主題變數與 header 升級）；以 `node .\full-professional-stock-screen.js --render-existing` 沿用 2026-09-21 已驗證資料重產 `index.html`、`latest.html` 與日期版 HTML，不抓新資料、不改 `HORIZON_SCORE_V2`、排名、動作或門檻。
+- Text changes (specific conclusions instead of vague instructions): 能源判讀改為「WTI 93.09 美元、近5日 -8.2%，成本壓力明顯減輕；但 EIA 原文指出柴油供應仍緊，運輸／航空／物流維持、不加碼」；期貨改為「賣壓確認＝收盤跌破 20 日 EMA 且 ETF／外資持股同步轉弱，兩項同時成立才減碼」；美元改為「Fed 廣義美元 118.21（09-11 週資料、本期 +0.25%），週頻率不等待它，以每日美元／臺幣與個股卡為準」；殖利率具體到「高本益比（PE 高於同業）的成長股先不追買」；VIX 具體到數值與動作；亞洲匯率具體到日圓／人民幣 5 日變化與競價意涵；「圖怎麼看」改為「數字已在卡片上，圖只確認方向，買賣只看個股卡」；三步地圖改為帶實際數值與結論；個股卡（以 4967 十銓為例）改為「現在不買：價格 276.50 高於承接區 272.00–275.00（高 1.50）；ETF 近5日持平（尚未轉增）；主動ETF當日持股未完整（19/22）」，展開依據列出具體「開始分批的條件」。
+- Design upgrade: header 改為深綠漸層＋金線＋狀態徽章；卡片（前三名、國際卡、個股卡、決策卡）統一柔和陰影、hover 上浮、圓角與左色條；表格表頭深綠、斑馬紋、hover 高亮；區塊標題加裝飾線；按鈕 hover／focus 統一。
+- Desktop: `1050x900`，截圖 `output/ui-v2-1050x900.png`；4967 卡展開「改變條件與完整依據」；`scrollWidth=1035`，無水平溢出；console errors/warnings `0`；無 pageerror。
+- Mobile: `390x844`，截圖 `output/ui-v2-390x844.png`；4967 卡展開；`scrollWidth=375`，無水平溢出；console errors/warnings `0`；無 pageerror。
+- Regression: 登入 gate 保留、`bootstrap` 登入流程正常、個股搜尋 4967 正常、國際公告導讀保留、表格/決策卡既有功能未動。
+- Boundary: 本項是純 UI 與說明文字修改，未重新抓取市場資料；歷史日期版 HTML（如 20260918）保留舊版內嵌文字作為歷史稽核，不視為缺失。
+
+Final result: passed
+
 ## 2026-09-20 國際資料最近營業日回溯 QA
 
 - 問題：週末報告中的美元／臺幣與外資臺指期卡片錯誤顯示沒有前期比較，且資料日期可能空白。
