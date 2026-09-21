@@ -513,3 +513,27 @@ OpenCode 必須依結果回報：
 - 保留邊界：公告導讀只作環境與持股曝險檢查，不改 `HORIZON_SCORE_V2`、排名、個股動作或硬性門檻。
 
 <!-- EVENT_CONTENT_GUIDE_V1 -->
+
+## 2026-09-21 判讀具體化與介面設計升級（已完成，Codex 接手）
+
+### 使用者目標
+
+使用者反覆要求：所有說明文字必須是「具體、明確、可直接決策」的結論，不得寫成「先看油價是否讓成本變高」「線往上只是最近資料變強」「現貨也下跌才算賣壓確認」「美元方向不明」「這是背景資料」等讓使用者自行猜測的句子；同時要求介面更有設計感、閱讀更舒適。使用者下一個目標是由 Codex 接手，把介面做得「更漂亮、更完美」。
+
+### 已完成（本次）
+
+- `international-ui.js`：能源、期貨、殖利率、VIX、美元、亞洲匯率、美股、圖怎麼看、三步決策地圖全部改用實際數值給出「明確結論＋對象＋動作」；個股卡「等待確認／不建立部位」列出卡住的具體原因（價格高於承接區多少、ETF 持平／減少、主動ETF不完整），展開依據列出「開始分批的條件」與「取消下一批的條件」。
+- `full-professional-stock-screen.js`：`:root` 新增設計變數（--green-deep、--green-soft、--gold、--gold-soft、--radius、--shadow、--shadow-hover、--ring）；header 改深綠漸層＋金線＋狀態徽章；`international-ui.js` styles 尾端新增「設計升級層」（卡片陰影／hover、左色條、表格深綠表頭＋斑馬紋、區塊標題裝飾線、按鈕 hover/focus）。
+- 驗證：`node --check`、`Test-InternationalContext.js`、`git diff --check` 通過；`--render-existing` 沿用 2026-09-21 資料重產（純 UI，未重抓資料、未改評分／排名／門檻）；1050×900 與 390×844 無水平溢出、console 0、無 pageerror；4967 卡驗證具體文字；線上 Pages byte match 通過。
+- 提交：`04a2d67`（Make judgments concrete and refresh UI design）已推送 `origin/main`；`design-qa.md` 有完整紀錄；Obsidian SOP 已同步「判讀具體化契約」段落（`JUDGMENT_CONCRETENESS_V1`）與 `ui_v2_commit`／`judgment_concreteness` frontmatter；`Sync-OpenCodeObsidianHandoff.ps1 -CheckOpenCodeConfig` 回傳 `HANDOFF_READY=true`。
+
+### Codex 接手：更漂亮、更完美的介面
+
+1. 工作區應乾淨、`HEAD = origin/main = 04a2d67`；先 `git status --short --branch` 確認，不得清除或覆寫非本次變更。
+2. 所有畫面修改必須改 `full-professional-stock-screen.js`（主樣式與版面）或 `international-ui.js`（國際區塊、個股卡與樣式層），再用 `node .\full-professional-stock-screen.js --render-existing` 重產；不得直接手改生成 HTML，也不得以 `--render-existing` 冒充每日資料更新。
+3. 不得修改 `HORIZON_SCORE_V2`、排名、個股動作規則、`MI_QFIIS` 11 日等硬性門檻；不得重抓資料冒充新發布。
+4. 每次視覺修改必須保存 `design-qa.md`（來源與實作比較、1050×900、390×844、互動、console、水平溢出、`Final result: passed`），並實際瀏覽器驗證登入 gate、拖曳排序、表格同步捲軸、評分明細、公告導讀等既有功能未被破壞。
+5. 發布走純 UI 契約：提交限定檔案、推送、等待 deploy-pages.yml、線上 byte match 與必要標記驗證；禁止跳過預檢或直接呼叫 `Update-ProfessionalScreen.ps1 -Publish`。
+6. 判讀文字請沿用「明確結論＋明確對象＋明確動作」契約（見 Obsidian SOP 的 `JUDGMENT_CONCRETENESS_V1` 段落）；新設計不得讓說明回到模糊句式。
+
+<!-- JUDGMENT_CONCRETENESS_V1 -->
