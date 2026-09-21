@@ -489,7 +489,7 @@ OpenCode 必須依結果回報：
 
 <!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
-## 2026-09-21 國際公告內文導讀修正（進行中）
+## 2026-09-21 國際公告內文導讀修正（已完成）
 
 ### 已確認問題
 
@@ -502,9 +502,14 @@ OpenCode 必須依結果回報：
 - 以 `EVENT_CONTENT_GUIDE_V1` 產生「簡單判讀、原文重點、對臺股怎麼用、要查的持股曝險、現在怎麼做、限制」；不改 `HORIZON_SCORE_V2`、排名或個股動作。
 - 原文擷取失敗時明確揭露失敗與下一個核對動作，不用標題猜方向，也不阻斷其他國際資料與報告發布。
 
-### 尚待完成
+### 實作與驗證結果
 
-- 執行完整受控更新，確認官方原文擷取、產生報告、頁面內容、瀏覽器版面與 GitHub Pages 線上驗證。
-- 完成後回填實際提交、資料日期、Pages workflow 與 `RUN_LOG`；未完成前不得宣稱本功能已上線。
+- `international-context.js` 以官方 URL 逐則抓取 Fed、EIA、OFAC 原文，輸出 `contentAnalysis` 與內文關鍵句；`international-ui.js` 顯示簡單判讀、原文重點、對臺股怎麼用、持股曝險、現在怎麼做與限制。
+- `scripts/Test-InternationalContext.js`、Node 語法、交接預檢與 `git diff --check` 通過；失敗路徑會顯示原文擷取失敗與下一個核對動作。
+- 實際受控更新：`STATUS=published`、`FINAL_RESULT_READY=true`、資料日期 ETF／法人／外資持股／市場 `2026-09-18`、外資持股歷史 11 日、股票 578 檔。
+- 程式提交：`c88bf25`；原文證據清理提交：`debd8f3`；最新報告發布提交：`f2af5483d2b1f82583d79c0b9d3ec77181eac4b3`；稽核標籤：`published/20260921-091440`。
+- Pages：`PAGES_AUDIT_STATUS=complete`、線上 HTTP 200、線上公告內容標記與本機版本一致；公開網址：`https://fricachai.github.io/pro_ranking/`。
+- 瀏覽器 QA：1050×900 與 390×844 均無頁面級水平溢出，console errors/warnings 為 0；`design-qa.md` 已記錄結果。
+- 保留邊界：公告導讀只作環境與持股曝險檢查，不改 `HORIZON_SCORE_V2`、排名、個股動作或硬性門檻。
 
 <!-- EVENT_CONTENT_GUIDE_V1 -->

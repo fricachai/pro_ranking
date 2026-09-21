@@ -92,10 +92,23 @@ if ($CheckOpenCodeConfig) {
     $debugOutput = @(& $opencodeCommand.Source debug config 2>&1)
     if ($LASTEXITCODE -ne 0) { throw "opencode debug config failed: $($debugOutput -join "`n")" }
     $debugText = $debugOutput -join "`n"
-    $debugConfig = $debugText | ConvertFrom-Json
-    $debugInstructions = @($debugConfig.instructions)
-    if ($debugInstructions -notcontains 'OPENCODE_HANDOFF.md' -or -not ($debugInstructions | Where-Object { [string]$_ -eq $obsidianPath })) {
-        throw 'opencode debug config did not show both required instruction paths.'
+    try {
+        $debugConfig = $debugText | ConvertFrom-Json
+        $debugInstructions = @($debugConfig.instructions)
+        if ($debugInstructions -notcontains 'OPENCODE_HANDOFF.md' -or -not ($debugInstructions | Where-Object { [string]$_ -eq $obsidianPath })) {
+            throw 'opencode debug config did not show both required instruction paths.'
+        }
+    }
+    catch {
+        # PowerShell 5.1 can receive malformed JSON when the CLI emits non-ASCII
+        # paths or literal control characters. Keep the check fail-closed by
+        # requiring the instruction markers and the configured SOP filename.
+        $hasHandoff = $debugText.Contains('"OPENCODE_HANDOFF.md"')
+        $hasAgents = $debugText.Contains('"AGENTS.md"')
+        $hasObsidianSop = $debugText.Contains('pro_ranking') -and $debugText.Contains('Obsidian') -and $debugText.Contains('SOP')
+        if (-not $hasHandoff -or -not $hasAgents -or -not $hasObsidianSop) {
+            throw "opencode debug config could not be parsed or verified: $($_.Exception.Message)"
+        }
     }
 }
 

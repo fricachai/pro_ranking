@@ -85,6 +85,17 @@ passed
 
 Final result: passed
 
+## 2026-09-21 官方公告內文導讀 QA
+
+- Source and implementation: Fed FOMC, EIA diesel and OFAC official pages were fetched as the source evidence; `international-context.js` now extracts official article text and produces `EVENT_CONTENT_GUIDE_V1`; `international-ui.js` renders the evidence, Taiwan-stock transmission, exposure checks and current action. Generated through the controlled update, not by editing HTML directly.
+- Visible result: the three announcement cards now show different content-derived guidance: Fed rate hike and elevated inflation, diesel supply/cost pressure, and limited sanctions-list / general-license changes. The former fixed headline disclaimer is absent from the generated page.
+- Desktop: `1050x900`, implementation screenshot `output/event-guidance-1050x900.png`; announcement details expanded; page `scrollWidth=1035`, no horizontal overflow; console errors/warnings `0`.
+- Mobile: `390x844`, implementation screenshot `output/event-guidance-390x844.png`; announcement details expanded; page `scrollWidth=375`, no horizontal overflow; console errors/warnings `0`.
+- Online verification: Pages HTTP 200; live page contains `原文是升息`, `全球餾分油供應偏緊`, `特定緊急狀態到期`; live page does not contain the fixed `先不要因標題買進或賣出` sentence.
+- Boundary: the guidance is an independent environment and exposure check. It does not change `HORIZON_SCORE_V2`, ranking, individual stock actions, or hard quality gates.
+
+Final result: passed
+
 ## 2026-09-20 國際資料最近營業日回溯 QA
 
 - 問題：週末報告中的美元／臺幣與外資臺指期卡片錯誤顯示沒有前期比較，且資料日期可能空白。
