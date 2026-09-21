@@ -171,6 +171,7 @@ const quickGuideHtml = `<section class="section" id="quickGuide"><div class="con
 function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showScoreDetail) {
   const search = document.getElementById('quickSearch'), mode = document.getElementById('quickMode'), filter = document.getElementById('quickAction');
   const host = document.getElementById('quickRows'), more = document.getElementById('quickMore');
+  const stockUrl = r => 'https://tw.stock.yahoo.com/quote/' + encodeURIComponent(r.code) + (r.market === 'TPEX' ? '.TWO' : '.TW') + '/technical-analysis';
   let limit = 12;
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' }).format(new Date());
   const validPrice = r => Number.isFinite(r.analysisPrice ?? r.livePrice ?? r.close) && (r.analysisPrice ?? r.livePrice ?? r.close) > 0;
@@ -222,7 +223,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
         return `開始分批的條件：${gates.join('、')}；若價格跌破 20 日 EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股轉弱，就取消下一批。`;
       })();
       const plan = holding ? `${r.holdingPlan} ${stockFlowText(r)}` : canEnter ? `操作方式：${entryActionText}；${stockFlowText(r)}` : `目前不買。${entryBlockers(r)}；${stockFlowText(r)}`;
-      return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><b>' + e(r.code + ' ' + r.name) + '</b><span>' + e(label) + '</span></div><strong class="quick-action">' + e(action) + '</strong><div class="quick-prices"><div><small>參考價</small><b>' + (validPrice(r) ? n(r.analysisPrice ?? r.livePrice ?? r.close, 2) : '—') + '</b></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-reason">' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
+      return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><a class="stock-link quick-stock-link" href="' + stockUrl(r) + '" target="_blank" rel="noreferrer" aria-label="開啟 ' + e(r.code + ' ' + r.name) + ' Yahoo奇摩股市技術分析"><b>' + e(r.code + ' ' + r.name) + '</b></a><span>' + e(label) + '</span></div><strong class="quick-action">' + e(action) + '</strong><div class="quick-prices"><div><small>參考價</small><b>' + (validPrice(r) ? n(r.analysisPrice ?? r.livePrice ?? r.close, 2) : '—') + '</b></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-reason">' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
     }).join('') || '<p>查無符合條件的股票。</p>';
     more.hidden = selected.length <= limit;
   }

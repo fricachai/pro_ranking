@@ -98,6 +98,17 @@ passed
 
 Final result: passed
 
+## 2026-09-21 股票名稱 Yahoo 奇摩股市技術分析超連結 QA
+
+- 問題：個股快速操作卡中的股票名稱（例如 `6770 力積電`）原本是純文字；同一使用者可見的股票名稱必須能直接開啟對應 Yahoo 奇摩股市技術分析頁。
+- 修正範圍：`international-ui.js` 的快速操作卡、`full-professional-stock-screen.js` 的持股決策卡與評分視窗標題；完整排名表原有股票連結一併確認。
+- URL 契約：上市股票使用 `https://tw.stock.yahoo.com/quote/{代號}.TW/technical-analysis`；上櫃股票使用 `{代號}.TWO`；連結文字包含代號與名稱，並有外部連結提示與鍵盤焦點樣式。
+- 瀏覽器 smoke check：`6770 力積電` 在快速操作卡、完整排名表、持股決策卡與評分視窗標題均呈現為連結，目標均為 `https://tw.stock.yahoo.com/quote/6770.TW/technical-analysis`；`8299 群聯` 抽查為 `.TWO`。
+- 互動邊界：持股卡仍保留拖曳排序；連結使用 `draggable="false"`，拖曳事件排除 `a`，點擊股票名稱不會誤觸拖曳。
+- 驗證：`node --check full-professional-stock-screen.js`、`node --check international-ui.js`、`--render-existing` 與 `git diff --check` 通過；本機實際登入後以 Playwright snapshot 確認四個畫面位置與 URL。
+
+Final result: passed
+
 ## 2026-09-21 全頁視覺狀態與互動回饋稽核 QA
 
 - Evidence: 依使用者提供的國際方向／快速卡、三時間尺度評分視窗、資料完整性展開區與持股摘要畫面逐區對照；另在本機登入後預覽實際展開資料稽核、開啟評分視窗、切換評分頁籤並檢查持股摘要。

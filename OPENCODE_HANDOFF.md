@@ -599,3 +599,24 @@ OpenCode 必須依結果回報：
 - 發布結果：commit `585dcb7` 已推送 `origin/main`；Pages workflow `35605422436` 成功；正式網址 HTTP 200；線上與本機 `index.html` 均為 4,449,629 bytes，SHA-256 均為 `e506a3db1552b119b95552fb7f0832356f1d2d5de327fb4c5609ed723378f0d5`。線上已確認閱讀導引、`目前 0 檔可開始承接`、`19/22 檔主動ETF已核對`、評分摘要、資料警示狀態與 `prefers-reduced-motion` 標記。
 
 <!-- CODEX_FULL_UI_STATE_AUDIT_V1 -->
+
+## 2026-09-21 股票名稱 Yahoo 奇摩股市技術分析超連結修正（Codex，已驗證）
+
+### 問題與修正
+
+- 個股快速操作卡中的股票名稱原本是純文字；使用者要求每一檔列出的股票都能直接開啟 Yahoo 奇摩股市對應的技術分析頁。
+- `international-ui.js` 現在為快速操作卡名稱建立外部連結；`full-professional-stock-screen.js` 的持股決策卡與評分視窗標題也確認為連結，完整排名表原有連結同步確認。
+- URL 依市場別產生：上市 `{code}.TW`、上櫃 `{code}.TWO`，固定路徑為 `/technical-analysis`；連結文字包含代號、名稱與外部連結提示。
+- 持股卡連結維持 `draggable="false"`，拖曳事件排除 `a`，避免點擊 Yahoo 連結被誤判為拖曳排序。
+
+### 實際驗證
+
+- 本機登入後以 Playwright 確認 `6770 力積電` 在快速操作卡、完整排名表、持股決策卡與評分視窗標題均指向 `https://tw.stock.yahoo.com/quote/6770.TW/technical-analysis`。
+- 抽查上櫃 `8299 群聯` 使用 `.TWO`；所有已列出的名稱連結具有可見底線、外部連結符號與鍵盤 focus-visible。
+- `node --check full-professional-stock-screen.js`、`node --check international-ui.js`、`node .\full-professional-stock-screen.js --render-existing`、`git diff --check` 通過。
+
+### 邊界
+
+- 本次只修改連結與其可辨識性，不改 `HORIZON_SCORE_V2`、排名、評分、個股動作、資料日期或硬性門檻；沿用 2026-09-21 已驗證資料重產。
+
+<!-- STOCK_TECHNICAL_LINKS_V1 -->
