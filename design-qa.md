@@ -9,6 +9,7 @@
 - Responsive contract: 本輪新增樣式以 `max-width:900px` 與 `max-width:560px` 明確切換兩欄／單欄；1050×900 與 390×844 的既有完整瀏覽器回歸紀錄仍保留，未改動原本的評分明細、公告導讀、拖曳排序與表格同步捲軸行為。
 - Validation: `node --check`、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 均通過；生成 HTML 僅由 `--render-existing` 重產，沒有直接手改。
 - Privacy boundary: 未把登入資訊、瀏覽器 localStorage、持股成本或私人排序狀態寫入程式、報告或提交。
+- Publication: commit `e6f4836` 已推送；Pages workflow `35602337919` 成功；正式網址 HTTP 200，線上首頁與本機 `index.html` SHA-256 完全一致，四步導引、`0 檔可開始承接`、`19/22` 與 `quick-controls` 標記均已確認。
 
 Final result: passed with existing exact-viewport regression coverage; current narrow-browser smoke check passed.
 
