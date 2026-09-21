@@ -110,7 +110,9 @@ Final result: passed
 - Current data boundary: 本次仍沿用 2026-09-21 已確認資料；578 檔股票、主動 ETF 19／22、外資持股歷史 11 個有效交易日；沒有重新抓取資料，也沒有把使用者瀏覽器的私有持股成本寫入檔案。
 - Validation: `node --check`（兩個來源檔）、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`HANDOFF_READY=true`；`git diff --check` 無內容錯誤，僅保留 Windows 換行提示。正式網址發布前仍需執行 commit／Pages workflow／線上 byte match。
 
-Final result: passed (local preview; publication pending)
+Final result: passed
+
+- Publication: commit `585dcb7`、Pages workflow `35605422436` success；正式網址 HTTP 200；線上／本機 bytes 與 SHA-256 完全一致。
 
 ## 2026-09-21 官方公告內文導讀 QA
 

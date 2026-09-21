@@ -573,7 +573,7 @@ OpenCode 必須依結果回報：
 
 <!-- CODEX_DECISION_RAIL_UI_V1 -->
 
-## 2026-09-21 全頁視覺狀態與互動回饋稽核（Codex，待發布）
+## 2026-09-21 全頁視覺狀態與互動回饋稽核（Codex，已發布）
 
 ### 已確認資料與實際檢查結果
 
@@ -596,6 +596,6 @@ OpenCode 必須依結果回報：
 ### 驗證與下一步
 
 - 已通過 `node --check`、`INTERNATIONAL_LIVE_RECONCILIATION=PASS`、`INTERNATIONAL_CONTEXT_TESTS=PASS`、`POSITION_DECISION_RULES_PASS`、`HANDOFF_READY=true` 與 `git diff --check`。
-- 目前狀態：`HANDOFF_PENDING`（來源檔與生成頁面尚未提交、推送與線上驗證）。下一步是檢查 diff 只含本輪 UI 與生成結果，提交並推送，等待 Pages workflow 成功，再驗證線上 HTTP 200、必要標記與本機／線上內容一致。
+- 發布結果：commit `585dcb7` 已推送 `origin/main`；Pages workflow `35605422436` 成功；正式網址 HTTP 200；線上與本機 `index.html` 均為 4,449,629 bytes，SHA-256 均為 `e506a3db1552b119b95552fb7f0832356f1d2d5de327fb4c5609ed723378f0d5`。線上已確認閱讀導引、`目前 0 檔可開始承接`、`19/22 檔主動ETF已核對`、評分摘要、資料警示狀態與 `prefers-reduced-motion` 標記。
 
 <!-- CODEX_FULL_UI_STATE_AUDIT_V1 -->
