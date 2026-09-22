@@ -313,3 +313,12 @@ Final result: passed
 - 沒有改變 HORIZON_SCORE_V2、排名、門檻或個股動作計算。
 
 Final result: passed
+
+## 2026-09-22 國際卡「5筆／20筆」改為「近5日／近20日」QA
+
+- Source and implementation: `international-ui.js`（市場氣氛、產業、資金、匯率、殖利率、費半、油價卡與快速面板的「5筆／20筆」全部改為「近5日／近20日」；`formatMethodText` 把「觀察規則」句的 20筆／5筆在顯示時轉為近20日／近5日；折線圖 aria-label 改為「最近 N 日」）；`international-context.js` summarize method 原文同步改為近5日／近20日；`full-professional-stock-screen.js` 宏觀區「20筆變化」改為「近20日變化」。
+- 效果：`近20日 +1.2%｜近5日 +1.9%`、`近5日 +0.2%｜上升＝臺幣貶值`、`S&P 500 近20日變動；美元／臺幣近5日±0.5%`、`最近21日觀察值走勢`、`近20日變化 -2.38%`；頁面不再出現「5筆／20筆／最近21筆」。
+- 純 UI／文案修改：以 `--render-existing` 沿用 2026-09-21 資料重產，未重抓資料、未改評分／排名／門檻；`formatMethodText` 只影響顯示，JSON 的 `summary.method` 原文保留可追溯，下次完整受控更新會使用新原文。
+- 驗證：`node --check` 三支、`Test-InternationalContext.js`、`git diff --check` 通過；index.html 掃描新字 True、舊字 False；瀏覽器本機登入後國際區塊無「5筆／20筆」、無水平溢出、console 0、無 pageerror。
+
+Final result: passed

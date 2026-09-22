@@ -11,7 +11,10 @@ function sparkline(metric) {
   if (values.length < 2) return '';
   const min = Math.min(...values), max = Math.max(...values), spread = max - min || 1;
   const points = values.map((v, i) => `${(i / (values.length - 1) * 160).toFixed(1)},${(30 - (v - min) / spread * 26).toFixed(1)}`).join(' ');
-  return `<svg class="context-spark" viewBox="0 0 160 34" role="img" aria-label="最近${values.length}筆觀察值走勢，各圖獨立尺度"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+  return `<svg class="context-spark" viewBox="0 0 160 34" role="img" aria-label="最近${values.length}日觀察值走勢，各圖獨立尺度"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+}
+function formatMethodText(text) {
+  return String(text || '').replace(/20筆/g, '近20日').replace(/5筆/g, '近5日');
 }
 function eventGuidance(event) {
   const guide = event?.contentAnalysis;
@@ -80,15 +83,15 @@ function renderInternationalContext(c) {
   const t20bp = Number.isFinite(d.treasury?.value) && Number.isFinite(d.treasury?.series?.at(-21)?.value) ? Math.round((d.treasury.value - d.treasury.series.at(-21).value) * 100) : null;
   const jpy5 = d.fx?.usdJpy?.change5, cny5 = d.fx?.usdCny?.change5;
   const dollarPeriod = d.dollar?.periodChange;
-  const marketDetail = `S&P 500 ${n(d.sp500?.value, 0)}（5筆 ${s(sp5)}、20筆 ${s(sp20)}）｜VIX ${n(d.vix?.value, 2)}（低於20＝不緊張）`;
-  const industryDetail = `費半 ${n(d.sox?.value, 0)}（5筆 ${s(sox5)}）｜WTI ${n(oilValue, 2)} 美元（5筆 ${s(oil5)}）`;
+  const marketDetail = `S&P 500 ${n(d.sp500?.value, 0)}（近5日 ${s(sp5)}、近20日 ${s(sp20)}）｜VIX ${n(d.vix?.value, 2)}（低於20＝不緊張）`;
+  const industryDetail = `費半 ${n(d.sox?.value, 0)}（近5日 ${s(sox5)}）｜WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}）`;
   const flowDetail = `外資臺指期淨空單 ${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)} 口（${d.tx?.date || '—'}${Number.isFinite(txChange) ? `，較前日 ${txChange >= 0 ? '收斂' : '擴大'} ${n(Math.abs(txChange), 0)} 口` : ''}）｜10年債 ${n(d.treasury?.value, 2)}%（5日 ${Number.isFinite(t5bp) ? (t5bp >= 0 ? '+' : '') + t5bp : '—'}bp）`;
   const marketJudgment = `環境中性：美股 5 筆 ${s(sp5)}、VIX ${n(d.vix?.value, 2)} 低檔。新買只挑個股卡「可開始承接」且價格在承接區；持股維持、不追高。`;
   const industryJudgment = Number.isFinite(sox5) && sox5 > 0.5
     ? `電子偏多：費半近5日 ${s(sox5)}，可找個股卡「可開始承接」的電子股分批。能源成本壓力減輕：WTI 跌到 ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}），但 EIA 原文指出全球柴油供應仍緊、煉油價差高，運輸／航空／物流成本仍偏高——這類持股維持、不加碼，等個股卡轉「可開始承接」。`
     : Number.isFinite(sox5) && sox5 < -0.5
       ? `電子偏空：費半近5日 ${s(sox5)}，電子股先不買，等個股卡重新顯示「可開始承接」。能源：WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}），成本壓力${Number.isFinite(oil5) && oil5 < -2 ? '減輕，但' : ''}運輸／製造持股仍以個股卡為準。`
-      : `電子與能源都沒有明確方向（費半 5筆 ${s(sox5)}、WTI 5筆 ${s(oil5)}）：兩邊都先不追買，只依個股卡「可開始承接」與承接區執行。`;
+      : `電子與能源都沒有明確方向（費半 近5日 ${s(sox5)}、WTI 近5日 ${s(oil5)}）：兩邊都先不追買，只依個股卡「可開始承接」與承接區執行。`;
   const flowJudgment = Number.isFinite(txNet) && txNet <= -50000
     ? `外資期貨偏空（淨空單 ${n(Math.abs(txNet), 0)} 口）：新買先不追價。賣壓確認＝持股「收盤跌破 20 日 EMA」且「ETF／外資持股由增加轉為減少」兩項同時成立才減碼；只有期貨空單不構成賣出。殖利率 ${n(d.treasury?.value, 2)}%${Number.isFinite(t5bp) && t5bp > 0 ? `（5日 +${t5bp}bp）` : ''}：高本益比成長股先不追買。`
     : `外資期貨沒有明顯賣壓（淨部位 ${n(txNet, 0)} 口）：持股先維持，新買仍要等個股卡「可開始承接」且價格在承接區。`;
@@ -121,16 +124,16 @@ function renderInternationalContext(c) {
       ? `資料日期 ${d.tx.date}；已採最近可驗證期貨觀測`
       : '期貨資料將回溯最近已結束營業日';
   const fxComparison = d.fx?.usdTwd?.comparisonDate
-    ? `較 ${d.fx.usdTwd.comparisonDate} ${delta(d.fx.usdTwd.changeFromPrevious, 3)}｜5筆 ${s(d.fx.usdTwd.change5)}`
-    : `5筆 ${s(d.fx?.usdTwd?.change5)}｜上升＝臺幣貶值`;
+    ? `較 ${d.fx.usdTwd.comparisonDate} ${delta(d.fx.usdTwd.changeFromPrevious, 3)}｜近5日 ${s(d.fx.usdTwd.change5)}`
+    : `近5日 ${s(d.fx?.usdTwd?.change5)}｜上升＝臺幣貶值`;
   const asiaFxComparison = d.fx?.usdJpy?.comparisonDate
     ? `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜較 ${d.fx.usdJpy.comparisonDate} USD/JPY ${delta(d.fx.usdJpy.changeFromPrevious, 3)}`
     : `USD/CNY ${n(d.fx?.usdCny?.value, 4)}｜均為一美元兌本幣`;
   const jpy = d.fx?.usdJpy?.value, cny = d.fx?.usdCny?.value;
   const cards = [
-     card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `20筆 ${s(sp20)}｜5筆 ${s(sp5)}`, d.sp500, '', 'S&P 變強＝外部氣氛支持，變弱＝先保守；上方已直接給台股結論。', direct.sp500),
+     card('sp500', '美股 S&P 500', n(d.sp500?.value, 0), `近20日 ${s(sp20)}｜近5日 ${s(sp5)}`, d.sp500, '', 'S&P 變強＝外部氣氛支持，變弱＝先保守；上方已直接給台股結論。', direct.sp500),
      card('fx', '美元／臺幣', n(d.fx?.usdTwd?.value, 3), fxComparison + '｜上升＝臺幣貶值', d.fx?.usdTwd, '期交所參考值，非銀行成交報價', '臺幣貶＝外資匯入轉弱；臺幣升＝資金壓力減輕。上方已直接給結論。', direct.fx),
-     card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `5筆 ${Number.isFinite(t5bp) ? (t5bp >= 0 ? '+' : '') + t5bp + 'bp' : '—'}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升＝高本益比成長股估值承壓；上方已直接給結論。', direct.treasury),
+     card('treasury', '美國10年債殖利率', `${n(d.treasury?.value, 2)}%`, `近5日 ${Number.isFinite(t5bp) ? (t5bp >= 0 ? '+' : '') + t5bp + 'bp' : '—'}｜2年 ${n(d.treasury?.y2, 2)}%`, d.treasury, '', '殖利率上升＝高本益比成長股估值承壓；上方已直接給結論。', direct.treasury),
      card('vix', 'VIX 波動指數', n(d.vix?.value, 2), '低於20＝不緊張／高於25＝緊張', d.vix, '', 'VIX 低＝恐慌賣壓少，高＝先停新買；上方已直接給結論。', direct.vix),
      card('tx', '外資臺指期淨部位', `${n(Number.isFinite(txNet) ? Math.abs(txNet) : null, 0)}口${txNet < 0 ? '（淨空）' : ''}`, txComparison, null, '負值＝外資在期貨押跌大盤。賣壓確認看個股：收盤跌破 20 日 EMA 且 ETF／外資持股同步轉弱，兩項同時成立才減碼；只有期貨空單不賣股。', '期貨偏空只讓新買更謹慎，不直接構成賣出。', direct.tx),
      card('dollar', 'Fed 廣義美元', n(d.dollar?.value, 2), `公布期間 ${s(dollarPeriod)}｜${d.dollar?.periodStart || '—'} 起`, d.dollar, '非 ICE DXY；週資料有發布落差', '美元走升＝全球資金偏緊；上方已直接給結論與資料日期。', direct.dollar)
@@ -158,13 +161,13 @@ function renderInternationalContext(c) {
     <div class="context-grid">${cards}</div>
     <div class="context-refresh"><span>國際資料查詢：${e(localTime(c.checkedAt))}（臺北）${weak ? ` · ${weak}項落後／缺漏` : ''}</span><button id="checkPublishedUpdate" type="button">查看最新發布</button><span id="publishedUpdateStatus" role="status" aria-live="polite"></span></div>
      <details class="context-details"><summary>半導體、能源與國際法人部位</summary><div class="context-section-guide"><b>這一組回答：電子、能源與資金現在偏強還是偏弱？</b><span>先看這裡的直接結論，再回到個股卡執行買進、維持或減碼；它不會改寫個股評分。</span></div><div class="context-grid context-grid-extra">
-        ${card('sox', '費城半導體', n(d.sox?.value, 0), `5筆 ${s(sox5)}｜相對S&P ${s(soxRelative, 1, '百分點')}`, d.sox, '', '費半變強＝電子股有產業順風；變弱＝電子股先停新買。', `費半 ${n(d.sox?.value, 0)}（近5日 ${s(sox5)}${soxRelative ? `、相對S&P ${s(soxRelative, 1, '百分點')}` : ''}）：${sox5 > 0.5 ? '電子偏多，可找個股卡「可開始承接」的電子股分批。' : sox5 < -0.5 ? '電子偏空，電子股先不買。' : '電子沒有明確方向，電子股先不追。'}`)}
-        ${card('oil', 'WTI近月期貨', `${n(oilValue, 2)}美元／桶`, `5筆 ${s(oil5)}｜注意合約轉倉`, d.oil, '', '油價上升＝運輸／製造成本壓力；下跌＝成本減輕；能源股仍要看個股卡。', `WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}）：${Number.isFinite(oil5) && oil5 <= -2 ? '成本壓力明顯減輕；但 EIA 原文指出柴油供應仍緊、煉油價差高，運輸／航空／物流持股維持、不加碼，能源股要個股卡通過才買。' : Number.isFinite(oil5) && oil5 >= 2 ? '成本壓力增加，運輸／製造股先不追買。' : '油價變化不大，照個股卡執行。'}`)}
+        ${card('sox', '費城半導體', n(d.sox?.value, 0), `近5日 ${s(sox5)}｜相對S&P ${s(soxRelative, 1, '百分點')}`, d.sox, '', '費半變強＝電子股有產業順風；變弱＝電子股先停新買。', `費半 ${n(d.sox?.value, 0)}（近5日 ${s(sox5)}${soxRelative ? `、相對S&P ${s(soxRelative, 1, '百分點')}` : ''}）：${sox5 > 0.5 ? '電子偏多，可找個股卡「可開始承接」的電子股分批。' : sox5 < -0.5 ? '電子偏空，電子股先不買。' : '電子沒有明確方向，電子股先不追。'}`)}
+        ${card('oil', 'WTI近月期貨', `${n(oilValue, 2)}美元／桶`, `近5日 ${s(oil5)}｜注意合約轉倉`, d.oil, '', '油價上升＝運輸／製造成本壓力；下跌＝成本減輕；能源股仍要看個股卡。', `WTI ${n(oilValue, 2)} 美元（近5日 ${s(oil5)}）：${Number.isFinite(oil5) && oil5 <= -2 ? '成本壓力明顯減輕；但 EIA 原文指出柴油供應仍緊、煉油價差高，運輸／航空／物流持股維持、不加碼，能源股要個股卡通過才買。' : Number.isFinite(oil5) && oil5 >= 2 ? '成本壓力增加，運輸／製造股先不追買。' : '油價變化不大，照個股卡執行。'}`)}
         ${card('fx', '亞洲匯率參考', `USD/JPY ${n(jpy, 2)}`, asiaFxComparison, null, '', `日圓貶＝日系出口競價壓力；人民幣貶＝中國需求偏弱。這只是背景，不改個股動作。`, `USD/JPY ${n(jpy, 2)}（近5日 ${s(jpy5)}）、USD/CNY ${n(cny, 4)}（近5日 ${s(cny5)}）：${Number.isFinite(jpy5) && jpy5 > 1 ? '日圓近5日明顯貶值，日系廠商出口競爭壓力增加，電子零組件／汽車供應鏈留意競價；' : ''}${Number.isFinite(cny5) && cny5 < -0.5 ? '人民幣偏強，中國需求沒有惡化訊號；' : ''}匯率只是背景，不改變你的動作——個股卡「可開始承接」就分批、「降低部位」就減碼。`)}
      </div><p class="context-cot-note"><b>CFTC 部位的使用方式：</b>只把它當作市場擁擠度與情緒背景。週變化不等同新開倉，不能因為淨多或淨空就直接買進或放空。</p><div class="table-wrap"><table><thead><tr><th>契約</th><th>部位日期</th><th>淨多空（口）</th><th>較前週</th><th>淨部位／未平倉</th></tr></thead><tbody>${cot || '<tr><td colspan="5">本次無可用資料</td></tr>'}</tbody></table></div>
       <p>${e(d.tx?.limitation || '臺指期本次沒有新增觀測，先沿用其他可驗證資金訊號與個股條件。')}</p></details>
       <details class="context-details"><summary>利率、能源與國際制裁公告</summary><div class="context-section-guide"><b>這一組先回答：公告內容會透過哪條路徑影響台股？</b><span>系統先讀取官方原文，整理政策動作、成本變化或制裁範圍，再列出要核對的持股曝險與現在的處理方式。</span></div><div class="context-events">${events}</div></details>
-    <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(c.summary.method)}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
+    <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(formatMethodText(c.summary.method))}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
   </section>`;
 }
 const quickGuideHtml = `<section class="section" id="quickGuide"><div class="context-heading"><div><h2>個股快速操作</h2><p>先選「未持有／已持有」，每張卡直接告訴你現在買、維持或減碼，以及差在哪裡。</p></div><a href="#positionSection">我的追蹤 ↓</a></div><p class="quick-action-key"><b>操作讀法：</b>「可開始承接」＝價格在承接區，可以分批買；「等待確認」＝現在不買（卡上會寫明是價格沒回承接區還是 ETF 沒轉增）；「不建立部位」＝未通過進場門檻；「正常持有」＝維持；「降低部位／優先降低風險」＝減碼。</p><div class="quick-controls"><input id="quickSearch" type="search" placeholder="輸入股票代號或名稱" aria-label="快速搜尋股票"><select id="quickMode" aria-label="目前持有狀態"><option value="entry">尚未持有</option><option value="holding">已經持有</option></select><select id="quickAction" aria-label="快速操作篩選"><option value="">全部動作</option></select><span id="quickCount" role="status" aria-live="polite"></span></div><p class="quick-data-note" id="quickDataNote"></p><div class="quick-grid" id="quickRows"></div><button type="button" id="quickMore">再顯示12檔</button><p class="quick-footnote">承接區是「分批買進」的參考價格區間，不是保證成交或自動委託；價格高於區間就等回到區間，跌破區間就等站回。</p></section>`;

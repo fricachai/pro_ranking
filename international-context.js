@@ -421,7 +421,7 @@ function summarize(data, sources) {
       : available < 4 ? '目前以可取得的國際指標與個股條件判讀；新部位只在承接區分批，持股依防守條件處理'
         : '環境訊號分歧，持股先維持；新部位只採個股條件與承接區確認';
   return { regime, available, total: 4, signals, action, fallbackUsed: sources.filter(x => x.status !== 'current').map(x => x.id),
-    method: '觀察規則：S&P 500 20筆變動；美元／臺幣5筆±0.5%；10年殖利率5筆±20基點；VIX低於20／高於25。可用指標採最佳可得值判讀，匯率、美元與期貨不重複加權。',
+    method: '觀察規則：S&P 500 近20日變動；美元／臺幣近5日±0.5%；10年殖利率近5日±20基點；VIX低於20／高於25。可用指標採最佳可得值判讀，匯率、美元與期貨不重複加權。',
     affectsStockActions: false };
 }
 async function fetchInternationalContext({ asOf, previous, fetchImpl = fetch, now = new Date() } = {}) {
