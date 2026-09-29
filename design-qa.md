@@ -330,6 +330,7 @@ Final result: passed
 - Quote selection: 成交價 `z` → 試撮價 `pz` → 最佳買賣中間價 → 單側委買／委賣；每張卡顯示 MIS 交易日期、時間及價位性質。頁面隱藏時跳過輪詢；沒有有效新價時保留前次有效值與原交易所時間。
 - Browser integration: 本機 HTTP 網頁 1050×900 與 390×844 均無頁面級水平溢出；桌機 `documentElement.scrollWidth=1035 <= 1050`，手機 `375 <= 390`。手機卡片為單欄，手動更新按鈕及狀態訊息均可見。
 - Actual source check: 從瀏覽器以 TWSE 與 TPEX 通道呼叫 Worker 均取得 HTTP 200；目前畫面 12 張卡中 11 張上市、1 張上櫃，12/12 均顯示有效報價及交易所日期時間。觀察到自動查詢間隔約 20 秒；手動按鈕立即完成另一輪查詢。
+- Online release check: commit `34fc0a9dc5b54bb5e3eb35dec0ced8a157d3cba4`、Pages workflow `36526288609` success；正式網址 HTTP 200 且 `PAGES_CONTENT_BYTE_MATCH=True`。線上瀏覽器同樣完成 12/12 報價，1050×900 與 390×844 均無頁面級水平溢出，console errors/warnings 0。
 - Failure paths: 模擬 Worker 請求失敗及來源回應無有效成交／試撮／委買賣價格，兩種情況都保留先前價格與交易所時間並顯示狀態；按鈕完成後恢復可用。
 - Decision boundary: 以本機臨時測試追蹤資料驗證持股卡即時價、損益與門檻價差更新；`holdingAction` 與持股摘要維持不變。快速卡報告動作與依據明確標示為報告快照，避免與最新價位混淆。測試追蹤資料已從 localStorage 清除。
 - Console and evidence: Browser console errors/warnings 0（本機測試伺服器 favicon request 已由瀏覽器測試路由處理）；桌機截圖 `.playwright-mcp/page-2026-09-29T05-15-28-333Z.png`、手機截圖 `.playwright-mcp/page-2026-09-29T05-16-39-493Z.png`。截圖只含公開報告內容，不含私人持倉資料。

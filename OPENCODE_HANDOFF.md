@@ -621,7 +621,7 @@ OpenCode 必須依結果回報：
 
 <!-- STOCK_TECHNICAL_LINKS_V1 -->
 
-## 2026-09-29 個股卡即時報價更新（本機驗證完成，待 Pages 發布）
+## 2026-09-29 個股卡即時報價更新（已發布）
 
 ### 使用者目標與來源確認
 
@@ -646,10 +646,11 @@ OpenCode 必須依結果回報：
 - Node 語法、`Test-PositionDecisionRules.js`、`Test-ProfessionalScreenFetchResilience.js`、`Test-InternationalContext.js`、`Test-ProfessionalScreenPowerShellBoundary.ps1`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 與 `git diff --check` 通過。
 - 本機瀏覽器 1050×900 與 390×844 無頁面級水平溢出；console errors/warnings 0。`design-qa.md` 記錄互動測試及兩個桌機／手機畫面截圖。
 - 純 UI 重產沿用資料日期 2026-09-24 的已驗證 JSON，沒有重新抓取資料。
+- 已發布程式提交 `34fc0a9dc5b54bb5e3eb35dec0ced8a157d3cba4`；Pages workflow run `36526288609` 成功，線上 HTTP 200，`PAGES_CONTENT_BYTE_MATCH=True`。
+- 正式 Pages 瀏覽器實測 12/12 張快速卡報價更新成功（11 上市、1 上櫃）；手動更新、報價時間、1050×900／390×844 及 console errors/warnings 0 均通過。公開網址：`https://fricachai.github.io/pro_ranking/`。
 
-### 尚待完成
+### 後續維護
 
-- 限定本次檔案提交與推送 `origin/main`、等待唯一 `deploy-pages.yml` workflow，驗證 Pages 線上必要標記、線上內容與正規化 byte match。
-- 發布及線上驗證完成前，不回報功能已上線。
+- 未來調整須保留 `LIVE_QUOTE_REFRESH_V1`：只更新顯示價格、持股未實現損益與價差；不得重算正式評分、排名、進場資格或持股決策。
 
 <!-- LIVE_QUOTE_REFRESH_V1 -->
