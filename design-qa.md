@@ -322,3 +322,18 @@ Final result: passed
 - 驗證：`node --check` 三支、`Test-InternationalContext.js`、`git diff --check` 通過；index.html 掃描新字 True、舊字 False；瀏覽器本機登入後國際區塊無「5筆／20筆」、無水平溢出、console 0、無 pageerror。
 
 Final result: passed
+
+## 2026-09-29 個股卡即時報價更新 QA
+
+- Reference and implementation: 參考 `https://fricachai.github.io/4ETF-buy-point/` 的公開載入程式與 Obsidian 即時報價筆記；參考頁登入遮罩維持未操作。確認其使用 Cloudflare Worker `/api/twse-quote` 代理 TWSE MIS 與 20 秒輪詢；本專案快速操作卡與已追蹤持股卡沿用相同來源策略。
+- Scope: `international-ui.js` 新增手動更新與 20 秒輪詢，僅查詢目前顯示的快速卡及已追蹤持股卡；`full-professional-stock-screen.js` 對持股卡價格、未實現損益與門檻價差增加 DOM 更新標記。只沿用 2026-09-24 已驗證 JSON 重產，未重新抓取或改評分、排名、進場資格、持股動作與報告資料。
+- Quote selection: 成交價 `z` → 試撮價 `pz` → 最佳買賣中間價 → 單側委買／委賣；每張卡顯示 MIS 交易日期、時間及價位性質。頁面隱藏時跳過輪詢；沒有有效新價時保留前次有效值與原交易所時間。
+- Browser integration: 本機 HTTP 網頁 1050×900 與 390×844 均無頁面級水平溢出；桌機 `documentElement.scrollWidth=1035 <= 1050`，手機 `375 <= 390`。手機卡片為單欄，手動更新按鈕及狀態訊息均可見。
+- Actual source check: 從瀏覽器以 TWSE 與 TPEX 通道呼叫 Worker 均取得 HTTP 200；目前畫面 12 張卡中 11 張上市、1 張上櫃，12/12 均顯示有效報價及交易所日期時間。觀察到自動查詢間隔約 20 秒；手動按鈕立即完成另一輪查詢。
+- Failure paths: 模擬 Worker 請求失敗及來源回應無有效成交／試撮／委買賣價格，兩種情況都保留先前價格與交易所時間並顯示狀態；按鈕完成後恢復可用。
+- Decision boundary: 以本機臨時測試追蹤資料驗證持股卡即時價、損益與門檻價差更新；`holdingAction` 與持股摘要維持不變。快速卡報告動作與依據明確標示為報告快照，避免與最新價位混淆。測試追蹤資料已從 localStorage 清除。
+- Console and evidence: Browser console errors/warnings 0（本機測試伺服器 favicon request 已由瀏覽器測試路由處理）；桌機截圖 `.playwright-mcp/page-2026-09-29T05-15-28-333Z.png`、手機截圖 `.playwright-mcp/page-2026-09-29T05-16-39-493Z.png`。截圖只含公開報告內容，不含私人持倉資料。
+- Automated checks: `node --check` 兩支 JavaScript、`Test-PositionDecisionRules.js`、`Test-ProfessionalScreenFetchResilience.js`、`Test-InternationalContext.js`、`Test-ProfessionalScreenPowerShellBoundary.ps1` 通過；`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 回傳 `HANDOFF_READY=true`。
+- Boundary: `LIVE_QUOTE_REFRESH_V1`；報價只刷新畫面欄位，不回寫 JSON／localStorage／公開報告資料，也不重算正式分數、排名或動作。
+
+Final result: passed

@@ -170,16 +170,44 @@ function renderInternationalContext(c) {
     <details class="context-details" id="internationalEvidence"><summary>資料來源、時效與判讀限制</summary><p>${e(formatMethodText(c.summary.method))}</p><p>日資料超過4個日曆日、週資料超過11日標示落後；遇長假會採保守標示。落後值可查閱，不進環境標籤。公告日期與最近查詢時間分開。</p><div class="table-wrap"><table><thead><tr><th>來源</th><th>證據</th><th>資料日期</th><th>發布頻率</th><th>狀態</th><th>查證</th></tr></thead><tbody>${statusRows}</tbody></table></div><ul>${c.limitations.map(x => `<li>${e(x)}</li>`).join('')}</ul></details>
   </section>`;
 }
-const quickGuideHtml = `<section class="section" id="quickGuide"><div class="context-heading"><div><h2>個股快速操作</h2><p>先選「未持有／已持有」，每張卡直接告訴你現在買、維持或減碼，以及差在哪裡。</p></div><a href="#positionSection">我的追蹤 ↓</a></div><p class="quick-action-key"><b>操作讀法：</b>「可開始承接」＝價格在承接區，可以分批買；「等待確認」＝現在不買（卡上會寫明是價格沒回承接區還是 ETF 沒轉增）；「不建立部位」＝未通過進場門檻；「正常持有」＝維持；「降低部位／優先降低風險」＝減碼。</p><div class="quick-controls"><input id="quickSearch" type="search" placeholder="輸入股票代號或名稱" aria-label="快速搜尋股票"><select id="quickMode" aria-label="目前持有狀態"><option value="entry">尚未持有</option><option value="holding">已經持有</option></select><select id="quickAction" aria-label="快速操作篩選"><option value="">全部動作</option></select><span id="quickCount" role="status" aria-live="polite"></span></div><p class="quick-data-note" id="quickDataNote"></p><div class="quick-grid" id="quickRows"></div><button type="button" id="quickMore">再顯示12檔</button><p class="quick-footnote">承接區是「分批買進」的參考價格區間，不是保證成交或自動委託；價格高於區間就等回到區間，跌破區間就等站回。</p></section>`;
+const quickGuideHtml = `<section class="section" id="quickGuide"><div class="context-heading"><div><h2>個股快速操作</h2><p>先選「未持有／已持有」，每張卡直接告訴你現在買、維持或減碼，以及差在哪裡。</p></div><a href="#positionSection">我的追蹤 ↓</a></div><p class="quick-action-key"><b>操作讀法：</b>「可開始承接」＝價格在承接區，可以分批買；「等待確認」＝現在不買（卡上會寫明是價格沒回承接區還是 ETF 沒轉增）；「不建立部位」＝未通過進場門檻；「正常持有」＝維持；「降低部位／優先降低風險」＝減碼。</p><div class="quick-controls"><input id="quickSearch" type="search" placeholder="輸入股票代號或名稱" aria-label="快速搜尋股票"><select id="quickMode" aria-label="目前持有狀態"><option value="entry">尚未持有</option><option value="holding">已經持有</option></select><select id="quickAction" aria-label="快速操作篩選"><option value="">全部動作</option></select><span id="quickCount" role="status" aria-live="polite"></span></div><div class="quick-quote-toolbar" data-contract="LIVE_QUOTE_REFRESH_V1"><span id="liveQuoteStatus" role="status" aria-live="polite">首次載入後立即查詢；之後每20秒更新目前顯示的股票卡。</span><button type="button" id="refreshLiveQuotes">立即更新報價</button></div><p class="quick-data-note" id="quickDataNote"></p><div class="quick-grid" id="quickRows"></div><button type="button" id="quickMore">再顯示12檔</button><p class="quick-footnote">即時報價只更新卡片價格、未實現損益與價差，不重算正式報告的分數、排名、進場資格或持股動作。承接區是「分批買進」的參考價格區間，不是保證成交或自動委託；價格高於區間就等回到區間，跌破區間就等站回。</p></section>`;
 function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showScoreDetail) {
   const search = document.getElementById('quickSearch'), mode = document.getElementById('quickMode'), filter = document.getElementById('quickAction');
   const host = document.getElementById('quickRows'), more = document.getElementById('quickMore');
+  const quoteButton = document.getElementById('refreshLiveQuotes'), quoteStatus = document.getElementById('liveQuoteStatus');
+  const LIVE_QUOTE_PROXY_BASE = 'https://stock-k-chat-proxy.fricachai.workers.dev';
+  const LIVE_QUOTE_REFRESH_MS = 20000;
+  const liveQuotes = new Map();
+  let quoteRefreshPromise = null, quoteRefreshDebounce = null;
   const stockUrl = r => 'https://tw.stock.yahoo.com/quote/' + encodeURIComponent(r.code) + (r.market === 'TPEX' ? '.TWO' : '.TW') + '/technical-analysis';
   let limit = 12;
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' }).format(new Date());
-  const validPrice = r => Number.isFinite(r.analysisPrice ?? r.livePrice ?? r.close) && (r.analysisPrice ?? r.livePrice ?? r.close) > 0;
+  const baselinePrice = r => r.analysisPrice ?? r.livePrice ?? r.close;
+  const priceFor = r => liveQuotes.get(String(r.code))?.price ?? baselinePrice(r);
+  const validPrice = r => Number.isFinite(baselinePrice(r)) && baselinePrice(r) > 0;
   const stale = r => { const d = r.liveDate || r.closeDate; return !d || !Number.isFinite(Date.parse(d)) || (Date.parse(today()) - Date.parse(d)) / 86400000 > 4; };
   const zone = z => z && Number.isFinite(z.low) && Number.isFinite(z.high) && z.low > 0 && z.high >= z.low ? n(z.low, 2) + '–' + n(z.high, 2) : '未提供價位';
+  const quoteStamp = r => {
+    const quote = liveQuotes.get(String(r.code));
+    if (quote) return `證交所 ${quote.kind}｜${quote.date}${quote.time ? ' ' + quote.time : ''}`;
+    const date = r.liveDate || r.closeDate || reportMeta.marketDate || '日期未提供';
+    const time = r.liveTime ? ' ' + r.liveTime : '';
+    return `報告快照｜${date}${time}`;
+  };
+  const quoteComparison = (r, price, holding) => {
+    if (!Number.isFinite(price) || price <= 0) return '目前沒有可驗證的有效報價。';
+    const priceLabel = liveQuotes.has(String(r.code)) ? '即時價' : '報告快照價';
+    if (holding) {
+      const v = view(r), trigger = Number(v.trigger);
+      if (!Number.isFinite(trigger) || trigger <= 0) return `${priceLabel} ${n(price, 2)}；目前沒有可比較的持有門檻。`;
+      return price >= trigger ? `${priceLabel} ${n(price, 2)}，高於${v.triggerLabel} ${n(trigger, 2)}（高 ${n(price - trigger, 2)}）。` : `${priceLabel} ${n(price, 2)}，低於${v.triggerLabel} ${n(trigger, 2)}（低 ${n(trigger - price, 2)}）。`;
+    }
+    if (!r.addZone || !Number.isFinite(r.addZone.low) || !Number.isFinite(r.addZone.high)) return `${priceLabel} ${n(price, 2)}；本股沒有已驗證的承接區。`;
+    const zoneText = zone(r.addZone);
+    if (price > r.addZone.high) return `${priceLabel} ${n(price, 2)}，高於承接區 ${zoneText}（高 ${n(price - r.addZone.high, 2)}）。`;
+    if (price < r.addZone.low) return `${priceLabel} ${n(price, 2)}，低於承接區 ${zoneText}（低 ${n(r.addZone.low - price, 2)}）。`;
+    return `${priceLabel} ${n(price, 2)}，位於承接區 ${zoneText} 內。`;
+  };
   const entryBlockers = r => {
     const current = r.analysisPrice ?? r.livePrice ?? r.close;
     const zoneText = zone(r.addZone);
@@ -205,11 +233,12 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
       const q = search.value.trim().toLowerCase(), holding = mode.value === 'holding';
     const selected = rows.filter(r => (!q || (r.code + ' ' + r.name).toLowerCase().includes(q)) && (!filter.value || (holding ? view(r).label : r.entryAction) === filter.value));
     document.getElementById('quickCount').textContent = '顯示 ' + Math.min(limit, selected.length) + '／' + selected.length + ' 檔';
-    document.getElementById('quickDataNote').textContent = '價格基準：' + (reportMeta.liveFreeze || reportMeta.marketDate || '回溯最近可驗證營業日') + '（' + (reportMeta.quotePhase === 'close' ? '收盤資料' : '盤中快照，待收盤確認') + '）。承接區＝可以分批買的價格區間：價格高於區間就等它回到區間，低於區間就等站回。';
+    document.getElementById('quickDataNote').textContent = '證交所報價與發布報告參考價分開顯示；若本次沒有新報價，保留報告快照並標出其日期時間。報告分數、排名與持股動作不隨即時價重算。';
     host.innerHTML = selected.slice(0, limit).map(r => {
       const v = view(r), unavailable = stale(r) || !validPrice(r), canEnter = r.entryAction === '可開始承接';
       const label = unavailable ? '資料待更新' : holding ? v.label : r.entryAction;
-      const current = r.analysisPrice ?? r.livePrice ?? r.close;
+      const current = baselinePrice(r);
+      const displayedCurrent = priceFor(r);
       const zoneText = zone(r.addZone);
       const entryActionText = !validPrice(r) || !r.addZone ? '現在不買：先等有效報價與承接區完成核對，再依區間分批買' : current > r.addZone.high ? `現在不追價：價格 ${n(current, 2)} 高於承接區 ${zoneText}（高 ${n(current - r.addZone.high, 2)}），等回到區間再分批買` : current < r.addZone.low ? `先觀察：價格 ${n(current, 2)} 低於承接區 ${zoneText}，等重新站回區間再分批買` : `現在可分批買：價格 ${n(current, 2)} 在承接區 ${zoneText} 內；不要追高`;
       const action = unavailable ? '現在不新增：等有效報價與條件核對完成再判斷' : holding ? (v.label === '符合加碼條件' ? `可以加碼：回到 ${v.zoneText || zone(r.addZone)} 分2–3批` : v.label === '降低部位' || v.label === '優先降低風險' ? `現在減碼：${v.todayAction}` : v.label === '保護持有' ? `先維持、不加碼：${v.todayAction}` : `維持持有：${v.todayAction}`) : canEnter ? entryActionText : `現在不買：${entryBlockers(r)}`;
@@ -217,6 +246,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
       const reason = holding ? `${r.positionReasons?.[0] || r.holdingSignals?.[0] || '依價格與法人共同確認'}；${stockFlowText(r)}` : `${canEnter ? priceReason : entryBlockers(r)} ${stockFlowText(r)}`;
       const priceLabel = holding ? v.triggerLabel : canEnter ? '承接觀察區' : '20EMA觀察區';
       const priceText = unavailable ? '等待有效報價核對' : holding ? Number.isFinite(v.trigger) && v.trigger > 0 ? v.zoneText : '依個股防守條件' : zone(r.addZone);
+      const displayedPrice = Number.isFinite(displayedCurrent) && displayedCurrent > 0 ? n(displayedCurrent, 2) : '—';
       const change = holding ? `${v.change}；${stockFlowText(r)}` : canEnter ? `取消下一批的條件：價格跌破 20 日 EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股由增加轉為減少。` : (() => {
         const gates = [];
         if (validPrice(r) && r.addZone && current > r.addZone.high) gates.push(`價格回到 ${zoneText} 內`);
@@ -226,14 +256,115 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
         return `開始分批的條件：${gates.join('、')}；若價格跌破 20 日 EMA（約 ${n(r.technical?.ema20, 2)}）或 ETF／外資持股轉弱，就取消下一批。`;
       })();
       const plan = holding ? `${r.holdingPlan} ${stockFlowText(r)}` : canEnter ? `操作方式：${entryActionText}；${stockFlowText(r)}` : `目前不買。${entryBlockers(r)}；${stockFlowText(r)}`;
-      return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><a class="stock-link quick-stock-link" href="' + stockUrl(r) + '" target="_blank" rel="noreferrer" aria-label="開啟 ' + e(r.code + ' ' + r.name) + ' Yahoo奇摩股市技術分析"><b>' + e(r.code + ' ' + r.name) + '</b></a><span>' + e(label) + '</span></div><strong class="quick-action">' + e(action) + '</strong><div class="quick-prices"><div><small>參考價</small><b>' + (validPrice(r) ? n(r.analysisPrice ?? r.livePrice ?? r.close, 2) : '—') + '</b></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-reason">' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
+      return '<article class="quick-card" data-quick-code="' + e(r.code) + '"><div class="quick-card-head"><a class="stock-link quick-stock-link" href="' + stockUrl(r) + '" target="_blank" rel="noreferrer" aria-label="開啟 ' + e(r.code + ' ' + r.name) + ' Yahoo奇摩股市技術分析"><b>' + e(r.code + ' ' + r.name) + '</b></a><span>報告分類｜' + e(label) + '</span></div><strong class="quick-action" title="依報告快照計算；即時報價不改寫分數、排名或持股動作">報告動作｜' + e(action) + '</strong><div class="quick-prices"><div><small>即時價／報告快照</small><b data-live-quote-price="' + e(r.code) + '">' + displayedPrice + '</b><small class="live-quote-stamp" data-live-quote-stamp="' + e(r.code) + '">' + e(quoteStamp(r)) + '</small></div><div><small>' + e(priceLabel) + '</small><b>' + e(priceText) + '</b></div></div><p class="quick-live-comparison" data-live-quote-comparison="' + e(r.code) + '">' + e(quoteComparison(r, displayedCurrent, holding)) + '</p><p class="quick-reason"><b>報告依據：</b>' + e(reason) + '</p><details><summary>改變條件與完整依據</summary><p>' + e(change) + '</p><p>下次確認：' + e(holding ? v.nextCheck : r.nextCheck || '下一交易日收盤') + '</p><p>' + e(plan) + '</p><button type="button" data-quick-detail="' + e(r.code) + '">查看評分與來源</button></details></article>';
     }).join('') || '<p>查無符合條件的股票。</p>';
     more.hidden = selected.length <= limit;
   }
-  search.addEventListener('input', () => { limit = 12; drawQuick(); });
-  filter.addEventListener('change', () => { limit = 12; drawQuick(); });
-  mode.addEventListener('change', () => { limit = 12; refreshOptions(); drawQuick(); });
-  more.addEventListener('click', () => { limit += 12; drawQuick(); });
+  const visibleQuoteRecords = () => {
+    const codes = new Set([
+      ...[...host.querySelectorAll('.quick-card[data-quick-code]')].map(card => card.dataset.quickCode),
+      ...[...document.querySelectorAll('#positionRows .position-card[data-position-code]')].map(card => card.dataset.positionCode)
+    ]);
+    return [...codes].map(code => rows.find(row => String(row.code) === String(code))).filter(row => row && ['TWSE', 'TPEX'].includes(row.market));
+  };
+  const parseQuoteNumber = value => {
+    const parsed = Number(String(value ?? '').replace(/,/g, '').trim());
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  };
+  const bestQuoteLevel = value => String(value || '').split('_').map(parseQuoteNumber).find(Number.isFinite) ?? null;
+  const normalizeLiveQuote = row => {
+    const code = String(row?.c || '').trim();
+    if (!/^\d{4}$/.test(code)) return null;
+    let price = parseQuoteNumber(row.z), kind = '成交價';
+    if (price === null) { price = parseQuoteNumber(row.pz); kind = '試撮價'; }
+    if (price === null) {
+      const bid = bestQuoteLevel(row.b), ask = bestQuoteLevel(row.a);
+      if (Number.isFinite(bid) && Number.isFinite(ask)) { price = (bid + ask) / 2; kind = '最佳買賣中間價'; }
+      else if (Number.isFinite(bid)) { price = bid; kind = '最佳委買價'; }
+      else if (Number.isFinite(ask)) { price = ask; kind = '最佳委賣價'; }
+    }
+    if (!Number.isFinite(price) || price <= 0) return null;
+    const rawDate = String(row.d || '');
+    const date = /^\d{8}$/.test(rawDate) ? `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}` : '交易日期未提供';
+    const time = /^\d{2}:\d{2}:\d{2}$/.test(String(row.t || '')) ? String(row.t) : '';
+    return { code, price, kind, date, time, receivedAt: Date.now() };
+  };
+  const updateQuoteDom = (row, quote) => {
+    const code = String(row.code), priceText = n(quote.price, 2), stampText = `證交所 ${quote.kind}｜${quote.date}${quote.time ? ' ' + quote.time : ''}`;
+    document.querySelectorAll('[data-live-quote-price]').forEach(node => { if (node.dataset.liveQuotePrice === code) node.textContent = priceText; });
+    document.querySelectorAll('[data-live-quote-stamp]').forEach(node => { if (node.dataset.liveQuoteStamp === code) node.textContent = stampText; });
+    document.querySelectorAll('[data-live-quote-comparison]').forEach(node => {
+      if (node.dataset.liveQuoteComparison !== code) return;
+      const card = node.closest('.quick-card'), holding = mode.value === 'holding';
+      const stock = rows.find(item => String(item.code) === code);
+      if (card && stock) node.textContent = quoteComparison(stock, quote.price, holding);
+    });
+    document.querySelectorAll('[data-live-pnl]').forEach(node => {
+      if (node.dataset.livePnl !== code) return;
+      const cost = Number(node.dataset.entryPrice);
+      const pct = Number.isFinite(cost) && cost > 0 ? (quote.price - cost) / cost * 100 : null;
+      node.textContent = Number.isFinite(pct) ? `${pct > 0 ? '+' : ''}${n(pct, 1)}%` : '—';
+      node.classList.toggle('state-add', Number.isFinite(pct) && pct >= 0);
+      node.classList.toggle('state-trim', Number.isFinite(pct) && pct < 0);
+    });
+    document.querySelectorAll('[data-live-trigger-gap]').forEach(node => {
+      if (node.dataset.liveTriggerGap !== code) return;
+      const trigger = Number(node.dataset.triggerPrice), cost = Number(node.dataset.entryPrice);
+      if (!Number.isFinite(trigger) || trigger <= 0) { node.textContent = '缺少可驗證價位'; return; }
+      const difference = (quote.price - trigger) / trigger * 100;
+      const gap = difference >= 0 ? `即時價高於門檻 ${n(difference, 1)}%` : `即時價低於門檻 ${n(Math.abs(difference), 1)}%`;
+      const costDifference = Number.isFinite(cost) && cost > 0 ? (trigger - cost) / cost * 100 : null;
+      node.textContent = gap + (Number.isFinite(costDifference) ? `；門檻較成本 ${costDifference >= 0 ? '+' : ''}${n(costDifference, 1)}%` : '');
+    });
+  };
+  async function refreshLiveQuotes() {
+    if (quoteRefreshPromise) return quoteRefreshPromise;
+    const records = visibleQuoteRecords();
+    if (!records.length) { quoteStatus.textContent = '目前畫面沒有可查詢的上市／上櫃個股卡。'; return; }
+    quoteButton.disabled = true;
+    quoteStatus.textContent = `正在更新 ${records.length} 檔目前顯示的個股報價…`;
+    quoteRefreshPromise = (async () => {
+      let received = 0, failed = 0;
+      const chunks = [];
+      for (let i = 0; i < records.length; i += 50) chunks.push(records.slice(i, i + 50));
+      for (const chunk of chunks) {
+        const channels = chunk.map(row => `${row.market === 'TPEX' ? 'otc' : 'tse'}_${row.code}.tw`).join('|');
+        const url = new URL('/api/twse-quote', LIVE_QUOTE_PROXY_BASE);
+        url.searchParams.set('ex_ch', channels);
+        url.searchParams.set('_', String(Date.now()));
+        const controller = new AbortController(), timeout = window.setTimeout(() => controller.abort(), 12000);
+        try {
+          const response = await fetch(url.toString(), { cache: 'no-store', headers: { Accept: 'application/json' }, signal: controller.signal });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const payload = await response.json();
+          if (!Array.isArray(payload?.msgArray)) throw new Error('報價資料格式不符');
+          const requested = new Set(chunk.map(row => String(row.code)));
+          for (const sourceRow of payload.msgArray) {
+            const quote = normalizeLiveQuote(sourceRow);
+            if (!quote || !requested.has(quote.code)) continue;
+            const stock = chunk.find(row => String(row.code) === quote.code);
+            if (!stock) continue;
+            liveQuotes.set(quote.code, quote);
+            updateQuoteDom(stock, quote);
+            received++;
+          }
+        } catch { failed++; }
+        finally { window.clearTimeout(timeout); }
+      }
+      const checkedAt = new Date().toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
+      if (received > 0 && failed === 0) quoteStatus.textContent = `報價更新完成：${received}/${records.length} 檔；本次查詢 ${checkedAt}（臺北時間）。未回傳者保留前次有效價與原時間。`;
+      else if (received > 0) quoteStatus.textContent = `部分更新：${received}/${records.length} 檔；${failed} 個批次未回應；未更新者保留原價與原時間。查詢 ${checkedAt}。`;
+      else if (failed > 0) quoteStatus.textContent = `即時報價來源未回應；保留目前顯示價格，將於下次自動重試。查詢 ${checkedAt}。`;
+      else quoteStatus.textContent = `來源已回應，但本次沒有可用成交／試撮／委買賣價格；保留目前價格。查詢 ${checkedAt}。`;
+    })();
+    try { await quoteRefreshPromise; }
+    finally { quoteRefreshPromise = null; quoteButton.disabled = false; }
+  }
+  search.addEventListener('input', () => { limit = 12; drawQuick(); window.clearTimeout(quoteRefreshDebounce); quoteRefreshDebounce = window.setTimeout(refreshLiveQuotes, 500); });
+  filter.addEventListener('change', () => { limit = 12; drawQuick(); refreshLiveQuotes(); });
+  mode.addEventListener('change', () => { limit = 12; refreshOptions(); drawQuick(); refreshLiveQuotes(); });
+  more.addEventListener('click', () => { limit += 12; drawQuick(); refreshLiveQuotes(); });
+  quoteButton.addEventListener('click', refreshLiveQuotes);
   host.addEventListener('click', event => { const button = event.target.closest('[data-quick-detail]'); if (button) showScoreDetail(button.dataset.quickDetail); });
   refreshOptions(); drawQuick();
   function checkAge() {
@@ -254,6 +385,9 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
   }
   checkAge();
   setInterval(() => { checkAge(); drawQuick(); }, 60000);
+  window.setInterval(() => { if (document.visibilityState === 'visible') refreshLiveQuotes(); }, LIVE_QUOTE_REFRESH_MS);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshLiveQuotes(); });
+  refreshLiveQuotes();
   const refresh = document.getElementById('checkPublishedUpdate');
   refresh?.addEventListener('click', async () => {
     const status = document.getElementById('publishedUpdateStatus'); refresh.disabled = true; status.textContent = '檢查發布版本…';
@@ -314,6 +448,7 @@ const styles = `
   .warning{border-radius:10px;box-shadow:0 3px 10px rgba(150,103,15,.08)}
   .position-board-body{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
   .position-summary-card{border-radius:var(--radius);box-shadow:var(--shadow)}
-  .quick-data-note{padding:9px 12px;border-radius:8px;background:#eef5f0;border:1px solid #d8e4db}
+   .quick-data-note{padding:9px 12px;border-radius:8px;background:#eef5f0;border:1px solid #d8e4db}
+   .quick-quote-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;padding:10px 12px;border:1px solid #cbd9d0;border-radius:8px;background:#fff}.quick-quote-toolbar span{font-size:12px;line-height:1.5;color:#315b49}.quick-quote-toolbar button{border:1px solid #8ba999;border-radius:7px;background:#f4f8f5;color:#153e2e;padding:8px 12px;min-height:38px;font:inherit;font-weight:750;cursor:pointer}.quick-quote-toolbar button:disabled{opacity:.6;cursor:wait}.quick-quote-toolbar button:hover:not(:disabled){border-color:var(--green);box-shadow:0 2px 8px rgba(20,96,63,.14)}.quick-quote-toolbar button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.quick-live-comparison{margin:2px 0 0;padding:7px 9px;border-left:3px solid #397866;background:#f4f8f5;color:#244b3c;font-size:12px;line-height:1.5;font-weight:650}.live-quote-stamp{display:block;margin-top:3px;color:#59665f;font-size:10px;line-height:1.35}
 `;
 module.exports = { renderInternationalContext, quickGuideHtml, installQuickGuide, styles };

@@ -278,6 +278,18 @@ Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Tes
 Invoke-Checked -Name 'powershell.exe' -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenPowerShellBoundary.ps1')) | Out-Null
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
+$liveQuoteUiContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'international-ui.js') -Raw -Encoding utf8
+foreach ($requiredLiveQuoteToken in @('LIVE_QUOTE_REFRESH_V1', 'const LIVE_QUOTE_REFRESH_MS = 20000;', '/api/twse-quote', 'data-live-quote-price', 'data-live-quote-stamp', 'document.visibilityState', 'AbortController', "row.market === 'TPEX' ? 'otc' : 'tse'")) {
+    if (-not $liveQuoteUiContent.Contains($requiredLiveQuoteToken)) {
+        throw "Live quote refresh safeguard is missing: $requiredLiveQuoteToken"
+    }
+}
+foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
+    $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
+    if (-not $ruleContent.Contains('LIVE_QUOTE_REFRESH_V1')) {
+        throw "Live quote refresh contract is missing from the handoff surface: $relativePath"
+    }
+}
 foreach ($requiredForeignHistoryToken in @(
     'mapLimit(retryDates, 1',
     'calendarDatesEnding(asOfIso, FOREIGN_HOLDING_LOOKBACK_CALENDAR_DAYS)',
@@ -594,11 +606,11 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         if ($report.PSObject.Properties['internationalContext']) {
-            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate')) {
+            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus')) {
                 if (-not $response.Content.Contains($marker)) { throw "Live page is missing international marker: $marker" }
             }
         }

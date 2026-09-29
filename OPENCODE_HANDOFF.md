@@ -620,3 +620,36 @@ OpenCode 必須依結果回報：
 - 本次只修改連結與其可辨識性，不改 `HORIZON_SCORE_V2`、排名、評分、個股動作、資料日期或硬性門檻；沿用 2026-09-21 已驗證資料重產。
 
 <!-- STOCK_TECHNICAL_LINKS_V1 -->
+
+## 2026-09-29 個股卡即時報價更新（本機驗證完成，待 Pages 發布）
+
+### 使用者目標與來源確認
+
+- 使用者希望在目前開啟的個股卡畫面，能立即及定時刷新每檔股票的最新價位，並指定參考 `https://fricachai.github.io/4ETF-buy-point/` 與 Obsidian 的即時報價筆記。
+- 參考頁有登入遮罩；未使用或重述登入資料。依公開載入的 `app.js` 及相關 Obsidian 筆記，確認該面板透過 `stock-k-chat-proxy.fricachai.workers.dev/api/twse-quote` 查詢 TWSE MIS，20 秒輪詢，並以 Worker 處理瀏覽器跨來源請求。
+- 已在參考頁瀏覽器脈絡以一組上市及上櫃通道實測代理端點回傳 HTTP 200、CORS `cors` response，且回應包含 MIS 的個股代號、交易日期與時間欄位。報價是否成交仍需依 `z`、`pz`、委買／委賣欄位判斷。
+
+### 採用方式與保留邊界
+
+- `international-ui.js` 快速操作卡新增手動更新按鈕、20 秒輪詢狀態、即時價／報告快照時間及與承接區或持有門檻的即時價差。
+- 只查目前已渲染的快速卡與已追蹤持股卡，上市／上櫃分別使用 `tse_{code}.tw`／`otc_{code}.tw`；一輪只有一個執行中請求，依 `z`、`pz`、最佳買賣價中點、單側報價順序取價。
+- `full-professional-stock-screen.js` 僅為持股卡的即時價格、未實現損益及門檻價差掛上 DOM 更新標記；報價更新不得改動報告物件、`positionDecisionMeta`、分類摘要、評分、排名或行動欄位。
+- 頁面隱藏時暫停輪詢；來源失敗或個股無有效價格時保留前次有效值及其交易所時間，不以收盤價或估值補造成即時價。
+- `LIVE_QUOTE_REFRESH_V1` 同步到本檔與 `AGENTS.md`，發布／交接驗證器檢查手動按鈕、報價 DOM 標記及 Worker 更新契約。
+
+### 本機實作與驗證結果
+
+- `international-ui.js` 新增「立即更新報價」、首次載入立即查詢與 20 秒循環；只查目前顯示的快速卡與已追蹤持股卡，頁面隱藏時跳過查詢，一輪只允許一個請求。
+- `full-professional-stock-screen.js` 對持股卡即時價、損益與觸發價差加上 DOM 更新標記；不修改報告物件、`positionDecisionMeta`、決策摘要、評分、排名、進場資格或持股動作。快速卡的報告分類／動作／依據標示為報告快照，與動態報價分開顯示。
+- Worker 瀏覽器測試：TWSE／TPEX 兩種通道 HTTP 200；畫面 12 張卡皆成功更新（11 張上市、1 張上櫃），MIS 交易日、時間與價位性質逐卡呈現；觀測到自動輪詢間隔約 20 秒，手動更新亦立即完成。
+- 失敗路徑：模擬 Worker 請求失敗及沒有有效成交／試撮／委買賣價格，均保留前次有效值與交易所時間並顯示狀態。以臨時本機追蹤資料測試持股卡價位、損益、門檻價差更新，持有動作及摘要不變；測試資料已清除。
+- Node 語法、`Test-PositionDecisionRules.js`、`Test-ProfessionalScreenFetchResilience.js`、`Test-InternationalContext.js`、`Test-ProfessionalScreenPowerShellBoundary.ps1`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 與 `git diff --check` 通過。
+- 本機瀏覽器 1050×900 與 390×844 無頁面級水平溢出；console errors/warnings 0。`design-qa.md` 記錄互動測試及兩個桌機／手機畫面截圖。
+- 純 UI 重產沿用資料日期 2026-09-24 的已驗證 JSON，沒有重新抓取資料。
+
+### 尚待完成
+
+- 限定本次檔案提交與推送 `origin/main`、等待唯一 `deploy-pages.yml` workflow，驗證 Pages 線上必要標記、線上內容與正規化 byte match。
+- 發布及線上驗證完成前，不回報功能已上線。
+
+<!-- LIVE_QUOTE_REFRESH_V1 -->
