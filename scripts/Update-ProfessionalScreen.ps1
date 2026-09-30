@@ -149,6 +149,7 @@ function Get-PagesWorkflowRuns {
 function Get-LiveReportState {
     param([Parameter(Mandatory)][string]$ExpectedEtfDate)
 
+    $decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
     $cacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
     $response = Invoke-WebRequest -Uri "${LiveUrl}?v=$cacheBust" -UseBasicParsing
     if ($response.RawContentStream.CanSeek) { $response.RawContentStream.Position = 0 }
@@ -163,7 +164,7 @@ function Get-LiveReportState {
     $localBytes = [IO.File]::ReadAllBytes($IndexHtml)
     $localHash = Get-Sha256Hex -Bytes $localBytes
     $liveHash = Get-Sha256Hex -Bytes $liveBytes
-    $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
+    $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     return [pscustomobject]@{
         StatusCode = [int]$response.StatusCode
@@ -384,6 +385,17 @@ try {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
     }
+    $decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
+    foreach ($requiredLiveObservationToken in @('POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken)) {
+        if (-not $latestHtmlContent.Contains($requiredLiveObservationToken)) {
+            throw "Required live-position observation token is missing: $requiredLiveObservationToken"
+        }
+    }
+    foreach ($requiredLiveObservationToken in @('POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken)) {
+        if (-not $latestHtmlContent.Contains($requiredLiveObservationToken)) {
+            throw "Required live-position observation token is missing: $requiredLiveObservationToken"
+        }
+    }
     $defenseReminderToken = -join @([char]0x9632, [char]0x5B88, [char]0x50F9, [char]0x63D0, [char]0x9192)
     $actionTransitionToken = -join @([char]0x5DF2, [char]0x6301, [char]0x6709, [char]0x52D5, [char]0x4F5C, [char]0xFF0F, [char]0x8F49, [char]0x63DB)
     foreach ($removedPositionToken in @('actionTransitionHtml', $defenseReminderToken, $actionTransitionToken)) {
@@ -571,7 +583,8 @@ try {
     if ($latestHash -ne $indexHash) { throw 'index.html does not match latest.html.' }
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
-    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    $decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
+    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 

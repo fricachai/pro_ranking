@@ -279,15 +279,30 @@ Invoke-Checked -Name 'powershell.exe' -Arguments @('-NoProfile', '-ExecutionPoli
 
 $generatorContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'full-professional-stock-screen.js') -Raw -Encoding utf8
 $liveQuoteUiContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'international-ui.js') -Raw -Encoding utf8
+$liveTradeLabel = -join @([char]0x6210, [char]0x4EA4, [char]0x50F9)
+$decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
 foreach ($requiredLiveQuoteToken in @('LIVE_QUOTE_REFRESH_V1', 'const LIVE_QUOTE_REFRESH_MS = 20000;', '/api/twse-quote', 'data-live-quote-price', 'data-live-quote-stamp', 'document.visibilityState', 'AbortController', "row.market === 'TPEX' ? 'otc' : 'tse'")) {
     if (-not $liveQuoteUiContent.Contains($requiredLiveQuoteToken)) {
         throw "Live quote refresh safeguard is missing: $requiredLiveQuoteToken"
+    }
+}
+foreach ($requiredLiveObservationToken in @('const LIVE_OBSERVATION_MAX_AGE_SECONDS = 90;', "quote.kind !== '$liveTradeLabel'", 'quote.date !== today()', '13 * 3600 + 30 * 60')) {
+    if (-not $liveQuoteUiContent.Contains($requiredLiveObservationToken)) {
+        throw "Intraday observation safeguard is missing: $requiredLiveObservationToken"
+    }
+}
+foreach ($requiredPositionDomToken in @('POSITION_LIVE_OBSERVATION_V1', 'position-live-observation', $decisionTimingToken)) {
+    if (-not $generatorContent.Contains($requiredPositionDomToken)) {
+        throw "Position-card observation UI is missing: $requiredPositionDomToken"
     }
 }
 foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains('LIVE_QUOTE_REFRESH_V1')) {
         throw "Live quote refresh contract is missing from the handoff surface: $relativePath"
+    }
+    if (-not $ruleContent.Contains('POSITION_LIVE_OBSERVATION_V1')) {
+        throw "Position live-observation contract is missing from the handoff surface: $relativePath"
     }
 }
 foreach ($requiredForeignHistoryToken in @(
@@ -606,11 +621,11 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         if ($report.PSObject.Properties['internationalContext']) {
-            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus')) {
+            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken)) {
                 if (-not $response.Content.Contains($marker)) { throw "Live page is missing international marker: $marker" }
             }
         }

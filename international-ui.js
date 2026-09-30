@@ -272,6 +272,29 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
     return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
   };
   const bestQuoteLevel = value => String(value || '').split('_').map(parseQuoteNumber).find(Number.isFinite) ?? null;
+  const LIVE_OBSERVATION_MAX_AGE_SECONDS = 90;
+  const secondsOfDay = value => {
+    const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(String(value || ''));
+    return match ? Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]) : null;
+  };
+  const updatePositionObservation = (node, quote) => {
+    const set = (state, message) => { node.dataset.liveState = state; node.textContent = message; };
+    const key = node.dataset.observationKey, trigger = Number(node.dataset.triggerPrice), label = node.dataset.triggerLabel || '價格門檻';
+    if (key === 'exit') { set('inactive', '報告已判定優先降低風險；即時價只更新報價，不重算既有動作。'); return; }
+    if (!Number.isFinite(trigger) || trigger <= 0) { set('inactive', '本股沒有可比較的價格門檻；即時價不改變正式狀態或今天動作。'); return; }
+    if (quote.kind !== '成交價') { set('inactive', `目前顯示${quote.kind}，不是成交價；暫不觸發盤中門檻提醒。`); return; }
+    if (quote.date !== today()) { set('inactive', `最新成交日期 ${quote.date} 不是今日；正式狀態與今天動作維持報告判斷。`); return; }
+    const nowTime = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Taipei', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date());
+    const nowSeconds = secondsOfDay(nowTime), quoteSeconds = secondsOfDay(quote.time);
+    if (!Number.isFinite(nowSeconds) || nowSeconds < 9 * 3600 || nowSeconds >= 13 * 3600 + 30 * 60) { set('inactive', '目前非09:00–13:30連續交易時段；只更新價位，不觸發盤中門檻提醒。'); return; }
+    if (!Number.isFinite(quoteSeconds)) { set('inactive', '成交時間未回傳；不以本機查詢時間代替交易所時間觸發盤中提醒。'); return; }
+    const age = nowSeconds - quoteSeconds;
+    if (age < -5) { set('inactive', `MIS成交時間 ${quote.time} 晚於目前臺北時間 ${nowTime}；時間不一致，暫不觸發盤中門檻提醒。`); return; }
+    if (age > LIVE_OBSERVATION_MAX_AGE_SECONDS) { set('inactive', `最新成交時間 ${quote.time} 距目前 ${age} 秒，超過 ${LIVE_OBSERVATION_MAX_AGE_SECONDS} 秒；暫不觸發盤中門檻提醒。`); return; }
+    const below = quote.price < trigger;
+    const relation = below ? '低於' : '未低於';
+    set(below ? 'below' : 'clear', `盤中成交價 ${n(quote.price, 2)} ${relation}${label} ${n(trigger, 2)}（成交時間 ${quote.time}）。盤中提醒，尚未收盤確認；正式持有狀態與今天動作不變，收盤後再確認。`);
+  };
   const normalizeLiveQuote = row => {
     const code = String(row?.c || '').trim();
     if (!/^\d{4}$/.test(code)) return null;
@@ -316,6 +339,14 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
       const costDifference = Number.isFinite(cost) && cost > 0 ? (trigger - cost) / cost * 100 : null;
       node.textContent = gap + (Number.isFinite(costDifference) ? `；門檻較成本 ${costDifference >= 0 ? '+' : ''}${n(costDifference, 1)}%` : '');
     });
+    document.querySelectorAll('[data-live-observation]').forEach(node => { if (node.dataset.liveObservation === code) updatePositionObservation(node, quote); });
+  };
+  const markObservationUnavailable = code => {
+    document.querySelectorAll('[data-live-observation]').forEach(node => {
+      if (node.dataset.liveObservation !== String(code)) return;
+      node.dataset.liveState = 'inactive';
+      node.textContent = '本次未取得有效新報價；保留上方原報價與交易所時間，不更新盤中提醒。';
+    });
   };
   async function refreshLiveQuotes() {
     if (quoteRefreshPromise) return quoteRefreshPromise;
@@ -325,6 +356,7 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
     quoteStatus.textContent = `正在更新 ${records.length} 檔目前顯示的個股報價…`;
     quoteRefreshPromise = (async () => {
       let received = 0, failed = 0;
+      const receivedCodes = new Set();
       const chunks = [];
       for (let i = 0; i < records.length; i += 50) chunks.push(records.slice(i, i + 50));
       for (const chunk of chunks) {
@@ -345,12 +377,14 @@ function installQuickGuide(rows, reportMeta, positionDecisionMeta, e, n, showSco
             const stock = chunk.find(row => String(row.code) === quote.code);
             if (!stock) continue;
             liveQuotes.set(quote.code, quote);
+            receivedCodes.add(quote.code);
             updateQuoteDom(stock, quote);
             received++;
           }
         } catch { failed++; }
         finally { window.clearTimeout(timeout); }
       }
+      records.forEach(row => { if (!receivedCodes.has(String(row.code))) markObservationUnavailable(row.code); });
       const checkedAt = new Date().toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
       if (received > 0 && failed === 0) quoteStatus.textContent = `報價更新完成：${received}/${records.length} 檔；本次查詢 ${checkedAt}（臺北時間）。未回傳者保留前次有效價與原時間。`;
       else if (received > 0) quoteStatus.textContent = `部分更新：${received}/${records.length} 檔；${failed} 個批次未回應；未更新者保留原價與原時間。查詢 ${checkedAt}。`;

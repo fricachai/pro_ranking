@@ -338,3 +338,15 @@ Final result: passed
 - Boundary: `LIVE_QUOTE_REFRESH_V1`；報價只刷新畫面欄位，不回寫 JSON／localStorage／公開報告資料，也不重算正式分數、排名或動作。
 
 Final result: passed
+
+## 2026-09-29 持股卡盤中即時觀察與重複標籤修正 QA
+
+- Change: 持股卡重複的外層「目前狀態」標籤改為「判斷時點」；新增獨立「盤中即時觀察」，不覆蓋正式狀態、今天動作、持股摘要或 `nextCheck`。
+- Safety boundary: 只有 MIS 成交價 `z`、交易日期是臺北今日、交易所時間 09:00–13:30 且成交時間距今不超過 90 秒，才比較卡片門檻。試撮、委買／委賣參考價、非今日、盤外與過期成交均顯示不觸發原因。
+- Interaction tests: 模擬今日盤中成交價低於門檻，顯示「盤中提醒，尚未收盤確認」與交易所時間；`holdingAction`、今天動作與摘要均未改變。試撮價、90 秒以上成交、盤外成交及本次沒有有效新報價都不觸發，且缺報價保留前次價格與時間。
+- Viewports: 1050×900 `scrollWidth=1035`，390×844 `scrollWidth=375`；兩者均無頁面級水平溢出。`判斷時點｜目前狀態` 唯一顯示，不再重複。
+- Evidence: 桌機觀察列截圖 `.playwright-mcp/element-2026-09-29T07-45-09-318Z.png`；手機持股卡截圖 `.playwright-mcp/page-2026-09-29T07-51-50-008Z.png`。截圖隱藏測試追蹤代號、成本、損益與門檻成本差；觀察列中的報價為合成測試輸入，不是市場行情。localStorage 測試資料已清除。
+- Boundary: 即時觀察僅作盤中提醒；不產生下單指令、不把單筆波動視為收盤確認，也不改 `HORIZON_SCORE_V2`、排名、正式持有動作或硬性門檻。
+- Automated checks: Node syntax、`Test-PositionDecisionRules.js`、`Test-InternationalContext.js`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 與 PowerShell boundary checks 通過。Pages 發布仍待完成。
+
+Final result: passed (local QA; Pages publication pending)
