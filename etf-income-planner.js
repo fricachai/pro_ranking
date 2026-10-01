@@ -436,39 +436,53 @@ async function fetchDailyIndicators(code, market = 'TW') {
     rsi14,
     kdK: kd.k,
     kdD: kd.d,
-    bias20Pct: (lastClose / ema20 - 1) * 100
+    bias20Pct: (lastClose / ema20 - 1) * 100,
+    rangeLow: Math.min(...lows),
+    rangeHigh: Math.max(...highs)
   };
 }
 
-/* 投入時點建議：依價格結構、KD、RSI 與除息時點給明確做法 */
+/* 投入時點建議：直接回答「現在投入或不投入」，保留技術理由與近一年價格位置 */
 function buildTiming(etf, ind, today = new Date()) {
-  if (!ind) return { status: 'no_data', label: '暫無技術資料', reason: '本次未取得可驗證的日K技術指標', zone: null };
+  if (!ind) return { status: 'no_data', decision: 'unknown', label: '無法判斷', reason: '本次未取得可驗證的日K技術指標', zoneLow: null, zoneHigh: null, rangeLow: null, rangeHigh: null, rangePositionPct: null };
   const zoneLow = ind.ema20 * 0.985, zoneHigh = ind.ema20 * 1.015;
-  let status, reason;
+  let status, decision, label, reason;
   if (ind.lastClose < ind.ema20) {
     status = 'watch';
-    reason = `目前價 ${fmtPrice(ind.lastClose)} 在 20日EMA（${fmtPrice(ind.ema20)}）下方，先觀察是否站回；分批以回測承接區 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 附近再執行。`;
+    decision = 'wait';
+    label = '現在不投入';
+    reason = `目前價 ${fmtPrice(ind.lastClose)} 在 20日EMA（${fmtPrice(ind.ema20)}）下方，趨勢尚未站回；等收盤站回 ${fmtPrice(ind.ema20)} 以上再考慮第一批，回測承接區 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 附近才分批。`;
   } else if (ind.bias20Pct > 5) {
     status = 'wait';
-    reason = `目前價 ${fmtPrice(ind.lastClose)} 高於 20日EMA 約 ${ind.bias20Pct.toFixed(1)}%，短線乖離過大；先等價格回到承接區 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 再分批。`;
+    decision = 'wait';
+    label = '現在不投入';
+    reason = `目前價 ${fmtPrice(ind.lastClose)} 高於 20日EMA 約 ${ind.bias20Pct.toFixed(1)}%，短線漲多、追價風險高；等價格回測到 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 再分批。`;
   } else if (ind.rsi14 > 75) {
     status = 'hot';
-    reason = `RSI14 約 ${ind.rsi14.toFixed(0)} 偏熱，短線追價風險高；分批等回測 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)}。`;
+    decision = 'wait';
+    label = '現在不投入';
+    reason = `RSI14 約 ${ind.rsi14.toFixed(0)} 偏熱，短線過熱、追價風險高；等指標降溫（RSI 回到 70 以下）再考慮分批。`;
   } else if (ind.kdK < 30 && ind.kdK > ind.kdD) {
     status = 'observe';
-    reason = `KD 低檔（K=${ind.kdK.toFixed(0)}／D=${ind.kdD.toFixed(0)}）黃金交叉，屬低檔轉強觀察；可先以承接區 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 小量分批，收盤跌破 ${fmtPrice(ind.ema60)}（60日EMA）則暫緩。`;
+    decision = 'wait';
+    label = '現在不投入（觀察）';
+    reason = `KD 低檔（K=${ind.kdK.toFixed(0)}／D=${ind.kdD.toFixed(0)}）剛黃金交叉，屬低檔轉強觀察；確認收盤站回 20日EMA（${fmtPrice(ind.ema20)}）後再投入第一批，跌破 60日EMA（${fmtPrice(ind.ema60)}）則放棄。`;
   } else {
     status = 'ok';
-    reason = `目前價 ${fmtPrice(ind.lastClose)} 站穩 20日EMA（${fmtPrice(ind.ema20)}），RSI ${ind.rsi14.toFixed(0)} 未過熱，KD ${ind.kdK.toFixed(0)}／${ind.kdD.toFixed(0)} 無極端訊號；可依計畫分批投入，回測 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 加碼，收盤跌破 60日EMA（${fmtPrice(ind.ema60)}）則暫停。`;
+    decision = 'invest';
+    label = '現在可投入第一批';
+    reason = `目前價 ${fmtPrice(ind.lastClose)} 站穩 20日EMA（${fmtPrice(ind.ema20)}）、RSI ${ind.rsi14.toFixed(0)} 未過熱、KD ${ind.kdK.toFixed(0)}／${ind.kdD.toFixed(0)} 無極端訊號；建議先投入配置金額的 1／3，回測 ${fmtPrice(zoneLow)}–${fmtPrice(zoneHigh)} 再加碼，收盤跌破 60日EMA（${fmtPrice(ind.ema60)}）則暫停後續加碼。`;
   }
   const upcoming = etf.upcomingExDate;
   if (upcoming) {
     reason += ` 最近除息日 ${upcoming} 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。`;
   }
-  return { status, label: TIMING_LABEL[status], reason, zoneLow, zoneHigh, ema20: ind.ema20, ema60: ind.ema60, rsi14: ind.rsi14, kdK: ind.kdK, kdD: ind.kdD, bias20Pct: ind.bias20Pct, lastClose: ind.lastClose, lastDate: ind.lastDate };
+  const rangePositionPct = (ind.rangeLow !== null && ind.rangeHigh !== null && ind.rangeHigh > ind.rangeLow)
+    ? (ind.lastClose - ind.rangeLow) / (ind.rangeHigh - ind.rangeLow) * 100 : null;
+  return { status, decision, label, reason, zoneLow, zoneHigh, ema20: ind.ema20, ema60: ind.ema60, rsi14: ind.rsi14, kdK: ind.kdK, kdD: ind.kdD, bias20Pct: ind.bias20Pct, lastClose: ind.lastClose, lastDate: ind.lastDate, rangeLow: ind.rangeLow, rangeHigh: ind.rangeHigh, rangePositionPct };
 }
 
-const TIMING_LABEL = { ok: '可分批投入', watch: '等站回再分批', wait: '等回測再分批', hot: '過熱等冷卻', observe: '低檔轉強觀察', no_data: '暫無技術資料' };
+const TIMING_LABEL = { ok: '現在可投入第一批', watch: '現在不投入', wait: '現在不投入', hot: '現在不投入', observe: '現在不投入（觀察）', no_data: '無法判斷' };
 function fmtPrice(v) { return Number.isFinite(v) ? v.toFixed(2) : '—'; }
 
 /* ---------- 前端 UI（與 international-ui.js 相同的產生器注入模式） ---------- */
@@ -504,6 +518,7 @@ function compactEtfForUi(etf) {
     } : null,
     timing: etf.timing ? {
       status: etf.timing.status,
+      decision: etf.timing.decision,
       label: etf.timing.label,
       reason: etf.timing.reason,
       zoneLow: etf.timing.zoneLow,
@@ -514,7 +529,10 @@ function compactEtfForUi(etf) {
       kdK: etf.timing.kdK,
       kdD: etf.timing.kdD,
       lastClose: etf.timing.lastClose,
-      lastDate: etf.timing.lastDate
+      lastDate: etf.timing.lastDate,
+      rangeLow: etf.timing.rangeLow,
+      rangeHigh: etf.timing.rangeHigh,
+      rangePositionPct: etf.timing.rangePositionPct
     } : null,
     volume: etf.volume
   };
@@ -614,6 +632,23 @@ function renderEtfIncomePlanner(data) {
   </section>`;
 }
 
+/* 近一年價格位置圖：低點→高點色帶＋現價標記＋位置說明 */
+function rangeChartHtml(t) {
+  if (!t || !Number.isFinite(t.rangeLow) || !Number.isFinite(t.rangeHigh) || t.rangeHigh <= t.rangeLow) {
+    return '<div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>';
+  }
+  const pos = Math.max(0, Math.min(100, Number.isFinite(t.rangePositionPct) ? t.rangePositionPct : (t.lastClose - t.rangeLow) / (t.rangeHigh - t.rangeLow) * 100));
+  const zoneLabel = pos < 33 ? '位於近一年區間低位' : pos < 67 ? '位於近一年區間中段' : '位於近一年區間高位';
+  const mid = (t.rangeLow + t.rangeHigh) / 2;
+  return `<div class="etfi-range">
+    <div class="etfi-range-bar" aria-hidden="true">
+      <span class="etfi-range-dot" style="left:${pos.toFixed(1)}%"></span>
+    </div>
+    <div class="etfi-range-labels"><span>低 ${n(t.rangeLow, 2)}</span><span>中 ${n(mid, 2)}</span><span>高 ${n(t.rangeHigh, 2)}</span></div>
+    <div class="etfi-range-note">目前價 ${n(t.lastClose, 2)}｜近一年區間約 ${pos.toFixed(0)}%｜${zoneLabel}</div>
+  </div>`;
+}
+
 function etfRowHtml(x) {
   const r = x.returns || {};
   const t = x.timing;
@@ -624,7 +659,12 @@ function etfRowHtml(x) {
     if (!v) return `<span class="etfi-ret is-none" title="上市歷史不足或本次無資料">${label} —</span>`;
     return `<span class="etfi-ret ${v.annualizedPct < 0 ? 'is-neg' : ''}">${label} <b>${s(v.annualizedPct, 1)}</b><small>${e(v.interval)}</small></span>`;
   };
-  const timingHtml = t ? `<div class="etfi-timing etfi-timing-${e(t.status)}"><b>${e(t.label)}</b><span>${e(t.reason)}</span><small>技術資料日 ${e(t.lastDate || '')}${Number.isFinite(t.zoneLow) ? '｜承接區 ' + n(t.zoneLow, 2) + '–' + n(t.zoneHigh, 2) : ''}</small></div>` : '';
+  const timingHtml = t ? `<div class="etfi-timing etfi-timing-${e(t.status)} etfi-decision-${e(t.decision || 'unknown')}">
+      <b class="etfi-decision-badge">${e(t.label)}</b>
+      <span>${e(t.reason)}</span>
+      ${rangeChartHtml(t)}
+      <small>技術資料日 ${e(t.lastDate || '')}${Number.isFinite(t.zoneLow) ? '｜承接區 ' + n(t.zoneLow, 2) + '–' + n(t.zoneHigh, 2) : ''}</small>
+    </div>` : '';
   const months = (x.dividendMonths12 || []).map(m => m + '月').join('、') || '—';
   return `<div class="etfi-row" data-code="${e(x.code)}" data-frequency="${e(x.frequencyLabel)}" data-verified="${x.frequencyVerified}">
     <div class="etfi-row-head">
@@ -765,7 +805,8 @@ const etfPlannerClientScript = `(function(){
   }
   document.addEventListener('change', function(ev){
     var t = ev.target;
-    if (t.id === 'etfiCapital' || t.id === 'etfiFreqFilter') { render(); return; }
+    if (t.id === 'etfiCapital') { render(); return; }
+    if (t.id === 'etfiFreqFilter') { applyFilters(); render(); return; }
     if (t.hasAttribute('data-etfi-check') || t.hasAttribute('data-etfi-weight')) { render(); return; }
   });
   document.addEventListener('input', function(ev){
@@ -867,18 +908,23 @@ const styles = `
 .etfi-weight input:focus-visible{outline:3px solid #e9b949}
 .etfi-contrib{font-size:12px;color:#555}
 .etfi-contrib b{font-size:14px;color:#0b6b3a}
-.etfi-timing{margin-top:10px;background:#f6f9f7;border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.6}
-.etfi-timing b{color:#0b6b3a}
-.etfi-timing span{display:block;margin-top:2px;color:#333}
+.etfi-timing{margin-top:10px;background:#f6f9f7;border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.6}
+.etfi-timing > span{display:block;margin-top:2px;color:#333}
 .etfi-timing small{color:#888}
+.etfi-decision-badge{display:inline-block;font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;margin-bottom:4px}
+.etfi-decision-invest .etfi-decision-badge{background:#0b6b3a;color:#fff}
+.etfi-decision-wait .etfi-decision-badge{background:#fff7e8;color:#8a5a00;border:1px solid #e5c36a}
+.etfi-decision-unknown .etfi-decision-badge{background:#eef1ef;color:#555;border:1px solid #ccd6d0}
 .etfi-timing-wait,.etfi-timing-hot{background:#fff7e8;border-left:3px solid #d98e04}
-.etfi-timing-wait b,.etfi-timing-hot b{color:#8a5a00}
 .etfi-timing-watch{background:#fdf0ef;border-left:3px solid #b3261e}
-.etfi-timing-watch b{color:#b3261e}
 .etfi-timing-observe{background:#eef4fd;border-left:3px solid #1d5fa8}
-.etfi-timing-observe b{color:#1d5fa8}
+.etfi-range{margin:8px 0 4px}
+.etfi-range-bar{position:relative;height:9px;border-radius:999px;background:linear-gradient(90deg,#b9d8e6 0%,#8fc7a8 48%,#e8b76a 80%,#d98e04 100%);box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.etfi-range-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#0b3d22;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35)}
+.etfi-range-labels{display:flex;justify-content:space-between;font-size:11px;color:#666;margin-top:3px}
+.etfi-range-note{font-size:12px;font-weight:700;color:#0b3d22;margin-top:2px}
 .etfi-right{display:flex;flex-direction:column;gap:12px}
-.etfi-result{background:#fff;border:2px solid #0b6b3a;border-radius:12px;padding:16px;position:sticky;top:12px;box-shadow:0 4px 14px rgba(11,107,58,.12)}
+.etfi-result{background:#fff;border:2px solid #0b6b3a;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(11,107,58,.12)}
 .etfi-result-head{font-size:13px;color:#0b3d22}
 .etfi-result-total{display:block;font-size:26px;font-weight:800;color:#0b6b3a;margin:6px 0}
 .etfi-result-head small{display:block;font-size:12px;color:#666;margin-top:2px}
@@ -901,7 +947,6 @@ const styles = `
 @media (max-width:900px){
   .etfi-layout{grid-template-columns:1fr}
   .etfi-right{order:-1}
-  .etfi-result{position:static}
   .etfi-env-grid{grid-template-columns:1fr}
   .etfi-metrics{grid-template-columns:1fr 1fr}
 }
