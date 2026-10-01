@@ -2601,12 +2601,13 @@ async function main() {
   let etfIncome = null;
   if (etfIncomeResult && etfIncomeResult.error) {
     console.log('[optional-task] ETF income planner unavailable: ' + formatFetchError(etfIncomeResult.error));
-    etfIncome = { status: 'unavailable', fetchedAt: new Date().toISOString(), sourceLabel: 'Yahoo 奇摩股市配息頁＋Yahoo Finance 月收盤（B 級）', universeCount: 0, okCount: 0, failureCount: 0, failures: [{ code: '', error: formatFetchError(etfIncomeResult.error) }], etfs: [], environment: etfIncomePlanner.buildEnvironmentContext(internationalContext), bestMonthly: { picks: [], selected: [] }, bestStaggered: { picks: [], selected: [] } };
+    etfIncome = { status: 'unavailable', fetchedAt: new Date().toISOString(), sourceLabel: 'Yahoo 奇摩股市配息頁＋Yahoo Finance 月收盤（B 級）', universeCount: 0, okCount: 0, failureCount: 0, failures: [{ code: '', error: formatFetchError(etfIncomeResult.error) }], etfs: [], environment: etfIncomePlanner.buildEnvironmentContext(internationalContext), bestMonthlyIncome: { picks: [], selected: [] }, bestMonthlyBalanced: { picks: [], selected: [] }, bestStaggered: { picks: [], selected: [] } };
   } else if (etfIncomeResult && etfIncomeResult.value) {
     etfIncome = {
       ...etfIncomeResult.value,
       environment: etfIncomePlanner.buildEnvironmentContext(internationalContext),
-      bestMonthly: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'monthly'),
+      bestMonthlyIncome: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'monthlyIncome'),
+      bestMonthlyBalanced: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'monthlyBalanced'),
       bestStaggered: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'staggered')
     };
   }

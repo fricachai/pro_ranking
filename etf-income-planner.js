@@ -577,7 +577,8 @@ function renderEtfIncomePlanner(data) {
   }
   const etfs = (data.etfs || []).map(compactEtfForUi);
   const env = data.environment;
-  const bestMonthly = normalizeBestPicks(data.bestMonthly);
+  const bestMonthlyIncome = normalizeBestPicks(data.bestMonthlyIncome || data.bestMonthly);
+  const bestMonthlyBalanced = normalizeBestPicks(data.bestMonthlyBalanced || data.bestMonthly);
   const bestStaggered = normalizeBestPicks(data.bestStaggered);
   const statusBadge = data.status === 'ok' ? '完整' : data.status === 'partial' ? '部分（缺 ' + (data.failureCount || 0) + ' 檔）' : '—';
   const countByFreq = {};
@@ -596,12 +597,13 @@ function renderEtfIncomePlanner(data) {
           <div class="etfi-capital-row">
             <input id="etfiCapital" type="number" min="10000" step="10000" value="100000" inputmode="numeric">
             <div class="etfi-quick">
-              ${[100000, 200000, 300000, 500000, 1000000].map(v => `<button type="button" class="etfi-quick-btn" data-capital="${v}">${v >= 1000000 ? '100萬' : (v / 10000) + '萬'}</button>`).join('')}
+              ${[100000, 200000, 300000, 500000, 1000000, 2000000, 3000000, 5000000].map(v => `<button type="button" class="etfi-quick-btn" data-capital="${v}">${(v / 10000) + '萬'}</button>`).join('')}
             </div>
           </div>
         </div>
         <div class="etfi-mode">
-          <button type="button" class="etfi-mode-btn is-active" data-mode="monthly">月配直領（每月都有股息）</button>
+          <button type="button" class="etfi-mode-btn is-active" data-mode="monthlyIncome">月配現金流優先（每月都有股息）</button>
+          <button type="button" class="etfi-mode-btn" data-mode="monthlyBalanced">月配長期平衡（重視總報酬）</button>
           <button type="button" class="etfi-mode-btn" data-mode="staggered">季配錯月（三檔輪流配）</button>
         </div>
         <div class="etfi-best" id="etfiBest"></div>
@@ -622,7 +624,8 @@ function renderEtfIncomePlanner(data) {
         <div class="etfi-notes">
           <details open><summary>怎麼讀這份規劃</summary>
             <ul>
-              <li>「月配直領」：全部選月配 ETF，每個月都領息。</li>
+              <li>「月配現金流優先」：選殖利率較高的月配 ETF，目標是提高每月預估股息。</li>
+              <li>「月配長期平衡」：選 1／3／5 年報酬與殖利率較平衡的月配 ETF，重視總報酬與歷史穩定性。</li>
               <li>「季配錯月」：挑 3 檔除息月份不同（各差 1 個月）的季配 ETF，每月輪流領息。</li>
               <li>「每月預估股息」＝各檔配置金額 ÷ 現價 × 近 12 個月每單位配息 ÷ 12 加總；配息金額可能逐月變動，這是估算不是保證。</li>
               <li>「含息年化報酬」＝期末收盤＋期間現金股利（不再投入）÷ 期初收盤，再年化；歷史不足的期間會誠實標示。</li>
@@ -642,7 +645,7 @@ function renderEtfIncomePlanner(data) {
         </div>
       </div>
     </div>
-    <script id="etfi-data" type="application/json">${JSON.stringify({ etfs, env, bestMonthly: bestMonthly.picks, bestStaggered: bestStaggered.picks, bestMethod: bestMonthly.method || '', bestMethodStaggered: bestStaggered.method || '', fetchedAt: data.fetchedAt, sourceLabel: data.sourceLabel }).replace(/<\//g, '<\\/')}</script>
+    <script id="etfi-data" type="application/json">${JSON.stringify({ etfs, env, bestMonthlyIncome: bestMonthlyIncome.picks, bestMonthlyBalanced: bestMonthlyBalanced.picks, bestStaggered: bestStaggered.picks, bestMethodIncome: bestMonthlyIncome.method || '', bestMethodBalanced: bestMonthlyBalanced.method || '', bestMethodStaggered: bestStaggered.method || '', fetchedAt: data.fetchedAt, sourceLabel: data.sourceLabel }).replace(/<\//g, '<\\/')}</script>
     <script>${etfPlannerClientScript}</script>
   </section>`;
 }
@@ -711,12 +714,12 @@ const etfPlannerClientScript = `(function(){
   function init(){
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem(ETFI_SELECTED_KEY) || 'null'); } catch(x) {}
-    if (saved && saved.mode) state.mode = saved.mode; else state.mode = 'monthly';
+    if (saved && saved.mode) state.mode = saved.mode === 'monthly' ? 'monthlyBalanced' : saved.mode; else state.mode = 'monthlyIncome';
     document.querySelectorAll('.etfi-mode-btn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-mode') === state.mode); });
     if (saved && saved.selected) state.selected = saved.selected; else state.selected = {};
     var cap = document.getElementById('etfiCapital');
     if (saved && saved.capital) cap.value = saved.capital;
-    var best = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
+    var best = planForMode(state.mode);
     var rows = document.querySelectorAll('.etfi-row');
     rows.forEach(function(row){
       var code = row.getAttribute('data-code');
@@ -773,6 +776,21 @@ const etfPlannerClientScript = `(function(){
     return out;
   }
   function etfOf(code){ return DATA.etfs.find(function(x){ return x.code === code; }); }
+  function planForMode(mode){
+    if (mode === 'staggered') return DATA.bestStaggered;
+    if (mode === 'monthlyBalanced') return DATA.bestMonthlyBalanced;
+    return DATA.bestMonthlyIncome;
+  }
+  function modeLabel(mode){
+    if (mode === 'staggered') return '季配錯月';
+    if (mode === 'monthlyBalanced') return '月配長期平衡';
+    return '月配現金流優先';
+  }
+  function modeMethod(mode){
+    if (mode === 'staggered') return DATA.bestMethodStaggered || '';
+    if (mode === 'monthlyBalanced') return DATA.bestMethodBalanced || '';
+    return DATA.bestMethodIncome || '';
+  }
   function render(){
     var capital = parseFloat(document.getElementById('etfiCapital').value);
     if (!isFinite(capital) || capital < 0) capital = 0;
@@ -793,9 +811,9 @@ const etfPlannerClientScript = `(function(){
       rows.push({ etf: etf, weight: x.weight, capitalShare: capitalShare, units: units, monthlyCash: monthlyCash });
     });
     var bestEl = document.getElementById('etfiBest');
-    var bestModeLabel = state.mode === 'staggered' ? '季配錯月最佳配置' : '月配直領最佳配置';
-    var bestPicks = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
-    var bestMethod = state.mode === 'staggered' ? (DATA.bestMethodStaggered || '') : (DATA.bestMethod || '');
+    var bestModeLabel = modeLabel(state.mode) + '最佳配置';
+    var bestPicks = planForMode(state.mode);
+    var bestMethod = modeMethod(state.mode);
     var chips = (bestPicks || []).map(function(p){
       var etf = etfOf(p.code);
       if (!etf) return '';
@@ -804,7 +822,7 @@ const etfPlannerClientScript = `(function(){
     }).join('');
     bestEl.innerHTML = '<div class="etfi-best-head"><b>' + bestModeLabel + '</b><span>點選上方模式套用方案；點選任一檔跳到下方完整資料</span></div><div class="etfi-best-codes">' + chips + '</div><p class="etfi-best-method">' + (bestMethod ? '權重依據：' + bestMethod + '；歷史績效不代表未來，這是模型建議而非保證的最適解。' : '權重為模型依績效與殖利率計算的建議，不是保證的最適解。') + '</p>';
     var isPreset = rows.length > 0 && (bestPicks || []).length === rows.length && rows.every(function(r){
-      return bestPicks.some(function(p){ return p.code === r.etf.code && Math.abs(p.weight - r.weight) < 0.005; });
+      return bestPicks.some(function(p){ return p.code === r.etf.code && Math.abs(p.weight - r.weight) < 0.011; });
     });
     var detailEl = document.getElementById('etfiDetail');
     if (!rows.length) {
@@ -833,7 +851,7 @@ const etfPlannerClientScript = `(function(){
       return;
     }
     var configLabel = isPreset ? '模型建議配置' : '自訂配置';
-    resultEl.innerHTML = '<div class="etfi-result-head"><span>每月預估股息（' + (state.mode === 'staggered' ? '季配錯月' : '月配直領') + '｜' + configLabel + '）</span><b class="etfi-result-total">約 ' + monthlyTotal.toLocaleString('zh-TW', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' 元／月</b><small>年化估算 ' + (monthlyTotal * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 }) + ' 元／年（近12個月配息推算，非保證）</small></div>' + rows.map(function(r){
+    resultEl.innerHTML = '<div class="etfi-result-head"><span>每月預估股息（' + modeLabel(state.mode) + '｜' + configLabel + '）</span><b class="etfi-result-total">約 ' + monthlyTotal.toLocaleString('zh-TW', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' 元／月</b><small>年化估算 ' + (monthlyTotal * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 }) + ' 元／年（近12個月配息推算，非保證）</small></div>' + rows.map(function(r){
       var etf = r.etf;
       return '<div class="etfi-result-row"><div><b>' + etf.code + ' ' + etf.name + '</b><span>' + etf.frequencyLabel + '｜權重 ' + Math.round(r.weight * 100) + '%｜現價 ' + n(r.etf.price, 2) + '｜投入 ' + Math.round(r.capitalShare).toLocaleString('zh-TW') + ' 元</span></div><div class="etfi-result-num"><span>本檔預估月均股息</span><b>' + Math.round(r.monthlyCash).toLocaleString('zh-TW') + ' 元／月</b></div></div>';
     }).join('') + '<p class="etfi-result-note">「本檔預估月均股息」＝配置金額 ÷ 現價 × 近12個月每單位配息 ÷ 12；是該檔對整體月配息的預估貢獻，不是額外費用，也不保證；配息逐月變動、除息會使淨值下降。</p>';
@@ -877,7 +895,7 @@ const etfPlannerClientScript = `(function(){
       document.querySelectorAll('.etfi-mode-btn').forEach(function(b){ b.classList.remove('is-active'); });
       ev.target.classList.add('is-active');
       state.mode = ev.target.getAttribute('data-mode');
-      var best = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
+      var best = planForMode(state.mode);
       state.selected = {};
       (best || []).forEach(function(p){ state.selected[p.code] = p.weight; });
       document.querySelectorAll('.etfi-row').forEach(function(row){
@@ -1180,14 +1198,53 @@ function normalizeWeights(scores) {
   return w.map(x => Math.round(x * 1000) / 1000);
 }
 
+/* 現金流優先分數（透明權重）：殖利率60%、1年報酬10%、3年報酬10%、5年報酬10%、
+   資料完整度5%、流動性5%。目標是提高每月預估股息；歷史不足期間不補造數值，
+   該檔權重自動保守。 */
+function incomePriorityScore(etf) {
+  if (!etf || !Number.isFinite(etf.price) || etf.price <= 0 || !Number.isFinite(etf.trailingYieldPct)) return null;
+  if (etf.frequency !== 'monthly') return null;
+  if (!etf.frequencyVerified) return null;
+  const r1 = etf.returns?.['1y']?.annualizedPct;
+  const r3 = etf.returns?.['3y']?.annualizedPct;
+  const r5 = etf.returns?.['5y']?.annualizedPct;
+  const rScore = v => Number.isFinite(v) ? Math.max(0, Math.min(v, 30)) / 30 * 100 : 0;
+  const yieldScore = Math.min(etf.trailingYieldPct, 12) / 12 * 100;
+  const liqScore = Number.isFinite(etf.volume) && etf.volume > 0 ? Math.min(Math.log10(etf.volume) / 8, 1) * 100 : 30;
+  const histYears = Number.isFinite(etf.returns?.maxHistoryYears) ? etf.returns.maxHistoryYears : 0;
+  const histScore = Math.min(histYears / 5, 1) * 100;
+  const parts = {
+    yieldScore,
+    r1Score: rScore(r1),
+    r3Score: rScore(r3),
+    r5Score: rScore(r5),
+    histScore,
+    liqScore
+  };
+  const missing = [];
+  if (!Number.isFinite(r1)) missing.push('1y');
+  if (!Number.isFinite(r3)) missing.push('3y');
+  if (!Number.isFinite(r5)) missing.push('5y');
+  const score = parts.yieldScore * 0.60 + parts.r1Score * 0.10 + parts.r3Score * 0.10 + parts.r5Score * 0.10 + parts.histScore * 0.05 + parts.liqScore * 0.05;
+  return {
+    score,
+    parts,
+    missing,
+    weights: { yield: 60, '1y': 10, '3y': 10, '5y': 10, history: 5, liquidity: 5 },
+    method: '權重＝近12個月現金殖利率60%、近1/3/5年含息年化報酬各10%、資料完整度5%、流動性5%；目標是提高每月預估股息，歷史不足期間不補造、該檔權重自動保守'
+  };
+}
+
 /* 3 檔最佳配置：
-   mode=monthly：月配 ETF 中依配置分數取最佳 3 檔，權重依分數正規化（20–50%）
+   mode=monthlyIncome：月配 ETF 依現金流優先分數取最佳 3 檔（殖利率主導）
+   mode=monthlyBalanced：月配 ETF 依長期績效平衡分數取最佳 3 檔
    mode=staggered：季配 ETF 依除息月份分成 3 組，每組取分數最佳 1 檔；
    權重先依分數正規化，再做「每月領息平衡」微調，讓三組每月領息金額差距不要過大。 */
-function planBestThree(etfs, mode = 'monthly') {
-  if (mode === 'monthly') {
+function planBestThree(etfs, mode = 'monthlyIncome') {
+  if (mode === 'monthlyIncome' || mode === 'monthlyBalanced') {
+    const scoreFn = mode === 'monthlyIncome' ? incomePriorityScore : allocationScore;
     const scored = etfs
-      .map(e => ({ e, s: allocationScore(e) }))
+      .map(e => ({ e, s: scoreFn(e) }))
       .filter(x => x.s && x.e.frequency === 'monthly')
       .sort((a, b) => b.s.score - a.s.score);
     const top = scored.slice(0, 3);
@@ -1200,7 +1257,13 @@ function planBestThree(etfs, mode = 'monthly') {
       missing: x.s.missing,
       method: x.s.method
     }));
-    return { mode: 'monthly', picks, score: top.map(x => x.s.score), selected: top.map(x => x.e.code), method: '權重＝近1/3/5年含息年化報酬、近12個月殖利率、歷史資料完整度與流動性加權；歷史不足期間不補造，該檔權重自動保守' };
+    const method = mode === 'monthlyIncome'
+      ? '權重＝近12個月現金殖利率60%、近1/3/5年含息年化報酬各10%、資料完整度5%、流動性5%；目標是提高每月預估股息，歷史不足期間不補造、該檔權重自動保守'
+      : '權重＝近1/3/5年含息年化報酬（15/25/30%）、近12個月殖利率20%、歷史資料完整度5%、流動性5%；歷史不足期間不補造，該檔權重自動保守';
+    return { mode, picks, score: top.map(x => x.s.score), selected: top.map(x => x.e.code), method };
+  }
+  if (mode === 'monthly') {
+    return planBestThree(etfs, 'monthlyBalanced');
   }
   const groups = [[], [], []];
   for (const e of etfs) {
@@ -1250,6 +1313,7 @@ module.exports = {
   planAllocation,
   planBestThree,
   allocationScore,
+  incomePriorityScore,
   normalizeWeights,
   buildEnvironmentContext,
   renderEtfIncomePlanner,
