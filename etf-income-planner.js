@@ -553,7 +553,7 @@ function renderEtfIncomePlanner(data) {
   const freqSummary = ['月配', '季配', '半年配', '年配'].filter(k => countByFreq[k]).map(k => `${k} ${countByFreq[k]} 檔`).join('、');
   const rowsHtml = etfs.map(x => etfRowHtml(x)).join('');
   const envHtml = envCard(env);
-  return `<section class="section etfi-section" id="etfIncomePlanner">
+  return `<section class="section etfi-section" id="etfIncomePlanner" data-contract="ETF_INCOME_PLANNER_V1">
     <h2>ETF 月月配退休規劃 <span class="etfi-badge">${e(statusBadge)}</span></h2>
     <p class="section-lead">設定可投入資金，系統依「配息頻率（逐檔以實際除息紀錄確定）、現金殖利率、1／3／5 年含息年化報酬、投入時點與目前大環境」提出研究建議；可採用下方「3 支最佳配置」快速方案，或自行勾選標的與權重。月月領息可用「月配 ETF 直領」或「季配 ETF 錯開月份」兩種方式達成。</p>
     ${envHtml}
