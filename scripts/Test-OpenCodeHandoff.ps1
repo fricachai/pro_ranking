@@ -303,7 +303,7 @@ foreach ($requiredZoneChartToken in @('POSITION_ZONE_CHART_V1', 'position-zone-c
     }
 }
 $etfIncomePlannerContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'etf-income-planner.js') -Raw -Encoding utf8
-foreach ($requiredEtfiToken in @('ETF_INCOME_PLANNER_V1', 'classifyFrequency', 'period=M', 'planBestThree', 'renderEtfIncomePlanner', 'etfi-data')) {
+foreach ($requiredEtfiToken in @('ETF_INCOME_PLANNER_V1', 'classifyFrequency', "prefix === 'M'", 'planBestThree', 'renderEtfIncomePlanner', 'etfi-data')) {
     if (-not $etfIncomePlannerContent.Contains($requiredEtfiToken)) {
         throw "ETF income planner module is missing contract token: $requiredEtfiToken"
     }
