@@ -386,3 +386,14 @@ Final result: passed
 - Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；位置圖只顯示價格相對位置，不產生買賣指令。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配規劃：三檔最佳配置改為績效權重 QA
+
+- Change: 「3 支最佳配置」權重不再平均 33%，改為透明加權：近1年報酬15%＋3年25%＋5年30%＋殖利率20%＋資料完整度5%＋流動性5%，歷史不足期間不補造、該檔權重自動保守；權重正規化後限制單檔 20–50%；季配錯月另加入「每月領息平衡」微調。前端顯示建議權重、權重依據文字（模型建議非保證）。
+- Data logic: allocationScore 取代舊 etfScore；normalizeWeights 迭代確保合計 100% 且每檔 20–50%；planBestThree 回傳 picks[{code,weight,score,parts,missing,method}]；render 端 normalizeBestPicks 相容舊格式；localStorage key 升版為 proRankingEtfiSelectionV2。
+- Browser tests: 月配最佳 00730(38%)／00929(33%)／00900(29%)、權重合計 100%；季配錯月 00888(34%)／00891(35%)／00896(31%)，除息月 1/4/7/10、2/5/8/11、3/6/9/12 錯開；勾選與權重輸入與建議一致；權重依據文字顯示；console 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375（etfi 351=351），無溢出。
+- Online release: commit c0609f6；稽核標籤 published/20261001-131429；Pages PAGES_AUDIT_STATUS=complete；線上驗證權重、月份錯開、版面與 console 0 全數通過。
+- Boundary: 權重為模型建議非保證最適解；不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻。
+
+Final result: passed
