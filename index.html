@@ -195,6 +195,27 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .etfi-best-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:5px 12px;font-size:13px}
 .etfi-best-chip.is-sel{background:#fff;color:#0b6b3a;font-weight:700}
 .etfi-best-method{font-size:11.5px;color:#eaf5ee;opacity:.9;line-height:1.5;margin:8px 0 0}
+.etfi-detail{margin-bottom:14px}
+.etfi-detail-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.etfi-detail-head b{font-size:14px;color:#0b3d22}
+.etfi-detail-head span{font-size:11.5px;color:#777}
+.etfi-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.etfi-detail-card{background:#fff;border:1px solid #cfe3d7;border-left:4px solid #0b6b3a;border-radius:10px;padding:12px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit;width:100%;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.etfi-detail-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,107,58,.16);border-color:#0b6b3a}
+.etfi-detail-card:focus-visible{outline:3px solid #e9b949;outline-offset:2px}
+.etfi-detail-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.etfi-detail-top b{font-size:14px;color:#0b3d22}
+.etfi-detail-weight{font-size:12px;font-weight:800;color:#0b6b3a;background:#e6f4ec;border-radius:999px;padding:2px 9px;flex:none}
+.etfi-detail-meta{font-size:11.5px;color:#777;margin-top:3px;line-height:1.5}
+.etfi-detail-nums{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:8px 0;padding:6px 0;border-top:1px dashed #dde8e1;border-bottom:1px dashed #dde8e1}
+.etfi-detail-nums span{font-size:12px;color:#555}
+.etfi-detail-nums b{font-size:15px;color:#0b6b3a}
+.etfi-detail-rets{display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;color:#555}
+.etfi-detail-rets b{color:#0b3d22}
+.etfi-detail-rets .is-neg b{color:#b3261e}
+.etfi-detail-timing{margin-top:6px;font-size:12px;font-weight:800;color:#0b6b3a}
+.etfi-row.is-focus{outline:3px solid #e9b949;outline-offset:2px;box-shadow:0 0 0 4px rgba(233,185,73,.25);transition:box-shadow .2s ease}
+@media(max-width:900px){.etfi-detail-grid{grid-template-columns:1fr}}
 .etfi-filter{display:flex;gap:10px;align-items:center;margin:12px 0}
 .etfi-filter select{padding:7px 10px;border:1px solid #cfe3d7;border-radius:8px;background:#fff}
 .etfi-filter-note{font-size:12px;color:#666}
@@ -363,6 +384,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
           <button type="button" class="etfi-mode-btn" data-mode="staggered">季配錯月（三檔輪流配）</button>
         </div>
         <div class="etfi-best" id="etfiBest"></div>
+        <div class="etfi-detail" id="etfiDetail" aria-live="polite"></div>
         <div class="etfi-filter">
           <select id="etfiFreqFilter" aria-label="依配息頻率篩選">
             <option value="">全部可配息標的</option>
@@ -3046,10 +3068,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   var state = { capital: 100000, mode: 'monthly', selected: {} };
   var ETFI_SELECTED_KEY = 'proRankingEtfiSelectionV2';
   function n(v, d){ return Number.isFinite(v) ? v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—'; }
+  function s(v, d){ return Number.isFinite(v) ? (v > 0 ? '+' : '') + v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) + '%' : '—'; }
   function init(){
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem(ETFI_SELECTED_KEY) || 'null'); } catch(x) {}
     if (saved && saved.mode) state.mode = saved.mode; else state.mode = 'monthly';
+    document.querySelectorAll('.etfi-mode-btn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-mode') === state.mode); });
     if (saved && saved.selected) state.selected = saved.selected; else state.selected = {};
     var cap = document.getElementById('etfiCapital');
     if (saved && saved.capital) cap.value = saved.capital;
@@ -3139,16 +3163,41 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       var isSel = rows.some(function(r){ return r.etf.code === p.code; });
       return '<span class="etfi-best-chip ' + (isSel ? 'is-sel' : '') + '">' + p.code + ' ' + etf.name + (isFinite(etf.trailingYieldPct) ? '（殖利率 ' + etf.trailingYieldPct.toFixed(2) + '%）' : '') + '｜建議權重 ' + Math.round(p.weight * 100) + '%</span>';
     }).join('');
-    bestEl.innerHTML = '<div class="etfi-best-head"><b>' + bestModeLabel + '</b><span>每月都有配息｜可再自行增減標的</span></div><div class="etfi-best-codes">' + chips + '</div><p class="etfi-best-method">' + (bestMethod ? '權重依據：' + bestMethod + '；歷史績效不代表未來，這是模型建議而非保證的最適解。' : '權重為模型依績效與殖利率計算的建議，不是保證的最適解。') + '</p>';
+    bestEl.innerHTML = '<div class="etfi-best-head"><b>' + bestModeLabel + '</b><span>點選上方模式套用方案；點選任一檔跳到下方完整資料</span></div><div class="etfi-best-codes">' + chips + '</div><p class="etfi-best-method">' + (bestMethod ? '權重依據：' + bestMethod + '；歷史績效不代表未來，這是模型建議而非保證的最適解。' : '權重為模型依績效與殖利率計算的建議，不是保證的最適解。') + '</p>';
+    var isPreset = rows.length > 0 && (bestPicks || []).length === rows.length && rows.every(function(r){
+      return bestPicks.some(function(p){ return p.code === r.etf.code && Math.abs(p.weight - r.weight) < 0.005; });
+    });
+    var detailEl = document.getElementById('etfiDetail');
+    if (!rows.length) {
+      detailEl.innerHTML = '';
+    } else {
+      detailEl.innerHTML = '<div class="etfi-detail-head"><b>本組三檔資料（' + (isPreset ? '模型建議配置' : '自訂配置') + '）</b><span>點選任一檔，跳到下方完整資料卡並標示</span></div><div class="etfi-detail-grid">' + rows.map(function(r){
+        var etf = r.etf;
+        var rets = etf.returns || {};
+        var retCell = function(k, label){
+          var v = rets[k];
+          return '<span class="' + (v && v.annualizedPct < 0 ? 'is-neg' : '') + '">' + label + ' <b>' + (v ? s(v.annualizedPct, 1) : '—') + '</b></span>';
+        };
+        var t = etf.timing;
+        return '<button type="button" class="etfi-detail-card" data-focus-code="' + etf.code + '" aria-label="查看 ' + etf.code + ' ' + etf.name + ' 完整資料">' +
+          '<div class="etfi-detail-top"><b>' + etf.code + ' ' + etf.name + '</b><span class="etfi-detail-weight">權重 ' + Math.round(r.weight * 100) + '%</span></div>' +
+          '<div class="etfi-detail-meta">' + etf.frequencyLabel + '｜除息月 ' + (etf.dividendMonths12 || []).map(function(m){ return m + '月'; }).join('、') + '｜現價 ' + n(etf.price, 2) + '</div>' +
+          '<div class="etfi-detail-nums"><span>投入 ' + Math.round(r.capitalShare).toLocaleString('zh-TW') + ' 元</span><b>' + Math.round(r.monthlyCash).toLocaleString('zh-TW') + ' 元／月</b></div>' +
+          '<div class="etfi-detail-rets">' + retCell('1y', '1年') + retCell('3y', '3年') + retCell('5y', '5年') + '<span>殖利率 <b>' + n(etf.trailingYieldPct, 2) + '%</b></span></div>' +
+          (t ? '<div class="etfi-detail-timing etfi-detail-timing-' + t.status + '">' + t.label + '</div>' : '') +
+          '</button>';
+      }).join('') + '</div>';
+    }
     var resultEl = document.getElementById('etfiResult');
     if (!rows.length) {
-      resultEl.innerHTML = '<div class="etfi-result-empty"><b>尚未選擇標的</b><p>使用上方「3 支最佳配置」自動選取，或在左側勾選 ETF 標的。</p></div>';
+      resultEl.innerHTML = '<div class="etfi-result-empty"><b>尚未選擇標的</b><p>點選上方「月配直領」或「季配錯月」套用方案，或在左側勾選 ETF 標的。</p></div>';
       return;
     }
-    resultEl.innerHTML = '<div class="etfi-result-head"><span>每月預估股息（' + (state.mode === 'staggered' ? '季配錯月，每月輪流領' : '月配直領，每月領') + '）</span><b class="etfi-result-total">約 ' + monthlyTotal.toLocaleString('zh-TW', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' 元／月</b><small>年化估算 ' + (monthlyTotal * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 }) + ' 元／年（近12個月配息推算，非保證）</small></div>' + rows.map(function(r){
+    var configLabel = isPreset ? '模型建議配置' : '自訂配置';
+    resultEl.innerHTML = '<div class="etfi-result-head"><span>每月預估股息（' + (state.mode === 'staggered' ? '季配錯月' : '月配直領') + '｜' + configLabel + '）</span><b class="etfi-result-total">約 ' + monthlyTotal.toLocaleString('zh-TW', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' 元／月</b><small>年化估算 ' + (monthlyTotal * 12).toLocaleString('zh-TW', { maximumFractionDigits: 0 }) + ' 元／年（近12個月配息推算，非保證）</small></div>' + rows.map(function(r){
       var etf = r.etf;
-      return '<div class="etfi-result-row"><div><b>' + etf.code + ' ' + etf.name + '</b><span>' + etf.frequencyLabel + '｜權重 ' + Math.round(r.weight * 100) + '%｜現價 ' + n(r.etf.price, 2) + '</span></div><div class="etfi-result-num"><span>投入 ' + Math.round(r.capitalShare).toLocaleString('zh-TW') + ' 元</span><b>' + Math.round(r.monthlyCash).toLocaleString('zh-TW') + ' 元／月</b></div></div>';
-    }).join('') + '<p class="etfi-result-note">每月股息＝配置金額 ÷ 現價 × 近12個月每單位配息 ÷ 12；配息逐月變動，除息會使淨值下降，須以填息判斷實際獲益。</p>';
+      return '<div class="etfi-result-row"><div><b>' + etf.code + ' ' + etf.name + '</b><span>' + etf.frequencyLabel + '｜權重 ' + Math.round(r.weight * 100) + '%｜現價 ' + n(r.etf.price, 2) + '｜投入 ' + Math.round(r.capitalShare).toLocaleString('zh-TW') + ' 元</span></div><div class="etfi-result-num"><span>本檔預估月均股息</span><b>' + Math.round(r.monthlyCash).toLocaleString('zh-TW') + ' 元／月</b></div></div>';
+    }).join('') + '<p class="etfi-result-note">「本檔預估月均股息」＝配置金額 ÷ 現價 × 近12個月每單位配息 ÷ 12；是該檔對整體月配息的預估貢獻，不是額外費用，也不保證；配息逐月變動、除息會使淨值下降。</p>';
     document.querySelectorAll('.etfi-row').forEach(function(row){
       var code = row.getAttribute('data-code');
       var c = document.querySelector('[data-etfi-check="'+code+'"]');
@@ -3169,6 +3218,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
     if (ev.target.id === 'etfiCapital' || ev.target.hasAttribute('data-etfi-weight')) render();
   });
   document.addEventListener('click', function(ev){
+    var focusTarget = ev.target && ev.target.closest ? ev.target.closest('[data-focus-code]') : null;
+    if (focusTarget) {
+      var code = focusTarget.getAttribute('data-focus-code');
+      var row = document.querySelector('.etfi-row[data-code="' + code + '"]');
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.add('is-focus');
+        setTimeout(function(){ row.classList.remove('is-focus'); }, 2400);
+      }
+      return;
+    }
     if (ev.target.classList && ev.target.classList.contains('etfi-quick-btn')) {
       document.getElementById('etfiCapital').value = ev.target.getAttribute('data-capital');
       render();
