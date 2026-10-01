@@ -685,3 +685,31 @@ OpenCode 必須依結果回報：
 - 未來調整須保留 `POSITION_LIVE_OBSERVATION_V1`：盤中提醒只作輔助觀察，不改正式持有狀態、今天動作、摘要或產生下單指令。
 
 <!-- POSITION_LIVE_OBSERVATION_V1 -->
+
+## 2026-10-01 持股卡觀察區價格位置圖（POSITION_ZONE_CHART_V1）
+
+### 使用者目標
+
+使用者在持股決策卡「防守觀察區」價格框（例如 632–640）正下方要求一張簡單的圖，呈現目前現價（即時價格）在觀察區裡的相對位置，並標示落在區間內的波動位置。
+
+### 採用方式與保留邊界
+
+- 在「下一步與條件」欄位內、`position-trigger-box` 價格框正下方、`改變條件`正上方加入水平「現價相對觀察區」位置圖：色帶＝觀察區、標記＝目前價格，現價在區間內／上方／下方直接以文字標示（例：`即時價 280.75｜高於區間`）。
+- 圖只顯示價格相對位置並隨 `LIVE_QUOTE_REFRESH_V1` 的 TWSE MIS 即時價更新標記與文字；不改 `holdingAction`、`todayAction`、`nextCheck`、摘要分類、評分、排名或任何正式報告資料。
+- 觀察區沿用 `positionDecisionMeta` 已輸出的 `defenseZone`／`addZone`／`recoveryZone` 與 `triggerLabel`，不另建一套價格或決策邏輯；「下一次確認」與圖分開呈現，圖不回答確認時間。
+- 無有效即時價時保留報告快照價並標示「報告快照價」；來源失敗時保留前次有效位置，不以收盤價、估值或本機查詢時間包裝成即時價。
+- 純 UI 重產沿用 2026-09-30 已驗證 JSON，沒有重新抓取資料、沒有改 `HORIZON_SCORE_V2`、排名、門檻或正式動作。
+
+### 實作位置
+
+- `full-professional-stock-screen.js`：`positionDecisionMeta` 回傳 `zoneLow/zoneHigh/zoneDigits`；新增 `positionZoneChartMetrics`、`positionZoneChartHtml`、`updatePositionZoneChart`；持股卡渲染與 renderPositions 後掛 `[data-position-zone-chart]` 更新；「下一次確認：」改為「下一次確認｜」。
+- `international-ui.js`：`updateQuoteDom` 在即時價更新時同步 `[data-position-zone-chart]`；styles 新增 `.position-zone-chart` 系列與 760px 響應式。
+
+### 驗證結果
+
+- 瀏覽器實測兩張測試持股卡（3006 防守觀察區 258.0–261.0、2347 回測承接區 90.3–91.3）圖形正常；現價標記隨即時報價更新（280.75→281.25），狀態文字正確標示「高於區間」。
+- 1050×900 `scrollWidth=1035`、390×844 `scrollWidth=375`，均無頁面級水平溢出；手機圖形 291px 完整落在 325px 卡內；console errors/warnings 為 0。
+- Node 語法、`Test-PositionDecisionRules.js`、`Test-ProfessionalScreenFetchResilience.js`、`Test-InternationalContext.js`、PowerShell boundary 與 `Test-OpenCodeHandoff.ps1` 全數通過。
+- 測試追蹤資料已自 localStorage 清除；未保存任何成本、帳號或私人持倉。
+
+<!-- POSITION_ZONE_CHART_V1 -->

@@ -296,6 +296,11 @@ foreach ($requiredPositionDomToken in @('POSITION_LIVE_OBSERVATION_V1', 'positio
         throw "Position-card observation UI is missing: $requiredPositionDomToken"
     }
 }
+foreach ($requiredZoneChartToken in @('POSITION_ZONE_CHART_V1', 'position-zone-chart', 'data-position-zone-chart', 'positionZoneChartHtml')) {
+    if (-not $generatorContent.Contains($requiredZoneChartToken)) {
+        throw "Position-card zone chart UI is missing: $requiredZoneChartToken"
+    }
+}
 foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains('LIVE_QUOTE_REFRESH_V1')) {
@@ -303,6 +308,9 @@ foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     }
     if (-not $ruleContent.Contains('POSITION_LIVE_OBSERVATION_V1')) {
         throw "Position live-observation contract is missing from the handoff surface: $relativePath"
+    }
+    if (-not $ruleContent.Contains('POSITION_ZONE_CHART_V1')) {
+        throw "Position zone-chart contract is missing from the handoff surface: $relativePath"
     }
 }
 foreach ($requiredForeignHistoryToken in @(
@@ -621,11 +629,11 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-        foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'position-zone-chart', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         if ($report.PSObject.Properties['internationalContext']) {
-            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', $decisionTimingToken)) {
+            foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', $decisionTimingToken)) {
                 if (-not $response.Content.Contains($marker)) { throw "Live page is missing international marker: $marker" }
             }
         }

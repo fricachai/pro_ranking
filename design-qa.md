@@ -351,3 +351,15 @@ Final result: passed
 - Online release: commit `9bce977d9529f2a32def9bafeb011bb5b3a65c01`、最新資料提交 `ae9ea72c955c5c9140655c439eb9eb1927e8a318`；Pages workflow `36796778496` success，正式網址 HTTP 200，`PAGES_CONTENT_BYTE_MATCH=True`。線上持股卡確認「判斷時點｜目前狀態」與盤中觀察標記。
 
 Final result: passed
+
+## 2026-10-01 持股卡觀察區價格位置圖 QA
+
+- Change: 持股決策卡「下一步與條件」欄位內、`position-trigger-box` 價格框正下方新增水平「現價相對觀察區」位置圖；色帶＝觀察區、標記＝目前價格，現價在區間內／上方／下方以文字直接標示。`positionDecisionMeta` 回傳 `zoneLow/zoneHigh/zoneDigits`；新增 `positionZoneChartMetrics`、`positionZoneChartHtml`、`updatePositionZoneChart`；「下一次確認：」改為「下一次確認｜」；`international-ui.js` 的 `updateQuoteDom` 即時價更新時同步 `[data-position-zone-chart]`。
+- Safety boundary: 圖只顯示價格相對位置，隨 TWSE MIS 即時價更新；不改 `holdingAction`、`todayAction`、`nextCheck`、摘要分類、評分、排名或任何正式報告資料。觀察區沿用 `positionDecisionMeta` 的 `defenseZone`／`addZone`／`recoveryZone`，不另建一套價格邏輯；無有效即時價時標示「報告快照價」，不以收盤價、估值或本機時間包裝成即時價。
+- Browser tests: 以測試追蹤資料 3006（防守觀察區 258.0–261.0）與 2347（回測承接區 90.3–91.3）驗證圖形正常；現價標記隨即時報價自動更新（280.75→281.25），狀態文字正確標示「即時價 281.25｜高於區間」。`下一次確認｜今天收盤後` 標籤正確。console errors/warnings 為 0。
+- Viewports: 1050×900 `scrollWidth=1035`、390×844 `scrollWidth=375` 均無頁面級水平溢出；手機圖形 291px 完整落在 325px 卡內。桌機截圖 `.playwright-mcp/zone-chart-desktop-1050.png`、手機截圖 `.playwright-mcp/zone-chart-mobile-390.png`。
+- Automated checks: Node 語法、`Test-PositionDecisionRules.js`、`Test-ProfessionalScreenFetchResilience.js`、`Test-InternationalContext.js`、PowerShell boundary 與 `Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 全數通過。
+- Privacy: 測試追蹤資料與登入狀態已自 localStorage 清除；未保存任何成本、帳號或私人持倉。
+- Boundary: `POSITION_ZONE_CHART_V1`；純 UI 重產沿用 2026-09-30 已驗證 JSON，未重抓資料、未改 `HORIZON_SCORE_V2`、排名、門檻或正式動作。
+
+Final result: passed
