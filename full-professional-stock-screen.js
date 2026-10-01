@@ -5,6 +5,7 @@ const path = require('path');
 const vm = require('vm');
 const { fetchInternationalContext, validateContext, freshness } = require('./international-context');
 const internationalUi = require('./international-ui');
+const etfIncomePlanner = require('./etf-income-planner');
 
 const ROOT = __dirname;
 const OUT_DIR = path.join(ROOT, 'professional-screen-report');
@@ -2164,6 +2165,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 @media(max-width:560px){.decision-rail{grid-template-columns:1fr;gap:8px;margin-bottom:22px;padding:8px}.decision-rail-item{padding:10px}.quick-controls{top:0;padding:8px 0;background:linear-gradient(180deg,var(--paper) 78%,rgba(243,247,244,.9))}}
 .stock-link{display:inline-flex;align-items:baseline;gap:2px;text-decoration:underline;text-decoration-color:rgba(37,95,133,.5);text-decoration-thickness:1px;text-underline-offset:3px}.stock-link::after{content:' ↗';font-size:.72em;font-weight:700;line-height:1}.stock-link:hover,.stock-link:focus-visible{color:var(--green);text-decoration-color:currentColor}.score-dialog-head .stock-link{color:var(--ink);text-decoration-color:var(--gold)}.score-dialog-head .stock-link:hover,.score-dialog-head .stock-link:focus-visible{color:var(--green)}
 ${internationalUi.styles}
+${etfIncomePlanner.styles}
 </style>
 </head>
 <body class="auth-locked">
@@ -2187,6 +2189,7 @@ ${internationalUi.styles}
 <main>
 ${decisionRail}
 ${internationalUi.renderInternationalContext(report.internationalContext)}
+${etfIncomePlanner.renderEtfIncomePlanner(report.etfIncome)}
 <div class="quick-gate ${report.meta.activeEtfDataComplete ? '' : 'is-warning'}">主動ETF當日資料 ${report.meta.activeUpdated}/${report.meta.activeEtfs}｜${report.meta.activeEtfDataComplete ? '依個股條件判斷新部位' : '部分來源尚未完成核對：新部位只採個股完整門檻'}｜<a href="#sourceAudit">查看來源與補強狀態</a></div>
 ${internationalUi.quickGuideHtml}
 <details class="source-audit" id="sourceAudit"><summary>臺股資料完整性與各項限制</summary>
@@ -2580,6 +2583,10 @@ async function main() {
     () => fetchMacroOverlay(twseDailyRows, twseSecuritiesRows),
     'macro overlay sources'
   );
+  const etfIncomePromise = startRequiredTask(
+    () => etfIncomePlanner.computeEtfIncomeData(etfIncomePlanner.buildCandidateUniverse(data.etfs)),
+    'ETF income planner (B-level Yahoo dividend/performance)'
+  );
   const details = await mapLimit(stockEntries, 16, async ([code], index) => {
     if ((index + 1) % 75 === 0) console.log(`  已完成 ${index + 1}/${stockEntries.length}`);
     return fetchJson(`${XIAOYU}/data/stock/${code}.json`);
@@ -2587,8 +2594,21 @@ async function main() {
   const historyResults = await Promise.all([
     foreignHoldingPromise, institutionalHistoryPromise, creditHistoryPromise, macroOverlayPromise, internationalPromise
   ]);
+  const etfIncomeResult = await etfIncomePromise;
   let [foreignHoldingHistory, institutionalHistory, creditHistory, macroOverlay, internationalContext] = historyResults.map(unwrapRequiredTask);
   validateContext(internationalContext);
+  let etfIncome = null;
+  if (etfIncomeResult && etfIncomeResult.error) {
+    console.log('[optional-task] ETF income planner unavailable: ' + formatFetchError(etfIncomeResult.error));
+    etfIncome = { status: 'unavailable', fetchedAt: new Date().toISOString(), sourceLabel: 'Yahoo 奇摩股市配息頁＋Yahoo Finance 月收盤（B 級）', universeCount: 0, okCount: 0, failureCount: 0, failures: [{ code: '', error: formatFetchError(etfIncomeResult.error) }], etfs: [], environment: etfIncomePlanner.buildEnvironmentContext(internationalContext), bestMonthly: { picks: [], selected: [] }, bestStaggered: { picks: [], selected: [] } };
+  } else if (etfIncomeResult && etfIncomeResult.value) {
+    etfIncome = {
+      ...etfIncomeResult.value,
+      environment: etfIncomePlanner.buildEnvironmentContext(internationalContext),
+      bestMonthly: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'monthly'),
+      bestStaggered: etfIncomePlanner.planBestThree(etfIncomeResult.value.etfs, 'staggered')
+    };
+  }
   console.log('  讀取Yahoo Finance完整日K高低收，供標準KD計算...');
   const ohlcSeries = await mapLimit(stockEntries, 12, async ([code], index) => {
     if ((index + 1) % 100 === 0) console.log(`  KD日K已完成 ${index + 1}/${stockEntries.length}`);
@@ -2882,6 +2902,7 @@ async function main() {
     },
     macroOverlay,
     internationalContext,
+    etfIncome,
     sectorOverlay,
     sourcePosture: {
       primary: '證交所、櫃買中心、集保結算所、經濟部與中央銀行官方公開資料',
