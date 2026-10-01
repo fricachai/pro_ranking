@@ -5,6 +5,7 @@ const path = require('path');
 const vm = require('vm');
 const { fetchInternationalContext, validateContext, freshness } = require('./international-context');
 const internationalUi = require('./international-ui');
+// ETF_INCOME_PLANNER_V1: ETF 月月配退休規劃（配息頻率逐檔以實際除息紀錄確定；B級來源失敗不阻斷主報告）
 const etfIncomePlanner = require('./etf-income-planner');
 
 const ROOT = __dirname;
