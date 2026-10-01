@@ -347,6 +347,7 @@ Final result: passed
 - Viewports: 1050×900 `scrollWidth=1035`，390×844 `scrollWidth=375`；兩者均無頁面級水平溢出。`判斷時點｜目前狀態` 唯一顯示，不再重複。
 - Evidence: 桌機觀察列截圖 `.playwright-mcp/element-2026-09-29T07-45-09-318Z.png`；手機持股卡截圖 `.playwright-mcp/page-2026-09-29T07-51-50-008Z.png`。截圖隱藏測試追蹤代號、成本、損益與門檻成本差；觀察列中的報價為合成測試輸入，不是市場行情。localStorage 測試資料已清除。
 - Boundary: 即時觀察僅作盤中提醒；不產生下單指令、不把單筆波動視為收盤確認，也不改 `HORIZON_SCORE_V2`、排名、正式持有動作或硬性門檻。
-- Automated checks: Node syntax、`Test-PositionDecisionRules.js`、`Test-InternationalContext.js`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 與 PowerShell boundary checks 通過。Pages 發布仍待完成。
+- Automated checks: Node syntax、`Test-PositionDecisionRules.js`、`Test-InternationalContext.js`、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty` 與 PowerShell boundary checks 通過。
+- Online release: commit `9bce977d9529f2a32def9bafeb011bb5b3a65c01`、最新資料提交 `ae9ea72c955c5c9140655c439eb9eb1927e8a318`；Pages workflow `36796778496` success，正式網址 HTTP 200，`PAGES_CONTENT_BYTE_MATCH=True`。線上持股卡確認「判斷時點｜目前狀態」與盤中觀察標記。
 
-Final result: passed (local QA; Pages publication pending)
+Final result: passed
