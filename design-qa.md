@@ -397,3 +397,13 @@ Final result: passed
 - Boundary: 權重為模型建議非保證最適解；不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配規劃：方案點選與三檔明細卡 QA
+
+- Change: 1) 月配直領／季配錯月為可點選方案，點選即套用該組三檔與建議權重；2) 下方新增「本組三檔資料」專區：三張明細卡顯示權重、除息月、現價、投入金額、本檔預估月均股息、1/3/5 年報酬、殖利率、投入判斷；3) 點選任一明細卡跳到該 ETF 完整資料卡並暫時高亮（is-focus）；4) 右側每檔明確標示「權重｜現價｜投入金額」與「本檔預估月均股息」，並說明公式與非保證；5) 標題區分「模型建議配置／自訂配置」；6) 修正 init 從 localStorage 恢復模式時未同步模式按鈕 active 的既有 bug。
+- Browser tests: 乾淨狀態首次載入＝月配直領｜模型建議配置（00730/00929/00900）；資金 10→20 萬明細卡投入金額與月均股息同步 2 倍（33,000→66,000、207→415）；切換季配錯月明細卡變 00891/00888/00896（2/5/8/11、1/4/7/10、3/6/9/12 錯月）；點明細卡 scrollIntoView＋is-focus 高亮；console errors/warnings 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375（detail grid 351=351 單欄卡全寬），無溢出。
+- Online release: commit 8206a44；Pages workflow success；線上 HTTP 200；首次載入模型建議配置與明細卡、資金同步、模式切換、console 0 均通過。
+- Boundary: 純 UI／互動改善，沿用既有已驗證 JSON（--render-existing），未重抓資料、未改 HORIZON_SCORE_V2、排名或硬性門檻。
+
+Final result: passed
