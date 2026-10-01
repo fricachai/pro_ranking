@@ -713,3 +713,25 @@ OpenCode 必須依結果回報：
 - 測試追蹤資料已自 localStorage 清除；未保存任何成本、帳號或私人持倉。
 
 <!-- POSITION_ZONE_CHART_V1 -->
+
+## 2026-10-01 ETF 月月配退休規劃（ETF_INCOME_PLANNER_V1）
+
+### 使用者目標與已完成
+
+- 使用者要求新增「針對 ETF 標的操作」的退休月月配規劃：設定可投入資金（10／20／30 萬等）→ 建議 ETF → 參考 1／3／5 年績效年化報酬與時空背景 → 配置 → 預估每月股息。
+- `etf-income-planner.js` 已實作資料層與 UI：配息頻率逐檔以 Yahoo 奇摩 dividend 頁實際除息紀錄判定（period 前綴 M/Q/H/FY＋近12個月除息次數交叉驗證）；現金殖利率＝近12個月配息÷現價；1／3／5 年報酬為含息現金流年化（配息不再投入），歷史不足期間誠實標示；投入時點用 ETF 本身 EMA20/60、RSI、標準 KD 與除息時點；環境判讀整合既有國際市場脈動（利率／股市／匯率）並提供情境推演。
+- 提供「3 支最佳配置」：月配直領（依殖利率45%＋1年報酬20%＋3年報酬15%＋流動性10%＋歷史10%評分）或季配錯月（0056 型 1/4/7/10、00878 型 2/5/8/11、00919 型 3/6/9/12 三組輪流），每月都有股息；使用者可自行勾選與調整權重，前端即時試算每月預估股息。
+- 已接入 `full-professional-stock-screen.js`（require、optional 抓取、styles 與 render 注入、report.etfIncome 輸出）；驗證器已同步（`Test-OpenCodeHandoff.ps1` 檢查 etf-income-planner.js 與契約標記；`Update-ProfessionalScreen.ps1` 的 allowedPaths 與 HTML 標記檢查已加入）。
+
+### 固定邊界
+
+- 配息頻率、金額與報酬全部以抓取事實為準；候選清單（既有 ETF 快照＋補充債券/海外清單）只是候選，抓不到或無法判定即標示，不補造。
+- 上櫃 ETF 用 `.TWO`（如 00948B、00937B、00679B），上市用 `.TW`；市場別由 dividend 頁 title 偵測。
+- 來源 B 級；失敗只讓該區塊 unavailable／partial，不阻斷主報告。
+- 不改變 `HORIZON_SCORE_V2`、排名、個股動作或任何硬性門檻；環境情境是推演不是預測。
+- 月配息為估算（配息變動、除息扣淨值、可能含平準金／本金），前台標示非保證。
+
+### 驗證與下一步
+
+- 已通過：Node 語法、`--render-existing` 重產、Playwright 互動（資金快捷、模式切換、勾選權重、localStorage 保存、1050×900／390×844 無水平溢出、console 0）。
+- 待完成：完整受控更新（真抓全部候選 ETF 資料）→ 正式發布 → Pages 線上驗證 → 更新 Obsidian SOP 與 `design-qa.md`。

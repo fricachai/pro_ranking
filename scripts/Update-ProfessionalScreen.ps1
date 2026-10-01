@@ -584,7 +584,7 @@ try {
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
     $decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
-    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'ETF_INCOME_PLANNER_V1', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
@@ -594,7 +594,7 @@ try {
     }
     $dataChanged = -not $previousReportFingerprint -or $previousReportFingerprint -ne $currentReportFingerprint
 
-    $allowedPaths = @('index.html', 'professional-screen-report/latest.json') + $generatedFiles
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json', 'etf-income-planner.js') + $generatedFiles
     $allowedPrefixes = @('professional-screen-report/events/', 'professional-screen-report/backtest-snapshots/')
     $changedPaths = @(Get-ChangedPaths)
     $unexpected = @($changedPaths | Where-Object {
