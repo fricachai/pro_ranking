@@ -418,3 +418,13 @@ Final result: passed
 - Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；配置為模型建議非保證。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配規劃：可拖曳本組配置面板 QA
+
+- Change: 新增「本組配置」面板：候選 ETF 可勾選或拖曳加入、配置卡可拖曳排序、可拖到「移出區」或按「移出」按鈕移出、每檔權重可自行輸入；權重為 0 自動視為移出（不再殘留 0% 項目）；加入時重新平均分配、移出時剩餘平均分配至 100%；手動修改權重不自動正規化，合計非 100% 顯示警告「目前權重合計 X%」；右側與摘要同步顯示每檔權重／投入金額／本檔預估月均股息與合計；模型建議／自訂配置標籤依權重合計與選取判定。
+- Browser tests: 乾淨載入月配現金流優先 00929/00961/00964（7.54/8.67/8.43%）；勾選與原生 DragEvent 加入 00934 → 4 檔各 25%；權重設 0 → 卡片與 badge 移除；移出按鈕 → 剩餘平均；權重改 60% → 「權重合計 135%」警告；拖曳排序（00929→00964 後）正確；localStorage 保存/恢復；console errors/warnings 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375（config grid 317=317），無溢出。
+- Online release: commit 5362fa（拖曳面板）＋e6f0706（修正使用正確 income-priority 資料重產，先前的 HTML 誤用舊備份資料）；Pages workflow success；線上 HTTP 200、拖曳加入／移出／排序、權重警告、版面與 console 0 均通過。
+- Boundary: 純 UI／互動改造，沿用既有已驗證 JSON；未改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻。
+
+Final result: passed
