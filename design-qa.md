@@ -375,3 +375,14 @@ Final result: passed
 - Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；來源 B 級揭露；失敗只讓區塊 unavailable 不阻斷報告；月配息為估算非保證。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配規劃：篩選／摘要浮動／投入結論／位置圖修正 QA
+
+- Change: 1) 篩選變更現在會立即重新套用（「僅月配」只顯示月配 ETF）；2) 右側「每月預估股息」移除 position:sticky，改為正常欄位排列，不再浮動遮擋；3) 投入時點改為二分明確結論：現在可投入第一批／現在不投入（附等待原因：站回20日EMA／回測／降溫／低檔確認），並建議先投 1／3；4) 每檔新增「近一年價格位置圖」：低點→高點漸層色帶＋現價標記點＋「位於區間 X%（低位／中段／高位）」文字。
+- Browser tests: 篩選「僅月配」21 檔（無季配）、「僅季配」34 檔、全部 55 檔；0056 顯示「現在可投入第一批」＋位置圖「目前價 56.70｜近一年區間約 95%｜位於近一年區間高位」（標記點 left:95%）；00919/00918 顯示「現在不投入」（價格在 20日EMA 下方）；結果區 position=static；console errors/warnings 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375（etfi 區塊 351=351），無頁面級水平溢出。
+- Data: 受控更新重抓後 84 檔有技術判讀（55 檔 invest／29 檔 wait）；範圍資料來自 1 年日K 真實最高最低。
+- Online release: commit 3f17ad5；稽核標籤 published/20261001-123404；Pages PAGES_AUDIT_STATUS=complete；線上驗證徽章、位置圖、篩選、版面與 console 0 全數通過。
+- Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；位置圖只顯示價格相對位置，不產生買賣指令。
+
+Final result: passed
