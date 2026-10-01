@@ -407,3 +407,14 @@ Final result: passed
 - Boundary: 純 UI／互動改善，沿用既有已驗證 JSON（--render-existing），未重抓資料、未改 HORIZON_SCORE_V2、排名或硬性門檻。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配規劃：現金流優先模式與 200/300/500 萬按鈕 QA
+
+- Change: 1) 月配拆成「現金流優先」（殖利率60%＋1y/3y/5y報酬各10%＋歷史5%＋流動性5%，預設）與「長期平衡」（1y/3y/5y報酬15/25/30%＋殖利率20%＋歷史5%＋流動性5%）兩種模式；季配錯月維持；2) 資金快捷新增 200萬/300萬/500萬（共 10/20/30/50/100/200/300/500 萬）；3) 修正模式切換後「模型建議配置」標籤誤判為「自訂配置」的權重容差邊界（0.005→0.011）；4) 產生器改輸出 bestMonthlyIncome/bestMonthlyBalanced/bestStaggered 三組。
+- Data logic: 500萬試算＝月配現金流優先 00929/00961/00964（殖利率7.54/8.67/8.44%）約 34,147 元/月；月配長期平衡 00929/00900/00730 約 23,278 元/月；季配錯月 00891(10.97%)/00888(10.42%)/00896(14.37%) 約 49,265 元/月。高殖利率不等於保證，季配高息含平準金／本金與未填息風險，前台揭露。
+- Browser tests: 8 個資金按鈕正常；三模式切換、明細卡、權重依據、模型建議/自訂標籤正確；console errors/warnings 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375，無溢出。
+- Online release: 受控更新 STATUS=published；commit 2a07b4e；稽核標籤 published/20261001-165311；Pages PAGES_AUDIT_STATUS=complete；線上 HTTP 200、三模式與 500 萬按鈕、金額試算、版面與 console 0 全數通過。
+- Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；配置為模型建議非保證。
+
+Final result: passed
