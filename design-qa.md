@@ -363,3 +363,15 @@ Final result: passed
 - Boundary: `POSITION_ZONE_CHART_V1`；純 UI 重產沿用 2026-09-30 已驗證 JSON，未重抓資料、未改 `HORIZON_SCORE_V2`、排名、門檻或正式動作。
 
 Final result: passed
+
+## 2026-10-01 ETF 月月配退休規劃（ETF_INCOME_PLANNER_V1）QA
+
+- Change: 新增「ETF 月月配退休規劃」區塊：可投入資金輸入（10／20／30／50／100 萬快捷）、月配直領／季配錯月模式、3 支最佳配置（自動評分：殖利率45%＋1年報酬20%＋3年報酬15%＋流動性10%＋歷史10%）、可勾選標的與權重、每月預估股息即時試算、環境判讀（國際脈動）與情境推演、風險揭露。
+- Data contract: 配息頻率逐檔以 Yahoo 奇摩 dividend 頁實際除息紀錄判定（period 前綴 M/Q/H/FY＋近12個月除息次數交叉驗證）；上櫃用 .TWO、上市用 .TW（由 title 偵測）；1／3／5 年報酬為含息現金流年化（配息不再投入），歷史不足期間輸出 null 並揭露實際區間。
+- Browser tests: 資金快捷 10/20 萬即時重算（10萬→511、20萬→1,023）；模式切換載入該模式最佳 3 檔；月配最佳 00929/00961/00934、季配錯月 00888(1/4/7/10)/00891(2/5/8/11)/00918(3/6/9/12) 每月都有配息；勾選 00929 權重 100%→630 元/月；localStorage 保存後重載恢復；環境判讀顯示真實 regime；console errors/warnings 0。
+- Viewports: 1050×900 scrollWidth=1035、390×844 scrollWidth=375，etfi 區塊 351=351；兩種尺寸均無頁面級水平溢出。截圖：C:\Users\user\AppData\Local\Temp\opencode\etfi-desktop-1050.png、etfi-mobile-390.png（不進 repo）。
+- Online release: 受控更新 STATUS=published、FINAL_RESULT_READY=true；commit 95ca9b5dbea0c3b24530e6ca341aece3ebbbc4e8；稽核標籤 published/20261001-115325；Pages PAGES_AUDIT_STATUS=complete；線上正式網址 HTTP 200、月月配區塊「完整」、101 檔候選（月配21/季配35/半年配16/年配12/無配息17）；線上 1050×900 與 390×844 無溢出、console 0；環境 regime「訊號分歧」；10 萬資金月配最佳 3 檔約 669 元/月、季配錯月約 943 元/月。
+- Privacy: 本機測試後已清除 localStorage 測試資料；無帳密、成本或持倉寫入 repo。
+- Boundary: 不改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻；來源 B 級揭露；失敗只讓區塊 unavailable 不阻斷報告；月配息為估算非保證。
+
+Final result: passed
