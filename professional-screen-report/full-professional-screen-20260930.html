@@ -229,18 +229,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .etfi-weight input:focus-visible{outline:3px solid #e9b949}
 .etfi-contrib{font-size:12px;color:#555}
 .etfi-contrib b{font-size:14px;color:#0b6b3a}
-.etfi-timing{margin-top:10px;background:#f6f9f7;border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.6}
-.etfi-timing b{color:#0b6b3a}
-.etfi-timing span{display:block;margin-top:2px;color:#333}
+.etfi-timing{margin-top:10px;background:#f6f9f7;border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.6}
+.etfi-timing > span{display:block;margin-top:2px;color:#333}
 .etfi-timing small{color:#888}
+.etfi-decision-badge{display:inline-block;font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;margin-bottom:4px}
+.etfi-decision-invest .etfi-decision-badge{background:#0b6b3a;color:#fff}
+.etfi-decision-wait .etfi-decision-badge{background:#fff7e8;color:#8a5a00;border:1px solid #e5c36a}
+.etfi-decision-unknown .etfi-decision-badge{background:#eef1ef;color:#555;border:1px solid #ccd6d0}
 .etfi-timing-wait,.etfi-timing-hot{background:#fff7e8;border-left:3px solid #d98e04}
-.etfi-timing-wait b,.etfi-timing-hot b{color:#8a5a00}
 .etfi-timing-watch{background:#fdf0ef;border-left:3px solid #b3261e}
-.etfi-timing-watch b{color:#b3261e}
 .etfi-timing-observe{background:#eef4fd;border-left:3px solid #1d5fa8}
-.etfi-timing-observe b{color:#1d5fa8}
+.etfi-range{margin:8px 0 4px}
+.etfi-range-bar{position:relative;height:9px;border-radius:999px;background:linear-gradient(90deg,#b9d8e6 0%,#8fc7a8 48%,#e8b76a 80%,#d98e04 100%);box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.etfi-range-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#0b3d22;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35)}
+.etfi-range-labels{display:flex;justify-content:space-between;font-size:11px;color:#666;margin-top:3px}
+.etfi-range-note{font-size:12px;font-weight:700;color:#0b3d22;margin-top:2px}
 .etfi-right{display:flex;flex-direction:column;gap:12px}
-.etfi-result{background:#fff;border:2px solid #0b6b3a;border-radius:12px;padding:16px;position:sticky;top:12px;box-shadow:0 4px 14px rgba(11,107,58,.12)}
+.etfi-result{background:#fff;border:2px solid #0b6b3a;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(11,107,58,.12)}
 .etfi-result-head{font-size:13px;color:#0b3d22}
 .etfi-result-total{display:block;font-size:26px;font-weight:800;color:#0b6b3a;margin:6px 0}
 .etfi-result-head small{display:block;font-size:12px;color:#666;margin-top:2px}
@@ -263,7 +268,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 @media (max-width:900px){
   .etfi-layout{grid-template-columns:1fr}
   .etfi-right{order:-1}
-  .etfi-result{position:static}
   .etfi-env-grid{grid-template-columns:1fr}
   .etfi-metrics{grid-template-columns:1fr 1fr}
 }
@@ -383,7 +387,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0050"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0050">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 112.30 站穩 20日EMA（109.39），RSI 61 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 107.75–111.03 加碼，收盤跌破 60日EMA（105.87）則暫停。</span><small>技術資料日 2026-10-01｜承接區 107.75–111.03</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 112.30 站穩 20日EMA（109.39），RSI 61 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 107.75–111.03 加碼，收盤跌破 60日EMA（105.87）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 107.75–111.03</small>
+    </div>
   </div><div class="etfi-row" data-code="0056" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="0056" aria-label="選擇 0056 元大高股息"><span></span></label>
@@ -400,7 +409,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0056"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0056">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 56.65 站穩 20日EMA（55.72），RSI 62 未過熱，KD 63／68 無極端訊號；可依計畫分批投入，回測 54.89–56.56 加碼，收盤跌破 60日EMA（53.36）則暫停。</span><small>技術資料日 2026-10-01｜承接區 54.89–56.56</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 56.65 站穩 20日EMA（55.72），RSI 62 未過熱，KD 63／68 無極端訊號；可依計畫分批投入，回測 54.89–56.56 加碼，收盤跌破 60日EMA（53.36）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 54.89–56.56</small>
+    </div>
   </div><div class="etfi-row" data-code="00878" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00878" aria-label="選擇 00878 國泰永續高股息"><span></span></label>
@@ -417,7 +431,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00878"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00878">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 34.80 站穩 20日EMA（34.39），RSI 69 未過熱，KD 60／71 無極端訊號；可依計畫分批投入，回測 33.87–34.91 加碼，收盤跌破 60日EMA（33.20）則暫停。</span><small>技術資料日 2026-10-01｜承接區 33.87–34.91</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 34.80 站穩 20日EMA（34.39），RSI 69 未過熱，KD 60／71 無極端訊號；可依計畫分批投入，回測 33.87–34.91 加碼，收盤跌破 60日EMA（33.20）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 33.87–34.91</small>
+    </div>
   </div><div class="etfi-row" data-code="00919" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00919" aria-label="選擇 00919 群益台灣精選高息"><span></span></label>
@@ -434,7 +453,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00919"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00919">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 31.48 在 20日EMA（31.95）下方，先觀察是否站回；分批以回測承接區 31.47–32.43 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 31.47–32.43</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 31.48 在 20日EMA（31.95）下方，先觀察是否站回；分批以回測承接區 31.47–32.43 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 31.47–32.43</small>
+    </div>
   </div><div class="etfi-row" data-code="006208" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="006208" aria-label="選擇 006208 富邦台50"><span></span></label>
@@ -451,7 +475,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="006208"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="006208">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 256.90 站穩 20日EMA（250.33），RSI 64 未過熱，KD 78／74 無極端訊號；可依計畫分批投入，回測 246.57–254.08 加碼，收盤跌破 60日EMA（242.80）則暫停。</span><small>技術資料日 2026-10-01｜承接區 246.57–254.08</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 256.90 站穩 20日EMA（250.33），RSI 64 未過熱，KD 78／74 無極端訊號；可依計畫分批投入，回測 246.57–254.08 加碼，收盤跌破 60日EMA（242.80）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 246.57–254.08</small>
+    </div>
   </div><div class="etfi-row" data-code="009816" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009816" aria-label="選擇 009816 凱基台灣TOP50"><span></span></label>
@@ -485,7 +514,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0052"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0052">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 65.55 站穩 20日EMA（63.61），RSI 63 未過熱，KD 83／75 無極端訊號；可依計畫分批投入，回測 62.65–64.56 加碼，收盤跌破 60日EMA（61.87）則暫停。</span><small>技術資料日 2026-10-01｜承接區 62.65–64.56</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 65.55 站穩 20日EMA（63.61），RSI 63 未過熱，KD 83／75 無極端訊號；可依計畫分批投入，回測 62.65–64.56 加碼，收盤跌破 60日EMA（61.87）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 62.65–64.56</small>
+    </div>
   </div><div class="etfi-row" data-code="00918" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00918" aria-label="選擇 00918 大華優利高填息30"><span></span></label>
@@ -502,7 +536,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00918"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00918">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 33.76 在 20日EMA（34.54）下方，先觀察是否站回；分批以回測承接區 34.02–35.06 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 34.02–35.06</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 33.76 在 20日EMA（34.54）下方，先觀察是否站回；分批以回測承接區 34.02–35.06 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 34.02–35.06</small>
+    </div>
   </div><div class="etfi-row" data-code="00929" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00929" aria-label="選擇 00929 復華台灣科技優息"><span></span></label>
@@ -519,7 +558,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00929"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00929">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 29.49 站穩 20日EMA（29.03），RSI 62 未過熱，KD 82／71 無極端訊號；可依計畫分批投入，回測 28.59–29.47 加碼，收盤跌破 60日EMA（28.73）則暫停。</span><small>技術資料日 2026-10-01｜承接區 28.59–29.47</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 29.49 站穩 20日EMA（29.03），RSI 62 未過熱，KD 82／71 無極端訊號；可依計畫分批投入，回測 28.59–29.47 加碼，收盤跌破 60日EMA（28.73）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 28.59–29.47</small>
+    </div>
   </div><div class="etfi-row" data-code="00881" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00881" aria-label="選擇 00881 國泰台灣科技龍頭"><span></span></label>
@@ -536,7 +580,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00881"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00881">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 52.30 站穩 20日EMA（51.16），RSI 62 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 50.39–51.92 加碼，收盤跌破 60日EMA（50.90）則暫停。</span><small>技術資料日 2026-10-01｜承接區 50.39–51.92</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 52.30 站穩 20日EMA（51.16），RSI 62 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 50.39–51.92 加碼，收盤跌破 60日EMA（50.90）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 50.39–51.92</small>
+    </div>
   </div><div class="etfi-row" data-code="00713" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00713" aria-label="選擇 00713 元大台灣高息低波"><span></span></label>
@@ -553,7 +602,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00713"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00713">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 62.70 在 20日EMA（63.32）下方，先觀察是否站回；分批以回測承接區 62.37–64.27 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 62.37–64.27</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 62.70 在 20日EMA（63.32）下方，先觀察是否站回；分批以回測承接區 62.37–64.27 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 62.37–64.27</small>
+    </div>
   </div><div class="etfi-row" data-code="00922" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00922" aria-label="選擇 00922 國泰台灣領袖50"><span></span></label>
@@ -570,7 +624,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00922"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00922">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 43.58 站穩 20日EMA（42.54），RSI 62 未過熱，KD 76／74 無極端訊號；可依計畫分批投入，回測 41.91–43.18 加碼，收盤跌破 60日EMA（40.93）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 41.91–43.18</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 43.58 站穩 20日EMA（42.54），RSI 62 未過熱，KD 76／74 無極端訊號；可依計畫分批投入，回測 41.91–43.18 加碼，收盤跌破 60日EMA（40.93）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 41.91–43.18</small>
+    </div>
   </div><div class="etfi-row" data-code="00891" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00891" aria-label="選擇 00891 中信關鍵半導體"><span></span></label>
@@ -587,7 +646,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00891"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00891">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 37.64 站穩 20日EMA（36.19），RSI 66 未過熱，KD 81／77 無極端訊號；可依計畫分批投入，回測 35.65–36.74 加碼，收盤跌破 60日EMA（35.15）則暫停。</span><small>技術資料日 2026-10-01｜承接區 35.65–36.74</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 37.64 站穩 20日EMA（36.19），RSI 66 未過熱，KD 81／77 無極端訊號；可依計畫分批投入，回測 35.65–36.74 加碼，收盤跌破 60日EMA（35.15）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 35.65–36.74</small>
+    </div>
   </div><div class="etfi-row" data-code="00940" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00940" aria-label="選擇 00940 元大台灣價值高息"><span></span></label>
@@ -604,7 +668,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00940"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00940">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 13.13 站穩 20日EMA（12.94），RSI 67 未過熱，KD 80／79 無極端訊號；可依計畫分批投入，回測 12.75–13.14 加碼，收盤跌破 60日EMA（12.57）則暫停。 最近除息日 2026-10-07 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 12.75–13.14</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 13.13 站穩 20日EMA（12.94），RSI 67 未過熱，KD 80／79 無極端訊號；可依計畫分批投入，回測 12.75–13.14 加碼，收盤跌破 60日EMA（12.57）則暫停。 最近除息日 2026-10-07 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 12.75–13.14</small>
+    </div>
   </div><div class="etfi-row" data-code="00692" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00692" aria-label="選擇 00692 富邦公司治理"><span></span></label>
@@ -621,7 +690,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00692"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00692">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 96.70 站穩 20日EMA（93.96），RSI 64 未過熱，KD 82／77 無極端訊號；可依計畫分批投入，回測 92.56–95.37 加碼，收盤跌破 60日EMA（91.02）則暫停。</span><small>技術資料日 2026-10-01｜承接區 92.56–95.37</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 96.70 站穩 20日EMA（93.96），RSI 64 未過熱，KD 82／77 無極端訊號；可依計畫分批投入，回測 92.56–95.37 加碼，收盤跌破 60日EMA（91.02）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 92.56–95.37</small>
+    </div>
   </div><div class="etfi-row" data-code="00927" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00927" aria-label="選擇 00927 群益半導體收益"><span></span></label>
@@ -638,7 +712,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00927"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00927">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 40.12 站穩 20日EMA（38.30），RSI 72 未過熱，KD 78／76 無極端訊號；可依計畫分批投入，回測 37.72–38.87 加碼，收盤跌破 60日EMA（37.26）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 37.72–38.87</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 40.12 站穩 20日EMA（38.30），RSI 72 未過熱，KD 78／76 無極端訊號；可依計畫分批投入，回測 37.72–38.87 加碼，收盤跌破 60日EMA（37.26）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 37.72–38.87</small>
+    </div>
   </div><div class="etfi-row" data-code="00935" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00935" aria-label="選擇 00935 野村臺灣新科技50"><span></span></label>
@@ -655,7 +734,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00935"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00935">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 61.10 站穩 20日EMA（59.24），RSI 56 未過熱，KD 75／68 無極端訊號；可依計畫分批投入，回測 58.36–60.13 加碼，收盤跌破 60日EMA（57.57）則暫停。</span><small>技術資料日 2026-10-01｜承接區 58.36–60.13</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 61.10 站穩 20日EMA（59.24），RSI 56 未過熱，KD 75／68 無極端訊號；可依計畫分批投入，回測 58.36–60.13 加碼，收盤跌破 60日EMA（57.57）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 58.36–60.13</small>
+    </div>
   </div><div class="etfi-row" data-code="00850" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00850" aria-label="選擇 00850 元大臺灣ESG永續"><span></span></label>
@@ -672,7 +756,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00850"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00850">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 96.00 站穩 20日EMA（93.64），RSI 62 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 92.24–95.04 加碼，收盤跌破 60日EMA（90.47）則暫停。</span><small>技術資料日 2026-10-01｜承接區 92.24–95.04</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 96.00 站穩 20日EMA（93.64），RSI 62 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 92.24–95.04 加碼，收盤跌破 60日EMA（90.47）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 92.24–95.04</small>
+    </div>
   </div><div class="etfi-row" data-code="00923" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00923" aria-label="選擇 00923 群益台ESG低碳50"><span></span></label>
@@ -689,7 +778,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00923"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00923">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 41.52 站穩 20日EMA（40.71），RSI 61 未過熱，KD 74／71 無極端訊號；可依計畫分批投入，回測 40.10–41.32 加碼，收盤跌破 60日EMA（40.27）則暫停。</span><small>技術資料日 2026-10-01｜承接區 40.10–41.32</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 41.52 站穩 20日EMA（40.71），RSI 61 未過熱，KD 74／71 無極端訊號；可依計畫分批投入，回測 40.10–41.32 加碼，收盤跌破 60日EMA（40.27）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 40.10–41.32</small>
+    </div>
   </div><div class="etfi-row" data-code="00900" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00900" aria-label="選擇 00900 富邦特選高股息30"><span></span></label>
@@ -706,7 +800,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00900"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00900">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 19.27 在 20日EMA（19.47）下方，先觀察是否站回；分批以回測承接區 19.18–19.76 附近再執行。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 19.18–19.76</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 19.27 在 20日EMA（19.47）下方，先觀察是否站回；分批以回測承接區 19.18–19.76 附近再執行。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 19.18–19.76</small>
+    </div>
   </div><div class="etfi-row" data-code="00939" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00939" aria-label="選擇 00939 統一台灣高息動能"><span></span></label>
@@ -723,7 +822,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00939"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00939">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 23.87 站穩 20日EMA（23.83），RSI 51 未過熱，KD 41／62 無極端訊號；可依計畫分批投入，回測 23.47–24.19 加碼，收盤跌破 60日EMA（22.69）則暫停。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 23.47–24.19</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 23.87 站穩 20日EMA（23.83），RSI 51 未過熱，KD 41／62 無極端訊號；可依計畫分批投入，回測 23.47–24.19 加碼，收盤跌破 60日EMA（22.69）則暫停。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 23.47–24.19</small>
+    </div>
   </div><div class="etfi-row" data-code="00888" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00888" aria-label="選擇 00888 永豐台灣ESG"><span></span></label>
@@ -740,7 +844,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00888"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00888">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 36.29 站穩 20日EMA（35.02），RSI 69 未過熱，KD 80／79 無極端訊號；可依計畫分批投入，回測 34.49–35.54 加碼，收盤跌破 60日EMA（33.95）則暫停。</span><small>技術資料日 2026-10-01｜承接區 34.49–35.54</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 36.29 站穩 20日EMA（35.02），RSI 69 未過熱，KD 80／79 無極端訊號；可依計畫分批投入，回測 34.49–35.54 加碼，收盤跌破 60日EMA（33.95）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 34.49–35.54</small>
+    </div>
   </div><div class="etfi-row" data-code="00915" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00915" aria-label="選擇 00915 凱基優選高股息30"><span></span></label>
@@ -757,7 +866,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00915"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00915">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 32.94 站穩 20日EMA（32.77），RSI 54 未過熱，KD 61／68 無極端訊號；可依計畫分批投入，回測 32.27–33.26 加碼，收盤跌破 60日EMA（31.85）則暫停。</span><small>技術資料日 2026-10-01｜承接區 32.27–33.26</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 32.94 站穩 20日EMA（32.77），RSI 54 未過熱，KD 61／68 無極端訊號；可依計畫分批投入，回測 32.27–33.26 加碼，收盤跌破 60日EMA（31.85）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 32.27–33.26</small>
+    </div>
   </div><div class="etfi-row" data-code="00893" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00893" aria-label="選擇 00893 國泰智能電動車"><span></span></label>
@@ -791,7 +905,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00961"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00961">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 13.23 在 20日EMA（13.27）下方，先觀察是否站回；分批以回測承接區 13.07–13.47 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 13.07–13.47</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 13.23 在 20日EMA（13.27）下方，先觀察是否站回；分批以回測承接區 13.07–13.47 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 13.07–13.47</small>
+    </div>
   </div><div class="etfi-row" data-code="00896" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00896" aria-label="選擇 00896 中信綠能及電動車"><span></span></label>
@@ -808,7 +927,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00896"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00896">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 27.76 站穩 20日EMA（27.59），RSI 40 未過熱，KD 66／55 無極端訊號；可依計畫分批投入，回測 27.17–28.00 加碼，收盤跌破 60日EMA（27.29）則暫停。</span><small>技術資料日 2026-10-01｜承接區 27.17–28.00</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 27.76 站穩 20日EMA（27.59），RSI 40 未過熱，KD 66／55 無極端訊號；可依計畫分批投入，回測 27.17–28.00 加碼，收盤跌破 60日EMA（27.29）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 27.17–28.00</small>
+    </div>
   </div><div class="etfi-row" data-code="00892" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00892" aria-label="選擇 00892 富邦台灣半導體"><span></span></label>
@@ -825,7 +949,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00892"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00892">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 42.85 站穩 20日EMA（42.09），RSI 50 未過熱，KD 67／66 無極端訊號；可依計畫分批投入，回測 41.46–42.72 加碼，收盤跌破 60日EMA（41.15）則暫停。</span><small>技術資料日 2026-10-01｜承接區 41.46–42.72</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 42.85 站穩 20日EMA（42.09），RSI 50 未過熱，KD 67／66 無極端訊號；可依計畫分批投入，回測 41.46–42.72 加碼，收盤跌破 60日EMA（41.15）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 41.46–42.72</small>
+    </div>
   </div><div class="etfi-row" data-code="00934" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00934" aria-label="選擇 00934 中信成長高股息"><span></span></label>
@@ -842,7 +971,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00934"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00934">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 29.96 站穩 20日EMA（29.75），RSI 46 未過熱，KD 70／57 無極端訊號；可依計畫分批投入，回測 29.30–30.19 加碼，收盤跌破 60日EMA（28.83）則暫停。</span><small>技術資料日 2026-10-01｜承接區 29.30–30.19</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 29.96 站穩 20日EMA（29.75），RSI 46 未過熱，KD 70／57 無極端訊號；可依計畫分批投入，回測 29.30–30.19 加碼，收盤跌破 60日EMA（28.83）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 29.30–30.19</small>
+    </div>
   </div><div class="etfi-row" data-code="00735" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00735" aria-label="選擇 00735 國泰臺韓科技"><span></span></label>
@@ -859,7 +993,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00735"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00735">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 108.70 站穩 20日EMA（105.57），RSI 54 未過熱，KD 69／65 無極端訊號；可依計畫分批投入，回測 103.99–107.16 加碼，收盤跌破 60日EMA（102.89）則暫停。</span><small>技術資料日 2026-10-01｜承接區 103.99–107.16</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 108.70 站穩 20日EMA（105.57），RSI 54 未過熱，KD 69／65 無極端訊號；可依計畫分批投入，回測 103.99–107.16 加碼，收盤跌破 60日EMA（102.89）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 103.99–107.16</small>
+    </div>
   </div><div class="etfi-row" data-code="00941" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00941" aria-label="選擇 00941 中信上游半導體"><span></span></label>
@@ -893,7 +1032,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00947"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00947">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 40.36 站穩 20日EMA（38.65），RSI 61 未過熱，KD 78／74 無極端訊號；可依計畫分批投入，回測 38.07–39.23 加碼，收盤跌破 60日EMA（37.00）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 38.07–39.23</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 40.36 站穩 20日EMA（38.65），RSI 61 未過熱，KD 78／74 無極端訊號；可依計畫分批投入，回測 38.07–39.23 加碼，收盤跌破 60日EMA（37.00）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 38.07–39.23</small>
+    </div>
   </div><div class="etfi-row" data-code="00965" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00965" aria-label="選擇 00965 元大航太防衛科技"><span></span></label>
@@ -927,7 +1071,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="009802"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="009802">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 19.88 站穩 20日EMA（19.88），RSI 33 未過熱，KD 47／50 無極端訊號；可依計畫分批投入，回測 19.58–20.18 加碼，收盤跌破 60日EMA（19.27）則暫停。</span><small>技術資料日 2026-10-01｜承接區 19.58–20.18</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 19.88 站穩 20日EMA（19.88），RSI 33 未過熱，KD 47／50 無極端訊號；可依計畫分批投入，回測 19.58–20.18 加碼，收盤跌破 60日EMA（19.27）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 19.58–20.18</small>
+    </div>
   </div><div class="etfi-row" data-code="00905" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00905" aria-label="選擇 00905 FT臺灣Smart"><span></span></label>
@@ -944,7 +1093,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00905"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00905">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 27.65 站穩 20日EMA（26.85），RSI 63 未過熱，KD 82／75 無極端訊號；可依計畫分批投入，回測 26.45–27.26 加碼，收盤跌破 60日EMA（26.27）則暫停。</span><small>技術資料日 2026-10-01｜承接區 26.45–27.26</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 27.65 站穩 20日EMA（26.85），RSI 63 未過熱，KD 82／75 無極端訊號；可依計畫分批投入，回測 26.45–27.26 加碼，收盤跌破 60日EMA（26.27）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 26.45–27.26</small>
+    </div>
   </div><div class="etfi-row" data-code="009828" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009828" aria-label="選擇 009828 中信台日韓PCB"><span></span></label>
@@ -1012,7 +1166,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00894"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00894">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 49.79 站穩 20日EMA（48.26），RSI 62 未過熱，KD 78／72 無極端訊號；可依計畫分批投入，回測 47.53–48.98 加碼，收盤跌破 60日EMA（47.11）則暫停。</span><small>技術資料日 2026-10-01｜承接區 47.53–48.98</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 49.79 站穩 20日EMA（48.26），RSI 62 未過熱，KD 78／72 無極端訊號；可依計畫分批投入，回測 47.53–48.98 加碼，收盤跌破 60日EMA（47.11）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 47.53–48.98</small>
+    </div>
   </div><div class="etfi-row" data-code="00895" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00895" aria-label="選擇 00895 富邦未來車"><span></span></label>
@@ -1046,7 +1205,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00701"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00701">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 41.07 站穩 20日EMA（40.95），RSI 55 未過熱，KD 40／62 無極端訊號；可依計畫分批投入，回測 40.33–41.56 加碼，收盤跌破 60日EMA（39.21）則暫停。</span><small>技術資料日 2026-10-01｜承接區 40.33–41.56</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 41.07 站穩 20日EMA（40.95），RSI 55 未過熱，KD 40／62 無極端訊號；可依計畫分批投入，回測 40.33–41.56 加碼，收盤跌破 60日EMA（39.21）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 40.33–41.56</small>
+    </div>
   </div><div class="etfi-row" data-code="00690" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00690" aria-label="選擇 00690 兆豐藍籌30"><span></span></label>
@@ -1063,7 +1227,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00690"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00690">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 82.15 站穩 20日EMA（80.25），RSI 58 未過熱，KD 69／68 無極端訊號；可依計畫分批投入，回測 79.05–81.45 加碼，收盤跌破 60日EMA（77.71）則暫停。</span><small>技術資料日 2026-10-01｜承接區 79.05–81.45</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 82.15 站穩 20日EMA（80.25），RSI 58 未過熱，KD 69／68 無極端訊號；可依計畫分批投入，回測 79.05–81.45 加碼，收盤跌破 60日EMA（77.71）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 79.05–81.45</small>
+    </div>
   </div><div class="etfi-row" data-code="00904" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00904" aria-label="選擇 00904 台新臺灣半導體30"><span></span></label>
@@ -1080,7 +1249,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00904"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00904">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 43.58 站穩 20日EMA（41.93），RSI 64 未過熱，KD 79／75 無極端訊號；可依計畫分批投入，回測 41.31–42.56 加碼，收盤跌破 60日EMA（40.62）則暫停。</span><small>技術資料日 2026-10-01｜承接區 41.31–42.56</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 43.58 站穩 20日EMA（41.93），RSI 64 未過熱，KD 79／75 無極端訊號；可依計畫分批投入，回測 41.31–42.56 加碼，收盤跌破 60日EMA（40.62）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 41.31–42.56</small>
+    </div>
   </div><div class="etfi-row" data-code="00946" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00946" aria-label="選擇 00946 群益科技高息成長"><span></span></label>
@@ -1097,7 +1271,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00946"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00946">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 15.47 站穩 20日EMA（15.29），RSI 60 未過熱，KD 79／70 無極端訊號；可依計畫分批投入，回測 15.07–15.52 加碼，收盤跌破 60日EMA（15.03）則暫停。 最近除息日 2026-10-07 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 15.07–15.52</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 15.47 站穩 20日EMA（15.29），RSI 60 未過熱，KD 79／70 無極端訊號；可依計畫分批投入，回測 15.07–15.52 加碼，收盤跌破 60日EMA（15.03）則暫停。 最近除息日 2026-10-07 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 15.07–15.52</small>
+    </div>
   </div><div class="etfi-row" data-code="00910" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00910" aria-label="選擇 00910 第一金太空衛星"><span></span></label>
@@ -1131,7 +1310,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="009803"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="009803">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 21.68 站穩 20日EMA（21.51），RSI 42 未過熱，KD 73／61 無極端訊號；可依計畫分批投入，回測 21.18–21.83 加碼，收盤跌破 60日EMA（21.20）則暫停。</span><small>技術資料日 2026-10-01｜承接區 21.18–21.83</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 21.68 站穩 20日EMA（21.51），RSI 42 未過熱，KD 73／61 無極端訊號；可依計畫分批投入，回測 21.18–21.83 加碼，收盤跌破 60日EMA（21.20）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 21.18–21.83</small>
+    </div>
   </div><div class="etfi-row" data-code="00861" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00861" aria-label="選擇 00861 元大全球未來通訊"><span></span></label>
@@ -1182,7 +1366,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00952"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00952">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 18.52 站穩 20日EMA（18.15），RSI 67 未過熱，KD 74／64 無極端訊號；可依計畫分批投入，回測 17.87–18.42 加碼，收盤跌破 60日EMA（17.93）則暫停。</span><small>技術資料日 2026-10-01｜承接區 17.87–18.42</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 18.52 站穩 20日EMA（18.15），RSI 67 未過熱，KD 74／64 無極端訊號；可依計畫分批投入，回測 17.87–18.42 加碼，收盤跌破 60日EMA（17.93）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 17.87–18.42</small>
+    </div>
   </div><div class="etfi-row" data-code="00733" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00733" aria-label="選擇 00733 富邦臺灣中小"><span></span></label>
@@ -1199,7 +1388,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00733"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00733">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-wait"><b>等回測再分批</b><span>目前價 72.50 高於 20日EMA 約 6.2%，短線乖離過大；先等價格回到承接區 67.27–69.31 再分批。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 67.27–69.31</small></div>
+    <div class="etfi-timing etfi-timing-wait etfi-decision-unknown">
+      <b class="etfi-decision-badge">等回測再分批</b>
+      <span>目前價 72.50 高於 20日EMA 約 6.2%，短線乖離過大；先等價格回到承接區 67.27–69.31 再分批。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 67.27–69.31</small>
+    </div>
   </div><div class="etfi-row" data-code="0055" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="0055" aria-label="選擇 0055 元大MSCI金融"><span></span></label>
@@ -1216,7 +1410,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0055"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0055">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 48.28 在 20日EMA（48.76）下方，先觀察是否站回；分批以回測承接區 48.03–49.49 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 48.03–49.49</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 48.28 在 20日EMA（48.76）下方，先觀察是否站回；分批以回測承接區 48.03–49.49 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 48.03–49.49</small>
+    </div>
   </div><div class="etfi-row" data-code="00936" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00936" aria-label="選擇 00936 台新永續高息中小"><span></span></label>
@@ -1233,7 +1432,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00936"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00936">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 21.54 站穩 20日EMA（21.36），RSI 53 未過熱，KD 71／65 無極端訊號；可依計畫分批投入，回測 21.04–21.68 加碼，收盤跌破 60日EMA（21.05）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 21.04–21.68</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 21.54 站穩 20日EMA（21.36），RSI 53 未過熱，KD 71／65 無極端訊號；可依計畫分批投入，回測 21.04–21.68 加碼，收盤跌破 60日EMA（21.05）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 21.04–21.68</small>
+    </div>
   </div><div class="etfi-row" data-code="00930" data-frequency="年配" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00930" aria-label="選擇 00930 永豐ESG低碳高息"><span></span></label>
@@ -1250,7 +1454,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00930"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00930">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 23.76 在 20日EMA（24.05）下方，先觀察是否站回；分批以回測承接區 23.69–24.41 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 23.69–24.41</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 23.76 在 20日EMA（24.05）下方，先觀察是否站回；分批以回測承接區 23.69–24.41 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 23.69–24.41</small>
+    </div>
   </div><div class="etfi-row" data-code="0051" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="0051" aria-label="選擇 0051 元大中型100"><span></span></label>
@@ -1267,7 +1476,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0051"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0051">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 148.55 站穩 20日EMA（145.67），RSI 57 未過熱，KD 79／71 無極端訊號；可依計畫分批投入，回測 143.49–147.86 加碼，收盤跌破 60日EMA（142.63）則暫停。</span><small>技術資料日 2026-10-01｜承接區 143.49–147.86</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 148.55 站穩 20日EMA（145.67），RSI 57 未過熱，KD 79／71 無極端訊號；可依計畫分批投入，回測 143.49–147.86 加碼，收盤跌破 60日EMA（142.63）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 143.49–147.86</small>
+    </div>
   </div><div class="etfi-row" data-code="009804" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009804" aria-label="選擇 009804 聯邦台精彩50"><span></span></label>
@@ -1284,7 +1498,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="009804"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="009804">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 23.96 站穩 20日EMA（23.34），RSI 62 未過熱，KD 73／72 無極端訊號；可依計畫分批投入，回測 22.99–23.69 加碼，收盤跌破 60日EMA（22.63）則暫停。</span><small>技術資料日 2026-10-01｜承接區 22.99–23.69</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 23.96 站穩 20日EMA（23.34），RSI 62 未過熱，KD 73／72 無極端訊號；可依計畫分批投入，回測 22.99–23.69 加碼，收盤跌破 60日EMA（22.63）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 22.99–23.69</small>
+    </div>
   </div><div class="etfi-row" data-code="00913" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00913" aria-label="選擇 00913 兆豐台灣晶圓製造"><span></span></label>
@@ -1301,7 +1520,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00913"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00913">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-wait"><b>等回測再分批</b><span>目前價 52.85 高於 20日EMA 約 5.2%，短線乖離過大；先等價格回到承接區 49.48–50.98 再分批。</span><small>技術資料日 2026-10-01｜承接區 49.48–50.98</small></div>
+    <div class="etfi-timing etfi-timing-wait etfi-decision-unknown">
+      <b class="etfi-decision-badge">等回測再分批</b>
+      <span>目前價 52.85 高於 20日EMA 約 5.2%，短線乖離過大；先等價格回到承接區 49.48–50.98 再分批。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 49.48–50.98</small>
+    </div>
   </div><div class="etfi-row" data-code="00901" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00901" aria-label="選擇 00901 永豐智能車供應鏈"><span></span></label>
@@ -1318,7 +1542,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00901"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00901">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 48.15 站穩 20日EMA（46.88），RSI 58 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 46.18–47.59 加碼，收盤跌破 60日EMA（45.39）則暫停。</span><small>技術資料日 2026-10-01｜承接區 46.18–47.59</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 48.15 站穩 20日EMA（46.88），RSI 58 未過熱，KD 76／72 無極端訊號；可依計畫分批投入，回測 46.18–47.59 加碼，收盤跌破 60日EMA（45.39）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 46.18–47.59</small>
+    </div>
   </div><div class="etfi-row" data-code="00938" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00938" aria-label="選擇 00938 凱基優選30"><span></span></label>
@@ -1335,7 +1564,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00938"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00938">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 26.56 站穩 20日EMA（26.53），RSI 49 未過熱，KD 41／61 無極端訊號；可依計畫分批投入，回測 26.13–26.93 加碼，收盤跌破 60日EMA（25.36）則暫停。</span><small>技術資料日 2026-10-01｜承接區 26.13–26.93</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 26.56 站穩 20日EMA（26.53），RSI 49 未過熱，KD 41／61 無極端訊號；可依計畫分批投入，回測 26.13–26.93 加碼，收盤跌破 60日EMA（25.36）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 26.13–26.93</small>
+    </div>
   </div><div class="etfi-row" data-code="00728" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00728" aria-label="選擇 00728 第一金工業30"><span></span></label>
@@ -1352,7 +1586,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00728"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00728">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 69.85 站穩 20日EMA（69.10），RSI 53 未過熱，KD 65／65 無極端訊號；可依計畫分批投入，回測 68.06–70.14 加碼，收盤跌破 60日EMA（66.19）則暫停。</span><small>技術資料日 2026-10-01｜承接區 68.06–70.14</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 69.85 站穩 20日EMA（69.10），RSI 53 未過熱，KD 65／65 無極端訊號；可依計畫分批投入，回測 68.06–70.14 加碼，收盤跌破 60日EMA（66.19）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 68.06–70.14</small>
+    </div>
   </div><div class="etfi-row" data-code="00907" data-frequency="年配" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00907" aria-label="選擇 00907 永豐優息存股"><span></span></label>
@@ -1369,7 +1608,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00907"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00907">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 17.55 在 20日EMA（17.67）下方，先觀察是否站回；分批以回測承接區 17.40–17.93 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 17.40–17.93</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 17.55 在 20日EMA（17.67）下方，先觀察是否站回；分批以回測承接區 17.40–17.93 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 17.40–17.93</small>
+    </div>
   </div><div class="etfi-row" data-code="0053" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="0053" aria-label="選擇 0053 元大電子"><span></span></label>
@@ -1386,7 +1630,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0053"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0053">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 253.70 站穩 20日EMA（246.35），RSI 62 未過熱，KD 81／71 無極端訊號；可依計畫分批投入，回測 242.65–250.04 加碼，收盤跌破 60日EMA（239.08）則暫停。</span><small>技術資料日 2026-10-01｜承接區 242.65–250.04</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 253.70 站穩 20日EMA（246.35），RSI 62 未過熱，KD 81／71 無極端訊號；可依計畫分批投入，回測 242.65–250.04 加碼，收盤跌破 60日EMA（239.08）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 242.65–250.04</small>
+    </div>
   </div><div class="etfi-row" data-code="009827" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009827" aria-label="選擇 009827 玉山未來全球算力"><span></span></label>
@@ -1420,7 +1669,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00912"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00912">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 36.06 站穩 20日EMA（35.55），RSI 53 未過熱，KD 66／68 無極端訊號；可依計畫分批投入，回測 35.01–36.08 加碼，收盤跌破 60日EMA（34.21）則暫停。</span><small>技術資料日 2026-10-01｜承接區 35.01–36.08</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 36.06 站穩 20日EMA（35.55），RSI 53 未過熱，KD 66／68 無極端訊號；可依計畫分批投入，回測 35.01–36.08 加碼，收盤跌破 60日EMA（34.21）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 35.01–36.08</small>
+    </div>
   </div><div class="etfi-row" data-code="006203" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="006203" aria-label="選擇 006203 元大MSCI台灣"><span></span></label>
@@ -1437,7 +1691,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="006203"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="006203">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 202.55 站穩 20日EMA（198.52），RSI 55 未過熱，KD 77／74 無極端訊號；可依計畫分批投入，回測 195.55–201.50 加碼，收盤跌破 60日EMA（192.32）則暫停。</span><small>技術資料日 2026-10-01｜承接區 195.55–201.50</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 202.55 站穩 20日EMA（198.52），RSI 55 未過熱，KD 77／74 無極端訊號；可依計畫分批投入，回測 195.55–201.50 加碼，收盤跌破 60日EMA（192.32）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 195.55–201.50</small>
+    </div>
   </div><div class="etfi-row" data-code="00730" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00730" aria-label="選擇 00730 富邦臺灣優質高息"><span></span></label>
@@ -1454,7 +1713,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00730"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00730">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 29.85 站穩 20日EMA（28.90），RSI 75 未過熱，KD 92／82 無極端訊號；可依計畫分批投入，回測 28.47–29.34 加碼，收盤跌破 60日EMA（28.55）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 28.47–29.34</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 29.85 站穩 20日EMA（28.90），RSI 75 未過熱，KD 92／82 無極端訊號；可依計畫分批投入，回測 28.47–29.34 加碼，收盤跌破 60日EMA（28.55）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 28.47–29.34</small>
+    </div>
   </div><div class="etfi-row" data-code="00731" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00731" aria-label="選擇 00731 復華富時高息低波"><span></span></label>
@@ -1471,7 +1735,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00731"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00731">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 96.75 在 20日EMA（97.27）下方，先觀察是否站回；分批以回測承接區 95.81–98.73 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 95.81–98.73</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 96.75 在 20日EMA（97.27）下方，先觀察是否站回；分批以回測承接區 95.81–98.73 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 95.81–98.73</small>
+    </div>
   </div><div class="etfi-row" data-code="00932" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00932" aria-label="選擇 00932 兆豐永續高息等權"><span></span></label>
@@ -1488,7 +1757,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00932"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00932">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 17.53 站穩 20日EMA（17.42），RSI 61 未過熱，KD 82／74 無極端訊號；可依計畫分批投入，回測 17.16–17.68 加碼，收盤跌破 60日EMA（17.34）則暫停。</span><small>技術資料日 2026-10-01｜承接區 17.16–17.68</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 17.53 站穩 20日EMA（17.42），RSI 61 未過熱，KD 82／74 無極端訊號；可依計畫分批投入，回測 17.16–17.68 加碼，收盤跌破 60日EMA（17.34）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 17.16–17.68</small>
+    </div>
   </div><div class="etfi-row" data-code="00962" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00962" aria-label="選擇 00962 台新AI優息動能"><span></span></label>
@@ -1505,7 +1779,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00962"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00962">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 15.13 站穩 20日EMA（15.07），RSI 48 未過熱，KD 67／57 無極端訊號；可依計畫分批投入，回測 14.84–15.30 加碼，收盤跌破 60日EMA（14.87）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 14.84–15.30</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 15.13 站穩 20日EMA（15.07），RSI 48 未過熱，KD 67／57 無極端訊號；可依計畫分批投入，回測 14.84–15.30 加碼，收盤跌破 60日EMA（14.87）則暫停。 最近除息日 2026-10-16 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 14.84–15.30</small>
+    </div>
   </div><div class="etfi-row" data-code="00928" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00928" aria-label="選擇 00928 中信上櫃ESG30"><span></span></label>
@@ -1522,7 +1801,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00928"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00928">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 33.46 站穩 20日EMA（32.84），RSI 57 未過熱，KD 71／69 無極端訊號；可依計畫分批投入，回測 32.35–33.34 加碼，收盤跌破 60日EMA（32.71）則暫停。</span><small>技術資料日 2026-10-01｜承接區 32.35–33.34</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 33.46 站穩 20日EMA（32.84），RSI 57 未過熱，KD 71／69 無極端訊號；可依計畫分批投入，回測 32.35–33.34 加碼，收盤跌破 60日EMA（32.71）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 32.35–33.34</small>
+    </div>
   </div><div class="etfi-row" data-code="00921" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00921" aria-label="選擇 00921 兆豐龍頭等權重"><span></span></label>
@@ -1539,7 +1823,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00921"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00921">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 23.44 在 20日EMA（23.78）下方，先觀察是否站回；分批以回測承接區 23.42–24.14 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 23.42–24.14</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 23.44 在 20日EMA（23.78）下方，先觀察是否站回；分批以回測承接區 23.42–24.14 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 23.42–24.14</small>
+    </div>
   </div><div class="etfi-row" data-code="00960" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00960" aria-label="選擇 00960 野村全球航運龍頭"><span></span></label>
@@ -1556,7 +1845,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00960"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00960">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 22.35 站穩 20日EMA（21.90），RSI 66 未過熱，KD 38／52 無極端訊號；可依計畫分批投入，回測 21.57–22.23 加碼，收盤跌破 60日EMA（20.44）則暫停。</span><small>技術資料日 2026-10-01｜承接區 21.57–22.23</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 22.35 站穩 20日EMA（21.90），RSI 66 未過熱，KD 38／52 無極端訊號；可依計畫分批投入，回測 21.57–22.23 加碼，收盤跌破 60日EMA（20.44）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 21.57–22.23</small>
+    </div>
   </div><div class="etfi-row" data-code="009808" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009808" aria-label="選擇 009808 華南永昌優選50"><span></span></label>
@@ -1573,7 +1867,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="009808"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="009808">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 32.00 站穩 20日EMA（31.48），RSI 56 未過熱，KD 68／69 無極端訊號；可依計畫分批投入，回測 31.01–31.95 加碼，收盤跌破 60日EMA（30.71）則暫停。</span><small>技術資料日 2026-10-01｜承接區 31.01–31.95</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 32.00 站穩 20日EMA（31.48），RSI 56 未過熱，KD 68／69 無極端訊號；可依計畫分批投入，回測 31.01–31.95 加碼，收盤跌破 60日EMA（30.71）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 31.01–31.95</small>
+    </div>
   </div><div class="etfi-row" data-code="00944" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00944" aria-label="選擇 00944 野村趨勢動能高息"><span></span></label>
@@ -1590,7 +1889,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00944"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00944">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 21.98 站穩 20日EMA（21.63），RSI 66 未過熱，KD 68／74 無極端訊號；可依計畫分批投入，回測 21.31–21.96 加碼，收盤跌破 60日EMA（21.06）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 21.31–21.96</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 21.98 站穩 20日EMA（21.63），RSI 66 未過熱，KD 68／74 無極端訊號；可依計畫分批投入，回測 21.31–21.96 加碼，收盤跌破 60日EMA（21.06）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 21.31–21.96</small>
+    </div>
   </div><div class="etfi-row" data-code="006201" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="006201" aria-label="選擇 006201 元大富櫃50"><span></span></label>
@@ -1607,7 +1911,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="006201"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="006201">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 46.53 站穩 20日EMA（45.30），RSI 60 未過熱，KD 75／73 無極端訊號；可依計畫分批投入，回測 44.62–45.98 加碼，收盤跌破 60日EMA（44.39）則暫停。</span><small>技術資料日 2026-10-01｜承接區 44.62–45.98</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 46.53 站穩 20日EMA（45.30），RSI 60 未過熱，KD 75／73 無極端訊號；可依計畫分批投入，回測 44.62–45.98 加碼，收盤跌破 60日EMA（44.39）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 44.62–45.98</small>
+    </div>
   </div><div class="etfi-row" data-code="00964" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00964" aria-label="選擇 00964 中信亞太高股息"><span></span></label>
@@ -1624,7 +1933,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00964"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00964">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 14.76 在 20日EMA（14.78）下方，先觀察是否站回；分批以回測承接區 14.56–15.00 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 14.56–15.00</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 14.76 在 20日EMA（14.78）下方，先觀察是否站回；分批以回測承接區 14.56–15.00 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 14.56–15.00</small>
+    </div>
   </div><div class="etfi-row" data-code="00903" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00903" aria-label="選擇 00903 富邦元宇宙"><span></span></label>
@@ -1675,7 +1989,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00943"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00943">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 21.11 站穩 20日EMA（21.06），RSI 54 未過熱，KD 79／68 無極端訊號；可依計畫分批投入，回測 20.74–21.37 加碼，收盤跌破 60日EMA（21.10）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 20.74–21.37</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 21.11 站穩 20日EMA（21.06），RSI 54 未過熱，KD 79／68 無極端訊號；可依計畫分批投入，回測 20.74–21.37 加碼，收盤跌破 60日EMA（21.10）則暫停。 最近除息日 2026-10-19 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 20.74–21.37</small>
+    </div>
   </div><div class="etfi-row" data-code="009809" data-frequency="季配" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="009809" aria-label="選擇 009809 富邦淨零ESG50"><span></span></label>
@@ -1692,7 +2011,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="009809"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="009809">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 18.53 站穩 20日EMA（18.23），RSI 57 未過熱，KD 73／74 無極端訊號；可依計畫分批投入，回測 17.96–18.51 加碼，收盤跌破 60日EMA（17.65）則暫停。</span><small>技術資料日 2026-10-01｜承接區 17.96–18.51</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 18.53 站穩 20日EMA（18.23），RSI 57 未過熱，KD 73／74 無極端訊號；可依計畫分批投入，回測 17.96–18.51 加碼，收盤跌破 60日EMA（17.65）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 17.96–18.51</small>
+    </div>
   </div><div class="etfi-row" data-code="0057" data-frequency="年配" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="0057" aria-label="選擇 0057 富邦摩台"><span></span></label>
@@ -1709,7 +2033,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="0057"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="0057">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 331.75 站穩 20日EMA（325.23），RSI 57 未過熱，KD 78／72 無極端訊號；可依計畫分批投入，回測 320.36–330.11 加碼，收盤跌破 60日EMA（314.88）則暫停。</span><small>技術資料日 2026-10-01｜承接區 320.36–330.11</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 331.75 站穩 20日EMA（325.23），RSI 57 未過熱，KD 78／72 無極端訊號；可依計畫分批投入，回測 320.36–330.11 加碼，收盤跌破 60日EMA（314.88）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 320.36–330.11</small>
+    </div>
   </div><div class="etfi-row" data-code="00920" data-frequency="年配" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00920" aria-label="選擇 00920 富邦ESG綠色電力"><span></span></label>
@@ -1726,7 +2055,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00920"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00920">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 24.87 站穩 20日EMA（24.60），RSI 52 未過熱，KD 71／69 無極端訊號；可依計畫分批投入，回測 24.23–24.97 加碼，收盤跌破 60日EMA（24.63）則暫停。</span><small>技術資料日 2026-10-01｜承接區 24.23–24.97</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 24.87 站穩 20日EMA（24.60），RSI 52 未過熱，KD 71／69 無極端訊號；可依計畫分批投入，回測 24.23–24.97 加碼，收盤跌破 60日EMA（24.63）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 24.23–24.97</small>
+    </div>
   </div><div class="etfi-row" data-code="00851" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00851" aria-label="選擇 00851 台新全球AI"><span></span></label>
@@ -1743,7 +2077,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00851"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00851">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 73.15 站穩 20日EMA（71.39），RSI 67 未過熱，KD 86／80 無極端訊號；可依計畫分批投入，回測 70.32–72.46 加碼，收盤跌破 60日EMA（70.39）則暫停。</span><small>技術資料日 2026-10-01｜承接區 70.32–72.46</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 73.15 站穩 20日EMA（71.39），RSI 67 未過熱，KD 86／80 無極端訊號；可依計畫分批投入，回測 70.32–72.46 加碼，收盤跌破 60日EMA（70.39）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 70.32–72.46</small>
+    </div>
   </div><div class="etfi-row" data-code="006204" data-frequency="年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="006204" aria-label="選擇 006204 永豐臺灣加權"><span></span></label>
@@ -1760,7 +2099,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="006204"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="006204">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-ok"><b>可分批投入</b><span>目前價 237.95 站穩 20日EMA（234.16），RSI 54 未過熱，KD 82／79 無極端訊號；可依計畫分批投入，回測 230.65–237.67 加碼，收盤跌破 60日EMA（227.47）則暫停。</span><small>技術資料日 2026-10-01｜承接區 230.65–237.67</small></div>
+    <div class="etfi-timing etfi-timing-ok etfi-decision-unknown">
+      <b class="etfi-decision-badge">可分批投入</b>
+      <span>目前價 237.95 站穩 20日EMA（234.16），RSI 54 未過熱，KD 82／79 無極端訊號；可依計畫分批投入，回測 230.65–237.67 加碼，收盤跌破 60日EMA（227.47）則暫停。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 230.65–237.67</small>
+    </div>
   </div><div class="etfi-row" data-code="00736" data-frequency="半年配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00736" aria-label="選擇 00736 國泰新興市場"><span></span></label>
@@ -1777,7 +2121,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00736"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00736">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 31.61 在 20日EMA（31.69）下方，先觀察是否站回；分批以回測承接區 31.22–32.17 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 31.22–32.17</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 31.61 在 20日EMA（31.69）下方，先觀察是否站回；分批以回測承接區 31.22–32.17 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 31.22–32.17</small>
+    </div>
   </div><div class="etfi-row" data-code="00948B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00948B" aria-label="選擇 00948B 中信優息投資級債"><span></span></label>
@@ -1794,7 +2143,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00948B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00948B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 8.77 在 20日EMA（9.02）下方，先觀察是否站回；分批以回測承接區 8.88–9.15 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 8.88–9.15</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 8.77 在 20日EMA（9.02）下方，先觀察是否站回；分批以回測承接區 8.88–9.15 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 8.88–9.15</small>
+    </div>
   </div><div class="etfi-row" data-code="00937B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00937B" aria-label="選擇 00937B 群益ESG投等債20+"><span></span></label>
@@ -1811,7 +2165,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00937B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00937B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 13.72 在 20日EMA（14.12）下方，先觀察是否站回；分批以回測承接區 13.91–14.33 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 13.91–14.33</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 13.72 在 20日EMA（14.12）下方，先觀察是否站回；分批以回測承接區 13.91–14.33 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 13.91–14.33</small>
+    </div>
   </div><div class="etfi-row" data-code="00959B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00959B" aria-label="選擇 00959B 大華投等美債15Y+"><span></span></label>
@@ -1828,7 +2187,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00959B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00959B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 8.75 在 20日EMA（8.98）下方，先觀察是否站回；分批以回測承接區 8.84–9.11 附近再執行。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 8.84–9.11</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 8.75 在 20日EMA（8.98）下方，先觀察是否站回；分批以回測承接區 8.84–9.11 附近再執行。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 8.84–9.11</small>
+    </div>
   </div><div class="etfi-row" data-code="00966B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00966B" aria-label="選擇 00966B 統一ESG投等債15+"><span></span></label>
@@ -1845,7 +2209,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00966B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00966B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 12.97 在 20日EMA（13.31）下方，先觀察是否站回；分批以回測承接區 13.11–13.51 附近再執行。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span><small>技術資料日 2026-10-01｜承接區 13.11–13.51</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 12.97 在 20日EMA（13.31）下方，先觀察是否站回；分批以回測承接區 13.11–13.51 附近再執行。 最近除息日 2026-10-05 將至；除息會使淨值同步下降，需以填息判斷實際獲益，不因「領息」單獨追買。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 13.11–13.51</small>
+    </div>
   </div><div class="etfi-row" data-code="00967B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00967B" aria-label="選擇 00967B 元大優息美債"><span></span></label>
@@ -1862,7 +2231,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00967B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00967B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 8.51 在 20日EMA（8.74）下方，先觀察是否站回；分批以回測承接區 8.61–8.87 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 8.61–8.87</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 8.51 在 20日EMA（8.74）下方，先觀察是否站回；分批以回測承接區 8.61–8.87 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 8.61–8.87</small>
+    </div>
   </div><div class="etfi-row" data-code="00968B" data-frequency="月配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00968B" aria-label="選擇 00968B 元大優息投等債"><span></span></label>
@@ -1879,7 +2253,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00968B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00968B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 8.63 在 20日EMA（8.86）下方，先觀察是否站回；分批以回測承接區 8.72–8.99 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 8.72–8.99</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 8.63 在 20日EMA（8.86）下方，先觀察是否站回；分批以回測承接區 8.72–8.99 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 8.72–8.99</small>
+    </div>
   </div><div class="etfi-row" data-code="00969B" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00969B" aria-label="選擇 00969B 元大零息超長美債"><span></span></label>
@@ -1913,7 +2292,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00679B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00679B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 24.61 在 20日EMA（25.38）下方，先觀察是否站回；分批以回測承接區 25.00–25.76 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 25.00–25.76</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 24.61 在 20日EMA（25.38）下方，先觀察是否站回；分批以回測承接區 25.00–25.76 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 25.00–25.76</small>
+    </div>
   </div><div class="etfi-row" data-code="00687B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00687B" aria-label="選擇 00687B 國泰20年美債"><span></span></label>
@@ -1930,7 +2314,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00687B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00687B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 25.57 在 20日EMA（26.48）下方，先觀察是否站回；分批以回測承接區 26.08–26.87 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 26.08–26.87</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 25.57 在 20日EMA（26.48）下方，先觀察是否站回；分批以回測承接區 26.08–26.87 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 26.08–26.87</small>
+    </div>
   </div><div class="etfi-row" data-code="00795B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00795B" aria-label="選擇 00795B 中信美國公債20年"><span></span></label>
@@ -1947,7 +2336,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00795B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00795B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 24.71 在 20日EMA（25.50）下方，先觀察是否站回；分批以回測承接區 25.11–25.88 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 25.11–25.88</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 24.71 在 20日EMA（25.50）下方，先觀察是否站回；分批以回測承接區 25.11–25.88 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 25.11–25.88</small>
+    </div>
   </div><div class="etfi-row" data-code="00720B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00720B" aria-label="選擇 00720B 元大投資級公司債"><span></span></label>
@@ -1964,7 +2358,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00720B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00720B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 30.72 在 20日EMA（31.52）下方，先觀察是否站回；分批以回測承接區 31.05–32.00 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 31.05–32.00</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 30.72 在 20日EMA（31.52）下方，先觀察是否站回；分批以回測承接區 31.05–32.00 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 31.05–32.00</small>
+    </div>
   </div><div class="etfi-row" data-code="00751B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00751B" aria-label="選擇 00751B 元大AAA至A公司債"><span></span></label>
@@ -1981,7 +2380,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00751B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00751B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 28.80 在 20日EMA（29.80）下方，先觀察是否站回；分批以回測承接區 29.35–30.24 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 29.35–30.24</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 28.80 在 20日EMA（29.80）下方，先觀察是否站回；分批以回測承接區 29.35–30.24 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 29.35–30.24</small>
+    </div>
   </div><div class="etfi-row" data-code="00846B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00846B" aria-label="選擇 00846B 富邦歐洲銀行債"><span></span></label>
@@ -1998,7 +2402,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00846B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00846B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 34.10 在 20日EMA（34.69）下方，先觀察是否站回；分批以回測承接區 34.17–35.21 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 34.17–35.21</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 34.10 在 20日EMA（34.69）下方，先觀察是否站回；分批以回測承接區 34.17–35.21 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 34.17–35.21</small>
+    </div>
   </div><div class="etfi-row" data-code="00931B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00931B" aria-label="選擇 00931B 統一美債20年"><span></span></label>
@@ -2015,7 +2424,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00931B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00931B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 12.44 在 20日EMA（12.83）下方，先觀察是否站回；分批以回測承接區 12.63–13.02 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 12.63–13.02</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 12.44 在 20日EMA（12.83）下方，先觀察是否站回；分批以回測承接區 12.63–13.02 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 12.63–13.02</small>
+    </div>
   </div><div class="etfi-row" data-code="00696B" data-frequency="季配" data-verified="true">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00696B" aria-label="選擇 00696B 富邦美債20年"><span></span></label>
@@ -2032,7 +2446,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00696B"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00696B">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 26.81 在 20日EMA（27.64）下方，先觀察是否站回；分批以回測承接區 27.22–28.05 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 27.22–28.05</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 26.81 在 20日EMA（27.64）下方，先觀察是否站回；分批以回測承接區 27.22–28.05 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 27.22–28.05</small>
+    </div>
   </div><div class="etfi-row" data-code="00646" data-frequency="無配息紀錄" data-verified="false">
     <div class="etfi-row-head">
       <label class="etfi-check"><input type="checkbox" data-etfi-check="00646" aria-label="選擇 00646 元大S&amp;amp;P500"><span></span></label>
@@ -2083,7 +2502,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
       <label class="etfi-weight">權重 <input type="number" min="0" max="100" step="5" value="0" data-etfi-weight="00963"> %</label>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="00963">—</b></span>
     </div>
-    <div class="etfi-timing etfi-timing-watch"><b>等站回再分批</b><span>目前價 12.45 在 20日EMA（12.89）下方，先觀察是否站回；分批以回測承接區 12.70–13.09 附近再執行。</span><small>技術資料日 2026-10-01｜承接區 12.70–13.09</small></div>
+    <div class="etfi-timing etfi-timing-watch etfi-decision-unknown">
+      <b class="etfi-decision-badge">等站回再分批</b>
+      <span>目前價 12.45 在 20日EMA（12.89）下方，先觀察是否站回；分批以回測承接區 12.70–13.09 附近再執行。</span>
+      <div class="etfi-range"><div class="etfi-range-note">近一年高低點：暫無資料</div></div>
+      <small>技術資料日 2026-10-01｜承接區 12.70–13.09</small>
+    </div>
   </div></div>
       </div>
       <div class="etfi-right">
@@ -2230,7 +2654,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
   }
   document.addEventListener('change', function(ev){
     var t = ev.target;
-    if (t.id === 'etfiCapital' || t.id === 'etfiFreqFilter') { render(); return; }
+    if (t.id === 'etfiCapital') { render(); return; }
+    if (t.id === 'etfiFreqFilter') { applyFilters(); render(); return; }
     if (t.hasAttribute('data-etfi-check') || t.hasAttribute('data-etfi-weight')) { render(); return; }
   });
   document.addEventListener('input', function(ev){
