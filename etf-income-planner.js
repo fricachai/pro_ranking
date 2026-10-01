@@ -556,6 +556,20 @@ function envCard(env) {
   </div>`;
 }
 
+/* 將最佳配置正規化為 [{code, weight}]；相容舊版 [{code}] 均分格式 */
+function normalizeBestPicks(best) {
+  if (!best) return { picks: [], method: '' };
+  if (Array.isArray(best)) {
+    if (best.length && typeof best[0] === 'object' && best[0].code !== undefined && best[0].weight !== undefined) {
+      return { picks: best, method: best[0].method || '' };
+    }
+    const codes = best.map(x => typeof x === 'string' ? x : x.code);
+    return { picks: codes.map(c => ({ code: c, weight: codes.length ? 1 / codes.length : 0 })), method: '舊版均分（未含績效權重）' };
+  }
+  if (Array.isArray(best.picks)) return { picks: best.picks, method: best.method || '' };
+  return { picks: [], method: '' };
+}
+
 function renderEtfIncomePlanner(data) {
   if (!data || data.status === 'unavailable') {
     return `<section class="section etfi-section" id="etfIncomePlanner"><h2>ETF 月月配退休規劃</h2>
@@ -563,8 +577,8 @@ function renderEtfIncomePlanner(data) {
   }
   const etfs = (data.etfs || []).map(compactEtfForUi);
   const env = data.environment;
-  const bestMonthly = data.bestMonthly || { picks: [], selected: [] };
-  const bestStaggered = data.bestStaggered || { picks: [], selected: [] };
+  const bestMonthly = normalizeBestPicks(data.bestMonthly);
+  const bestStaggered = normalizeBestPicks(data.bestStaggered);
   const statusBadge = data.status === 'ok' ? '完整' : data.status === 'partial' ? '部分（缺 ' + (data.failureCount || 0) + ' 檔）' : '—';
   const countByFreq = {};
   for (const x of etfs) countByFreq[x.frequencyLabel] = (countByFreq[x.frequencyLabel] || 0) + 1;
@@ -627,7 +641,7 @@ function renderEtfIncomePlanner(data) {
         </div>
       </div>
     </div>
-    <script id="etfi-data" type="application/json">${JSON.stringify({ etfs, env, bestMonthly: bestMonthly.selected, bestStaggered: bestStaggered.selected, fetchedAt: data.fetchedAt, sourceLabel: data.sourceLabel }).replace(/<\//g, '<\\/')}</script>
+    <script id="etfi-data" type="application/json">${JSON.stringify({ etfs, env, bestMonthly: bestMonthly.picks, bestStaggered: bestStaggered.picks, bestMethod: bestMonthly.method || '', bestMethodStaggered: bestStaggered.method || '', fetchedAt: data.fetchedAt, sourceLabel: data.sourceLabel }).replace(/<\//g, '<\\/')}</script>
     <script>${etfPlannerClientScript}</script>
   </section>`;
 }
@@ -690,7 +704,7 @@ function etfRowHtml(x) {
 const etfPlannerClientScript = `(function(){
   var DATA = JSON.parse(document.getElementById('etfi-data').textContent);
   var state = { capital: 100000, mode: 'monthly', selected: {} };
-  var ETFI_SELECTED_KEY = 'proRankingEtfiSelectionV1';
+  var ETFI_SELECTED_KEY = 'proRankingEtfiSelectionV2';
   function n(v, d){ return Number.isFinite(v) ? v.toLocaleString('zh-TW', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—'; }
   function init(){
     var saved = null;
@@ -715,7 +729,7 @@ const etfPlannerClientScript = `(function(){
     });
     if (!Object.keys(state.selected).length && best && best.length) {
       state.selected = {};
-      best.forEach(function(code){ state.selected[code] = 1 / best.length; });
+      best.forEach(function(p){ state.selected[p.code] = p.weight; });
       rows.forEach(function(row){
         var code = row.getAttribute('data-code');
         var c = document.querySelector('[data-etfi-check="'+code+'"]');
@@ -777,13 +791,15 @@ const etfPlannerClientScript = `(function(){
     });
     var bestEl = document.getElementById('etfiBest');
     var bestModeLabel = state.mode === 'staggered' ? '季配錯月最佳配置' : '月配直領最佳配置';
-    var bestCodes = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
-    bestEl.innerHTML = '<div class="etfi-best-head"><b>' + bestModeLabel + '</b><span>每月都有配息｜可再自行增減標的</span></div><div class="etfi-best-codes">' + (bestCodes || []).map(function(code){
-      var etf = etfOf(code);
+    var bestPicks = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
+    var bestMethod = state.mode === 'staggered' ? (DATA.bestMethodStaggered || '') : (DATA.bestMethod || '');
+    var chips = (bestPicks || []).map(function(p){
+      var etf = etfOf(p.code);
       if (!etf) return '';
-      var isSel = rows.some(function(r){ return r.etf.code === code; });
-      return '<span class="etfi-best-chip ' + (isSel ? 'is-sel' : '') + '">' + code + ' ' + etf.name + (isFinite(etf.trailingYieldPct) ? '（殖利率 ' + etf.trailingYieldPct.toFixed(2) + '%）' : '') + '</span>';
-    }).join('') + '</div>';
+      var isSel = rows.some(function(r){ return r.etf.code === p.code; });
+      return '<span class="etfi-best-chip ' + (isSel ? 'is-sel' : '') + '">' + p.code + ' ' + etf.name + (isFinite(etf.trailingYieldPct) ? '（殖利率 ' + etf.trailingYieldPct.toFixed(2) + '%）' : '') + '｜建議權重 ' + Math.round(p.weight * 100) + '%</span>';
+    }).join('');
+    bestEl.innerHTML = '<div class="etfi-best-head"><b>' + bestModeLabel + '</b><span>每月都有配息｜可再自行增減標的</span></div><div class="etfi-best-codes">' + chips + '</div><p class="etfi-best-method">' + (bestMethod ? '權重依據：' + bestMethod + '；歷史績效不代表未來，這是模型建議而非保證的最適解。' : '權重為模型依績效與殖利率計算的建議，不是保證的最適解。') + '</p>';
     var resultEl = document.getElementById('etfiResult');
     if (!rows.length) {
       resultEl.innerHTML = '<div class="etfi-result-empty"><b>尚未選擇標的</b><p>使用上方「3 支最佳配置」自動選取，或在左側勾選 ETF 標的。</p></div>';
@@ -824,7 +840,7 @@ const etfPlannerClientScript = `(function(){
       state.mode = ev.target.getAttribute('data-mode');
       var best = state.mode === 'staggered' ? DATA.bestStaggered : DATA.bestMonthly;
       state.selected = {};
-      (best || []).forEach(function(code){ state.selected[code] = 1 / Math.max(best.length, 1); });
+      (best || []).forEach(function(p){ state.selected[p.code] = p.weight; });
       document.querySelectorAll('.etfi-row').forEach(function(row){
         var code = row.getAttribute('data-code');
         var c = document.querySelector('[data-etfi-check="'+code+'"]');
@@ -873,6 +889,7 @@ const styles = `
 .etfi-best-codes{display:flex;flex-wrap:wrap;gap:8px}
 .etfi-best-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:5px 12px;font-size:13px}
 .etfi-best-chip.is-sel{background:#fff;color:#0b6b3a;font-weight:700}
+.etfi-best-method{font-size:11.5px;color:#eaf5ee;opacity:.9;line-height:1.5;margin:8px 0 0}
 .etfi-filter{display:flex;gap:10px;align-items:center;margin:12px 0}
 .etfi-filter select{padding:7px 10px;border:1px solid #cfe3d7;border-radius:8px;background:#fff}
 .etfi-filter-note{font-size:12px;color:#666}
@@ -1027,56 +1044,140 @@ function buildEnvironmentContext(ctx) {
   };
 }
 
-/* ETF 評分（透明權重）：殖利率 45%、1年報酬 20%、3年報酬 15%、流動性 10%、歷史 10% */
-function etfScore(etf) {
+/* 配置分數（透明權重）：1年報酬15%、3年報酬25%、5年報酬30%、殖利率20%、
+   資料完整度5%、流動性5%。歷史不足期間不補造數值：該期間報酬以 0 分計，
+   資料完整度分數如實反映實際可計算年數，因此歷史愈短權重愈保守。 */
+function allocationScore(etf) {
   if (!etf || !Number.isFinite(etf.price) || etf.price <= 0 || !Number.isFinite(etf.trailingYieldPct)) return null;
   if (etf.frequency !== 'monthly' && etf.frequency !== 'quarterly') return null;
   if (!etf.frequencyVerified) return null;
   const r1 = etf.returns?.['1y']?.annualizedPct;
   const r3 = etf.returns?.['3y']?.annualizedPct;
+  const r5 = etf.returns?.['5y']?.annualizedPct;
+  const rScore = v => Number.isFinite(v) ? Math.max(0, Math.min(v, 30)) / 30 * 100 : 0;
   const yieldScore = Math.min(etf.trailingYieldPct, 12) / 12 * 100;
-  const r1Score = Number.isFinite(r1) ? Math.max(-100, Math.min(r1, 80)) : 0;
-  const r3Score = Number.isFinite(r3) ? Math.max(-100, Math.min(r3, 80)) : 0;
   const liqScore = Number.isFinite(etf.volume) && etf.volume > 0 ? Math.min(Math.log10(etf.volume) / 8, 1) * 100 : 30;
-  const histScore = Number.isFinite(etf.returns?.maxHistoryYears) ? Math.min(etf.returns.maxHistoryYears / 5, 1) * 100 : 20;
-  const score = yieldScore * 0.45 + r1Score * 0.20 + r3Score * 0.15 + liqScore * 0.10 + histScore * 0.10;
+  const histYears = Number.isFinite(etf.returns?.maxHistoryYears) ? etf.returns.maxHistoryYears : 0;
+  const histScore = Math.min(histYears / 5, 1) * 100;
+  const parts = {
+    r1Score: rScore(r1),
+    r3Score: rScore(r3),
+    r5Score: rScore(r5),
+    yieldScore,
+    histScore,
+    liqScore
+  };
+  const missing = [];
+  if (!Number.isFinite(r1)) missing.push('1y');
+  if (!Number.isFinite(r3)) missing.push('3y');
+  if (!Number.isFinite(r5)) missing.push('5y');
+  const score = parts.r1Score * 0.15 + parts.r3Score * 0.25 + parts.r5Score * 0.30 + parts.yieldScore * 0.20 + parts.histScore * 0.05 + parts.liqScore * 0.05;
   return {
     score,
-    parts: { yieldScore, r1Score, r3Score, liqScore, histScore },
-    weights: { yieldScore: 45, r1: 20, r3: 15, liquidity: 10, history: 10 }
+    parts,
+    missing,
+    weights: { '1y': 15, '3y': 25, '5y': 30, yield: 20, history: 5, liquidity: 5 },
+    method: '權重＝近1/3/5年含息年化報酬、近12個月殖利率、歷史資料完整度與流動性加權；歷史不足期間不補造，該檔權重自動保守'
   };
 }
 
+/* 三檔權重：依分數正規化，單檔下限 20%、上限 50%，避免永遠平均或過度集中 */
+function normalizeWeights(scores) {
+  const n = scores.length;
+  if (!n) return [];
+  const sum = scores.reduce((s, x) => s + x, 0);
+  if (!(sum > 0)) return scores.map(() => 1 / n);
+  let w = scores.map(s => s / sum);
+  const MIN = 0.2, MAX = 0.5;
+  for (let iter = 0; iter < 12; iter++) {
+    let changed = false;
+    const over = w.map((v, i) => v > MAX ? i : -1).filter(i => i >= 0);
+    if (over.length) {
+      const excess = over.reduce((s, i) => s + (w[i] - MAX), 0);
+      over.forEach(i => { w[i] = MAX; });
+      const under = w.map((v, i) => v < MAX && !over.includes(i) ? i : -1).filter(i => i >= 0);
+      const underSum = under.reduce((s, i) => s + (MAX - w[i]), 0);
+      if (underSum > 0 && excess > 0) {
+        under.forEach(i => { w[i] += excess * (MAX - w[i]) / underSum; });
+        changed = true;
+      }
+    }
+    const under2 = w.map((v, i) => v < MIN ? i : -1).filter(i => i >= 0);
+    if (under2.length) {
+      const need = under2.reduce((s, i) => s + (MIN - w[i]), 0);
+      under2.forEach(i => { w[i] = MIN; });
+      const donors = w.map((v, i) => v > MIN && !under2.includes(i) ? i : -1).filter(i => i >= 0);
+      const donorExcess = donors.reduce((s, i) => s + (w[i] - MIN), 0);
+      if (donorExcess > 0 && need > 0) {
+        donors.forEach(i => { w[i] -= need * (w[i] - MIN) / donorExcess; });
+        changed = true;
+      }
+    }
+    const total = w.reduce((s, x) => s + x, 0);
+    if (Math.abs(total - 1) > 1e-9) { w = w.map(x => x / total); changed = true; }
+    if (!changed) break;
+  }
+  return w.map(x => Math.round(x * 1000) / 1000);
+}
+
 /* 3 檔最佳配置：
-   mode=monthly：月配 ETF 中依評分取最佳 3 檔（每月直領）
-   mode=staggered：季配 ETF 依除息月份分成 3 組，每組取評分最佳 1 檔（每月輪流領） */
+   mode=monthly：月配 ETF 中依配置分數取最佳 3 檔，權重依分數正規化（20–50%）
+   mode=staggered：季配 ETF 依除息月份分成 3 組，每組取分數最佳 1 檔；
+   權重先依分數正規化，再做「每月領息平衡」微調，讓三組每月領息金額差距不要過大。 */
 function planBestThree(etfs, mode = 'monthly') {
   if (mode === 'monthly') {
     const scored = etfs
-      .map(e => ({ e, s: etfScore(e) }))
+      .map(e => ({ e, s: allocationScore(e) }))
       .filter(x => x.s && x.e.frequency === 'monthly')
       .sort((a, b) => b.s.score - a.s.score);
-    const picks = scored.slice(0, 3).map(x => ({ code: x.e.code, weight: 1 / 3 }));
-    return { mode: 'monthly', picks, score: scored.slice(0, 3).map(x => x.s.score), selected: scored.slice(0, 3).map(x => x.e.code) };
+    const top = scored.slice(0, 3);
+    const weights = normalizeWeights(top.map(x => x.s.score));
+    const picks = top.map((x, i) => ({
+      code: x.e.code,
+      weight: weights[i],
+      score: x.s.score,
+      parts: x.s.parts,
+      missing: x.s.missing,
+      method: x.s.method
+    }));
+    return { mode: 'monthly', picks, score: top.map(x => x.s.score), selected: top.map(x => x.e.code), method: '權重＝近1/3/5年含息年化報酬、近12個月殖利率、歷史資料完整度與流動性加權；歷史不足期間不補造，該檔權重自動保守' };
   }
   const groups = [[], [], []];
   for (const e of etfs) {
-    if (e.frequency !== 'quarterly' || !etfScore(e)) continue;
+    if (e.frequency !== 'quarterly' || !allocationScore(e)) continue;
     const months = new Set(e.dividendMonths12 || []);
     let gi = 0;
     if (months.has(2) || months.has(5) || months.has(8) || months.has(11)) gi = 1;
     if (months.has(3) || months.has(6) || months.has(9) || months.has(12)) gi = 2;
     groups[gi].push(e);
   }
-  const picks = [];
-  const selected = [];
+  const picked = [];
   for (const g of groups) {
     if (!g.length) continue;
-    g.sort((a, b) => etfScore(b).score - etfScore(a).score);
-    picks.push({ code: g[0].code, weight: 1 / Math.max(groups.filter(x => x.length).length, 1) });
-    selected.push(g[0].code);
+    g.sort((a, b) => allocationScore(b).score - allocationScore(a).score);
+    picked.push(g[0]);
   }
-  return { mode: 'staggered', picks, selected };
+  if (!picked.length) return { mode: 'staggered', picks: [], score: [], selected: [], method: '無可用季配標的' };
+  const scores = picked.map(e => allocationScore(e).score);
+  let weights = normalizeWeights(scores);
+  if (picked.length === 3) {
+    const cashPerUnit = picked.map(e => (e.monthlyCashPerUnit || 0) / e.price);
+    const rel = cashPerUnit.map((c, i) => weights[i] * c);
+    const avgRel = rel.reduce((s, x) => s + x, 0) / rel.length;
+    if (avgRel > 0) {
+      const adj = rel.map((r, i) => weights[i] * Math.pow(avgRel / Math.max(r, 1e-12), 0.3));
+      weights = normalizeWeights(adj);
+    }
+  }
+  const picks = picked.map((e, i) => ({
+    code: e.code,
+    weight: weights[i],
+    score: scores[i],
+    parts: allocationScore(e).parts,
+    missing: allocationScore(e).missing,
+    method: '權重先依近1/3/5年年化報酬、殖利率、資料完整度與流動性正規化，再加入每月領息平衡微調'
+  }));
+  return { mode: 'staggered', picks, score: scores, selected: picked.map(e => e.code), method: '權重先依績效分數正規化，再加入每月領息平衡微調' };
 }
 
 module.exports = {
@@ -1088,7 +1189,8 @@ module.exports = {
   classifyFrequency,
   planAllocation,
   planBestThree,
-  etfScore,
+  allocationScore,
+  normalizeWeights,
   buildEnvironmentContext,
   renderEtfIncomePlanner,
   styles,
