@@ -706,7 +706,7 @@ function etfRowHtml(x) {
       <span class="etfi-added-badge" style="display:none">已加入本組 ✓</span>
       <span class="etfi-contrib">每月預估 <b class="etfi-contrib-val" data-etfi-contrib="${e(x.code)}">—</b></span>
     </div>
-    ${timingHtml}
+${timingHtml}
   </div>`;
 }
 
