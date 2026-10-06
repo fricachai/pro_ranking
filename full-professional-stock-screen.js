@@ -134,7 +134,9 @@ function isExpectedTwseCalendarGap(error) {
   const inspect = current => {
     if (!current || seen.has(current)) return false;
     seen.add(current);
-    if (Number(current.status) === 307 || /307 Temporary Redirect|redirect count exceeded/i.test(String(current.message || ''))) return true;
+    // TWSE returns stat!=OK or zero rows for real market holidays; a 307 is a
+    // transient redirect/rate-limit signal and must be retried, not skipped.
+    if (/redirect count exceeded/i.test(String(current.message || ''))) return true;
     return inspect(current.cause);
   };
   return inspect(error);
@@ -143,6 +145,7 @@ function isExpectedTwseCalendarGap(error) {
 function isRetryableFetchError(error) {
   const status = Number(error?.status);
   if (!Number.isFinite(status)) return true;
+  if (status === 307) return true;
   return status === 408 || status === 425 || status === 429 || status >= 500;
 }
 
