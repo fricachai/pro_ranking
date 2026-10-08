@@ -71,6 +71,7 @@ $requiredFiles = @(
     'fetch-events.js',
     'full-professional-stock-screen.js',
     'etf-income-planner.js',
+    'news-pricing-radar.js',
     'scripts/Invoke-OpenCodeDailyUpdate.ps1',
     'scripts/Sync-OpenCodeObsidianHandoff.ps1',
     'scripts/Test-OpenCodeHandoff.ps1',
@@ -270,7 +271,7 @@ $nodeVersion = (& $node.Source --version).Trim()
 $nodeMajor = [int](($nodeVersion -replace '^v', '').Split('.')[0])
 if ($nodeMajor -lt 18) { throw "Node.js 18 or newer is required. Found: $nodeVersion" }
 
-foreach ($relativePath in @('international-context.js', 'international-ui.js', 'scripts/Test-InternationalContext.js', 'fetch-events.js', 'full-professional-stock-screen.js', 'etf-income-planner.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js', 'scripts/Test-PositionDecisionRules.js')) {
+foreach ($relativePath in @('international-context.js', 'international-ui.js', 'scripts/Test-InternationalContext.js', 'fetch-events.js', 'full-professional-stock-screen.js', 'etf-income-planner.js', 'news-pricing-radar.js', 'scripts/Capture-HorizonBacktestSnapshot.js', 'scripts/Backtest-HorizonStrategy.js', 'scripts/Test-ProfessionalScreenFetchResilience.js', 'scripts/Test-PositionDecisionRules.js')) {
     Invoke-Checked -Name $node.Source -Arguments @('--check', (Join-Path $RepoRoot $relativePath)) | Out-Null
 }
 Invoke-Checked -Name $node.Source -Arguments @((Join-Path $RepoRoot 'scripts/Test-ProfessionalScreenFetchResilience.js')) | Out-Null
@@ -318,6 +319,17 @@ foreach ($requiredEtfiRuleToken in @('ETF_INCOME_PLANNER_V1', 'etfIncomePlanner'
         throw "ETF income planner marker is missing from generator: $requiredEtfiRuleToken"
     }
 }
+$pricingRadarContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'news-pricing-radar.js') -Raw -Encoding utf8
+foreach ($requiredPricingRadarToken in @('NEWS_PRICING_RADAR_V1', 'computeStockPricing', 'summarizePricingRadar', 'renderPricingRadar', 'analyzeNewsPricing', 'volumeFeatures', 'breakoutFeatures', 'observationScore')) {
+    if (-not $pricingRadarContent.Contains($requiredPricingRadarToken)) {
+        throw "News pricing radar module is missing contract token: $requiredPricingRadarToken"
+    }
+}
+foreach ($requiredPricingRadarIntegration in @('newsPricingRadar.summarizePricingRadar', 'newsPricingRadar.styles', 'newsPricingRadar.renderPricingRadar', 'NEWS_PRICING_RADAR_V1', 'pricingRadar,')) {
+    if (-not $generatorContent.Contains($requiredPricingRadarIntegration)) {
+        throw "News pricing radar integration is missing from generator: $requiredPricingRadarIntegration"
+    }
+}
 foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     $ruleContent = Get-Content -LiteralPath (Join-Path $RepoRoot $relativePath) -Raw -Encoding utf8
     if (-not $ruleContent.Contains('LIVE_QUOTE_REFRESH_V1')) {
@@ -331,6 +343,9 @@ foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     }
     if (-not $ruleContent.Contains('ETF_INCOME_PLANNER_V1')) {
         throw "ETF income planner contract is missing from the handoff surface: $relativePath"
+    }
+    if (-not $ruleContent.Contains('NEWS_PRICING_RADAR_V1')) {
+        throw "News pricing radar contract is missing from the handoff surface: $relativePath"
     }
 }
 foreach ($requiredForeignHistoryToken in @(
@@ -649,7 +664,7 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'position-zone-chart', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'position-zone-chart', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', 'NEWS_PRICING_RADAR_V1', 'newsPricingRadar', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         if ($report.PSObject.Properties['internationalContext']) {

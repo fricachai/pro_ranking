@@ -735,3 +735,31 @@ OpenCode 必須依結果回報：
 
 - 已通過：Node 語法、`--render-existing` 重產、Playwright 互動（資金快捷、模式切換、勾選權重、localStorage 保存、1050×900／390×844 無水平溢出、console 0）。
 - 待完成：完整受控更新（真抓全部候選 ETF 資料）→ 正式發布 → Pages 線上驗證 → 更新 Obsidian SOP 與 `design-qa.md`。
+
+## 2026-10-08 消息定價雷達（NEWS_PRICING_RADAR_V1）
+
+### 使用者目標
+
+- 使用者提供一則 MasterTalks「/消息起漲」貼文，要求評估能否強化 `pro_ranking`。經對照後，`pro_ranking` 已具備基本面、資金、技術、ETF／外資籌碼與分類等大部分能力，真正缺口是「消息是否已被市場定價」的確認。使用者選擇先做「利多是否已被定價＋量比＋前高突破」觀察模組（選項 1）。
+
+### 設計邊界
+
+- 新增 `news-pricing-radar.js`（`NEWS_PRICING_RADAR_V1`）為**觀察層**：只用量價與已確認消息判斷利多是否已被定價，並輸出量比與前高突破。
+- 不寫入 `HORIZON_SCORE_V2`、不改變排名、`entryAction`／`holdingAction`／`todayAction`／`nextCheck`、A/B/C/D 分類或任何硬性門檻。
+- 只採 `confirmed=true` 的官方／結構化事件（重大訊息、法說會、庫藏股、處置、除權息）進入判讀；Yahoo RSS（`news_pending`）只列「待確認」，不計分。
+- 量比、前高突破、消息後報酬全部以 Yahoo 日K（含成交量）計算並標示資料日期；日K／成交量不足一律標示「資料不足」，不補造數值。
+- 數量：`full-professional-stock-screen.js` 的 `fetchYahooOhlc` 增加 `open`／`volume`（不影響既有 `technicalFromCloses`；其只依 high／low／close），新增 `ohlcByCode` 與 `report.pricingRadar`。
+
+### 已同步
+
+- `full-professional-stock-screen.js`：require 模組、OHLC 加成交量、`report.pricingRadar` 輸出、`styles` 與 `renderPricingRadar` 注入。
+- `news-pricing-radar.js`：`computeStockPricing`、`summarizePricingRadar`、`renderPricingRadar`、`styles`。
+- 驗證器：`Test-OpenCodeHandoff.ps1`（requiredFiles、Node 語法清單、模組／整合／交接標記、live marker）與 `Update-ProfessionalScreen.ps1`（live／latest.html／index.html 標記、allowedPaths）。
+- `AGENTS.md` 新增「消息定價雷達契約」。
+
+### 待完成
+
+- 執行完整受控更新（`Invoke-ProfessionalScreenUpdateCommand.ps1` 或 Desktop `Start`／`Get-Status` 分段）以產生 `report.pricingRadar` 並發布；完成 Pages 線上驗證（`NEWS_PRICING_RADAR_V1`、`newsPricingRadar` 標記與資料日期）。
+- 本功能屬資料層新增（需重新計算 Yahoo 日K特徵），不得以 `--render-existing` 冒充新資料。
+
+<!-- NEWS_PRICING_RADAR_V1 -->

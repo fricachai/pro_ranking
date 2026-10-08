@@ -164,7 +164,7 @@ function Get-LiveReportState {
     $localBytes = [IO.File]::ReadAllBytes($IndexHtml)
     $localHash = Get-Sha256Hex -Bytes $localBytes
     $liveHash = Get-Sha256Hex -Bytes $liveBytes
-    $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
+    $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', $decisionTimingToken, 'NEWS_PRICING_RADAR_V1', 'newsPricingRadar', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     return [pscustomobject]@{
         StatusCode = [int]$response.StatusCode
@@ -380,7 +380,7 @@ try {
         if (-not (Test-Path $path)) { throw "Required output is missing: $path" }
     }
     $latestHtmlContent = Get-Content $LatestHtml -Raw -Encoding utf8
-    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle', 'id="quotePhaseBanner"', 'LIVE_QUOTE_REFRESH_V1', 'id="refreshLiveQuotes"', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'stock-k-chat-proxy.fricachai.workers.dev', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'horizonScores', 'dataHealth', 'decisionMode', 'positionReasons', 'isLimitUp', 'todayAction', 'nextCheck', 'zoneText')) {
+    foreach ($requiredAuthToken in @('id="loginGate"', 'pro-ranking-auth-v1', 'id="logoutButton"', 'const AUTH_ACCOUNTS=', "username:'frica'", "username:'Amanda'", 'triggerLabel=', 'operationPriceHtml', 'positionDecisionSummary', 'positionDecisionMeta', 'tracking-toggle', 'id="quotePhaseBanner"', 'LIVE_QUOTE_REFRESH_V1', 'id="refreshLiveQuotes"', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'stock-k-chat-proxy.fricachai.workers.dev', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'horizonScores', 'dataHealth', 'decisionMode', 'positionReasons', 'isLimitUp', 'todayAction', 'nextCheck', 'NEWS_PRICING_RADAR_V1', 'newsPricingRadar', 'zoneText')) {
         if (-not $latestHtmlContent.Contains($requiredAuthToken)) {
             throw "Required login gate token is missing: $requiredAuthToken"
         }
@@ -584,7 +584,7 @@ try {
 
     $indexContent = Get-Content $IndexHtml -Raw -Encoding utf8
     $decisionTimingToken = -join @([char]0x5224, [char]0x65B7, [char]0x6642, [char]0x9EDE, [char]0xFF5C)
-    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'ETF_INCOME_PLANNER_V1', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
+    foreach ($marker in @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'NEWS_PRICING_RADAR_V1', 'newsPricingRadar', 'ETF_INCOME_PLANNER_V1', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', $decisionTimingToken, 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$meta.etfDate)) {
         if (-not $indexContent.Contains($marker)) { throw "index.html is missing validation marker: $marker" }
     }
 
@@ -594,7 +594,7 @@ try {
     }
     $dataChanged = -not $previousReportFingerprint -or $previousReportFingerprint -ne $currentReportFingerprint
 
-    $allowedPaths = @('index.html', 'professional-screen-report/latest.json', 'etf-income-planner.js') + $generatedFiles
+    $allowedPaths = @('index.html', 'professional-screen-report/latest.json', 'etf-income-planner.js', 'news-pricing-radar.js') + $generatedFiles
     $allowedPrefixes = @('professional-screen-report/events/', 'professional-screen-report/backtest-snapshots/')
     $changedPaths = @(Get-ChangedPaths)
     $unexpected = @($changedPaths | Where-Object {

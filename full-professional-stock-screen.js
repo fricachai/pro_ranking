@@ -7,6 +7,8 @@ const { fetchInternationalContext, validateContext, freshness } = require('./int
 const internationalUi = require('./international-ui');
 // ETF_INCOME_PLANNER_V1: ETF 月月配退休規劃（配息頻率逐檔以實際除息紀錄確定；B級來源失敗不阻斷主報告）
 const etfIncomePlanner = require('./etf-income-planner');
+// NEWS_PRICING_RADAR_V1: 消息定價雷達（觀察層，只用量價與已確認消息判斷利多是否已被定價，不改排名與動作）
+const newsPricingRadar = require('./news-pricing-radar');
 
 const ROOT = __dirname;
 const OUT_DIR = path.join(ROOT, 'professional-screen-report');
@@ -483,9 +485,11 @@ async function fetchYahooOhlc(code, market = 'TWSE') {
   if (!result?.timestamp?.length || !quote) throw new Error(`Yahoo daily OHLC missing for ${code}`);
   return result.timestamp.map((timestamp, index) => ({
     timestamp,
+    open: number(quote.open?.[index]),
     high: number(quote.high?.[index]),
     low: number(quote.low?.[index]),
-    close: number(quote.close?.[index])
+    close: number(quote.close?.[index]),
+    volume: number(quote.volume?.[index])
   })).filter(row => Number.isFinite(row.high) && Number.isFinite(row.low) && Number.isFinite(row.close));
 }
 
@@ -2170,6 +2174,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .stock-link{display:inline-flex;align-items:baseline;gap:2px;text-decoration:underline;text-decoration-color:rgba(37,95,133,.5);text-decoration-thickness:1px;text-underline-offset:3px}.stock-link::after{content:' ↗';font-size:.72em;font-weight:700;line-height:1}.stock-link:hover,.stock-link:focus-visible{color:var(--green);text-decoration-color:currentColor}.score-dialog-head .stock-link{color:var(--ink);text-decoration-color:var(--gold)}.score-dialog-head .stock-link:hover,.score-dialog-head .stock-link:focus-visible{color:var(--green)}
 ${internationalUi.styles}
 ${etfIncomePlanner.styles}
+${newsPricingRadar.styles}
 </style>
 </head>
 <body class="auth-locked">
@@ -2194,6 +2199,7 @@ ${etfIncomePlanner.styles}
 ${decisionRail}
 ${internationalUi.renderInternationalContext(report.internationalContext)}
 ${etfIncomePlanner.renderEtfIncomePlanner(report.etfIncome)}
+${newsPricingRadar.renderPricingRadar(report.pricingRadar)}
 <div class="quick-gate ${report.meta.activeEtfDataComplete ? '' : 'is-warning'}">主動ETF當日資料 ${report.meta.activeUpdated}/${report.meta.activeEtfs}｜${report.meta.activeEtfDataComplete ? '依個股條件判斷新部位' : '部分來源尚未完成核對：新部位只採個股完整門檻'}｜<a href="#sourceAudit">查看來源與補強狀態</a></div>
 ${internationalUi.quickGuideHtml}
 <details class="source-audit" id="sourceAudit"><summary>臺股資料完整性與各項限制</summary>
@@ -2851,6 +2857,13 @@ async function main() {
     ...tpexDailyRows.map(row => String(row.SecuritiesCompanyCode || '').trim()),
     ...tpexSecuritiesRows.map(row => String(row['證券代號'] || '').trim())
   ].filter(code => /^\d{4}$/.test(code)));
+  const ohlcByCode = new Map(stockEntries.map(([code], index) => [code, ohlcSeries[index]?.__error ? [] : ohlcSeries[index]]));
+  const pricingRadar = newsPricingRadar.summarizePricingRadar({
+    records,
+    ohlcByCode,
+    priceDate: yyyymmddToIso(data.meta.price_date),
+    marketDate: marketDates.at(-1) || yyyymmddToIso(data.meta.price_date)
+  });
   const report = {
     meta: {
       generatedAt: formatDateTimeTaipei(),
@@ -2908,6 +2921,7 @@ async function main() {
     macroOverlay,
     internationalContext,
     etfIncome,
+    pricingRadar,
     sectorOverlay,
     sourcePosture: {
       primary: '證交所、櫃買中心、集保結算所、經濟部與中央銀行官方公開資料',
