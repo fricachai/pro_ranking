@@ -771,4 +771,10 @@ OpenCode 必須依結果回報：
 - 分類的「排除」與追蹤清單只屬此觀察清單，不得回寫 `bucket`、`action`、`entryAction`／`holdingAction`／`todayAction`／`nextCheck`，也不得成為買賣指令。
 - 驗證器已同步（`Test-OpenCodeHandoff.ps1`、`Update-ProfessionalScreen.ps1` 的標記與 allowedPaths）。
 
+### 完成狀態（完整版）
+
+- 已發布：程式提交 `fe1470b`（Expand news radar to full breakout observation model）；完整受控更新 `STATUS=published`、`FINAL_RESULT_READY=true`；報告發布提交 `ba924560bd4bc4aaeeb65ffb9b2308f831df3490`；稽核標籤 `published/20261008-094434`；Pages `PAGES_AUDIT_STATUS=complete`、線上 HTTP 200，`NEWS_BREAKOUT_RADAR_V1` 與 `data-news-breakout-radar` 標記存在。
+- 本次快照：518 檔、有可驗證消息 36 檔、進入觀察 62 檔、追蹤清單 5 檔；1050×900／390×844 無頁面級水平溢出、console 0。
+- 換行正規化根因修復：本次線上 byte match 曾被內嵌 CRLF 假性卡住（`PAGES_LINE_ENDING_FALSE_MISMATCH_V1`）；`buildHtml` 現在統一輸出 LF，`Update-ProfessionalScreen.ps1` 線上比對先正規化 CRLF／BOM 再比對（程式提交 `2554e8e`）。
+
 <!-- NEWS_PRICING_RADAR_V1 --><!-- NEWS_BREAKOUT_RADAR_V1 -->

@@ -441,3 +441,16 @@ Final result: passed
 - Privacy: 瀏覽器 QA 以 DOM 解除登入遮罩顯示，未輸入或重述任何帳密；未提交成本、持倉或登入狀態。
 
 Final result: passed
+
+## 2026-10-08 消息起漲觀察雷達完整版（NEWS_BREAKOUT_RADAR_V1）QA
+
+- Change: 在 `news-pricing-radar.js` 上擴充為完整六構面觀察：消息強度20／基本面驗證20／股價反應20／資金確認15／技術突破15／相對強弱10（共100）；新增起漲階段（①消息→②注意→③量增→④突破→⑤籌碼→⑥回測不破→⑦再攻）、A／B／C／量價觀察／排除分類、過度乖離檢查、每檔10項分析與3–5檔追蹤清單；頁面加入「消息→基本面→股價→籌碼→突破」流程圖與最值得追蹤卡片。
+- Boundary: 六構面除新的量價與消息外，基本面（`earningsTrend`＋`businessQuality`）、資金（外資／投信／自營／ETF）、技術（均線／MACD／RSI／KD）只**重組既有分數與證據**；不寫入 `HORIZON_SCORE_V2`、不改排名、`entryAction`／`holdingAction`／`todayAction`／`nextCheck`、A/B/C/D 或硬性門檻；「排除」分類與追蹤清單不回寫個股，也不是買賣指令。
+- Root-cause fix: 本次更新在 Pages 線上 byte-match 因 5 個內嵌 CRLF 被 Jekyll 正規化而假性不符（`PAGES_LINE_ENDING_FALSE_MISMATCH_V1`）。修正：`buildHtml` 輸出統一為 LF；`Update-ProfessionalScreen.ps1` 線上位元比對改為先正規化 CRLF／BOM 再比較 SHA-256。
+- Viewports: 線上 1050×900 `scrollWidth=1035<=1050`；390×844 `scrollWidth=375<=390`；手機表格用自身容器水平捲動、無頁面級溢出，追蹤卡 349px 全寬於 351px 區塊內。
+- Console: 線上瀏覽器 errors / warnings 0。
+- Data result (本次快照): 研究母體 518 檔、近20日有可驗證消息 36 檔、進入觀察 62 檔、資料不足 0 檔、追蹤清單 5 檔（A級與B級）；市場5日/20日中位數報酬 0.5%／1.45%；價量／市場資料日 2026-10-07。
+- Online release: 受控更新 `STATUS=published`、`FINAL_RESULT_READY=true`；程式提交 `fe1470b`（完整版）＋`2554e8e`（換行正規化修復）；報告發布提交 `ba924560bd4bc4aaeeb65ffb9b2308f831df3490`；稽核標籤 `published/20261008-094434`；Pages `PAGES_AUDIT_STATUS=complete`、線上 HTTP 200，`NEWS_BREAKOUT_RADAR_V1` 與 `data-news-breakout-radar` 標記存在。
+- Privacy: 瀏覽器 QA 以 DOM 解除登入遮罩顯示，未輸入或重述任何帳密；未提交成本、持倉或登入狀態。
+
+Final result: passed
