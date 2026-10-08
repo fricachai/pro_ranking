@@ -320,7 +320,7 @@ foreach ($requiredEtfiRuleToken in @('ETF_INCOME_PLANNER_V1', 'etfIncomePlanner'
     }
 }
 $pricingRadarContent = Get-Content -LiteralPath (Join-Path $RepoRoot 'news-pricing-radar.js') -Raw -Encoding utf8
-foreach ($requiredPricingRadarToken in @('NEWS_PRICING_RADAR_V1', 'computeStockPricing', 'summarizePricingRadar', 'renderPricingRadar', 'analyzeNewsPricing', 'volumeFeatures', 'breakoutFeatures', 'observationScore')) {
+foreach ($requiredPricingRadarToken in @('NEWS_PRICING_RADAR_V1', 'NEWS_BREAKOUT_RADAR_V1', 'computeStockPricing', 'computeStockRadar', 'summarizePricingRadar', 'renderPricingRadar', 'analyzeNewsPricing', 'volumeFeatures', 'breakoutFeatures', 'detectStage', 'classifyBreakout', 'scoreCapital', 'scoreTechnical', 'scoreRelative', 'observationScore')) {
     if (-not $pricingRadarContent.Contains($requiredPricingRadarToken)) {
         throw "News pricing radar module is missing contract token: $requiredPricingRadarToken"
     }
@@ -346,6 +346,9 @@ foreach ($relativePath in @('AGENTS.md', 'OPENCODE_HANDOFF.md')) {
     }
     if (-not $ruleContent.Contains('NEWS_PRICING_RADAR_V1')) {
         throw "News pricing radar contract is missing from the handoff surface: $relativePath"
+    }
+    if (-not $ruleContent.Contains('NEWS_BREAKOUT_RADAR_V1')) {
+        throw "News breakout radar contract is missing from the handoff surface: $relativePath"
     }
 }
 foreach ($requiredForeignHistoryToken in @(
@@ -664,7 +667,7 @@ try {
         }
         Write-Output "PAGES_AUDIT_STATUS=$pagesAuditStatus"
         Write-Output "PAGES_CONTENT_BYTE_MATCH=$liveByteMatch"
-foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'position-zone-chart', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', 'NEWS_PRICING_RADAR_V1', 'newsPricingRadar', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
+foreach ($marker in @('top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'data-live-pnl', 'data-live-trigger-gap', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', 'position-zone-chart', 'etfIncomePlanner', 'etfi-data', 'etfi-capital', 'NEWS_PRICING_RADAR_V1', 'NEWS_BREAKOUT_RADAR_V1', 'newsPricingRadar', 'data-news-breakout-radar', $decisionTimingToken, 'financialCoverageBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'dataCoverage', 'financialSourceMode', 'freshnessPenalty', 'todayAction', 'nextCheck', [string]$report.meta.etfDate)) {
             if (-not $response.Content.Contains($marker)) { throw "Live page is missing marker: $marker" }
         }
         if ($report.PSObject.Properties['internationalContext']) {

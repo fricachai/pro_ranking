@@ -764,4 +764,11 @@ OpenCode 必須依結果回報：
 - 線上 `PAGES_AUDIT_STATUS=complete`、HTTP 200，`NEWS_PRICING_RADAR_V1` 與 `data-news-pricing-radar` 標記存在；1050×900／390×844 無頁面級水平溢出、console 0。
 - 本功能屬資料層新增（重新計算 Yahoo 日K特徵），不得以 `--render-existing` 冒充新資料。
 
-<!-- NEWS_PRICING_RADAR_V1 -->
+### 完整版：消息起漲觀察雷達（NEWS_BREAKOUT_RADAR_V1）
+
+- 在 `news-pricing-radar.js` 上擴充完整版：六構面觀察分（消息強度20／基本面驗證20／股價反應20／資金確認15／技術突破15／相對強弱10）、起漲階段（①消息剛出現→②市場開始注意→③量能增加→④股價突破→⑤籌碼進場→⑥回測不破→⑦再次上攻）、A／B／C／量價觀察／排除分類、過度乖離檢查、每檔 10 項分析與 3–5 檔追蹤清單，並在頁面加入「消息→基本面→股價→籌碼→突破」流程圖與最值得追蹤卡片。
+- 基本面（`earningsTrend`＋`businessQuality`）、資金（外資／投信／自營／ETF 流向）與技術（均線／MACD／RSI／KD）只**重組**既有分數與證據，不重複計分；相對強弱以個股 5／20 日報酬相對市場中位數計算。
+- 分類的「排除」與追蹤清單只屬此觀察清單，不得回寫 `bucket`、`action`、`entryAction`／`holdingAction`／`todayAction`／`nextCheck`，也不得成為買賣指令。
+- 驗證器已同步（`Test-OpenCodeHandoff.ps1`、`Update-ProfessionalScreen.ps1` 的標記與 allowedPaths）。
+
+<!-- NEWS_PRICING_RADAR_V1 --><!-- NEWS_BREAKOUT_RADAR_V1 -->
