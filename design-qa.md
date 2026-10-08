@@ -428,3 +428,16 @@ Final result: passed
 - Boundary: 純 UI／互動改造，沿用既有已驗證 JSON；未改 HORIZON_SCORE_V2、排名、個股動作或硬性門檻。
 
 Final result: passed
+
+## 2026-10-08 消息定價雷達（NEWS_PRICING_RADAR_V1）QA
+
+- Change: 新增 `news-pricing-radar.js` 觀察層與報告 `report.pricingRadar`，只用量價與已確認消息判斷「利多是否已被市場定價」，輸出量比（5／20日）、前高突破（20／60日）、最新K上影線與消息後報酬；`fetchYahooOhlc` 增加 `open`／`volume`（不影響既有 `technicalFromCloses`，其只依 high／low／close）。UI 於國際區塊後新增「📡 消息定價雷達（觀察層）」表格與前5名展開證據。
+- Boundary: 不寫入 `HORIZON_SCORE_V2`、不改排名、`entryAction`／`holdingAction`／`todayAction`／`nextCheck`、A/B/C/D 分類或硬性門檻；只採 `confirmed=true` 官方／結構化事件進入判讀，Yahoo RSS 只列待確認；缺資料標示「資料不足」不補造。
+- Automated checks: `node --check` 兩支、`Test-PositionDecisionRules.js`（POSITION_DECISION_RULES_PASS）、`Test-InternationalContext.js`（INTERNATIONAL_CONTEXT_TESTS=PASS）、`Test-ProfessionalScreenFetchResilience.js`（FETCH_RESILIENCE_TEST=pass）、`Test-ProfessionalScreenPowerShellBoundary.ps1`（POWERSHELL_BOUNDARY_TEST=pass）、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty`（HANDOFF_READY=true）全數通過；另以合成日K離線單元測試量比、前高突破、消息定價與資料不足路徑。
+- Data result (本次快照): 研究母體 518 檔、近20日有可驗證消息 36 檔、符合量價或消息條件 109 檔、資料不足 1 檔；價量／市場資料日 2026-10-07。
+- Viewports: 線上 1050×900 `scrollWidth=1035<=1050`；390×844 `scrollWidth=375<=390`，表格在手機以自身容器水平捲動、無頁面級溢出。
+- Console: 線上瀏覽器 errors / warnings 0。
+- Online release: 受控更新 `STATUS=published`、`FINAL_RESULT_READY=true`；commit `16225ad687aac6c1a30afa61f511f28d58dd15cb`；稽核標籤 `published/20261008-090234`；Pages `PAGES_AUDIT_STATUS=complete`；線上 HTTP 200、`NEWS_PRICING_RADAR_V1` 與 `data-news-pricing-radar` 標記存在。
+- Privacy: 瀏覽器 QA 以 DOM 解除登入遮罩顯示，未輸入或重述任何帳密；未提交成本、持倉或登入狀態。
+
+Final result: passed

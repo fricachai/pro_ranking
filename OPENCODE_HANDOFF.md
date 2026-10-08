@@ -757,9 +757,11 @@ OpenCode 必須依結果回報：
 - 驗證器：`Test-OpenCodeHandoff.ps1`（requiredFiles、Node 語法清單、模組／整合／交接標記、live marker）與 `Update-ProfessionalScreen.ps1`（live／latest.html／index.html 標記、allowedPaths）。
 - `AGENTS.md` 新增「消息定價雷達契約」。
 
-### 待完成
+### 完成狀態
 
-- 執行完整受控更新（`Invoke-ProfessionalScreenUpdateCommand.ps1` 或 Desktop `Start`／`Get-Status` 分段）以產生 `report.pricingRadar` 並發布；完成 Pages 線上驗證（`NEWS_PRICING_RADAR_V1`、`newsPricingRadar` 標記與資料日期）。
-- 本功能屬資料層新增（需重新計算 Yahoo 日K特徵），不得以 `--render-existing` 冒充新資料。
+- 已執行完整受控更新並發布：`STATUS=published`、`FINAL_RESULT_READY=true`、`FINAL_EXIT_CODE=0`；資料日期 ETF／法人／外資持股／市場 `2026-10-07`、外資持股歷史 11 日、股票 518 檔。
+- 程式提交 `e9e561a`（Add news pricing radar observation layer）；報告發布提交 `16225ad687aac6c1a30afa61f511f28d58dd15cb`；稽核標籤 `published/20261008-090234`。
+- 線上 `PAGES_AUDIT_STATUS=complete`、HTTP 200，`NEWS_PRICING_RADAR_V1` 與 `data-news-pricing-radar` 標記存在；1050×900／390×844 無頁面級水平溢出、console 0。
+- 本功能屬資料層新增（重新計算 Yahoo 日K特徵），不得以 `--render-existing` 冒充新資料。
 
 <!-- NEWS_PRICING_RADAR_V1 -->
