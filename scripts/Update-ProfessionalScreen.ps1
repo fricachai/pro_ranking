@@ -129,6 +129,15 @@ function Get-Sha256Hex {
     }
 }
 
+function Get-NormalizedHtmlHash {
+    param([Parameter(Mandatory)][byte[]]$Bytes)
+    $utf8 = New-Object System.Text.UTF8Encoding($false, $true)
+    $decoded = $utf8.GetString($Bytes)
+    $normalized = ($decoded -replace "`r`n", "`n") -replace "`r", "`n"
+    $outputBytes = [Text.Encoding]::UTF8.GetBytes($normalized)
+    return Get-Sha256Hex -Bytes $outputBytes
+}
+
 function Get-PagesWorkflowRuns {
     param([AllowNull()][string]$Commit)
 
@@ -162,8 +171,8 @@ function Get-LiveReportState {
         $memory.Dispose()
     }
     $localBytes = [IO.File]::ReadAllBytes($IndexHtml)
-    $localHash = Get-Sha256Hex -Bytes $localBytes
-    $liveHash = Get-Sha256Hex -Bytes $liveBytes
+    $localHash = Get-NormalizedHtmlHash -Bytes $localBytes
+    $liveHash = Get-NormalizedHtmlHash -Bytes $liveBytes
     $required = @('INTERNATIONAL_CONTEXT_V1', 'internationalContext', 'quickGuide', 'checkPublishedUpdate', 'LIVE_QUOTE_REFRESH_V1', 'refreshLiveQuotes', 'liveQuoteStatus', 'data-live-quote-price', 'POSITION_LIVE_OBSERVATION_V1', 'data-live-observation', 'POSITION_ZONE_CHART_V1', 'data-position-zone-chart', $decisionTimingToken, 'NEWS_PRICING_RADAR_V1', 'NEWS_BREAKOUT_RADAR_V1', 'newsPricingRadar', 'data-news-breakout-radar', 'top30TableWrap', 'fullTableWrap', 'positionDecisionSummary', 'quotePhaseBanner', 'horizon-score-strip', 'score-tabs', 'scoreTabPanel', 'cross-horizon-reading', 'long-coverage-note', 'table-sort-button', 'data-table-sort', 'todayAction', 'nextCheck', $ExpectedEtfDate)
     $missing = @($required | Where-Object { -not $response.Content.Contains($_) })
     return [pscustomobject]@{

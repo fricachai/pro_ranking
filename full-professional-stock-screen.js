@@ -2454,7 +2454,9 @@ ${internationalUi.installQuickGuide.toString()}
     .replaceAll('目前不在本次ETF持股上市股票母體', '目前不在本次 ETF 持股普通股母體')
     .replace(/(<a class="stock-link"[^>]*>.*?<\/a>)<\/td><td>(?:上櫃|上市)<\/td><td><input class="table-position-check"/g, '$1</td><td><input class="table-position-check"')
     .replace(`${report.meta.stockCount}／${report.meta.listedUniverseCount}`, `${report.meta.stockCount}／${report.meta.allEtfHeldStocks}`)
-    .replace(/研究母體是 \d+ 檔上市普通股，約占當日 \d+ 檔上市普通股的 [\d.]+%，不是全體上市股票。/, `研究母體是 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股。`);
+    .replace(/研究母體是 \d+ 檔上市普通股，約占當日 \d+ 檔上市普通股的 [\d.]+%，不是全體上市股票。/, `研究母體是 ${report.meta.stockCount} 檔上市／上櫃普通股，已涵蓋本次 ETF 持股資料中的 ${report.meta.allEtfHeldStocks} 檔可辨識四碼普通股。`)
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n');
 }
 
 async function main() {

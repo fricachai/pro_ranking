@@ -186,7 +186,7 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 
 ## GitHub Pages byte-match 換行格式防呆
 
-Pages workflow 使用 Jekyll 建置時，可能將 Windows CRLF HTML 正規化為 LF。若 workflow 的 `pages_build_version` 等於本機 HEAD，且 artifact hash 與線上頁面 hash 相同，但本機原始 `index.html` hash 不同，先檢查換行格式；這是已驗證的 `PAGES_LINE_ENDING_FALSE_MISMATCH_V1` 情況，不得當成 CDN 尚未傳播，也不得跳過預檢或直接執行 `Update-ProfessionalScreen.ps1 -Publish`。預檢器應正規化換行後比較內容，並保留 workflow SHA、HTTP、頁面標記與資料契約驗證。
+Pages workflow 使用 Jekyll 建置時，可能將 Windows CRLF HTML 正規化為 LF。若 workflow 的 `pages_build_version` 等於本機 HEAD，且 artifact hash 與線上頁面 hash 相同，但本機原始 `index.html` hash 不同，先檢查換行格式；這是已驗證的 `PAGES_LINE_ENDING_FALSE_MISMATCH_V1` 情況，不得當成 CDN 尚未傳播，也不得跳過預檢或直接執行 `Update-ProfessionalScreen.ps1 -Publish`。預檢器應正規化換行後比較內容，並保留 workflow SHA、HTTP、頁面標記與資料契約驗證。產生器 `buildHtml` 輸出已統一為 LF；`Update-ProfessionalScreen.ps1` 的線上位元比對會先正規化 CRLF／BOM 再比較，根治事件／公告內文資料內嵌 CRLF 造成的假性不符。
 
 ## 跨 Agent UI 交接規則
 
