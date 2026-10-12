@@ -3102,7 +3102,24 @@ function serializeErrorForLog(error) {
 }
 
 const run = process.argv.includes('--render-existing') ? renderExistingReport : main;
+function logTerminalError(kind, reason) {
+  // Guarantee that a silent fatal exit (unhandled rejection or uncaught
+  // exception) is visible in the runner log. The controlled PowerShell runner
+  // captures stdout reliably; also mirror to stderr for direct CLI runs.
+  const detail = reason && reason.stack
+    ? reason.stack
+    : reason && reason.message
+      ? String(reason.message)
+      : String(reason);
+  const line = 'GENERATOR_FATAL ' + kind + ': ' + detail;
+  try { process.stderr.write(line + '\n'); } catch (ignored) { /* keep going */ }
+  console.log(line);
+  process.exitCode = 1;
+  setTimeout(() => process.exit(1), 150).unref();
+}
 if (require.main === module) {
+  process.on('unhandledRejection', reason => logTerminalError('UNHANDLED_REJECTION', reason));
+  process.on('uncaughtException', error => logTerminalError('UNCAUGHT_EXCEPTION', error));
   Promise.resolve(run()).catch(error => {
     console.log('GENERATOR_ERROR ' + JSON.stringify(serializeErrorForLog(error)));
     console.log(error.stack || error);
