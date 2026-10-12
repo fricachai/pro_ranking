@@ -778,3 +778,26 @@ OpenCode 必須依結果回報：
 - 換行正規化根因修復：本次線上 byte match 曾被內嵌 CRLF 假性卡住（`PAGES_LINE_ENDING_FALSE_MISMATCH_V1`）；`buildHtml` 現在統一輸出 LF，`Update-ProfessionalScreen.ps1` 線上比對先正規化 CRLF／BOM 再比對（程式提交 `2554e8e`）。
 
 <!-- NEWS_PRICING_RADAR_V1 --><!-- NEWS_BREAKOUT_RADAR_V1 -->
+
+## 2026-10-12 產生器無聲失敗觀測修正與暫時性來源失敗重試（GENERATOR_FATAL_OBSERVABILITY_V1）
+
+### 已確認問題與根因
+
+- 受控更新在報告產生階段失敗：`FINAL_STATUS=failed`、`FINAL_EXIT_CODE=1`，但事件階段已成功（Yahoo coverage 100%、654 筆），產生器輸出停在「1/7 讀取ETF資料…」後即中止，RUN_LOG 沒有 `GENERATOR_ERROR`，也沒有任何 stack。
+- 產生器原本只在 `Promise.resolve(run()).catch(...)` 印 `GENERATOR_ERROR`；未處理 rejection／uncaught exception 會直接中止 Node，輸出不上 RUN_LOG，導致一時無法定位。
+- 以前景 `node .\full-professional-stock-screen.js` 重跑同一個產生器完整成功（EXIT_CODE=0），證明是暫時性來源失敗或未處理 rejection，不是評分、排名或硬性門檻問題。
+
+### 已修正
+
+- `full-professional-stock-screen.js` bootstrapping 新增 `logTerminalError`：`unhandledRejection`／`uncaughtException` 會輸出 `GENERATOR_FATAL` 到 stdout（受控 runner 可靠捕捉）與 stderr，並在 150ms 後 `process.exit(1)`。此後任何靜默致命結束都可在 RUN_LOG 看到。
+- `AGENTS.md` 修復契約新增第 6 點與 `<-- GENERATOR_FATAL_OBSERVABILITY_V1 -->`：`1/7` 後無聲結束時先前景重跑、還原診斷報告檔、再依同一受控 runner 重試；不得降低 `MI_QFIIS` 11 日等硬性門檻。
+- 驗證：`node --check`、`FETCH_RESILIENCE_TEST=pass`、`POSITION_DECISION_RULES_PASS`；用手機模擬 unhandledRejection 確認輸出停頓與退出碼 1。
+
+### 本次受控更新成功結果（不得照抄為未來數值）
+
+- 修正提交 `66c4a26` 已推送；重新走完整受控更新：`STATUS=published`、`FINAL_RESULT_READY=true`、`FINAL_EXIT_CODE=0`。
+- 報告發布提交 `cdb326a6`；稽核標籤 `published/20261012-084359`；`PAGES_AUDIT_STATUS=complete`、線上 byte match。
+- 資料日期 ETF／法人／外資持股／市場 `2026-10-08`；外資持股歷史 11 日；股票 518 檔；`DATA_CHANGED=true`。
+- 公開網址：https://fricachai.github.io/pro_ranking/ ；RUN_LOG：`professional-screen-report/logs/daily-refresh-20261012-083737.log`。
+
+<!-- GENERATOR_FATAL_OBSERVABILITY_V1 -->
