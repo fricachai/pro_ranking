@@ -821,3 +821,19 @@ OpenCode 必須依結果回報：
 - 仍不得為通過檢查而放寬 `MI_QFIIS` 11 個有效交易日、主動 ETF 完整性、治理排除或其他資料品質門檻。
 - 被追蹤檔案的意外變更或非允許清單的產生檔仍必須停止發布。
 - 失敗執行產生的日期版檔案已還原／清除，重跑由同一受控 runner 重新產生。
+
+## 2026-10-20 每日 08:30 自動排程（DAILY_UPDATE_SCHEDULE_V1）
+
+### 已完成
+
+- `scripts/Invoke-DailyScreenUpdateScheduled.ps1`：排程包裝入口，固定切到 repo 根目錄、呼叫 `Invoke-ProfessionalScreenUpdateCommand.ps1`，逐行輸出並同步寫入 `professional-screen-report/logs/scheduled-update-YYYYMMDD-HHmmss.log`，以控制器 exit code 作為工作結果。
+- `scripts/Register-DailyScreenUpdateTask.ps1`：建立／更新 Windows 工作排程。預設工作名稱 `pro_ranking daily screen update`、每天 08:30；`-WeekdaysOnly` 可改為週一至週五；`-Time HH:mm` 可改時間。
+- 工作設定：`MultipleInstances=IgnoreNew`（禁止第二份競爭更新）、`StartWhenAvailable`（休眠喚醒後補跑）、允許電池供電時執行、執行時限 2 小時；使用目前使用者的互動登入權杖，不儲存密碼。
+- 已實際註冊並驗證：`SCHEDULED_TASK_READY=true`、`SCHEDULED_TASK_STATE=Ready`、`SCHEDULED_TASK_NEXT_RUN=2026/10/21 08:30:00`。
+
+### 邊界
+
+- 排程與手動 `/update-report` 共用同一個受控入口，預檢、資料品質閘門、`MI_QFIIS` 11 個有效交易日、主動 ETF 完整性、治理排除、Git 與 Pages 驗證全部不變。
+- 每日 08:30 屬盤前時段，即時報價可能為 `quotePhase=no_live_quote`，依 `NO_LIVE_QUOTE_PHASE_V1` 以官方收盤價呈現並揭露。
+- 週六、週日仍會執行；若只保留交易日，改用 `-WeekdaysOnly`。
+- 電腦關機或工作排程服務未執行時不會補跑；開機後 `StartWhenAvailable` 會補跑。

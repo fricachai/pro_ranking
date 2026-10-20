@@ -29,6 +29,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-Professiona
 
 OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採「預檢一次 → `Start` 一次 → 依序每 60 秒讀取 `Get-ProfessionalScreenUpdateStatus.ps1 -WaitSeconds 60`」；每次狀態輸出都必須在主工作階段呈現。終態必須包含 `FINAL_RESULT_READY=true`，否則即使 state 已是 published，也不得宣稱完整完成。這些 Status 呼叫是同一個背景更新的唯讀觀察，不是第二份更新；不得平行輪詢、不得再次 Start，也不得另開競爭中的背景程序。<!-- OPENCODE_PROGRESS_OUTPUT_V3 -->
 
+## 每日自動排程（Windows 工作排程器）
+
+1. 排程只呼叫同一個受控 CLI 入口 `scripts/Invoke-ProfessionalScreenUpdateCommand.ps1`（經 `scripts/Invoke-DailyScreenUpdateScheduled.ps1` 包裝），不得繞過預檢、資料契約、Git 或 Pages 驗證。
+2. 以 `scripts/Register-DailyScreenUpdateTask.ps1` 建立工作；預設每天 08:30，`-WeekdaysOnly` 可改為週一至週五。工作設定必須為 `MultipleInstances=IgnoreNew`、`StartWhenAvailable`，避免重複或競爭更新。
+3. 排程使用目前使用者的互動登入權杖，不儲存密碼；若電腦在 08:30 休眠，喚醒後會補跑。
+4. 排程執行紀錄寫入 `professional-screen-report/logs/scheduled-update-*.log`；回報時仍須揭露 `STATUS`、資料日期、提交、Pages byte match 與 Actions 稽核狀態。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
+
 ## OpenCode 執行規則
 
 1. 先讀 `OPENCODE_HANDOFF.md`。單純每日更新不改動評分權重與硬性條件；但使用者要求修正，或更新流程因來源、產檔、驗證、UI、Git／Pages 失敗時，Build 必須進入跨層級修正流程，不得把每日模式當成編輯權限上限。
@@ -163,6 +170,8 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 - `scripts/Test-OpenCodeHandoff.ps1`：OpenCode、GitHub、資料契約與線上版本的交接預檢。
 - `scripts/Sync-OpenCodeObsidianHandoff.ps1`：每次 Obsidian 寫回後驗證三份指示、Build 權限與現行契約，輸出 `HANDOFF_READY=true`。
 - `scripts/Invoke-OpenCodeDailyUpdate.ps1`：先預檢再以 OpenCode CLI 非互動模式執行每日發布；Desktop 直接使用 `/update-report`。
+- `scripts/Invoke-DailyScreenUpdateScheduled.ps1`：Windows 工作排程器呼叫的包裝入口，固定從專案根目錄執行受控控制器並逐行寫入 `scheduled-update-*.log`。
+- `scripts/Register-DailyScreenUpdateTask.ps1`：建立／更新每日排程工作（預設 08:30，可用 `-WeekdaysOnly` 改成週一至週五）。
 - `OPENCODE_HANDOFF.md`：完整交接清單、一次性設定與故障邊界。
 - `opencode.json`、`.opencode/commands/update-report.md`：授權 OpenCode Build 完整工程能力並提供 `/update-report`。
 - `index.html`：GitHub Pages 首頁，由更新腳本從最新報告複製產生。
