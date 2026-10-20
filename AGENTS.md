@@ -32,9 +32,13 @@ OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採�
 ## 每日自動排程（Windows 工作排程器）
 
 1. 排程只呼叫同一個受控 CLI 入口 `scripts/Invoke-ProfessionalScreenUpdateCommand.ps1`（經 `scripts/Invoke-DailyScreenUpdateScheduled.ps1` 包裝），不得繞過預檢、資料契約、Git 或 Pages 驗證。
-2. 以 `scripts/Register-DailyScreenUpdateTask.ps1` 建立工作；預設每天 08:30，`-WeekdaysOnly` 可改為週一至週五。工作設定必須為 `MultipleInstances=IgnoreNew`、`StartWhenAvailable`，避免重複或競爭更新。
-3. 排程使用目前使用者的互動登入權杖，不儲存密碼；若電腦在 08:30 休眠，喚醒後會補跑。
-4. 排程執行紀錄寫入 `professional-screen-report/logs/scheduled-update-*.log`；回報時仍須揭露 `STATUS`、資料日期、提交、Pages byte match 與 Actions 稽核狀態。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
+2. 現行排程為兩個獨立工作（以 `scripts/Register-DailyScreenUpdateTask.ps1` 建立，參數見下表）：
+   - `pro_ranking weekday 0915 update`：週一至週五 09:15，盤中即時報價與當日籌碼。
+   - `pro_ranking daily 1800 update`：每天 18:00，收盤後資料與晚間新增新聞。
+3. 兩個工作共用同一個控制器，並設 `MultipleInstances=IgnoreNew`；不得再建立第三份同時執行的更新。`StartWhenAvailable` 讓休眠或關機後的排程在恢復時補跑。
+4. 排程使用目前使用者的互動登入權杖，不儲存密碼。
+5. 排程執行紀錄寫入 `professional-screen-report/logs/scheduled-update-*.log`；回報時仍須揭露 `STATUS`、資料日期、提交、Pages byte match 與 Actions 稽核狀態。
+6. 09:15 屬盤中，`quotePhase=intraday`；18:00 為收盤後，若來源尚未更新則照實揭露各來源日期，不得用報告時間冒充。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
 
 ## OpenCode 執行規則
 
