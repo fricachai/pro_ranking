@@ -454,3 +454,17 @@ Final result: passed
 - Privacy: 瀏覽器 QA 以 DOM 解除登入遮罩顯示，未輸入或重述任何帳密；未提交成本、持倉或登入狀態。
 
 Final result: passed
+
+## 2026-10-20 左側浮動／收合快速跳轉導覽（PAGE_JUMP_NAV_V1）QA
+
+- Change: `full-professional-stock-screen.js` 新增常駐左側導覽（`#pageJumpNav`，契約標記 `PAGE_JUMP_NAV_V1`）。桌機（≥901px）以固定左欄佔位並把 header／`main` 內容往右推，內容與導覽不重疊；欄寬展開 200–232px、收合 54–56px（只留 01–09 編號，hover 有完整名稱提示）。手機（≤900px）改為左下角膠囊按鈕，面板向上展開、點選後自動收合。
+- Sections: 依頁面順序連結 9 個實際錨點 `#internationalContext`、`#etfIncomePlanner`、`#newsPricingRadar`、`#quickGuide`、`#sourceAudit`、`#positionSection`、`#top30Section`、`#fullRankingSection`、`#horizonFramework`；本次為原本沒有 id 的「前30名與主要風險」、「三時間尺度評分架構」補上 `top30Section`／`horizonFramework`。
+- Behavior: 點選連結以 `scrollTo` 平滑捲動並保留 16px 上緣；目標為 `<details>`（資料完整性）時自動展開；捲動時以 `requestAnimationFrame` 節流更新目前區塊高亮（`aria-current="location"`）；`Escape` 收合；手機點面板外部收合；`prefers-reduced-motion` 時改為立即跳轉。
+- Boundary: 只改導覽、錨點、CSS 與前端事件；未改動 `HORIZON_SCORE_V2`、排名、`entryAction`／`holdingAction`／`todayAction`、`MI_QFIIS` 11 日等硬性門檻或任何報告 JSON 數值。以 `node .\full-professional-stock-screen.js --render-existing` 沿用 2026-10-14 已驗證資料重產，非資料更新。
+- Viewports: 1440×900 導覽 232px、內容起點 256px、`scrollWidth=1425<=1440`、無重疊；1050×900 導覽 200px（收合 54px）、header 內距 224px 與內容對齊、`scrollWidth=1035<=1050`、無重疊；390×844 膠囊 104×41、面板 268×430 完整落在 844 內、`scrollWidth=375<=390`。
+- Interaction tests: 1050 點「完整股票排名」後該區塊 top=16、hash 與高亮同步；點「資料完整性」會自動展開 `<details>`；`Escape` 由 200px 收合為 54px、`aria-expanded=false`；390 點「個股快速操作」跳轉後面板自動收合。
+- Console: 本機瀏覽器 errors / warnings 0。
+- Privacy: QA 僅以 localStorage 登入旗標載入頁面，未輸入或保存任何帳號、密碼、成本或持股；未把任何私人狀態寫入 repo 或公開頁面。
+- Automated checks: `node --check full-professional-stock-screen.js`、`Test-PositionDecisionRules.js`（POSITION_DECISION_RULES_PASS）、`Test-InternationalContext.js`（INTERNATIONAL_CONTEXT_TESTS=PASS）、`Test-OpenCodeHandoff.ps1 -SkipOpenCode -SkipLive -AllowDirty`（HANDOFF_READY=true）。
+
+Final result: passed

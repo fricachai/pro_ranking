@@ -2175,6 +2175,63 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 ${internationalUi.styles}
 ${etfIncomePlanner.styles}
 ${newsPricingRadar.styles}
+html{scroll-behavior:smooth}
+#internationalContext,#etfIncomePlanner,#newsPricingRadar,#quickGuide,#sourceAudit,#positionSection,#top30Section,#fullRankingSection,#horizonFramework{scroll-margin-top:18px}
+body{--rail-w:232px}
+body.rail-collapsed{--rail-w:56px}
+body:not(.auth-locked){padding-left:var(--rail-w)}
+body:not(.auth-locked) header{padding-left:calc(var(--rail-w) + max(24px,calc((100vw - var(--rail-w) - 1240px)/2)))}
+.page-jump-nav{position:fixed;z-index:70;left:0;top:0;bottom:0;width:var(--rail-w);display:flex;flex-direction:column;gap:9px;padding:14px 10px 12px;border-right:1px solid #d5e3da;background:rgba(248,252,249,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:5px 0 16px rgba(13,63,43,.05);overflow:hidden}
+.page-jump-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px solid rgba(201,168,91,.65);border-radius:10px;background:linear-gradient(165deg,#14603f 0%,#0d3f2b 100%);color:#fff;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(13,63,43,.18);transition:box-shadow .16s ease,background .16s ease}
+.page-jump-toggle:hover{box-shadow:0 12px 24px rgba(13,63,43,.26);background:linear-gradient(165deg,#1b7a52 0%,#14603f 100%)}
+.page-jump-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.page-jump-icon{font-size:14px;line-height:1}
+.page-jump-label{font-size:12.5px;letter-spacing:.04em;white-space:nowrap}
+.page-jump-panel{position:static;display:flex;flex-direction:column;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 2px 0 0}
+.page-jump-panel[hidden]{display:flex}
+.page-jump-head{margin:0 0 8px;padding:0 2px 8px;border-bottom:1px solid #dbe8e0}
+.page-jump-head b{display:block;color:var(--green-deep);font-size:13px;letter-spacing:.03em}
+.page-jump-head small{display:block;margin-top:3px;color:var(--muted);font-size:11.5px;line-height:1.45}
+.page-jump-list{list-style:none;margin:0;padding:0;display:grid;gap:2px;align-content:start}
+.page-jump-list a{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;padding:8px 9px;border:1px solid transparent;border-radius:9px;color:var(--ink);text-decoration:none;transition:background .14s ease,border-color .14s ease,box-shadow .14s ease}
+.page-jump-list a:hover{background:rgba(238,247,241,.95);border-color:#cfe2d8}
+.page-jump-list a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.page-jump-list .page-jump-step{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#e7f0ea;color:var(--green-deep);font-size:10.5px;font-weight:800}
+.page-jump-list strong{display:block;font-size:13px;font-weight:800;line-height:1.35}
+.page-jump-list small{display:block;margin-top:2px;color:var(--muted);font-size:11px;line-height:1.4}
+.page-jump-list a.is-active{background:linear-gradient(135deg,rgba(234,244,237,.98) 0%,rgba(248,241,223,.98) 100%);border-color:#cddfd3;box-shadow:inset 3px 0 0 var(--green)}
+.page-jump-list a.is-active .page-jump-step{background:var(--green);color:#fff}
+.page-jump-foot{margin-top:10px;padding-top:9px;border-top:1px solid #dbe8e0}
+.page-jump-top{width:100%;padding:8px 10px;border:1px solid #cfdcd4;border-radius:8px;background:rgba(255,255,255,.85);color:var(--green-deep);font:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:background .14s ease,border-color .14s ease,box-shadow .14s ease}
+.page-jump-top:hover{background:#eef7f1;border-color:#8eaf9d;box-shadow:0 4px 10px rgba(18,37,29,.09)}
+.page-jump-top:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+[id][tabindex="-1"]:focus{outline:none}
+body.rail-collapsed .page-jump-nav{padding:12px 7px 10px}
+body.rail-collapsed .page-jump-toggle{justify-content:center;padding:9px 0}
+body.rail-collapsed .page-jump-label{display:none}
+body.rail-collapsed .page-jump-head{margin:0;padding:0 0 6px;min-height:0;border-bottom:1px solid #dbe8e0}
+body.rail-collapsed .page-jump-head b,body.rail-collapsed .page-jump-head small{display:none}
+body.rail-collapsed .page-jump-list a{grid-template-columns:1fr;justify-items:center;padding:6px 0}
+body.rail-collapsed .page-jump-list .page-jump-step{width:30px;height:30px;font-size:11.5px}
+body.rail-collapsed .page-jump-list a>span:last-child{display:none}
+body.rail-collapsed .page-jump-foot{display:none}
+@media(max-width:1180px) and (min-width:901px){body{--rail-w:200px}body.rail-collapsed{--rail-w:54px}}
+@media(max-width:900px){
+body{--rail-w:0px}
+body:not(.auth-locked){padding-left:0}
+body:not(.auth-locked) header{padding-left:max(24px,calc((100vw - 1240px)/2))}
+.page-jump-nav{top:auto;bottom:14px;left:12px;width:auto;max-width:calc(100vw - 24px);padding:0;border:0;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;overflow:visible}
+.page-jump-toggle{width:auto;padding:11px 15px;border-radius:999px;border:1px solid rgba(201,168,91,.75)}
+.page-jump-panel{position:absolute;left:0;bottom:calc(100% + 10px);width:min(82vw,268px);max-height:min(62vh,430px);padding:12px;border:1px solid #cfdcd4;border-radius:14px;background:rgba(255,255,255,.97);box-shadow:0 20px 46px rgba(13,63,43,.24);overflow:auto}
+.page-jump-panel[hidden]{display:none}
+body.rail-collapsed .page-jump-toggle{justify-content:flex-start;padding:11px 15px}
+body.rail-collapsed .page-jump-label{display:inline}
+body.rail-collapsed .page-jump-head{margin:0 0 8px;padding:0 2px 8px;border-bottom:1px solid #dbe8e0}
+body.rail-collapsed .page-jump-head b,body.rail-collapsed .page-jump-head small{display:block}
+body.rail-collapsed .page-jump-list a{grid-template-columns:22px minmax(0,1fr);justify-items:stretch;padding:8px 9px}
+body.rail-collapsed .page-jump-list a>span:last-child{display:block}
+body.rail-collapsed .page-jump-foot{display:block}
+}
 </style>
 </head>
 <body class="auth-locked">
@@ -2194,6 +2251,24 @@ ${newsPricingRadar.styles}
   </div>
 </div>
 <div id="appShell" class="app-shell app-shell--hidden" aria-hidden="true">
+<nav class="page-jump-nav" id="pageJumpNav" data-contract="PAGE_JUMP_NAV_V1" aria-label="頁面快速跳轉">
+  <button class="page-jump-toggle" id="pageJumpToggle" type="button" aria-expanded="false" aria-controls="pageJumpPanel" title="展開頁面快速跳轉"><span class="page-jump-icon" aria-hidden="true">☰</span><span class="page-jump-label">快速跳轉</span></button>
+  <div class="page-jump-panel" id="pageJumpPanel" hidden>
+    <p class="page-jump-head"><b>跳到本頁重要區塊</b><small>依頁面順序排列；目前閱讀位置會自動標示。</small></p>
+    <ol class="page-jump-list">
+      <li><a href="#internationalContext" data-jump-target="internationalContext"><span class="page-jump-step">01</span><span><strong>國際市場脈動</strong><small>台股方向與環境結論</small></span></a></li>
+      <li><a href="#etfIncomePlanner" data-jump-target="etfIncomePlanner"><span class="page-jump-step">02</span><span><strong>ETF 月月配規劃</strong><small>資金、配置與每月股息</small></span></a></li>
+      <li><a href="#newsPricingRadar" data-jump-target="newsPricingRadar"><span class="page-jump-step">03</span><span><strong>消息起漲觀察雷達</strong><small>消息是否已被市場定價</small></span></a></li>
+      <li><a href="#quickGuide" data-jump-target="quickGuide"><span class="page-jump-step">04</span><span><strong>個股快速操作</strong><small>現在買、維持或減碼</small></span></a></li>
+      <li><a href="#sourceAudit" data-jump-target="sourceAudit"><span class="page-jump-step">05</span><span><strong>資料完整性與限制</strong><small>來源日期與缺漏說明</small></span></a></li>
+      <li><a href="#positionSection" data-jump-target="positionSection"><span class="page-jump-step">06</span><span><strong>持股決策總覽</strong><small>已持有部位的今天動作</small></span></a></li>
+      <li><a href="#top30Section" data-jump-target="top30Section"><span class="page-jump-step">07</span><span><strong>前30名與主要風險</strong><small>快速掃描研究優先順序</small></span></a></li>
+      <li><a href="#fullRankingSection" data-jump-target="fullRankingSection"><span class="page-jump-step">08</span><span><strong>完整股票排名</strong><small>搜尋、篩選與排序</small></span></a></li>
+      <li><a href="#horizonFramework" data-jump-target="horizonFramework"><span class="page-jump-step">09</span><span><strong>三時間尺度評分架構</strong><small>短／中／長期怎麼算</small></span></a></li>
+    </ol>
+    <div class="page-jump-foot"><button class="page-jump-top" id="pageJumpTop" type="button">回到本頁最上面</button></div>
+  </div>
+</nav>
 <header><div class="header-row"><h1>ETF持有普通股多因子研究報告 <span class="system-credit">(系統設計：fricachai)</span></h1><button class="logout-button" id="logoutButton" type="button">登出</button></div><p>整合國際市場與臺股證據，快速查看進場條件、持有動作與風險。</p><div class="header-status">個股價格 ${escapeHtml(report.meta.liveFreeze)} · 本次發布 ${escapeHtml(report.meta.generatedAt)}</div><details class="freeze-details"><summary>各項資料時間</summary><div class="freeze"><span>報告產生 <b>${escapeHtml(report.meta.generatedAt)}</b></span><span>事件檢查 <b>${escapeHtml(report.meta.eventCheckedAt)}</b></span><span>Yahoo新聞 <b>${escapeHtml(newsStatusLabel)} ${fmt(report.meta.yahooNewsCoverageRate, 1)}%</b></span><span>ETF資料 <b>${escapeHtml(report.meta.etfDate)}</b></span><span>ETF來源快照 <b>${escapeHtml(report.meta.etfSourceGeneratedAt || '未提供')}</b></span><span>法人買賣超 <b>${escapeHtml(report.meta.institutionalDate)}</b></span><span>外資持股 <b>${escapeHtml(report.meta.foreignHoldingDate)}</b></span><span>信用交易 <b>${escapeHtml(report.meta.creditDate)}</b></span><span>集保分級 <b>${escapeHtml(report.meta.tdccDate)}</b></span><span>價量／估值 <b>${escapeHtml(report.meta.marketDate)}</b></span><span>${escapeHtml(report.meta.priceLabel || '最新報價')}凍結 <b>${escapeHtml(report.meta.liveFreeze)}</b></span></div></details></header>
 <main>
 ${decisionRail}
@@ -2243,11 +2318,11 @@ ${staleEtfNotice}
 
 <section class="section"><h2>篩選覆蓋</h2><div class="summary-grid"><div><b>${report.meta.stockCount}／${report.meta.allEtfHeldStocks}</b><span>本次納入普通股／ETF持股可辨識母體</span></div><div><b>${report.meta.foreignHoldingCovered}</b><span>具官方外資持股趨勢</span></div><div><b>${report.meta.bucketA}</b><span>A級：通過初步布局門檻</span></div><div><b>${report.meta.rejected}</b><span>D級：硬性條件排除</span></div></div></section>
 
-  <section class="section"><h2>前30名與主要風險</h2><p class="section-lead">排名只使用「中期研究分數」；短期分數回答時機，長期分數是方法覆蓋85%的初篩，資料健康度則獨立顯示。點擊分數可查看明細；點選 #、短期、中期或長期表頭可切換由小到大／由大到小排序。</p><div class="table-scroll-tools"><button class="scroll-button" id="top30ScrollLeft" type="button" title="向左捲動" aria-label="前30名表格向左捲動">&#8592;</button><div class="top-scroll" id="top30TopScroll" aria-label="前30名表格水平捲軸"><div class="top-scroll-sizer" id="top30TopScrollSizer"></div></div><button class="scroll-button" id="top30ScrollRight" type="button" title="向右捲動" aria-label="前30名表格向右捲動">&#8594;</button></div><div class="table-wrap top30-table-wrap" id="top30TableWrap"><table class="top30-table" id="top30Table"><thead><tr><th>${sortButton('#','rank')}</th><th>股票</th><th>追蹤</th><th>建立新部位</th><th>已經持有</th><th>${sortButton('短期時機','short')}</th><th>${sortButton('中期研究／排名','medium')}</th><th>${sortButton('長期初篩','long')}</th><th>資料健康</th><th>營收YoY</th><th>PE</th><th>ETF 5日</th><th>主動ETF 5日</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信買賣超5日</th><th>RSI</th><th>K／D</th><th>最先注意風險</th></tr></thead><tbody>${topRows}</tbody></table></div></section>
+  <section class="section" id="top30Section"><h2>前30名與主要風險</h2><p class="section-lead">排名只使用「中期研究分數」；短期分數回答時機，長期分數是方法覆蓋85%的初篩，資料健康度則獨立顯示。點擊分數可查看明細；點選 #、短期、中期或長期表頭可切換由小到大／由大到小排序。</p><div class="table-scroll-tools"><button class="scroll-button" id="top30ScrollLeft" type="button" title="向左捲動" aria-label="前30名表格向左捲動">&#8592;</button><div class="top-scroll" id="top30TopScroll" aria-label="前30名表格水平捲軸"><div class="top-scroll-sizer" id="top30TopScrollSizer"></div></div><button class="scroll-button" id="top30ScrollRight" type="button" title="向右捲動" aria-label="前30名表格向右捲動">&#8594;</button></div><div class="table-wrap top30-table-wrap" id="top30TableWrap"><table class="top30-table" id="top30Table"><thead><tr><th>${sortButton('#','rank')}</th><th>股票</th><th>追蹤</th><th>建立新部位</th><th>已經持有</th><th>${sortButton('短期時機','short')}</th><th>${sortButton('中期研究／排名','medium')}</th><th>${sortButton('長期初篩','long')}</th><th>資料健康</th><th>營收YoY</th><th>PE</th><th>ETF 5日</th><th>主動ETF 5日</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信買賣超5日</th><th>RSI</th><th>K／D</th><th>最先注意風險</th></tr></thead><tbody>${topRows}</tbody></table></div></section>
 
  <section class="section" id="fullRankingSection"><h2>完整 ${report.meta.stockCount} 檔上市股票排名</h2><div class="filters"><input id="search" type="search" placeholder="搜尋代號或名稱"><select id="bucket"><option value="">全部新部位動作</option><option value="A">可開始承接</option><option value="B">等待確認</option><option value="C">暫不承接</option><option value="D">不建立部位</option></select><select id="sector"><option value="">全部產業</option>${[...new Set(report.ranking.map(row => row.sector))].sort().map(value => `<option>${escapeHtml(value)}</option>`).join('')}</select><label class="position-toggle"><input id="positionOnly" type="checkbox"> <span>只看我的布局追蹤</span></label></div><div class="table-scroll-tools"><button class="scroll-button" id="scrollLeft" type="button" title="向左捲動" aria-label="向左捲動">&#8592;</button><div class="top-scroll" id="fullTopScroll" aria-label="表格水平捲軸"><div class="top-scroll-sizer" id="fullTopScrollSizer"></div></div><button class="scroll-button" id="scrollRight" type="button" title="向右捲動" aria-label="向右捲動">&#8594;</button></div><div class="table-wrap full-table-wrap" id="fullTableWrap"><table class="full-table" id="fullTable"><thead><tr><th>${sortButton('#','rank')}</th><th>股票</th><th>追蹤</th><th>產業</th><th>建立新部位</th><th>已經持有</th><th>${sortButton('短期時機','short')}</th><th>${sortButton('中期研究／排名','medium')}</th><th>${sortButton('長期初篩','long')}</th><th>資料健康</th><th>即時/收盤</th><th>營收YoY</th><th>累計YoY</th><th>PE</th><th>ETF 5日</th><th>ETF 10日</th><th>主動5日</th><th>外資持股比</th><th>外資持股5日</th><th>外資持股10日</th><th>外資買賣超5日</th><th>投信5日</th><th>投信10日</th><th>RSI</th><th>K／D</th><th>距20EMA</th><th>主要風險</th></tr></thead><tbody id="fullRows"></tbody></table></div><p class="small">中期研究分數決定排名；短期與長期分數提供不同時間尺度，不可互相替代。點選 # 或三個時間尺度表頭可排序顯示，但不改變研究排名、分數或投資動作。外資持股比率高低本身不是買賣訊號，重點是持股存量、法人買賣流量與ETF方向是否一致。</p></section>
 
-<section class="section"><h2>三時間尺度評分架構</h2><p class="section-lead">三個分數回答不同問題，不能互相替代；畫面以整數顯示，底層保留一位小數供稽核。只有中期研究分數用於排名，資料健康度不加分、不扣分，只作獨立品質門檻。</p><div class="framework-wrap"><table class="framework-table"><thead><tr><th>用途</th><th>實際權重</th><th>回答的問題</th><th>限制與使用方式</th></tr></thead><tbody>
+<section class="section" id="horizonFramework"><h2>三時間尺度評分架構</h2><p class="section-lead">三個分數回答不同問題，不能互相替代；畫面以整數顯示，底層保留一位小數供稽核。只有中期研究分數用於排名，資料健康度不加分、不扣分，只作獨立品質門檻。</p><div class="framework-wrap"><table class="framework-table"><thead><tr><th>用途</th><th>實際權重</th><th>回答的問題</th><th>限制與使用方式</th></tr></thead><tbody>
 <tr><td><b>短期時機（100分）</b></td><td><ul><li>技術與時機 30%</li><li>ETF／法人短期流向 25%</li><li>事件催化 15%</li><li>風險與流動性 15%</li><li>基本面護欄 15%</li></ul></td><td>現在是不是相對合理的觀察、等待或分批時機？</td><td>不預測單日漲跌；盤中訊號一律等收盤確認。事件項不再重複放入營收成長。</td></tr>
 <tr><td><b>中期研究（100分，排名主軸）</b></td><td><ul><li>盈餘與營收趨勢 25%</li><li>企業營運品質 20%</li><li>技術趨勢 20%</li><li>估值 15%</li><li>ETF／法人籌碼 10%</li><li>事件、風險與流動性 10%</li></ul></td><td>未來數週至數月，哪一些股票最值得優先深入研究？</td><td>本益比只在估值計分；營收只在趨勢構面計分；仍須先通過資料、流動性、趨勢與法人等硬門檻。</td></tr>
 <tr><td><b>長期初篩（正規化100分）</b></td><td><ul><li>企業營運品質 25%</li><li>財務韌性 20%</li><li>成長耐久性 15%</li><li>估值 25%</li><li>資本配置品質 15%：尚未計分</li></ul></td><td>哪些公司具備較值得長期研究的品質與價格條件？</td><td>目前方法覆蓋85%，再正規化為100分以便比較；因尚缺完整自由現金流、ROIC與資本配置紀律，只能稱「初篩」，不可單獨形成長期買賣動作。</td></tr>
@@ -2442,7 +2517,46 @@ let syncTop30ScrollWidth=()=>{};let syncFullScrollWidth=()=>{};let scrollersInit
  function draw(){const q=search.value.trim().toLowerCase();let filtered=rows.filter(r=>(!q||(r.code+' '+r.name).toLowerCase().includes(q))&&(!bucket.value||r.bucket===bucket.value)&&(!sector.value||r.sector===sector.value)&&(!positionOnly.checked||positions[r.code]));const state=tableSortState.full;if(state){filtered=[...filtered].sort((a,b)=>{const av=state.key==='rank'?a.rank:a.horizonScores&&a.horizonScores[state.key]?a.horizonScores[state.key].score:null;const bv=state.key==='rank'?b.rank:b.horizonScores&&b.horizonScores[state.key]?b.horizonScores[state.key].score:null;const diff=(Number.isFinite(av)?av:-Infinity)-(Number.isFinite(bv)?bv:-Infinity);return (state.direction==='asc'?diff:-diff)||a.rank-b.rank})}const rendered=filtered.map(r=>{const h=r.horizonScores||{};const health=r.dataHealth||{};return '<tr><td>'+r.rank+'</td><td><a class="stock-link" href="'+stockUrl(r.code)+'" target="_blank" rel="noreferrer" title="開啟 '+e(r.name)+' Yahoo技術分析"><b>'+e(r.code)+'</b> '+e(r.name)+'</a></td><td><input class="table-position-check" type="checkbox" data-position-toggle="'+e(r.code)+'" aria-label="追蹤 '+e(r.code)+' '+e(r.name)+'"></td><td>'+e(r.industry)+'</td><td class="tag-'+r.bucket+'">'+e(r.entryAction)+'</td><td class="state-'+e(r.holdingState)+'">'+e(r.holdingAction)+'</td><td>'+scoreAnchor(r,'short',h.short&&h.short.score)+'</td><td>'+scoreAnchor(r)+'</td><td>'+scoreAnchor(r,'long',h.long&&h.long.score)+'</td><td>'+n(health.score,0)+'% '+e(health.status||'')+(health.comparisonStatus==='部分可比'?'／部分可比':'')+'</td><td>'+n(r.livePrice??r.close,2)+'</td><td>'+s(r.fundamentals.revenueYoy,1,'%')+'</td><td>'+s(r.fundamentals.revenueYtdYoy,1,'%')+'</td><td>'+n(r.valuation.pe)+'</td><td>'+s(r.etf.d5)+'</td><td>'+s(r.etf.d10)+'</td><td>'+s(r.etf.activeD5)+'</td><td>'+n(r.foreign.holdingRatio,2)+'%</td><td>'+s(r.foreign.holdingD5)+'</td><td>'+s(r.foreign.holdingD10)+'</td><td>'+s(r.foreign.netBuy5)+'</td><td>'+s(r.investmentTrust.netBuy5)+'</td><td>'+s(r.investmentTrust.netBuy10)+'</td><td>'+n(r.technical.rsi14)+'</td><td>'+n(r.technical.kdK,1)+'／'+n(r.technical.kdD,1)+'</td><td>'+s(r.technical.distanceEma20,1,'%')+'</td><td>'+e((r.rejectionReasons||[]).join('；')||'—')+'</td></tr>'}).join('');body.innerHTML=rendered||'<tr><td class="empty-state" colspan="27"><b>目前沒有股票符合這組篩選條件。</b><br>只有「可開始承接」代表新部位通過全部門檻；既有部位請查看「我的布局追蹤」，不要因排名變化直接賣出。</td></tr>';syncPositionChecks();updateSortButtons('full');requestAnimationFrame(syncFullScrollWidth)}
  document.addEventListener('click',event=>{const move=event.target.closest('[data-position-move]');if(move){event.preventDefault();movePosition(move.dataset.positionCode,move.dataset.positionMove==='up'?-1:1);return}});
  function getAuthStorage(remember){return remember?window.localStorage:window.sessionStorage}function hasStoredAuth(){return window.localStorage.getItem(AUTH_STORAGE_KEY)==='1'||window.sessionStorage.getItem(AUTH_STORAGE_KEY)==='1'}function persistAuth(remember){window.localStorage.removeItem(AUTH_STORAGE_KEY);window.sessionStorage.removeItem(AUTH_STORAGE_KEY);getAuthStorage(remember).setItem(AUTH_STORAGE_KEY,'1')}function clearAuth(){window.localStorage.removeItem(AUTH_STORAGE_KEY);window.sessionStorage.removeItem(AUTH_STORAGE_KEY)}function setGateLocked(locked){document.body.classList.toggle('auth-locked',locked);appShell.classList.toggle('app-shell--hidden',locked);appShell.setAttribute('aria-hidden',locked?'true':'false');loginGate.classList.toggle('login-gate--hidden',!locked)}function setLoginStatus(message,type=''){loginStatus.textContent=message;loginStatus.className='login-status'+(type?' '+type:'')}
-let appStarted=false;function startApp(){if(!scrollersInitialized){syncTop30ScrollWidth=setupTableScroller(top30TableWrap,top30TopScroll,top30TopScrollSizer,top30Table,document.getElementById('top30ScrollLeft'),document.getElementById('top30ScrollRight'));syncFullScrollWidth=setupTableScroller(tableWrap,topScroll,topScrollSizer,fullTable,document.getElementById('scrollLeft'),document.getElementById('scrollRight'));scrollersInitialized=true}renderPositions();draw();syncPositionChecks();const initialScore=location.hash.startsWith('#score-')?decodeURIComponent(location.hash.slice(7)):'';if(initialScore)openScore(initialScore,false)}function bootstrap(){if(appStarted)return;appStarted=true;startApp();installQuickGuide(rows,reportMeta,positionDecisionMeta,e,n,openScore)}function handleLoginSubmit(event){event.preventDefault();const username=loginUsername.value.trim();const password=loginPassword.value;const authorized=AUTH_ACCOUNTS.some(account=>username===account.username&&password===account.password);if(!authorized){setLoginStatus('帳號或密碼錯誤。','error');loginPassword.value='';loginPassword.focus();return}persistAuth(rememberLogin.checked);setLoginStatus('登入成功。');setGateLocked(false);bootstrap()}function handleLogout(){clearAuth();setGateLocked(true);setLoginStatus('請輸入帳號與密碼。');loginPassword.value='';loginUsername.focus()}
+let appStarted=false;
+function installPageJumpNav(){
+  const nav=document.getElementById('pageJumpNav');if(!nav)return;
+  const toggle=document.getElementById('pageJumpToggle');const panel=document.getElementById('pageJumpPanel');const topButton=document.getElementById('pageJumpTop');
+  if(!toggle||!panel)return;
+  const links=Array.from(panel.querySelectorAll('a[data-jump-target]'));
+  links.forEach(link=>{const strong=link.querySelector('strong');const small=link.querySelector('small');if(strong)link.title=strong.textContent+(small?'｜'+small.textContent:'')});
+  const sections=links.map(link=>document.getElementById(link.dataset.jumpTarget)).filter(Boolean);
+  const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const railMode=window.matchMedia('(min-width:901px)');
+  let expanded=false;let loopActive=false;
+  function setActive(id){links.forEach(link=>{const active=link.dataset.jumpTarget===id;link.classList.toggle('is-active',active);if(active){link.setAttribute('aria-current','location')}else{link.removeAttribute('aria-current')}})}
+  function currentSectionId(){if(!sections.length)return '';const marker=window.innerHeight*0.32;let active=sections[0];sections.forEach(section=>{if(section.getBoundingClientRect().top<=marker)active=section});const atBottom=window.pageYOffset+window.innerHeight>=document.documentElement.scrollHeight-4;return (atBottom?sections[sections.length-1]:active).id}
+  function refreshActive(){if(loopActive)return;loopActive=true;window.requestAnimationFrame(()=>{loopActive=false;setActive(currentSectionId())})}
+  function applyExpanded(){
+    const desktop=railMode.matches;
+    nav.classList.toggle('is-open',expanded);
+    if(desktop){document.body.classList.toggle('rail-collapsed',!expanded)}else{document.body.classList.remove('rail-collapsed')}
+    panel.hidden=desktop?false:!expanded;
+    toggle.setAttribute('aria-expanded',expanded?'true':'false');
+    toggle.title=expanded?'收合左側快速跳轉':'展開左側快速跳轉';
+    toggle.setAttribute('aria-label',toggle.title);
+    if(expanded)setActive(currentSectionId());
+  }
+  function setExpanded(next){expanded=next;applyExpanded()}
+  function jumpTo(id){const target=document.getElementById(id);if(!target)return;const wrappingDetails=target.tagName==='DETAILS'?target:target.closest('details');if(wrappingDetails)wrappingDetails.open=true;const top=target.getBoundingClientRect().top+window.pageYOffset-16;window.scrollTo({top:Math.max(top,0),behavior:reducedMotion.matches?'auto':'smooth'});history.replaceState(null,'','#'+id);setActive(id);if(typeof target.focus==='function'){target.setAttribute('tabindex','-1');target.focus({preventScroll:true})}if(!railMode.matches)setExpanded(false)}
+  expanded=railMode.matches;
+  applyExpanded();
+  toggle.addEventListener('click',()=>setExpanded(!expanded));
+  links.forEach(link=>link.addEventListener('click',event=>{event.preventDefault();jumpTo(link.dataset.jumpTarget)}));
+  if(topButton)topButton.addEventListener('click',()=>{window.scrollTo({top:0,behavior:reducedMotion.matches?'auto':'smooth'});if(history.replaceState)history.replaceState(null,'',location.pathname+location.search);setActive(sections.length?sections[0].id:'');toggle.focus()});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&expanded){setExpanded(false);toggle.focus()}});
+  document.addEventListener('click',event=>{if(!railMode.matches&&expanded&&!nav.contains(event.target))setExpanded(false)});
+  const handleModeChange=()=>{expanded=railMode.matches;applyExpanded()};
+  if(railMode.addEventListener){railMode.addEventListener('change',handleModeChange)}
+  window.addEventListener('scroll',refreshActive,{passive:true});
+  window.addEventListener('resize',refreshActive,{passive:true});
+  setActive(currentSectionId());
+}
+function startApp(){installPageJumpNav();if(!scrollersInitialized){syncTop30ScrollWidth=setupTableScroller(top30TableWrap,top30TopScroll,top30TopScrollSizer,top30Table,document.getElementById('top30ScrollLeft'),document.getElementById('top30ScrollRight'));syncFullScrollWidth=setupTableScroller(tableWrap,topScroll,topScrollSizer,fullTable,document.getElementById('scrollLeft'),document.getElementById('scrollRight'));scrollersInitialized=true}renderPositions();draw();syncPositionChecks();const initialScore=location.hash.startsWith('#score-')?decodeURIComponent(location.hash.slice(7)):'';if(initialScore)openScore(initialScore,false)}function bootstrap(){if(appStarted)return;appStarted=true;startApp();installQuickGuide(rows,reportMeta,positionDecisionMeta,e,n,openScore)}function handleLoginSubmit(event){event.preventDefault();const username=loginUsername.value.trim();const password=loginPassword.value;const authorized=AUTH_ACCOUNTS.some(account=>username===account.username&&password===account.password);if(!authorized){setLoginStatus('帳號或密碼錯誤。','error');loginPassword.value='';loginPassword.focus();return}persistAuth(rememberLogin.checked);setLoginStatus('登入成功。');setGateLocked(false);bootstrap()}function handleLogout(){clearAuth();setGateLocked(true);setLoginStatus('請輸入帳號與密碼。');loginPassword.value='';loginUsername.focus()}
  [search,bucket,sector,positionOnly].forEach(el=>el.addEventListener('input',draw));exportPositionsButton.addEventListener('click',exportPositions);importPositionsButton.addEventListener('click',()=>{importPositionsFile.value='';importPositionsFile.click()});importPositionsFile.addEventListener('change',()=>{const file=importPositionsFile.files&&importPositionsFile.files[0];if(file)importPositionsBackup(file)});document.addEventListener('change',event=>{const toggle=event.target.closest('[data-position-toggle]');if(toggle){setPosition(toggle.dataset.positionToggle,toggle.checked);return}const cost=event.target.closest('[data-position-cost]');if(cost&&positions[cost.dataset.positionCost]){const value=Number(cost.value);if(Number.isFinite(value)&&value>0){positions[cost.dataset.positionCost].entryPrice=value;savePositions();renderPositions()}}});document.addEventListener('click',event=>{const sort=event.target.closest('[data-table-sort]');if(sort){event.preventDefault();setTableSort(sort.dataset.tableSort);return}const tab=event.target.closest('[data-score-tab]');if(tab&&document.getElementById('scoreTabPanel')){event.preventDefault();if(tab.dataset.scoreCode){openScore(tab.dataset.scoreCode,true,tab.dataset.scoreTab||'medium')}else scoreTab(tab.dataset.scoreTab||'medium');return}const link=event.target.closest('[data-score-code]');if(!link)return;event.preventDefault();openScore(link.dataset.scoreCode,true,link.dataset.scoreTab||'medium')});document.getElementById('scoreClose').addEventListener('click',()=>scoreDialog.close());scoreDialog.addEventListener('click',event=>{if(event.target===scoreDialog)scoreDialog.close()});scoreDialog.addEventListener('close',()=>{if(location.hash.startsWith('#score-'))history.replaceState(null,'',location.pathname+location.search)});loginForm.addEventListener('submit',handleLoginSubmit);logoutButton.addEventListener('click',handleLogout);if(hasStoredAuth()){setGateLocked(false);bootstrap()}else{setGateLocked(true);setLoginStatus('請輸入帳號與密碼。');loginUsername.focus()}
 ${internationalUi.installQuickGuide.toString()}
 </script></body></html>`;
