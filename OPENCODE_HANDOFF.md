@@ -801,3 +801,23 @@ OpenCode 必須依結果回報：
 - 公開網址：https://fricachai.github.io/pro_ranking/ ；RUN_LOG：`professional-screen-report/logs/daily-refresh-20261012-083737.log`。
 
 <!-- GENERATOR_FATAL_OBSERVABILITY_V1 -->
+
+## 2026-10-20 本機 QA 截圖中斷發布的根因修正（LOCAL_QA_ARTIFACT_IGNORE_V1）
+
+### 症狀與根因
+
+- 22:47 啟動的受控更新在「報告產生完成 → 驗證輸出」後失敗：`Generator changed unexpected files: live-1440.png`，exit code 1。
+- 該 PNG 建立時間為 22:48:13（更新執行中），位於專案根目錄、非任何腳本輸出；屬執行期間由外部／本機 QA 產生的截圖。
+- 發布守門原本把 `git status --porcelain` 的任何未追蹤檔案都視為不可發布變更，因此一個與資料無關的本機截圖即可中斷整份更新。
+
+### 修正
+
+1. `.gitignore` 新增 repo 根目錄圖片樣式（`/*.png`、`/*.jpg`、`/*.jpeg`、`/*.webp`）；`output/` 內已追蹤的正式設計截圖不受影響。
+2. `scripts/Update-ProfessionalScreen.ps1` 的守門維持 fail-closed，但錯誤訊息會指出「未追蹤本機產物」與正確處理方式（移到 `output/` 並由 `.gitignore` 排除），不自動刪除使用者檔案。
+3. `AGENTS.md` 新增「本機 QA 產物與發布守門邊界」與 `LOCAL_QA_ARTIFACT_IGNORE_V1` 標記。
+
+### 邊界
+
+- 仍不得為通過檢查而放寬 `MI_QFIIS` 11 個有效交易日、主動 ETF 完整性、治理排除或其他資料品質門檻。
+- 被追蹤檔案的意外變更或非允許清單的產生檔仍必須停止發布。
+- 失敗執行產生的日期版檔案已還原／清除，重跑由同一受控 runner 重新產生。

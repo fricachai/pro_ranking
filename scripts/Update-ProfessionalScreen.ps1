@@ -615,7 +615,18 @@ try {
         return $true
     })
     if ($unexpected.Count -gt 0) {
-        throw "Generator changed unexpected files: $($unexpected -join ', ')"
+        # Keep this gate fail-closed, but make the recovery path explicit so a
+        # local QA screenshot dropped into the repo root does not look like a
+        # generator defect. Never delete unrelated user work automatically.
+        $statusLines = @(Invoke-Git -Arguments @('status', '--porcelain=v1'))
+        $untrackedUnexpected = @($statusLines | Where-Object { $_ -like '?? *' } | ForEach-Object {
+            $_.Substring(3).Trim('"').Replace('\', '/')
+        } | Where-Object { $_ -in $unexpected })
+        $hint = ''
+        if ($untrackedUnexpected.Count -gt 0) {
+            $hint = ' Hint: untracked local artifacts are not pipeline outputs. Move QA screenshots under output/ and keep repo-root image files ignored via .gitignore (LOCAL_QA_ARTIFACT_IGNORE_V1); do not delete unrelated user work.'
+        }
+        throw "Generator changed unexpected files: $($unexpected -join ', ').$hint"
     }
 
     $gitAddPaths = @('index.html', 'professional-screen-report/latest.json', 'professional-screen-report/events/latest-events.json') + $generatedFiles

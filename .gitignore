@@ -11,3 +11,9 @@ professional-screen-report/latest.html
 professional-screen-report/logs/
 professional-screen-report/events/dedup-hashes.json
 professional-screen-report/events/ai-cache/
+# Local QA screenshots captured in the repo root must never block the daily
+# publish gate or be committed. Tracked design screenshots live in output/.
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
