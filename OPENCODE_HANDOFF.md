@@ -846,3 +846,11 @@ OpenCode 必須依結果回報：
 - 09:15 屬盤中（`quotePhase=intraday`）；18:00 為收盤後，若 ETF／法人來源尚未更新，報告照實揭露各來源日期。
 - 週六、週日僅 18:00 執行；兩次執行都會各自重新檢查行情、新聞與重大訊息，`DATA_CHANGED=false` 只代表排除時間戳後無實質變化。
 - 電腦關機或工作排程服務未執行時不會補跑；恢復後 `StartWhenAvailable` 會補跑。
+
+### 2026-10-21 09:15 未更新根因（已修正）
+
+- 事實：工作排程 `LastRunTime=2026/10/21 09:15:00`、`LastResult=1`，但 `professional-screen-report/logs/scheduled-update-*.log` 完全沒有產生，狀態檔仍停在 2026-10-20 23:05 的 `published`。更新其實有被觸發，是包裝程序在啟動控制器前就失敗。
+- 根因：`Invoke-DailyScreenUpdateScheduled.ps1` 使用 `$ErrorActionPreference='Stop'` 搭配 `& powershell.exe ... *>&1 | Tee-Object`；Windows PowerShell 5.1 會把原生命令的 stderr（git 提示、Node `console.warn`、重試診斷）升級為終止錯誤 `NativeCommandError`，因此 log 尚未建立就退出 1。
+- 已用最小實驗重現：`powershell.exe -NoProfile -Command "$ErrorActionPreference='Stop'; & cmd /c 'echo WARN 1>&2' *>&1 | Tee-Object ..."` 得到 `NativeCommandError` 且 log 不存在。
+- 修正：包裝改為啟動前先建立 log，並以 `Start-Process -RedirectStandardOutput/-RedirectStandardError` 執行控制器，再合併 stdout／stderr 至同一紀錄；成敗只依控制器 exit code，不再讓 stderr 影響結束碼。
+- 規則：`AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 7 點已同步此邊界，避免日後又用 `*>&1` + `Stop` 的寫法。

@@ -38,7 +38,8 @@ OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採�
 3. 兩個工作共用同一個控制器，並設 `MultipleInstances=IgnoreNew`；不得再建立第三份同時執行的更新。`StartWhenAvailable` 讓休眠或關機後的排程在恢復時補跑。
 4. 排程使用目前使用者的互動登入權杖，不儲存密碼。
 5. 排程執行紀錄寫入 `professional-screen-report/logs/scheduled-update-*.log`；回報時仍須揭露 `STATUS`、資料日期、提交、Pages byte match 與 Actions 稽核狀態。
-6. 09:15 屬盤中，`quotePhase=intraday`；18:00 為收盤後，若來源尚未更新則照實揭露各來源日期，不得用報告時間冒充。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
+6. 09:15 屬盤中，`quotePhase=intraday`；18:00 為收盤後，若來源尚未更新則照實揭露各來源日期，不得用報告時間冒充。
+7. 排程包裝必須以控制器 exit code 判定成敗；不得讓原生命令的 stderr（git 提示、Node `console.warn`、重試診斷）因 `$ErrorActionPreference='Stop'` + `*>&1` 升級成終止錯誤，且必須在啟動前先建立 log，確保失敗也留有證據。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
 
 ## OpenCode 執行規則
 
