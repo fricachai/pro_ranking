@@ -854,3 +854,9 @@ OpenCode 必須依結果回報：
 - 已用最小實驗重現：`powershell.exe -NoProfile -Command "$ErrorActionPreference='Stop'; & cmd /c 'echo WARN 1>&2' *>&1 | Tee-Object ..."` 得到 `NativeCommandError` 且 log 不存在。
 - 修正：包裝改為啟動前先建立 log，並以 `Start-Process -RedirectStandardOutput/-RedirectStandardError` 執行控制器，再合併 stdout／stderr 至同一紀錄；成敗只依控制器 exit code，不再讓 stderr 影響結束碼。
 - 規則：`AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 7 點已同步此邊界，避免日後又用 `*>&1` + `Stop` 的寫法。
+
+### 2026-10-21 排程提早回報成功的修正
+
+- 現象：10:21:42 觸發後，包裝在 10:24:03 就以 exit 0 結束，但實際發布完成時間是 10:30:49。控制器會先返回，背景 runner 才完成發布，因此工作排程的 `LastResult` 不能當成「已發布」證據。
+- 修正：`Invoke-DailyScreenUpdateScheduled.ps1` 在控制器返回後，改為等待 `.git/professional-screen-update-state.json` 中屬於本次啟動的終態（`published`／`failed`），預設最多 45 分鐘；只有 `published` 才回傳 0，`failed` 或逾時回傳 1，並把 `SCHEDULED_UPDATE_FINAL_STATUS` 與完成時間寫入排程 log。
+- 規則：`AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 8 點已同步。

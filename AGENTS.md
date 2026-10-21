@@ -39,7 +39,8 @@ OpenCode Desktop 為避免長時間 Shell 被 UI 緩衝，`/update-report` 採�
 4. 排程使用目前使用者的互動登入權杖，不儲存密碼。
 5. 排程執行紀錄寫入 `professional-screen-report/logs/scheduled-update-*.log`；回報時仍須揭露 `STATUS`、資料日期、提交、Pages byte match 與 Actions 稽核狀態。
 6. 09:15 屬盤中，`quotePhase=intraday`；18:00 為收盤後，若來源尚未更新則照實揭露各來源日期，不得用報告時間冒充。
-7. 排程包裝必須以控制器 exit code 判定成敗；不得讓原生命令的 stderr（git 提示、Node `console.warn`、重試診斷）因 `$ErrorActionPreference='Stop'` + `*>&1` 升級成終止錯誤，且必須在啟動前先建立 log，確保失敗也留有證據。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
+7. 排程包裝必須以控制器 exit code 判定成敗；不得讓原生命令的 stderr（git 提示、Node `console.warn`、重試診斷）因 `$ErrorActionPreference='Stop'` + `*>&1` 升級成終止錯誤，且必須在啟動前先建立 log，確保失敗也留有證據。
+8. 排程工作的成功碼必須代表「本次已發布」，不能只代表控制器已返回；包裝須等待 `.git/professional-screen-update-state.json` 屬於本次啟動的 `published`／`failed` 終態，逾時或 `failed` 一律回傳非 0。<!-- DAILY_UPDATE_SCHEDULE_V1 -->
 
 ## OpenCode 執行規則
 
