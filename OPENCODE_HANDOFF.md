@@ -867,3 +867,11 @@ OpenCode 必須依結果回報：
 - 根因：`/slow` 端點 100ms 後回應，客戶端逾時僅 10ms；機器忙碌或 event loop 延遲時，逾時計時器可能晚於回應，重試次數不確定。這是測試的時間競態，不是產品邏輯錯誤。
 - 修正：`/slow` 改為永不回應（客戶端逾時必定先發生），逾時改為 50ms；連續執行 5 次均 `FETCH_RESILIENCE_TEST=pass`、`TIMEOUT_ATTEMPTS=2`。
 - 包裝另增「90 秒內未偵測到本次啟動的狀態」即 `SCHEDULED_UPDATE_FAILED=no_run_started` 並回傳非 0，避免預檢失敗時空等 45 分鐘。
+
+### 2026-10-21 排程實際啟動驗證（SCHEDULED_TASK_PUBLISH_VERIFICATION_V1）
+
+- 實際使用 Task Scheduler `Start-ScheduledTask` 啟動 `pro_ranking weekday 0915 update`（10:34:50），非直接手動呼叫 wrapper。log：`professional-screen-report/logs/scheduled-update-20261021-103451.log`。
+- 預檢通過後啟動唯一受控 runner（PID 20924）；報告 10:41:23 產生、10:43:09 發布完成。log 出現 `SCHEDULED_UPDATE_FINAL_STATUS=published`，Task Scheduler `LastResult=0`。
+- 報告提交 `7498959fb5667629b4cd6c5736b79e2c7038dd45`、tag `published/20261021-103047`；ETF／法人／外資持股／市場資料日 2026-10-20、集保 2026-10-16、`quotePhase=intraday`、597 檔、外資歷史 11 日；Pages audit complete、byte match true、公開網址 `https://fricachai.github.io/pro_ranking/`。
+- 限制：此為 Task Scheduler 手動觸發驗證，不等於 18:00 或下一次 09:15 指定時刻自動 trigger 已驗證。截至當日 11:31，18:00 首次 trigger 尚未發生；下一個週一至週五 09:15 trigger 為 2026-10-22 09:15。不得宣稱未來每次排程都必然成功；電腦開機／登入、網路、工作區乾淨與 GitHub 認證仍是前置條件。
+- 可重用規則同步到 `AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 9 點：`Ready` 不代表觸發或發布完成；分開驗證實際 runner、終態與指定時刻 trigger。<!-- SCHEDULED_TASK_PUBLISH_VERIFICATION_V1 -->
