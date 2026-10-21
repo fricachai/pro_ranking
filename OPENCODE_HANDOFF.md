@@ -860,3 +860,10 @@ OpenCode 必須依結果回報：
 - 現象：10:21:42 觸發後，包裝在 10:24:03 就以 exit 0 結束，但實際發布完成時間是 10:30:49。控制器會先返回，背景 runner 才完成發布，因此工作排程的 `LastResult` 不能當成「已發布」證據。
 - 修正：`Invoke-DailyScreenUpdateScheduled.ps1` 在控制器返回後，改為等待 `.git/professional-screen-update-state.json` 中屬於本次啟動的終態（`published`／`failed`），預設最多 45 分鐘；只有 `published` 才回傳 0，`failed` 或逾時回傳 1，並把 `SCHEDULED_UPDATE_FINAL_STATUS` 與完成時間寫入排程 log。
 - 規則：`AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 8 點已同步。
+
+### 2026-10-21 預檢韌性測試競態修正
+
+- 現象：10:33 再次觸發排程時，預檢在 `Test-ProfessionalScreenFetchResilience.js` 失敗：`AssertionError: 1 !== 2`（`timeoutAttempts` 應為 2）。
+- 根因：`/slow` 端點 100ms 後回應，客戶端逾時僅 10ms；機器忙碌或 event loop 延遲時，逾時計時器可能晚於回應，重試次數不確定。這是測試的時間競態，不是產品邏輯錯誤。
+- 修正：`/slow` 改為永不回應（客戶端逾時必定先發生），逾時改為 50ms；連續執行 5 次均 `FETCH_RESILIENCE_TEST=pass`、`TIMEOUT_ATTEMPTS=2`。
+- 包裝另增「90 秒內未偵測到本次啟動的狀態」即 `SCHEDULED_UPDATE_FAILED=no_run_started` 並回傳非 0，避免預檢失敗時空等 45 分鐘。

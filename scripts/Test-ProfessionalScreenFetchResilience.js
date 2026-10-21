@@ -26,10 +26,10 @@ const server = http.createServer((request, response) => {
   }
   if (request.url === '/slow') {
     timeoutAttempts += 1;
-    setTimeout(() => {
-      response.writeHead(200, { 'content-type': 'text/plain' });
-      response.end('slow response');
-    }, 100);
+    // Intentionally never respond: the client-side timeout must always win,
+    // regardless of machine load or event-loop delays. Previously this handler
+    // answered after 100 ms with a 10 ms client timeout, so a busy machine could
+    // let the response arrive first and make the retry-count assertion flaky.
     return;
   }
   response.writeHead(404);
@@ -83,7 +83,7 @@ async function main() {
     try {
       await fetchText(base + '/slow', 2, {
         label: 'local slow source',
-        timeoutMs: 10,
+        timeoutMs: 50,
         retryBaseDelayMs: 1,
         retryMaxDelayMs: 5,
         logAttempts: true

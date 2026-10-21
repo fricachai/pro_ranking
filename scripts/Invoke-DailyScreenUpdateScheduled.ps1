@@ -131,6 +131,28 @@ $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 $finalState = $null
 $lastReportedStatus = ''
 
+# Fail fast when the controller never started a run (for example a preflight
+# failure). Otherwise the scheduled task would wait for the full timeout while
+# nothing is actually running.
+$runDetectionDeadline = (Get-Date).AddSeconds(90)
+$runDetected = $false
+while ((Get-Date) -lt $runDetectionDeadline) {
+    $state = Read-UpdateState
+    if ($null -ne $state) {
+        $stateStartedAt = Get-StateStartedAt -State $state
+        if (($null -ne $stateStartedAt) -and ($stateStartedAt -ge $minimumStartedAt)) {
+            $runDetected = $true
+            break
+        }
+    }
+    Start-Sleep -Seconds 5
+}
+if (-not $runDetected) {
+    Write-RunLog 'SCHEDULED_UPDATE_FAILED=no_run_started'
+    if ($controllerExit -ne 0) { exit $controllerExit }
+    exit 1
+}
+
 while ((Get-Date) -lt $deadline) {
     $state = Read-UpdateState
     if ($null -ne $state) {
