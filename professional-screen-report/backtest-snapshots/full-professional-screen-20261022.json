@@ -1,6 +1,6 @@
 {
   "schemaVersion": "HORIZON_BACKTEST_SNAPSHOT_V1",
-  "capturedAt": "2026-10-25T10:05:30.477Z",
+  "capturedAt": "2026-10-26T01:20:07.260Z",
   "asOf": "2026-10-22",
   "meta": {
     "priceDate": "2026-10-22",
@@ -59496,26 +59496,26 @@
     }
   ],
   "internationalResearch": {
-    "availableAt": "2026-10-25T10:03:30.798Z",
+    "availableAt": "2026-10-26T01:18:21.221Z",
     "eligibleForExistingBacktest": false,
     "context": {
       "version": "INTERNATIONAL_CONTEXT_V1",
-      "checkedAt": "2026-10-25T10:03:30.798Z",
-      "asOf": "2026-10-25",
+      "checkedAt": "2026-10-26T01:18:21.221Z",
+      "asOf": "2026-10-26",
       "sources": [
         {
           "id": "fx",
           "label": "期交所外幣參考匯率",
-          "url": "https://openapi.taifex.com.tw/v1/DailyForeignExchangeRates?date=20261025",
+          "url": "https://openapi.taifex.com.tw/v1/DailyForeignExchangeRates?date=20261026",
           "evidence": "A",
           "cadence": "每日參考值",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-22",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 3
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 4
         },
         {
           "id": "tx",
@@ -59524,12 +59524,12 @@
           "evidence": "A",
           "cadence": "每日盤後",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-22",
-          "requestedDate": "2026-10-25",
+          "requestedDate": "2026-10-26",
           "historyRequestedThrough": "2026-10-22",
-          "dateBackfillDays": 3,
+          "dateBackfillDays": 4,
           "comparisonDate": "2026-10-21"
         },
         {
@@ -59539,12 +59539,12 @@
           "evidence": "A",
           "cadence": "美國營業日",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-23",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 2
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 3
         },
         {
           "id": "vix",
@@ -59553,12 +59553,12 @@
           "evidence": "A",
           "cadence": "美國收盤",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-23",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 2
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 3
         },
         {
           "id": "dollar",
@@ -59567,12 +59567,12 @@
           "evidence": "A",
           "cadence": "每週公布前週日資料",
           "maxAgeDays": 11,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-16",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 9
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 10
         },
         {
           "id": "cot",
@@ -59581,12 +59581,12 @@
           "evidence": "A",
           "cadence": "通常週五公布週二部位",
           "maxAgeDays": 11,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-20",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 5
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 6
         },
         {
           "id": "sp500",
@@ -59595,12 +59595,12 @@
           "evidence": "B",
           "cadence": "日行情／可能含盤中值",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-23",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 2
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 3
         },
         {
           "id": "sox",
@@ -59609,12 +59609,12 @@
           "evidence": "B",
           "cadence": "日行情／可能含盤中值",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-23",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 2
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 3
         },
         {
           "id": "oil",
@@ -59623,12 +59623,12 @@
           "evidence": "B",
           "cadence": "近月合約／有轉倉影響",
           "maxAgeDays": 4,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
-          "observedAt": "2026-10-23",
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 2
+          "observedAt": "2026-10-25",
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 1
         },
         {
           "id": "fed",
@@ -59637,14 +59637,14 @@
           "evidence": "A",
           "cadence": "事件發布",
           "maxAgeDays": null,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-13",
           "contentFetchedCount": 3,
           "contentUnavailableCount": 0,
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 12
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 13
         },
         {
           "id": "energy",
@@ -59653,14 +59653,14 @@
           "evidence": "A",
           "cadence": "事件發布",
           "maxAgeDays": null,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-22",
           "contentFetchedCount": 3,
           "contentUnavailableCount": 0,
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 3
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 4
         },
         {
           "id": "sanctions",
@@ -59669,14 +59669,14 @@
           "evidence": "A",
           "cadence": "事件發布",
           "maxAgeDays": null,
-          "checkedAt": "2026-10-25T10:03:30.798Z",
+          "checkedAt": "2026-10-26T01:18:21.221Z",
           "status": "current",
           "observedAt": "2026-10-21",
           "contentFetchedCount": 3,
           "contentUnavailableCount": 0,
-          "requestedDate": "2026-10-25",
-          "historyRequestedThrough": "2026-10-25",
-          "dateBackfillDays": 4
+          "requestedDate": "2026-10-26",
+          "historyRequestedThrough": "2026-10-26",
+          "dateBackfillDays": 5
         }
       ],
       "data": {
@@ -60421,421 +60421,39 @@
             }
           ]
         },
-        "treasury": {
-          "unit": "%",
-          "date": "2026-10-23",
-          "value": 5,
-          "comparisonDate": "2026-10-22",
-          "comparisonValue": 4.96,
-          "changeFromPrevious": 0.040000000000000036,
-          "change5": -1.7681728880157177,
-          "change20": -3.474903474903468,
-          "difference5": -0.08999999999999986,
-          "sampleCount": 204,
+        "dollar": {
+          "unit": "2006年1月＝100",
+          "publishedAt": "2026-10-19",
+          "date": "2026-10-16",
+          "value": 121.4048,
+          "comparisonDate": "2026-10-15",
+          "comparisonValue": 121.5693,
+          "changeFromPrevious": -0.16450000000000387,
+          "change5": null,
+          "change20": null,
+          "difference5": null,
+          "sampleCount": 4,
           "series": [
             {
-              "date": "2026-07-23",
-              "value": 4.71
-            },
-            {
-              "date": "2026-07-24",
-              "value": 4.69
-            },
-            {
-              "date": "2026-07-27",
-              "value": 4.65
-            },
-            {
-              "date": "2026-07-28",
-              "value": 4.61
-            },
-            {
-              "date": "2026-07-29",
-              "value": 4.67
-            },
-            {
-              "date": "2026-07-30",
-              "value": 4.68
-            },
-            {
-              "date": "2026-07-31",
-              "value": 4.75
-            },
-            {
-              "date": "2026-08-03",
-              "value": 4.7
-            },
-            {
-              "date": "2026-08-04",
-              "value": 4.63
-            },
-            {
-              "date": "2026-08-05",
-              "value": 4.63
-            },
-            {
-              "date": "2026-08-06",
-              "value": 4.69
-            },
-            {
-              "date": "2026-08-07",
-              "value": 4.65
-            },
-            {
-              "date": "2026-08-10",
-              "value": 4.72
-            },
-            {
-              "date": "2026-08-11",
-              "value": 4.7
-            },
-            {
-              "date": "2026-08-12",
-              "value": 4.68
-            },
-            {
-              "date": "2026-08-13",
-              "value": 4.63
-            },
-            {
-              "date": "2026-08-14",
-              "value": 4.68
-            },
-            {
-              "date": "2026-08-17",
-              "value": 4.72
-            },
-            {
-              "date": "2026-08-18",
-              "value": 4.71
-            },
-            {
-              "date": "2026-08-19",
-              "value": 4.65
-            },
-            {
-              "date": "2026-08-20",
-              "value": 4.69
-            },
-            {
-              "date": "2026-08-21",
-              "value": 4.74
-            },
-            {
-              "date": "2026-08-24",
-              "value": 4.7
-            },
-            {
-              "date": "2026-08-25",
-              "value": 4.64
-            },
-            {
-              "date": "2026-08-26",
-              "value": 4.66
-            },
-            {
-              "date": "2026-08-27",
-              "value": 4.67
-            },
-            {
-              "date": "2026-08-28",
-              "value": 4.73
-            },
-            {
-              "date": "2026-08-31",
-              "value": 4.75
-            },
-            {
-              "date": "2026-09-01",
-              "value": 4.79
-            },
-            {
-              "date": "2026-09-02",
-              "value": 4.79
-            },
-            {
-              "date": "2026-09-03",
-              "value": 4.77
-            },
-            {
-              "date": "2026-09-04",
-              "value": 4.78
-            },
-            {
-              "date": "2026-09-08",
-              "value": 4.8
-            },
-            {
-              "date": "2026-09-09",
-              "value": 4.83
-            },
-            {
-              "date": "2026-09-10",
-              "value": 4.95
-            },
-            {
-              "date": "2026-09-11",
-              "value": 4.96
-            },
-            {
-              "date": "2026-09-14",
-              "value": 4.97
-            },
-            {
-              "date": "2026-09-15",
-              "value": 5
-            },
-            {
-              "date": "2026-09-16",
-              "value": 5.01
-            },
-            {
-              "date": "2026-09-17",
-              "value": 4.94
-            },
-            {
-              "date": "2026-09-18",
-              "value": 5.01
-            },
-            {
-              "date": "2026-09-21",
-              "value": 4.96
-            },
-            {
-              "date": "2026-09-22",
-              "value": 4.96
-            },
-            {
-              "date": "2026-09-23",
-              "value": 5.11
-            },
-            {
-              "date": "2026-09-24",
-              "value": 5.18
-            },
-            {
-              "date": "2026-09-25",
-              "value": 5.17
-            },
-            {
-              "date": "2026-09-28",
-              "value": 5.24
-            },
-            {
-              "date": "2026-09-29",
-              "value": 5.26
-            },
-            {
-              "date": "2026-09-30",
-              "value": 5.29
-            },
-            {
-              "date": "2026-10-01",
-              "value": 5.24
-            },
-            {
-              "date": "2026-10-02",
-              "value": 5.28
-            },
-            {
-              "date": "2026-10-05",
-              "value": 5.31
-            },
-            {
-              "date": "2026-10-06",
-              "value": 5.27
-            },
-            {
-              "date": "2026-10-07",
-              "value": 5.28
-            },
-            {
-              "date": "2026-10-08",
-              "value": 5.22
-            },
-            {
-              "date": "2026-10-09",
-              "value": 5.24
-            },
-            {
               "date": "2026-10-13",
-              "value": 5.21
+              "value": 121.4433
             },
             {
               "date": "2026-10-14",
-              "value": 5.19
+              "value": 122.0037
             },
             {
               "date": "2026-10-15",
-              "value": 5.1
+              "value": 121.5693
             },
             {
               "date": "2026-10-16",
-              "value": 5.09
-            },
-            {
-              "date": "2026-10-19",
-              "value": 5.15
-            },
-            {
-              "date": "2026-10-20",
-              "value": 5.12
-            },
-            {
-              "date": "2026-10-21",
-              "value": 5.13
-            },
-            {
-              "date": "2026-10-22",
-              "value": 4.96
-            },
-            {
-              "date": "2026-10-23",
-              "value": 5
+              "value": 121.4048
             }
           ],
-          "y2": 4.69,
-          "spread10y2y": 0.3099999999999996
-        },
-        "tx": {
-          "date": "2026-10-22",
-          "long": 8126,
-          "short": 95423,
-          "net": -87297,
-          "netValueThousands": -807290288,
-          "changeFromPrevious": -1225,
-          "comparisonDate": "2026-10-21",
-          "history": [
-            {
-              "date": "2026-09-17",
-              "long": 8161,
-              "short": 86835,
-              "net": -78674,
-              "netValueThousands": -731073459
-            },
-            {
-              "date": "2026-09-18",
-              "long": 10323,
-              "short": 86433,
-              "net": -76110,
-              "netValueThousands": -722001635
-            },
-            {
-              "date": "2026-09-21",
-              "long": 10318,
-              "short": 84399,
-              "net": -74081,
-              "netValueThousands": -712023417
-            },
-            {
-              "date": "2026-09-22",
-              "long": 10740,
-              "short": 86308,
-              "net": -75568,
-              "netValueThousands": -728920843
-            },
-            {
-              "date": "2026-09-23",
-              "long": 10855,
-              "short": 86939,
-              "net": -76084,
-              "netValueThousands": -735230706
-            },
-            {
-              "date": "2026-09-24",
-              "long": 9675,
-              "short": 86706,
-              "net": -77031,
-              "netValueThousands": -741508532
-            },
-            {
-              "date": "2026-09-29",
-              "long": 8788,
-              "short": 87817,
-              "net": -79029,
-              "netValueThousands": -755298847
-            },
-            {
-              "date": "2026-09-30",
-              "long": 12351,
-              "short": 90502,
-              "net": -78151,
-              "netValueThousands": -755498847
-            },
-            {
-              "date": "2026-10-01",
-              "long": 12373,
-              "short": 91927,
-              "net": -79554,
-              "netValueThousands": -774905393
-            },
-            {
-              "date": "2026-10-02",
-              "long": 11893,
-              "short": 92197,
-              "net": -80304,
-              "netValueThousands": -781742101
-            },
-            {
-              "date": "2026-10-05",
-              "long": 14760,
-              "short": 91764,
-              "net": -77004,
-              "netValueThousands": -769250525
-            },
-            {
-              "date": "2026-10-07",
-              "long": 13545,
-              "short": 92646,
-              "net": -79101,
-              "netValueThousands": -790597660
-            },
-            {
-              "date": "2026-10-08",
-              "long": 11389,
-              "short": 94583,
-              "net": -83194,
-              "netValueThousands": -821357330
-            },
-            {
-              "date": "2026-10-13",
-              "long": 10640,
-              "short": 97879,
-              "net": -87239,
-              "netValueThousands": -844623509
-            },
-            {
-              "date": "2026-10-14",
-              "long": 11352,
-              "short": 98166,
-              "net": -86814,
-              "netValueThousands": -847505397
-            },
-            {
-              "date": "2026-10-20",
-              "long": 11524,
-              "short": 101272,
-              "net": -89748,
-              "netValueThousands": -834696074
-            },
-            {
-              "date": "2026-10-21",
-              "long": 9410,
-              "short": 95482,
-              "net": -86072,
-              "netValueThousands": -809366279
-            },
-            {
-              "date": "2026-10-22",
-              "long": 8126,
-              "short": 95423,
-              "net": -87297,
-              "netValueThousands": -807290288
-            }
-          ],
-          "unit": "口",
-          "contract": "臺股期貨 TX；全到期月份合計",
-          "limitation": "僅 TX，未合併小台／微台；換月與避險均可能影響，淨空單不等於撤出台股。"
+          "periodChange": -0.03170203708232622,
+          "periodStart": "2026-10-13",
+          "limitation": "Fed 廣義美元指數，並非 ICE DXY；本期變動僅比較本次公布期間。"
         },
         "sp500": {
           "unit": "點",
@@ -61113,311 +60731,281 @@
             }
           ]
         },
-        "dollar": {
-          "unit": "2006年1月＝100",
-          "publishedAt": "2026-10-19",
-          "date": "2026-10-16",
-          "value": 121.4048,
-          "comparisonDate": "2026-10-15",
-          "comparisonValue": 121.5693,
-          "changeFromPrevious": -0.16450000000000387,
-          "change5": null,
-          "change20": null,
-          "difference5": null,
-          "sampleCount": 4,
-          "series": [
-            {
-              "date": "2026-10-13",
-              "value": 121.4433
-            },
-            {
-              "date": "2026-10-14",
-              "value": 122.0037
-            },
-            {
-              "date": "2026-10-15",
-              "value": 121.5693
-            },
-            {
-              "date": "2026-10-16",
-              "value": 121.4048
-            }
-          ],
-          "periodChange": -0.03170203708232622,
-          "periodStart": "2026-10-13",
-          "limitation": "Fed 廣義美元指數，並非 ICE DXY；本期變動僅比較本次公布期間。"
-        },
-        "oil": {
-          "unit": "美元／桶",
-          "quoteKind": "日行情，最近一筆可能尚未收盤",
-          "exchangeTimezone": "America/New_York",
+        "treasury": {
+          "unit": "%",
           "date": "2026-10-23",
-          "value": 103.2699966430664,
+          "value": 5,
           "comparisonDate": "2026-10-22",
-          "comparisonValue": 99.47000122070312,
-          "changeFromPrevious": 3.7999954223632812,
-          "change5": 1.8341316574195021,
-          "change20": 11.751966833229254,
-          "difference5": 1.8599929809570312,
-          "sampleCount": 64,
+          "comparisonValue": 4.96,
+          "changeFromPrevious": 0.040000000000000036,
+          "change5": -1.7681728880157177,
+          "change20": -3.474903474903468,
+          "difference5": -0.08999999999999986,
+          "sampleCount": 204,
           "series": [
+            {
+              "date": "2026-07-23",
+              "value": 4.71
+            },
+            {
+              "date": "2026-07-24",
+              "value": 4.69
+            },
             {
               "date": "2026-07-27",
-              "value": 82.61000061035156
+              "value": 4.65
             },
             {
               "date": "2026-07-28",
-              "value": 79.26000213623047
+              "value": 4.61
             },
             {
               "date": "2026-07-29",
-              "value": 84.45999908447266
+              "value": 4.67
             },
             {
               "date": "2026-07-30",
-              "value": 83.58999633789062
+              "value": 4.68
             },
             {
               "date": "2026-07-31",
-              "value": 84.66999816894531
+              "value": 4.75
             },
             {
               "date": "2026-08-03",
-              "value": 80.33999633789062
+              "value": 4.7
             },
             {
               "date": "2026-08-04",
-              "value": 75.7699966430664
+              "value": 4.63
             },
             {
               "date": "2026-08-05",
-              "value": 75.22000122070312
+              "value": 4.63
             },
             {
               "date": "2026-08-06",
-              "value": 77.29000091552734
+              "value": 4.69
             },
             {
               "date": "2026-08-07",
-              "value": 78.18000030517578
+              "value": 4.65
             },
             {
               "date": "2026-08-10",
-              "value": 82.12999725341797
+              "value": 4.72
             },
             {
               "date": "2026-08-11",
-              "value": 83.19999694824219
+              "value": 4.7
             },
             {
               "date": "2026-08-12",
-              "value": 83.2699966430664
+              "value": 4.68
             },
             {
               "date": "2026-08-13",
-              "value": 81.25
+              "value": 4.63
             },
             {
               "date": "2026-08-14",
-              "value": 82.4000015258789
+              "value": 4.68
             },
             {
               "date": "2026-08-17",
-              "value": 84.5
+              "value": 4.72
             },
             {
               "date": "2026-08-18",
-              "value": 84.94000244140625
+              "value": 4.71
             },
             {
               "date": "2026-08-19",
-              "value": 85.83000183105469
+              "value": 4.65
             },
             {
               "date": "2026-08-20",
-              "value": 87.83000183105469
+              "value": 4.69
             },
             {
               "date": "2026-08-21",
-              "value": 87.05999755859375
+              "value": 4.74
             },
             {
               "date": "2026-08-24",
-              "value": 85.01000213623047
+              "value": 4.7
             },
             {
               "date": "2026-08-25",
-              "value": 82.36000061035156
+              "value": 4.64
             },
             {
               "date": "2026-08-26",
-              "value": 82.2300033569336
+              "value": 4.66
             },
             {
               "date": "2026-08-27",
-              "value": 83.52999877929688
+              "value": 4.67
             },
             {
               "date": "2026-08-28",
-              "value": 83.4000015258789
+              "value": 4.73
             },
             {
               "date": "2026-08-31",
-              "value": 85.76000213623047
+              "value": 4.75
             },
             {
               "date": "2026-09-01",
-              "value": 90.22000122070312
+              "value": 4.79
             },
             {
               "date": "2026-09-02",
-              "value": 91.01000213623047
+              "value": 4.79
             },
             {
               "date": "2026-09-03",
-              "value": 91.30000305175781
+              "value": 4.77
             },
             {
               "date": "2026-09-04",
-              "value": 91.4800033569336
+              "value": 4.78
             },
             {
               "date": "2026-09-08",
-              "value": 93.02999877929688
+              "value": 4.8
             },
             {
               "date": "2026-09-09",
-              "value": 96.05000305175781
+              "value": 4.83
             },
             {
               "date": "2026-09-10",
-              "value": 102.4800033569336
+              "value": 4.95
             },
             {
               "date": "2026-09-11",
-              "value": 100.05000305175781
+              "value": 4.96
             },
             {
               "date": "2026-09-14",
-              "value": 101.38999938964844
+              "value": 4.97
             },
             {
               "date": "2026-09-15",
-              "value": 105.83000183105469
+              "value": 5
             },
             {
               "date": "2026-09-16",
-              "value": 102.43000030517578
+              "value": 5.01
             },
             {
               "date": "2026-09-17",
-              "value": 101.91000366210938
+              "value": 4.94
             },
             {
               "date": "2026-09-18",
-              "value": 100.30000305175781
+              "value": 5.01
             },
             {
               "date": "2026-09-21",
-              "value": 95.77999877929688
+              "value": 4.96
             },
             {
               "date": "2026-09-22",
-              "value": 94.58999633789062
+              "value": 4.96
             },
             {
               "date": "2026-09-23",
-              "value": 92.16000366210938
+              "value": 5.11
             },
             {
               "date": "2026-09-24",
-              "value": 94.61000061035156
+              "value": 5.18
             },
             {
               "date": "2026-09-25",
-              "value": 92.41000366210938
+              "value": 5.17
             },
             {
               "date": "2026-09-28",
-              "value": 92.5999984741211
+              "value": 5.24
             },
             {
               "date": "2026-09-29",
-              "value": 89.37999725341797
+              "value": 5.26
             },
             {
               "date": "2026-09-30",
-              "value": 90.41999816894531
+              "value": 5.29
             },
             {
               "date": "2026-10-01",
-              "value": 92.87000274658203
+              "value": 5.24
             },
             {
               "date": "2026-10-02",
-              "value": 91.11000061035156
+              "value": 5.28
             },
             {
               "date": "2026-10-05",
-              "value": 89.43000030517578
+              "value": 5.31
             },
             {
               "date": "2026-10-06",
-              "value": 89.44000244140625
+              "value": 5.27
             },
             {
               "date": "2026-10-07",
-              "value": 88.27999877929688
+              "value": 5.28
             },
             {
               "date": "2026-10-08",
-              "value": 91.48999786376953
+              "value": 5.22
             },
             {
               "date": "2026-10-09",
-              "value": 91.8499984741211
-            },
-            {
-              "date": "2026-10-12",
-              "value": 93.73999786376953
+              "value": 5.24
             },
             {
               "date": "2026-10-13",
-              "value": 94.13999938964844
+              "value": 5.21
             },
             {
               "date": "2026-10-14",
-              "value": 95.08999633789062
+              "value": 5.19
             },
             {
               "date": "2026-10-15",
-              "value": 97.97000122070312
+              "value": 5.1
             },
             {
               "date": "2026-10-16",
-              "value": 101.41000366210938
+              "value": 5.09
             },
             {
               "date": "2026-10-19",
-              "value": 103.66000366210938
+              "value": 5.15
             },
             {
               "date": "2026-10-20",
-              "value": 101.79000091552734
+              "value": 5.12
             },
             {
               "date": "2026-10-21",
-              "value": 97.1500015258789
+              "value": 5.13
             },
             {
               "date": "2026-10-22",
-              "value": 99.47000122070312
+              "value": 4.96
             },
             {
               "date": "2026-10-23",
-              "value": 103.2699966430664
+              "value": 5
             }
-          ]
+          ],
+          "y2": 4.69,
+          "spread10y2y": 0.3099999999999996
         },
         "sox": {
           "unit": "點",
@@ -61695,13 +61283,429 @@
             }
           ]
         },
+        "oil": {
+          "unit": "美元／桶",
+          "quoteKind": "日行情，最近一筆可能尚未收盤",
+          "exchangeTimezone": "America/New_York",
+          "date": "2026-10-25",
+          "value": 101.66999816894531,
+          "comparisonDate": "2026-10-23",
+          "comparisonValue": 103.2699966430664,
+          "changeFromPrevious": -1.5999984741210938,
+          "change5": -1.9197428350964496,
+          "change20": 9.794816246524029,
+          "difference5": -1.9900054931640625,
+          "sampleCount": 65,
+          "series": [
+            {
+              "date": "2026-07-27",
+              "value": 82.61000061035156
+            },
+            {
+              "date": "2026-07-28",
+              "value": 79.26000213623047
+            },
+            {
+              "date": "2026-07-29",
+              "value": 84.45999908447266
+            },
+            {
+              "date": "2026-07-30",
+              "value": 83.58999633789062
+            },
+            {
+              "date": "2026-07-31",
+              "value": 84.66999816894531
+            },
+            {
+              "date": "2026-08-03",
+              "value": 80.33999633789062
+            },
+            {
+              "date": "2026-08-04",
+              "value": 75.7699966430664
+            },
+            {
+              "date": "2026-08-05",
+              "value": 75.22000122070312
+            },
+            {
+              "date": "2026-08-06",
+              "value": 77.29000091552734
+            },
+            {
+              "date": "2026-08-07",
+              "value": 78.18000030517578
+            },
+            {
+              "date": "2026-08-10",
+              "value": 82.12999725341797
+            },
+            {
+              "date": "2026-08-11",
+              "value": 83.19999694824219
+            },
+            {
+              "date": "2026-08-12",
+              "value": 83.2699966430664
+            },
+            {
+              "date": "2026-08-13",
+              "value": 81.25
+            },
+            {
+              "date": "2026-08-14",
+              "value": 82.4000015258789
+            },
+            {
+              "date": "2026-08-17",
+              "value": 84.5
+            },
+            {
+              "date": "2026-08-18",
+              "value": 84.94000244140625
+            },
+            {
+              "date": "2026-08-19",
+              "value": 85.83000183105469
+            },
+            {
+              "date": "2026-08-20",
+              "value": 87.83000183105469
+            },
+            {
+              "date": "2026-08-21",
+              "value": 87.05999755859375
+            },
+            {
+              "date": "2026-08-24",
+              "value": 85.01000213623047
+            },
+            {
+              "date": "2026-08-25",
+              "value": 82.36000061035156
+            },
+            {
+              "date": "2026-08-26",
+              "value": 82.2300033569336
+            },
+            {
+              "date": "2026-08-27",
+              "value": 83.52999877929688
+            },
+            {
+              "date": "2026-08-28",
+              "value": 83.4000015258789
+            },
+            {
+              "date": "2026-08-31",
+              "value": 85.76000213623047
+            },
+            {
+              "date": "2026-09-01",
+              "value": 90.22000122070312
+            },
+            {
+              "date": "2026-09-02",
+              "value": 91.01000213623047
+            },
+            {
+              "date": "2026-09-03",
+              "value": 91.30000305175781
+            },
+            {
+              "date": "2026-09-04",
+              "value": 91.4800033569336
+            },
+            {
+              "date": "2026-09-08",
+              "value": 93.02999877929688
+            },
+            {
+              "date": "2026-09-09",
+              "value": 96.05000305175781
+            },
+            {
+              "date": "2026-09-10",
+              "value": 102.4800033569336
+            },
+            {
+              "date": "2026-09-11",
+              "value": 100.05000305175781
+            },
+            {
+              "date": "2026-09-14",
+              "value": 101.38999938964844
+            },
+            {
+              "date": "2026-09-15",
+              "value": 105.83000183105469
+            },
+            {
+              "date": "2026-09-16",
+              "value": 102.43000030517578
+            },
+            {
+              "date": "2026-09-17",
+              "value": 101.91000366210938
+            },
+            {
+              "date": "2026-09-18",
+              "value": 100.30000305175781
+            },
+            {
+              "date": "2026-09-21",
+              "value": 95.77999877929688
+            },
+            {
+              "date": "2026-09-22",
+              "value": 94.58999633789062
+            },
+            {
+              "date": "2026-09-23",
+              "value": 92.16000366210938
+            },
+            {
+              "date": "2026-09-24",
+              "value": 94.61000061035156
+            },
+            {
+              "date": "2026-09-25",
+              "value": 92.41000366210938
+            },
+            {
+              "date": "2026-09-28",
+              "value": 92.5999984741211
+            },
+            {
+              "date": "2026-09-29",
+              "value": 89.37999725341797
+            },
+            {
+              "date": "2026-09-30",
+              "value": 90.41999816894531
+            },
+            {
+              "date": "2026-10-01",
+              "value": 92.87000274658203
+            },
+            {
+              "date": "2026-10-02",
+              "value": 91.11000061035156
+            },
+            {
+              "date": "2026-10-05",
+              "value": 89.43000030517578
+            },
+            {
+              "date": "2026-10-06",
+              "value": 89.44000244140625
+            },
+            {
+              "date": "2026-10-07",
+              "value": 88.27999877929688
+            },
+            {
+              "date": "2026-10-08",
+              "value": 91.48999786376953
+            },
+            {
+              "date": "2026-10-09",
+              "value": 91.8499984741211
+            },
+            {
+              "date": "2026-10-12",
+              "value": 93.73999786376953
+            },
+            {
+              "date": "2026-10-13",
+              "value": 94.13999938964844
+            },
+            {
+              "date": "2026-10-14",
+              "value": 95.08999633789062
+            },
+            {
+              "date": "2026-10-15",
+              "value": 97.97000122070312
+            },
+            {
+              "date": "2026-10-16",
+              "value": 101.41000366210938
+            },
+            {
+              "date": "2026-10-19",
+              "value": 103.66000366210938
+            },
+            {
+              "date": "2026-10-20",
+              "value": 101.79000091552734
+            },
+            {
+              "date": "2026-10-21",
+              "value": 97.1500015258789
+            },
+            {
+              "date": "2026-10-22",
+              "value": 99.47000122070312
+            },
+            {
+              "date": "2026-10-23",
+              "value": 103.2699966430664
+            },
+            {
+              "date": "2026-10-25",
+              "value": 101.66999816894531
+            }
+          ]
+        },
+        "tx": {
+          "date": "2026-10-22",
+          "long": 8126,
+          "short": 95423,
+          "net": -87297,
+          "netValueThousands": -807290288,
+          "changeFromPrevious": -1225,
+          "comparisonDate": "2026-10-21",
+          "history": [
+            {
+              "date": "2026-09-17",
+              "long": 8161,
+              "short": 86835,
+              "net": -78674,
+              "netValueThousands": -731073459
+            },
+            {
+              "date": "2026-09-18",
+              "long": 10323,
+              "short": 86433,
+              "net": -76110,
+              "netValueThousands": -722001635
+            },
+            {
+              "date": "2026-09-21",
+              "long": 10318,
+              "short": 84399,
+              "net": -74081,
+              "netValueThousands": -712023417
+            },
+            {
+              "date": "2026-09-22",
+              "long": 10740,
+              "short": 86308,
+              "net": -75568,
+              "netValueThousands": -728920843
+            },
+            {
+              "date": "2026-09-23",
+              "long": 10855,
+              "short": 86939,
+              "net": -76084,
+              "netValueThousands": -735230706
+            },
+            {
+              "date": "2026-09-24",
+              "long": 9675,
+              "short": 86706,
+              "net": -77031,
+              "netValueThousands": -741508532
+            },
+            {
+              "date": "2026-09-29",
+              "long": 8788,
+              "short": 87817,
+              "net": -79029,
+              "netValueThousands": -755298847
+            },
+            {
+              "date": "2026-09-30",
+              "long": 12351,
+              "short": 90502,
+              "net": -78151,
+              "netValueThousands": -755498847
+            },
+            {
+              "date": "2026-10-01",
+              "long": 12373,
+              "short": 91927,
+              "net": -79554,
+              "netValueThousands": -774905393
+            },
+            {
+              "date": "2026-10-02",
+              "long": 11893,
+              "short": 92197,
+              "net": -80304,
+              "netValueThousands": -781742101
+            },
+            {
+              "date": "2026-10-05",
+              "long": 14760,
+              "short": 91764,
+              "net": -77004,
+              "netValueThousands": -769250525
+            },
+            {
+              "date": "2026-10-07",
+              "long": 13545,
+              "short": 92646,
+              "net": -79101,
+              "netValueThousands": -790597660
+            },
+            {
+              "date": "2026-10-08",
+              "long": 11389,
+              "short": 94583,
+              "net": -83194,
+              "netValueThousands": -821357330
+            },
+            {
+              "date": "2026-10-13",
+              "long": 10640,
+              "short": 97879,
+              "net": -87239,
+              "netValueThousands": -844623509
+            },
+            {
+              "date": "2026-10-14",
+              "long": 11352,
+              "short": 98166,
+              "net": -86814,
+              "netValueThousands": -847505397
+            },
+            {
+              "date": "2026-10-20",
+              "long": 11524,
+              "short": 101272,
+              "net": -89748,
+              "netValueThousands": -834696074
+            },
+            {
+              "date": "2026-10-21",
+              "long": 9410,
+              "short": 95482,
+              "net": -86072,
+              "netValueThousands": -809366279
+            },
+            {
+              "date": "2026-10-22",
+              "long": 8126,
+              "short": 95423,
+              "net": -87297,
+              "netValueThousands": -807290288
+            }
+          ],
+          "unit": "口",
+          "contract": "臺股期貨 TX；全到期月份合計",
+          "limitation": "僅 TX，未合併小台／微台；換月與避險均可能影響，淨空單不等於撤出台股。"
+        },
         "fed": [
           {
             "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
             "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
             "publishedAt": "2026-10-13T18:00:00.000Z",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 1823,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61719,7 +61723,7 @@
             "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
             "publishedAt": "2026-10-07T18:00:00.000Z",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 1855,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61737,7 +61741,7 @@
             "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
             "publishedAt": "2026-09-16T18:00:00.000Z",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 2114,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61748,6 +61752,62 @@
               "action": "新資金先不追高，等個股承接區與價格結構確認；既有持股未同時出現基本面或價格破壞，不因單一 Fed 公告立即砍倉。",
               "evidence": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote: The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate. While uncertainty remains elevated owing, in part, to geopolitical developments, domestic spending has been resilient.",
               "limitation": "Fed 政策是全球環境濾網，不直接取代個股財報、估值與防守條件。"
+            }
+          }
+        ],
+        "energy": [
+          {
+            "title": "U.S. refineries have been running at very high rates in 2026",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68344",
+            "publishedAt": "2026-10-22T14:00:00.000Z",
+            "contentStatus": "fetched",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
+            "contentLength": 6096,
+            "contentAnalysis": {
+              "version": "EVENT_CONTENT_GUIDE_V1",
+              "status": "fetched",
+              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
+              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
+              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
+              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
+              "evidence": "This year the refinery runs were driven largely by tight global supplies for distillate fuel oil, leading to high international demand for U.",
+              "limitation": "能源商品與個股獲利的傳導有時間差。"
+            }
+          },
+          {
+            "title": "Hybrid sales rise while battery electric sales remain lower after tax credit expiration",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68325",
+            "publishedAt": "2026-10-19T14:00:00.000Z",
+            "contentStatus": "fetched",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
+            "contentLength": 7537,
+            "contentAnalysis": {
+              "version": "EVENT_CONTENT_GUIDE_V1",
+              "status": "fetched",
+              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
+              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
+              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
+              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
+              "evidence": "Hybrid sales rise while battery electric sales remain lower after tax credit expiration - U.S. Energy Information Administration (EIA) Today in Energy Skip to page content Recent articles Browse by tag liquid fuels natural gas electricity oil/petroleum production/supply crude oil consumption/demand generation prices map states exports/imports international…",
+              "limitation": "能源商品與個股獲利的傳導有時間差。"
+            }
+          },
+          {
+            "title": "U.S. small-scale solar generation has quadrupled in the last decade",
+            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68324",
+            "publishedAt": "2026-10-16T14:00:00.000Z",
+            "contentStatus": "fetched",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
+            "contentLength": 8178,
+            "contentAnalysis": {
+              "version": "EVENT_CONTENT_GUIDE_V1",
+              "status": "fetched",
+              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
+              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
+              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
+              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
+              "evidence": "U.S. small-scale solar generation has quadrupled in the last decade - U.S. Energy Information Administration (EIA) Today in Energy Skip to page content Recent articles Browse by tag liquid fuels natural gas electricity oil/petroleum production/supply crude oil consumption/demand generation prices map states exports/imports international coal renewables weat…",
+              "limitation": "能源商品與個股獲利的傳導有時間差。"
             }
           }
         ],
@@ -61798,7 +61858,7 @@
             "url": "https://ofac.treasury.gov/recent-actions/20261021",
             "publishedAt": "2026-10-21",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 10150,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61816,7 +61876,7 @@
             "url": "https://ofac.treasury.gov/recent-actions/20261019",
             "publishedAt": "2026-10-19",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 10258,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61834,7 +61894,7 @@
             "url": "https://ofac.treasury.gov/recent-actions/20261016",
             "publishedAt": "2026-10-16",
             "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
+            "contentFetchedAt": "2026-10-26T01:18:21.221Z",
             "contentLength": 875,
             "contentAnalysis": {
               "version": "EVENT_CONTENT_GUIDE_V1",
@@ -61845,62 +61905,6 @@
               "action": "直接曝險才延後或重新檢查；沒有直接曝險不因公告單獨買賣。",
               "evidence": "Issuance of Amended Venezuela-related General License and Frequently Asked Question | Office of Foreign Assets Control Skip to main content The . Issuance of Amended Venezuela-related General License and Frequently Asked Question Release Date 10/16/2026 Recent Actions Body The Department of the Treasury's Office of Foreign Assets Control (OFAC) is issuing Venezuela-related General License 60A , \"Authorizing Transactions Related to Earthquake Relief Efforts in Venezuela.",
               "limitation": "公告的法律效果只適用於原文列出的對象與交易。"
-            }
-          }
-        ],
-        "energy": [
-          {
-            "title": "U.S. refineries have been running at very high rates in 2026",
-            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68344",
-            "publishedAt": "2026-10-22T14:00:00.000Z",
-            "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
-            "contentLength": 6096,
-            "contentAnalysis": {
-              "version": "EVENT_CONTENT_GUIDE_V1",
-              "status": "fetched",
-              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
-              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
-              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
-              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
-              "evidence": "This year the refinery runs were driven largely by tight global supplies for distillate fuel oil, leading to high international demand for U.",
-              "limitation": "能源商品與個股獲利的傳導有時間差。"
-            }
-          },
-          {
-            "title": "Hybrid sales rise while battery electric sales remain lower after tax credit expiration",
-            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68325",
-            "publishedAt": "2026-10-19T14:00:00.000Z",
-            "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
-            "contentLength": 7537,
-            "contentAnalysis": {
-              "version": "EVENT_CONTENT_GUIDE_V1",
-              "status": "fetched",
-              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
-              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
-              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
-              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
-              "evidence": "Hybrid sales rise while battery electric sales remain lower after tax credit expiration - U.S. Energy Information Administration (EIA) Today in Energy Skip to page content Recent articles Browse by tag liquid fuels natural gas electricity oil/petroleum production/supply crude oil consumption/demand generation prices map states exports/imports international…",
-              "limitation": "能源商品與個股獲利的傳導有時間差。"
-            }
-          },
-          {
-            "title": "U.S. small-scale solar generation has quadrupled in the last decade",
-            "url": "https://www.eia.gov/todayinenergy/detail.php?id=68324",
-            "publishedAt": "2026-10-16T14:00:00.000Z",
-            "contentStatus": "fetched",
-            "contentFetchedAt": "2026-10-25T10:03:30.798Z",
-            "contentLength": 8178,
-            "contentAnalysis": {
-              "version": "EVENT_CONTENT_GUIDE_V1",
-              "status": "fetched",
-              "simpleJudgment": "原文在解釋柴油價格構成，先看供給、庫存、原油與煉油利差，再判斷成本或受益方向。",
-              "direction": "對臺股：這是產業成本檢查，不是能源股或運輸股的直接買賣訊號。",
-              "exposure": "核對持股公司的燃料／運費成本與成本轉嫁能力。",
-              "action": "把原文重點放回個股毛利、營收與價格結構；未有公司層證據，不因標題新增部位。",
-              "evidence": "U.S. small-scale solar generation has quadrupled in the last decade - U.S. Energy Information Administration (EIA) Today in Energy Skip to page content Recent articles Browse by tag liquid fuels natural gas electricity oil/petroleum production/supply crude oil consumption/demand generation prices map states exports/imports international coal renewables weat…",
-              "limitation": "能源商品與個股獲利的傳導有時間差。"
             }
           }
         ]
