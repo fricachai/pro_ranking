@@ -875,3 +875,38 @@ OpenCode 必須依結果回報：
 - 報告提交 `7498959fb5667629b4cd6c5736b79e2c7038dd45`、tag `published/20261021-103047`；ETF／法人／外資持股／市場資料日 2026-10-20、集保 2026-10-16、`quotePhase=intraday`、597 檔、外資歷史 11 日；Pages audit complete、byte match true、公開網址 `https://fricachai.github.io/pro_ranking/`。
 - 限制：此為 Task Scheduler 手動觸發驗證，不等於 18:00 或下一次 09:15 指定時刻自動 trigger 已驗證。截至當日 11:31，18:00 首次 trigger 尚未發生；下一個週一至週五 09:15 trigger 為 2026-10-22 09:15。不得宣稱未來每次排程都必然成功；電腦開機／登入、網路、工作區乾淨與 GitHub 認證仍是前置條件。
 - 可重用規則同步到 `AGENTS.md` 的 `DAILY_UPDATE_SCHEDULE_V1` 第 9 點：`Ready` 不代表觸發或發布完成；分開驗證實際 runner、終態與指定時刻 trigger。<!-- SCHEDULED_TASK_PUBLISH_VERIFICATION_V1 -->
+
+## 2026-10-28 個股價格停在 10/22 的排查與 OpenAPI HTML 重試修正
+
+### 使用者問題
+
+公開頁顯示「個股價格 2026-10-22 13:33:00、本次發布 2026/10/26 09:20:02」，使用者認為 10/28 仍抓 10/22 是沒有更新最新收盤價。
+
+### 已查證事實
+
+1. 10/22 之後，證交所官方行情對 10/23、10/26 均回傳「沒有符合條件的資料」，`2330` 日成交資料也直接從 10/22 跳到 10/27。10/23、10/26 沒有交易（10/24、10/25 為週末），因此 10/23～10/26 期間「10/22 收盤」就是當時最新收盤，這段時間的報告並沒有抓錯日期。
+2. 真正中斷的是 10/27：09:15 排程在報告產生階段失敗，`GENERATOR_ERROR` 顯示 `JSON parse failed [TWSE security master]: Unexpected token '<'`，證交所 OpenAPI `openapi.twse.com.tw/v1/opendata/t187ap03_L` 以 HTTP 200 回傳 HTML 維護頁，舊程式第一次解析失敗就中止整份報告。
+3. 10/26 18:00 的每日排程也失敗：`gh auth status` 回報 keyring token invalid，預檢即停止（`SCHEDULED_UPDATE_FAILED=no_run_started`）。10/27 18:00 沒有排程 log，工作未啟動（可能電腦休眠／關機；`WakeToRun=False`）。
+4. 10/28 09:15 排程已成功發布 `eb693b5`，`priceDate=2026-10-27`、`liveDate=2026-10-28`；使用者截圖為 10/26 舊版（Pages HTML `Cache-Control: max-age=600`）。
+
+### 已修正（`OFFICIAL_OPENAPI_JSON_RETRY_V1`）
+
+- `full-professional-stock-screen.js`：`fetchJson` 改由 `fetchText` 的同一重試迴圈處理 JSON 解析；HTTP 200 但非 JSON 視為可重試錯誤，重試時加 `_fetchRetry` cache-buster，最終錯誤包含來源標籤、嘗試次數與回應開頭片段。
+- `fetch-events.js`：同樣將 JSON 解析納入既有重試，避免官方重大訊息端點回 HTML 時整批事件失敗。
+- `scripts/Test-ProfessionalScreenFetchResilience.js`：新增「HTML 兩次後轉 JSON 應成功」與「持續 HTML 應 fail-closed」兩個回歸案例；`FETCH_RESILIENCE_TEST=pass`、`HTML_THEN_JSON_ATTEMPTS=3`、`HTML_ONLY_ATTEMPTS=3`。
+- `AGENTS.md` 新增「官方 OpenAPI 非 JSON 回應的重試邊界」。
+
+### 驗證與發布（本次）
+
+- 程式提交：`cb168636e0734eb2ef7f8965621bae7f4caecebe`。
+- 受控更新：`STATUS=published`、`FINAL_RESULT_READY=true`、`FINAL_EXIT_CODE=0`、`DATA_CHANGED=true`。
+- 報告提交：`bb2b75a1b4f44a77c0e84f8b661e1ffd3b468257`；稽核標籤 `published/20261028-105538`；`PAGES_AUDIT_STATUS=complete`。
+- 資料：ETF／法人／外資持股／市場皆 `2026-10-27`、集保 `2026-10-22`、外資持股歷史 11 日、599 檔；`quotePhase=intraday`、即時報價凍結 `2026-10-28 10:53:35`。
+- 線上 `https://fricachai.github.io/pro_ranking/` 已確認顯示「個股價格 2026-10-28 10:53:35」與「本次發布 2026/10/28 10:53:43」。
+
+### 後續維護
+
+1. 價格日期比報告日期舊時，先查兩者之間是否有休市日（TWSE `STOCK_DAY`／`MI_INDEX`），不要直接判定抓取失敗。
+2. 排程失敗先讀 `scheduled-update-*.log` 與 state：`no_run_started` 多為預檢（GitHub token 或工作區）；`GENERATOR_ERROR` 才是資料或程式。
+3. GitHub CLI token 失效時需在該使用者環境重新 `gh auth login`；排程使用互動登入權杖，不會保存密碼。
+4. 18:00 排程若電腦關機／休眠且未喚醒，不會自動補跑；`StartWhenAvailable` 只在工作排程器實際取得執行機會時生效。<!-- OFFICIAL_OPENAPI_JSON_RETRY_V1 -->
