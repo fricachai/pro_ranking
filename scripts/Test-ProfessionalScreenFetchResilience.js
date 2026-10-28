@@ -7,9 +7,13 @@ const { fetchText, fetchJson } = require('../full-professional-stock-screen.js')
 let flakyAttempts = 0;
 let closeAttempts = 0;
 let timeoutAttempts = 0;
+let htmlThenJsonAttempts = 0;
+let htmlOnlyAttempts = 0;
 
 const server = http.createServer((request, response) => {
-  if (request.url === '/flaky') {
+  // Retries add a `_fetchRetry` cache-buster, so match on the path only.
+  const requestPath = String(request.url || '').split('?')[0];
+  if (requestPath === '/flaky') {
     flakyAttempts += 1;
     if (flakyAttempts < 3) {
       request.socket.destroy();
@@ -19,12 +23,31 @@ const server = http.createServer((request, response) => {
     response.end(JSON.stringify({ ok: true, attempts: flakyAttempts }));
     return;
   }
-  if (request.url === '/always-close') {
+  if (requestPath === '/always-close') {
     closeAttempts += 1;
     request.socket.destroy();
     return;
   }
-  if (request.url === '/slow') {
+  if (requestPath === '/html-then-json') {
+    htmlThenJsonAttempts += 1;
+    if (htmlThenJsonAttempts < 3) {
+      // Mirrors the 2026-10-27 TWSE OpenAPI incident: HTTP 200 with a
+      // maintenance HTML page instead of the expected JSON payload.
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      response.end('<!doctype html><html><head><title>System maintenance</title></head><body>maintenance</body></html>');
+      return;
+    }
+    response.writeHead(200, { 'content-type': 'application/json' });
+    response.end(JSON.stringify({ ok: true, attempts: htmlThenJsonAttempts }));
+    return;
+  }
+  if (requestPath === '/html-only') {
+    htmlOnlyAttempts += 1;
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+    response.end('<!doctype html><html><body>temporarily unavailable</body></html>');
+    return;
+  }
+  if (requestPath === '/slow') {
     timeoutAttempts += 1;
     // Intentionally never respond: the client-side timeout must always win,
     // regardless of machine load or event-loop delays. Previously this handler
@@ -96,10 +119,39 @@ async function main() {
     assert.strictEqual(timeoutError.source, 'local slow source');
     assert.strictEqual(timeoutAttempts, 2);
 
+    const htmlFlaky = await fetchJson(base + '/html-then-json', 5, {
+      label: 'local HTML-then-JSON source',
+      timeoutMs: 1000,
+      retryBaseDelayMs: 1,
+      retryMaxDelayMs: 5,
+      logAttempts: true
+    });
+    assert.deepStrictEqual(htmlFlaky, { ok: true, attempts: 3 });
+    assert.strictEqual(htmlThenJsonAttempts, 3);
+
+    let htmlOnlyError;
+    try {
+      await fetchJson(base + '/html-only', 3, {
+        label: 'local HTML-only source',
+        timeoutMs: 1000,
+        retryBaseDelayMs: 1,
+        retryMaxDelayMs: 5,
+        logAttempts: true
+      });
+    } catch (error) {
+      htmlOnlyError = error;
+    }
+    assert(htmlOnlyError);
+    assert.match(htmlOnlyError.message, /JSON parse failed \[local HTML-only source\] after 3 attempts/);
+    assert.match(htmlOnlyError.message, /body starts with "<!doctype html/);
+    assert.strictEqual(htmlOnlyAttempts, 3);
+
     console.log('FETCH_RESILIENCE_TEST=pass');
     console.log('FLAKY_ATTEMPTS=' + flakyAttempts);
     console.log('CLOSED_ATTEMPTS=' + closeAttempts);
     console.log('TIMEOUT_ATTEMPTS=' + timeoutAttempts);
+    console.log('HTML_THEN_JSON_ATTEMPTS=' + htmlThenJsonAttempts);
+    console.log('HTML_ONLY_ATTEMPTS=' + htmlOnlyAttempts);
   } finally {
     await close();
   }

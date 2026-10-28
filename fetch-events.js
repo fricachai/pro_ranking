@@ -57,7 +57,7 @@ async function mapLimit(items, limit, worker) {
   return results;
 }
 
-async function fetchText(url, attempts = 3, deadlineMs = null) {
+async function fetchText(url, attempts = 3, deadlineMs = null, parseJson = false) {
   let lastError;
   const hasDeadline = Number.isFinite(deadlineMs);
   for (let i = 0; i < attempts; i += 1) {
@@ -67,12 +67,19 @@ async function fetchText(url, attempts = 3, deadlineMs = null) {
       break;
     }
     try {
-      const response = await fetch(url, {
+      const response = await fetch(appendRetryMarker(url, i), {
         headers: { 'user-agent': 'Mozilla/5.0 (compatible; CodexResearch)' },
         signal: AbortSignal.timeout(Math.max(1, Math.min(CONFIG.requestTimeoutMs, remainingMs)))
       });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return await response.text();
+      const body = await response.text();
+      if (!parseJson) return body;
+      try {
+        return JSON.parse(body);
+      } catch (parseError) {
+        const preview = String(body).replace(/\s+/g, ' ').slice(0, 120);
+        throw new Error(`non-JSON response: ${parseError.message}; body starts with "${preview}"`);
+      }
     } catch (error) {
       lastError = error;
       log(`request failed (${i + 1}/${attempts}) for ${url}: ${error?.name || 'Error'} ${error?.message || error}`);
@@ -85,8 +92,14 @@ async function fetchText(url, attempts = 3, deadlineMs = null) {
   throw new Error(`Fetch failed: ${url}: ${lastError?.message || lastError}`);
 }
 
+function appendRetryMarker(url, attempt) {
+  if (attempt <= 0) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return url + separator + '_fetchRetry=' + attempt + '-' + Date.now();
+}
+
 async function fetchJson(url, attempts = 3) {
-  return JSON.parse(await fetchText(url, attempts));
+  return fetchText(url, attempts, null, true);
 }
 
 function ensureDir(dir) {

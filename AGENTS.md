@@ -119,6 +119,13 @@ OpenCode Build 與 Codex 在本專案採相同的工程權限與完成責任；`
 4. 報告必須輸出 `meta.foreignHoldingHistoryDays` 並在頁面揭露有效交易日數；每日管線與交接預檢都必須確認至少 11 日。
 5. 再次不足時，先檢查官方最大可查日期、週末／休市日、回應狀態及暫時性限流，再以循序方式重試。這是資料取得故障，不是修改選股權重或放寬品質標準的理由。
 
+## 官方 OpenAPI 非 JSON 回應的重試邊界
+
+1. 證交所／櫃買 OpenAPI 可能以 HTTP 200 回傳維護或錯誤 HTML，而不是 JSON。JSON 解析失敗屬暫時性來源失敗，必須在既有有限重試次數內以 cache-buster 重試，不得第一次就中止整份報告。
+2. `full-professional-stock-screen.js` 與 `fetch-events.js` 的 `fetchJson` 都必須把非 JSON 回應視為可重試錯誤；最終失敗訊息必須包含來源標籤、嘗試次數與回應開頭片段，讓 RUN_LOG 可直接定位。
+3. `scripts/Test-ProfessionalScreenFetchResilience.js` 必須保留 HTML 200 後轉 JSON 的回歸測試，以及持續 HTML 時 fail-closed 的測試。
+4. 重試仍失敗才可停止；不得因此降低官方資料日期、`MI_QFIIS` 11 個有效交易日、主動 ETF 完整度或其他硬性門檻，也不得用舊資料冒充本次更新。<!-- OFFICIAL_OPENAPI_JSON_RETRY_V1 -->
+
 ## 官方 T86 抓取與 Windows 執行邊界
 
 1. 證交所 T86 最近 45 個日曆日採逐日循序查詢，保留短暫延遲；暫時失敗日期最多重試三輪。不得恢復 4 路並行，也不得把單一日期失敗直接當成整個來源永久不可用。<!-- OFFICIAL_FETCH_RUNTIME_V2 -->

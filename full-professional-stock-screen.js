@@ -144,11 +144,25 @@ function isExpectedTwseCalendarGap(error) {
   return inspect(error);
 }
 
+function isJsonParseFetchError(error) {
+  return !!error && (error.isJsonParseError === true || error.name === 'SyntaxError');
+}
+
 function isRetryableFetchError(error) {
+  // TWSE/TPEX OpenAPI occasionally answers HTTP 200 with a maintenance HTML
+  // page instead of JSON. That is a transient source failure, not a fatal one,
+  // so it must go through the same bounded retry loop as 5xx responses.
+  if (isJsonParseFetchError(error)) return true;
   const status = Number(error?.status);
   if (!Number.isFinite(status)) return true;
   if (status === 307) return true;
   return status === 408 || status === 425 || status === 429 || status >= 500;
+}
+
+function appendFetchRetryMarker(url, attempt) {
+  if (attempt <= 0) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return url + separator + '_fetchRetry=' + attempt + '-' + Date.now();
 }
 
 async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
@@ -175,7 +189,8 @@ async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
         timedOut = true;
         controller.abort();
       }, timeoutMs);
-      const response = await fetch(url, {
+      const requestUrl = appendFetchRetryMarker(url, i);
+      const response = await fetch(requestUrl, {
         headers: {
           'user-agent': 'Mozilla/5.0 Codex Taiwan equity research screen',
           accept: 'application/json,text/plain,*/*'
@@ -187,7 +202,19 @@ async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
         httpError.status = response.status;
         throw httpError;
       }
-      return await response.text();
+      const body = await response.text();
+      if (config.parseJson === true) {
+        try {
+          return JSON.parse(body);
+        } catch (parseError) {
+          const preview = String(body).replace(/\s+/g, ' ').slice(0, 120);
+          const jsonError = new SyntaxError('non-JSON response: ' + parseError.message +
+            '; body starts with "' + preview + '"');
+          jsonError.isJsonParseError = true;
+          throw jsonError;
+        }
+      }
+      return body;
     } catch (error) {
       const normalizedError = timedOut
         ? Object.assign(new Error('timeout after ' + timeoutMs + 'ms'), { name: 'TimeoutError', cause: error })
@@ -217,19 +244,20 @@ async function fetchText(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
 }
 
 async function fetchJson(url, attempts = FETCH_DEFAULT_ATTEMPTS, options = {}) {
-  const config = options || {};
+  const config = Object.assign({}, options || {}, { parseJson: true });
   const label = config.label || url;
   try {
-    return JSON.parse(await fetchText(url, attempts, config));
+    return await fetchText(url, attempts, config);
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      const parseError = new Error('JSON parse failed [' + label + ']: ' + error.message);
-      parseError.source = label;
-      parseError.url = url;
-      parseError.cause = error;
-      throw parseError;
-    }
-    throw error;
+    const parseCause = [error.cause, error].find(item => isJsonParseFetchError(item));
+    if (!parseCause) throw error;
+    const parseError = new Error('JSON parse failed [' + label + '] after ' +
+      (error.attempts || '?') + ' attempts: ' + parseCause.message);
+    parseError.source = label;
+    parseError.url = url;
+    parseError.attempts = error.attempts;
+    parseError.cause = parseCause;
+    throw parseError;
   }
 }
 
